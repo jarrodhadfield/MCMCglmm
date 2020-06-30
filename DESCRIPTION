@@ -1,0 +1,12 @@
+Package: MCMCglmm
+Version: 2.30
+Date: 2020-06-17
+Title: MCMC Generalised Linear Mixed Models
+Depends:   Matrix, coda, ape
+Imports: corpcor, tensorA, cubature, methods
+Suggests:  rgl, combinat, mvtnorm, orthopolynom
+Author:Jarrod Hadfield
+Maintainer: Jarrod Hadfield <j.hadfield@ed.ac.uk>
+Description: MCMC Generalised Linear Mixed Models. 
+License: GPL (>= 2)
+SystemRequirements: C++11
