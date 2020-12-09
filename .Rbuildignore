@@ -1,0 +1,15 @@
+vignettes/Lecture[1-9][-][a-z].*[.]pdf$
+vignettes/jss[.]bst$
+vignettes/jss[.]cls$
+vignettes/CourseNotes[.]tex$
+vignettes/.*[.]aux$
+vignettes/.*[.]bbl$
+vignettes/.*[.]blg$
+vignettes/.*[.]idx$
+vignettes/.*[.]log$
+vignettes/.*[.]out$
+vignettes/.*[.]toc$
+.*~$
+src/.*[.]o$
+src/.*[.]so$
+src/symbols[.]rds
