@@ -962,9 +962,9 @@
             }          
             if(family_set=="multinomial"){
               if(length(table(data_tmp$MCMC_y))>2){
-                 m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional)~1, family="quasibinomial", data=data_tmp))
-                 v<-abs(((as.numeric(m1$dispersion[1])-0.5)/2)^2)
-                 mu<-as.numeric(m1$coef[1])
+                 m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional-MCMC_y)~1, family="quasibinomial", data=data_tmp))
+                 v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
+                 mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
               }else{
                  v<-1
                  mu<-0
