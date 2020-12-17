@@ -2557,6 +2557,35 @@ if(itt>0){
                   densityl2 += dt(yP[record]-linki_tmp[k]->x[i]/y2P[record], y2P[record+ny], true)-log(y2P[record]);
                  
                  break;
+
+                 case 25:  /* Hurdle Binomial */
+                   
+                   if(mfacP[rterm+i]==0){  // non-zero bit
+                     if(yP[record]>0.5){
+                       mndenom1 = dbinom(yP[record], y2P[record], exp(linki[k]->x[i])/(1.0+exp(linki[k]->x[i])), true);  
+                       mndenom1 -= log1p(-dbinom(0.0, y2P[record], exp(linki[k]->x[i])/(1.0+exp(linki[k]->x[i])), false));
+                       mndenom2 = dbinom(yP[record], y2P[record], exp(linki_tmp[k]->x[i])/(1.0+exp(linki_tmp[k]->x[i])), true); 
+                       mndenom2 -= log1p(-dbinom(yP[record], y2P[record], exp(linki_tmp[k]->x[i])/(1.0+exp(linki_tmp[k]->x[i])), false)); 
+                     } 
+                   }else{
+                      if(truncP[0]){
+                        if(linki_tmp[k]->x[i]<(-logitt)){linki_tmp[k]->x[i]=-logitt;}
+                        if(linki_tmp[k]->x[i]>logitt){linki_tmp[k]->x[i]=logitt;}
+                      }
+                      if(yP[record]>0.5){
+                        mndenom1 += linki[k]->x[i]-log1p(exp(linki[k]->x[i]));
+                        mndenom2 += linki_tmp[k]->x[i]-log1p(exp(linki_tmp[k]->x[i]));
+                      }else{
+                        mndenom1 += -log1p(exp(linki[k]->x[i]));
+                        mndenom2 += -log1p(exp(linki_tmp[k]->x[i]));
+                      }
+                      densityl1 += mndenom1;
+                      densityl2 += mndenom2;
+                      mndenom1 = 1.0;
+                      mndenom2 = 1.0;
+                   }
+                 
+                 break;
                  
                }
              }

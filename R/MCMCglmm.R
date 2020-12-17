@@ -10,7 +10,7 @@
     if(class(random)!="formula" & class(random)!="NULL"){stop("random should be a formula")}
 
     reserved.names<-c("units", "MCMC_y", "MCMC_y.additional","MCMC_y.additional2", "MCMC_liab","MCMC_meta", "MCMC_mev", "MCMC_family.names", "MCMC_error.term", "MCMC_dummy")
-    family.types<-c("gaussian", "poisson", "multinomial", "notyet_weibull", "exponential", "cengaussian", "cenpoisson", "notyet_cenweibull", "cenexponential",  "notyet_zigaussian", "zipoisson", "notyet_ziweibull", "notyet_ziexponential", "ordinal", "hupoisson", "ztpoisson", "geometric", "zapoisson", "zibinomial", "threshold", "zitobit", "nzbinom", "ncst", "msst")
+    family.types<-c("gaussian", "poisson", "multinomial", "notyet_weibull", "exponential", "cengaussian", "cenpoisson", "notyet_cenweibull", "cenexponential",  "notyet_zigaussian", "zipoisson", "notyet_ziweibull", "notyet_ziexponential", "ordinal", "hupoisson", "ztpoisson", "geometric", "zapoisson", "zibinomial", "threshold", "zitobit", "nzbinom", "ncst", "msst", "hubinomial")
 
     if(any(names(data)%in%reserved.names)){
       stop(paste(names(data)[which(names(data)%in%reserved.names)], " is a reserved variable please rename it"))
@@ -1018,7 +1018,7 @@
                 mu<-log(mu)-0.5*v
               }
             }
-            if(family_set=="zibinomial"){
+            if(family_set=="zibinomial" | family_set=="hubinomial"){
               if(max(data_tmp$MCMC_y)==1){
                 mu<-mean(data_tmp$MCMC_y==1)
                 mu<-log(mu/(1-mu))

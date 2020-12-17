@@ -183,7 +183,7 @@
           stop(paste(approx, "approximation not implemented for this response"))
         }  
       }
-      normal.zt<-function(mu, v, approx){
+      normal.ztp<-function(mu, v, approx){
         if(approx=="numerical" || approx=="taylor2"){
           if(approx=="numerical"){
             int.foo<-function(x, mu, v){exp(x)/(1-exp(-exp(x)))*dnorm(x, mu, sqrt(v))}
@@ -195,7 +195,18 @@
           stop(paste(approx, "approximation not implemented for this response"))
         }  
       }  
- 
+      normal.ztb<-function(mu, v, size, approx){
+        if(approx=="numerical" || approx=="taylor2"){
+          if(approx=="numerical"){
+            int.foo<-function(x, mu, v){(size*plogis(x)/(1-(1-plogis(x))^size))*dnorm(x, mu, sqrt(v))}
+            return(integrate(int.foo, qnorm(0.0001, mu,sqrt(v)), qnorm(0.9999, mu,sqrt(v)), mu,v)[[1]])
+          }else{
+            stop(paste(approx, "taylor approximation not implemented for this response"))
+          } 
+        }else{  
+          stop(paste(approx, "approximation not implemented for this response"))
+        }  
+      }  
       normal.logistic<-function(mu, v, approx){
         if(approx=="numerical"){
           int.foo<-function(x, mu, v){plogis(x)*dnorm(x, mu, sqrt(v))}
@@ -252,7 +263,7 @@
 
       if(any(object$family%in%c("ztpoisson"))){
         keep<-which(object$family%in%c("ztpoisson"))
-        post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){normal.zt(mu,v, approx)})
+        post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){normal.ztp(mu,v, approx)})
       }
 
       if(any(object$family%in%c("exponential","cenexponential","geometric","cengeometric"))){
@@ -335,14 +346,14 @@
           keep<-keep[-c(1:(length(keep)/2))]
           rm.obs<-c(rm.obs, keep)
           post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.zt(mu,v, approx)})
+          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.ztp(mu,v, approx)})
         }
         if(any(grepl("zapoisson", object$Residual$family))){
           keep<-which(object$error.term%in%which(super.trait==k))
           keep<-keep[-c(1:(length(keep)/2))]
           rm.obs<-c(rm.obs, keep)
           post.pred[,keep]<-1-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){normal.evd(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.zt(mu,v, approx)})
+          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.ztp(mu,v, approx)})
         }
 
         if(any(grepl("zipoisson", object$Residual$family[which(super.trait==k)]))){
@@ -359,6 +370,14 @@
           rm.obs<-c(rm.obs, keep)
           post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
           post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.logistic(mu,v, approx)})*size
+        }
+        if(any(grepl("hubinomial", object$Residual$family))){
+          keep<-which(object$error.term%in%which(super.trait==k))
+          size<-object$y.additional[keep[1:(length(keep)/2)],1]
+          keep<-keep[-c(1:(length(keep)/2))]
+          rm.obs<-c(rm.obs, keep)
+          post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
+          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], size, FUN=function(mu,v){normal.ztb(mu,v, size, approx)})
         }
       }
     }
