@@ -327,7 +327,7 @@
           size<-object$y.additional[trans[1:(length(trans)/2)],1]
           prob<-matrix(ynew[trans,i], length(trans)/sum(super.trait==k), sum(super.trait==k))
           prob[,2]<-rbinom(nrow(prob), 1, 1-plogis(prob[,2]))
-          prob[,2][which(prob[,2]==1)]<-rbinom(sum(prob[,2]==1), size, plogis(prob[,1][which(prob[,2]==1)]))
+          prob[,2][which(prob[,2]==1)]<-rbinom(sum(prob[,2]==1), size[which(prob[,2]==1)], plogis(prob[,1][which(prob[,2]==1)]))
           ynew[trans,i]<-prob[,2]
         }
         if(any(grepl("hubinomial", object$Residual$family[which(super.trait==k)]))){
