@@ -2565,7 +2565,7 @@ if(itt>0){
                        mndenom1 = dbinom(yP[record], y2P[record], exp(linki[k]->x[i])/(1.0+exp(linki[k]->x[i])), true);  
                        mndenom1 -= log1p(-dbinom(0.0, y2P[record], exp(linki[k]->x[i])/(1.0+exp(linki[k]->x[i])), false));
                        mndenom2 = dbinom(yP[record], y2P[record], exp(linki_tmp[k]->x[i])/(1.0+exp(linki_tmp[k]->x[i])), true); 
-                       mndenom2 -= log1p(-dbinom(yP[record], y2P[record], exp(linki_tmp[k]->x[i])/(1.0+exp(linki_tmp[k]->x[i])), false)); 
+                       mndenom2 -= log1p(-dbinom(0.0, y2P[record], exp(linki_tmp[k]->x[i])/(1.0+exp(linki_tmp[k]->x[i])), false)); 
                      } 
                    }else{
                       if(truncP[0]){
