@@ -2586,6 +2586,38 @@ if(itt>0){
                    }
                  
                  break;
+
+                 case 26:  /* ztmb */
+                   
+                   if(truncP[0]){
+                     if(linki_tmp[k]->x[i]<(-logitt)){linki_tmp[k]->x[i]=-logitt;}
+                     if(linki_tmp[k]->x[i]>logitt){linki_tmp[k]->x[i]=logitt;}
+                   }
+
+                   mndenom1 /= 1.0+exp(linki[k]->x[i]);
+                   mndenom2 /= 1.0+exp(linki_tmp[k]->x[i]);
+
+                   if(yP[record]>0.5){
+                      densityl1 += (linki[k]->x[i] - log1p(exp(linki[k]->x[i])));
+                      densityl2 += (linki_tmp[k]->x[i] - log1p(exp(linki_tmp[k]->x[i])));                
+                   }else{
+                     densityl1 += -linki[k]->x[i] - log1p(exp(-linki[k]->x[i]));
+                     densityl2 += -linki_tmp[k]->x[i] - log1p(exp(-linki_tmp[k]->x[i]));     
+                   }
+                   if(mfacP[rterm+i]==nthmnl){ 
+                     densityl1 -= log1p(-mndenom1);
+                     densityl2 -= log1p(-mndenom2);
+                     nthmnl = 0;
+                     mndenom1 = 1.0;
+                     mndenom2 = 1.0;
+                   }else{
+                     nthmnl++;
+                   }
+                   
+
+                 break;
+
+
                  
                }
              }
