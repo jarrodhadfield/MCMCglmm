@@ -10,7 +10,7 @@
   if(class(random)!="formula" & class(random)!="NULL"){stop("random should be a formula")}
 
   reserved.names<-c("units", "MCMC_y", "MCMC_y.additional","MCMC_y.additional2", "MCMC_liab","MCMC_meta", "MCMC_mev", "MCMC_family.names", "MCMC_error.term", "MCMC_dummy")
-  family.types<-c("gaussian", "poisson", "multinomial", "notyet_weibull", "exponential", "cengaussian", "cenpoisson", "notyet_cenweibull", "cenexponential",  "notyet_zigaussian", "zipoisson", "notyet_ziweibull", "notyet_ziexponential", "ordinal", "hupoisson", "ztpoisson", "geometric", "zapoisson", "zibinomial", "threshold", "zitobit", "nzbinom", "ncst", "msst", "hubinomial", "ztmb")
+  family.types<-c("gaussian", "poisson", "multinomial", "notyet_weibull", "exponential", "cengaussian", "cenpoisson", "notyet_cenweibull", "cenexponential",  "notyet_zigaussian", "zipoisson", "notyet_ziweibull", "notyet_ziexponential", "ordinal", "hupoisson", "ztpoisson", "geometric", "zapoisson", "zibinomial", "threshold", "zitobit", "nzbinom", "ncst", "msst", "hubinomial", "ztmb", "ztmultinomial")
 
   if(any(names(data)%in%reserved.names)){
     stop(paste(names(data)[which(names(data)%in%reserved.names)], " is a reserved variable please rename it"))
@@ -103,7 +103,7 @@ if(is.null(family)){
    }           
    family.names<-as.character(data$family)   
    MVasUV=TRUE
-   if(length(grep("cen|multinomial|zi|hu|za|nzbinom|ncst|msst|ztmb", family.names))>0){ 
+   if(any(grepl("cen|multinomial|zi|hu|za|nzbinom|ncst|msst|ztmb", family.names))){ 
      stop("For setting up multi-trait models as univariate the responses cannot come from distributions that require more than one data column or have more than one liability (i.e. censored, multinomial, zero-inflated, categorical with k>2): set it up as multivariate using cbind(...)")
    }
  }
@@ -119,7 +119,7 @@ if(is.null(family)){
 
 diagR<-1  # should the residual structure be diagonal even if us is used?
 
-if(length(grep("hu|zi|za|multinomial[3-9]|[0-9][0-9]|ztmb", family.names))>0){ 
+if(any(grepl("hu|zi|za|multinomial[3-9]|[0-9][0-9]|ztmb", family.names))){ 
   if(length(grep("idh\\(trait|us\\(trait|trait:units|units:trait|corg\\(trait|corgh\\(trait|cors\\(trait|idv\\(trait|ante.*\\(trait|sub\\(trait", rcov))==0){
     stop("Mutivariate error structures (i.e. using the term 'trait') are required for multinomial data with more than 2 categories, or zero-inflated/altered/hurdle models.")
   }else{
@@ -211,7 +211,7 @@ if(MVasUV){
 
     dist.preffix<-substr(family[i],1,2)                  
     if(nt>length(response.names)){stop("family is the wrong length")}
-    if(any(dist.preffix%in%c("ce", "mu", "ca", "tr", "zi", "hu", "za", "nz", "nc", "ms") | grepl("^ztmb", family[i]))){
+    if(any(dist.preffix%in%c("ce", "mu", "ca", "tr", "zi", "hu", "za", "nz", "nc", "ms") | grepl("^ztmb|^ztmultinomial", family[i]))){
 
 ######################
 # categorical traits #
@@ -263,8 +263,14 @@ if(MVasUV){
 # multinomial traits #
 ######################
 
-    if(dist.preffix=="mu"){
-     nJ<-as.numeric(substr(family[i],12,nchar(family[i])))-1
+    if(dist.preffix=="mu" | grepl("ztmultinomial", family[i])){
+
+     if(grepl("ztmultinomial", family[i])){
+       nJ<-as.numeric(substr(family[i],14,nchar(family[i])))-1
+     }else{
+       nJ<-as.numeric(substr(family[i],12,nchar(family[i])))-1
+     }
+
      if(nJ>1){
        slice<-FALSE
        rterm.family<-c(rterm.family, rep(rterm.family[length(rterm.family)], nJ-1))  
@@ -275,7 +281,7 @@ if(MVasUV){
        stop("multinomial data must be positive integers")
      }
      y.additional<-cbind(y.additional, matrix(rowSums(data[,match(response.names[0:nJ+nt], names(data))]), nS,nJ))             # get n of the multinomial
-     y.additional2<-cbind(y.additional2, matrix(0, nS,nJ))             # get n of the multinomial
+     y.additional2<-cbind(y.additional2, matrix(data[,match(response.names[nJ+nt], names(data))], nS,nJ))      # get n of the reference category
 
      if(any(na.omit(y.additional)>1)){slice<-FALSE}                                                                           # number of J-1 categories
      if(any(is.na(y.additional[,dim(y.additional)[2]]) & apply(data[,match(response.names[0:nJ+nt], names(data))], 1, function(x){any(is.na(x)==FALSE)}))){
@@ -283,7 +289,11 @@ if(MVasUV){
      }	 
      data<-data[,-which(names(data)==response.names[nt+nJ]),drop=FALSE]                                                        # remove first category
      response.names<-response.names[-(nt+nJ)]
-     family.names[nt]<-"multinomial"
+     if(grepl("ztmultinomial", family[i])){
+       family.names[nt]<-"ztmultinomial"
+     }else{
+       family.names[nt]<-"multinomial"
+     }
      ones<-rep(1,length(family.names))
      ones[nt]<-nJ
      family.names<-rep(family.names, ones)
@@ -982,7 +992,7 @@ if(is.null(start$liab)){
         v<-abs(log(abs(((var(data_tmp$MCMC_y+1)-mu)/(mu^2))+1)))
         mu<-log(mu)-0.5*v
       }          
-      if(family_set=="multinomial" | family_set=="ztmb"){
+      if(family_set=="multinomial" | family_set=="ztmb" | family_set=="ztmultinomial"){
         if(length(table(data_tmp$MCMC_y))>2){
          m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional-MCMC_y)~1, family="quasibinomial", data=data_tmp))
          v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))

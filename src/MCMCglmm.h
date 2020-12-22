@@ -82,6 +82,11 @@ cs *cs_dense(double *x, int n, int m, int start);
 /* creates an n x m dense 'sparse' matrix with entries (organised column-wise) x */
 cs *cs_dense0(int n, int m);
 /* creates an n x m dense 'sparse' matrix of zeros */
+double pkk(double *prob, double size, int k);
+/* returns the probability of getting at least one count in each of k categories from a multinomial */
+void pkk_loop(int start, double *p, int k, int depth, double *prob, double size, double *pend);
+/* recursive function used inside pkk */ 
+double pkk_update(const cs *linki, double size, int *present, int K, int final_i);
 #ifdef __cplusplus
 }
 #endif

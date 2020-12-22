@@ -59,7 +59,8 @@ export(
   path,
 # rante,
 # close.bracket,
-   me
+   me,
+   pkk
 ) 
 S3method(summary, MCMCglmm)
 S3method(print, summary.MCMCglmm)

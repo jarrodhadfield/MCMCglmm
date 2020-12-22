@@ -166,6 +166,8 @@ for(k=nG; k<nGR; k++){
   nrterms+=nlGR[k];
 }
 
+int  *present = new int[nrterms+nR]; // vector of 0 and 1's for ztmultinomial
+
 int *cond = new int[cnt];
 int *keep = new int[cnt];
 
@@ -2616,6 +2618,46 @@ if(itt>0){
                    
 
                  break;
+
+                 case 27:  /* Zero-truncated Multinomial Logit */
+  
+                   if(truncP[0]){
+                     if(linki_tmp[k]->x[i]<(-logitt)){linki_tmp[k]->x[i]=-logitt;}
+                     if(linki_tmp[k]->x[i]>logitt){linki_tmp[k]->x[i]=logitt;}
+                   }
+
+                   if(yP[record]>0.5){
+                     mndenom1 += exp(linki[k]->x[i]);
+                     mndenom2 += exp(linki_tmp[k]->x[i]);
+                     densityl1 += yP[record]*linki[k]->x[i];
+                     densityl2 += yP[record]*linki_tmp[k]->x[i];
+                     present[i] = 1; 
+                   }else{
+                     present[i] = 0;
+                   }
+
+                   if(mfacP[rterm+i]==nthmnl){ 
+                     if(y2P[record+ny]>0.5){
+                       present[i+1] = 1;
+                       densityl1 -= y2P[record]*log(mndenom1);
+                       densityl2 -= y2P[record]*log(mndenom2);
+                     }else{  // reference category is empty so do not include it in the normalisation
+                       present[i+1] = 0;
+                       densityl1 -= y2P[record]*log(mndenom1-1.0);
+                       densityl2 -= y2P[record]*log(mndenom2-1.0);
+                     }
+
+                     densityl1 -= log(pkk_update(linki[k], y2P[record], present, nthmnl+2, i));
+                     densityl2 -= log(pkk_update(linki_tmp[k], y2P[record], present, nthmnl+2, i));
+                     nthmnl = 0;
+                     mndenom1 = 1.0;
+                     mndenom2 = 1.0;
+                   }else{
+                     nthmnl++;
+                   }
+                   
+                 break;
+
 
 
                  
