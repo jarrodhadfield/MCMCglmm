@@ -16,9 +16,9 @@ double pkk(double *prob, double size, int k){
   double *p = vector;
 
   pkk_loop(0, p, k, 0, prob, size, pend);
-  
+
   return (pend[0]);
-}                
+}
 
 void pkk_loop(int start, double *p, int k, int depth, double *prob, double size, double *pend){
 
@@ -32,8 +32,8 @@ void pkk_loop(int start, double *p, int k, int depth, double *prob, double size,
       }
       pend[0] += pow(-1.0, k-depth+1)*pow(p[depth], size);
       pkk_loop(i+1, p, k, depth+1, prob, size, pend);
-  }  
-}  
+  }
+}
 
 double pkk_update(const cs *linki, double size, int *present, int K, int final_i){
 
