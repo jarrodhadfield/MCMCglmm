@@ -2655,15 +2655,11 @@ if(itt>0){
                    }else{
                      nthmnl++;
                    }
-                   
+
                  break;
-
-
-
-                 
                }
              }
-           }                                                                
+           }
          }
          dbar += densityl1;
   
