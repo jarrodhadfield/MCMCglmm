@@ -2136,7 +2136,7 @@ if(itt>0){
 /* sample liabilities  */   
 /***********************/
 //Rprintf("sample liabilities\n");	
-	
+
    if(missing){
   
      cnt2=0;
@@ -2163,9 +2163,14 @@ if(itt>0){
          p = k+proposal[cnt+j]*nGR;  // indexes proposal distributions
   
          for(i=0; i<dimG; i++){
-           linki_tmp[k]->x[i] = rnorm(0.0,1.0);
-           linki[k]->x[i] = linky->x[cnt2+nlGR[k]*i+j];
-           predi[k]->x[i] =  pred->x[cnt2+nlGR[k]*i+j];
+            record=cnt2+nlGR[k]*i+j;
+           if(familyP[record]==3 || familyP[record]==27){
+              linki_tmp[k]->x[i] = rnorm(0.0,1.0/sqrt((1.0+yP[record])*(1.0-yP[record]/(y2P[record]+1.0))));
+            }else{
+              linki_tmp[k]->x[i] = rnorm(0.0,1.0);
+            }  
+            linki[k]->x[i] = linky->x[record];
+            predi[k]->x[i] =  pred->x[record];
          }
   
          if(mvtype[cnt+j]==1){         // can be Gibbsed  
