@@ -256,7 +256,7 @@ if(MVasUV){
       response.names[which(response.names==response.names[nt])]<-new.names
       nt<-nt+nJ
       y.additional<-cbind(y.additional, matrix(1,nS,nJ))
-      y.additional2<-cbind(y.additional2, matrix(0,nS,nJ))
+      y.additional2<-cbind(y.additional2, matrix(1-rowSums(cont),nS,nJ))
     }
 
 ######################
@@ -432,8 +432,8 @@ if(grepl("^ztmb", family[i])){
      if(any(data[,match(response.names[1:nJ-1+nt], names(data))]%%1!=0, na.rm=T) | min(data[,match(response.names[1:nJ-1+nt], names(data))], na.rm=T)<0 | max(data[,match(response.names[1:nJ-1+nt], names(data))], na.rm=T)>1){
        stop("ztmb data must be zero or 1")
      }
-     y.additional<-cbind(y.additional,matrix(NA,nS,1))
-     y.additional2<-cbind(y.additional2,matrix(0,nS,1))                                                        # remove first category
+     y.additional<-cbind(y.additional,matrix(NA,nS,nJ))
+     y.additional2<-cbind(y.additional2,matrix(0,nS,nJ))                                                        # remove first category
      family.names[nt]<-"ztmb"
      ones<-rep(1,length(family.names))
      ones[nt]<-nJ
@@ -993,20 +993,27 @@ if(is.null(start$liab)){
         mu<-log(mu)-0.5*v
       }          
       if(family_set=="multinomial" | family_set=="ztmb" | family_set=="ztmultinomial"){
+
+        if(family_set=="ztmultinomial"){
+          data_tmp<-subset(data_tmp, MCMC_y>0 & MCMC_y.additional2>0)
+        }else{
+          data_tmp<-subset(data_tmp, MCMC_y>0 | MCMC_y.additional2>0)
+        }
+      
         if(length(table(data_tmp$MCMC_y))>2){
-         m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional-MCMC_y)~1, family="quasibinomial", data=data_tmp))
-         v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
-         mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
-       }else{
-         v<-1
-         mu<-0
-       }
-     }
-     if(family_set=="nzbinom"){ 
+          m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional2)~1, family="quasibinomial", data=data_tmp))
+          v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y+data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
+          mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
+        }else{
+          v<-1
+          mu<-0
+        }
+      }
+      if(family_set=="nzbinom"){ 
       v<-1
       mu<-plogis(1-(1-mean(data_tmp$MCMC_y, na.rm=TRUE))^(1/mean(data_tmp$MCMC_y.additional, na.rm=TRUE)))
-    }
-    if(family_set=="exponential" | family_set=="cenexponential"){
+      }
+      if(family_set=="exponential" | family_set=="cenexponential"){
       if(any(data_tmp$MCMC_y==0)){
         data_tmp$MCMC_y[which(data_tmp$MCMC_y==0)]<-1e-6
       }
