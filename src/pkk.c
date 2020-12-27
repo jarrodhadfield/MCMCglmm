@@ -85,7 +85,9 @@ double pkk_update(const cs *linki, double size, int *present, int K, int final_i
     double *prob = prob_vector;
 
     pkk_loop(0, p, k, 0, prob, size, pend);
+
+    if(pend[0]<1e-16){pend[0]=1e-16;}
     
-    return (pend[0]);
+    return(pend[0]);
   }
 }                

@@ -9,7 +9,7 @@
   if(class(rcov)!="formula"){stop("rcov should be a formula")}
   if(class(random)!="formula" & class(random)!="NULL"){stop("random should be a formula")}
 
-  reserved.names<-c("units", "MCMC_y", "MCMC_y.additional","MCMC_y.additional2", "MCMC_liab","MCMC_meta", "MCMC_mev", "MCMC_family.names", "MCMC_error.term", "MCMC_dummy")
+  reserved.names<-c("units", "MCMC_y", "MCMC_y.additional","MCMC_y.additional2", "MCMC_mh.weights", "MCMC_liab","MCMC_meta", "MCMC_mev", "MCMC_family.names", "MCMC_error.term", "MCMC_dummy")
   family.types<-c("gaussian", "poisson", "multinomial", "notyet_weibull", "exponential", "cengaussian", "cenpoisson", "notyet_cenweibull", "cenexponential",  "notyet_zigaussian", "zipoisson", "notyet_ziweibull", "notyet_ziexponential", "ordinal", "hupoisson", "ztpoisson", "geometric", "zapoisson", "zibinomial", "threshold", "zitobit", "nzbinom", "ncst", "msst", "hubinomial", "ztmb", "ztmultinomial")
 
   if(any(names(data)%in%reserved.names)){
@@ -51,6 +51,12 @@ if(is.null(start$QUASI)){
 }else{
   QUASI<-start$QUASI
   if(is.logical(QUASI)==FALSE){stop("start$QUASI should be TRUE or FALSE")}
+}
+if(is.null(start$r)){
+  rLV<-0.8
+}else{
+  rLV<-start$r
+  if(rLV<(-1) | rLV>1) {stop("start$r should be between -1 and 1")}
 }
 
 original.fixed<-fixed                                                                            # original model specification
@@ -152,6 +158,7 @@ nt<-1                                          # number of traits (to be iterate
 if(MVasUV){
   y.additional<-matrix(NA, nS,1)                 # matrix equal in dimension to y holding the additional parameters of the distribution (n, upper interval etc.)
   y.additional2<-matrix(NA, nS,1)
+  mh.weights<-matrix(1, nS,1)
   mfac<-rep(0, nlevels(data$trait))
   if(any(family.names=="categorical")){
     ncat<-tapply(data[,response.names][which(family.names=="categorical")], as.character(data$trait[which(family.names=="categorical")]), function(x){length(unique(x))})
@@ -204,6 +211,7 @@ if(MVasUV){
 
   y.additional<-matrix(NA, nS,0)                 # matrix equal in dimension to y holding the additional parameters of the distribution (n, upper interval etc.)
   y.additional2<-matrix(NA, nS,0)
+  mh.weights<-matrix(1, nS,0)
 
   for(i in 1:length(family)){
 
@@ -257,6 +265,7 @@ if(MVasUV){
       nt<-nt+nJ
       y.additional<-cbind(y.additional, matrix(1,nS,nJ))
       y.additional2<-cbind(y.additional2, matrix(1-rowSums(cont),nS,nJ))
+      mh.weights<-cbind(mh.weights, matrix(1,nS,nJ))
     }
 
 ######################
@@ -282,7 +291,16 @@ if(MVasUV){
      }
      y.additional<-cbind(y.additional, matrix(rowSums(data[,match(response.names[0:nJ+nt], names(data))]), nS,nJ))             # get n of the multinomial
      y.additional2<-cbind(y.additional2, matrix(data[,match(response.names[nJ+nt], names(data))], nS,nJ))      # get n of the reference category
-
+     if(grepl("ztmultinomial", family[i])){
+        tmp_y<-unlist(data[,match(response.names[0:(nJ-1)+nt], names(data))])
+        tmp_sum<-rep(rowSums(data[,match(response.names[0:nJ+nt], names(data))]), nJ) 
+        new.weights<-1.0/sqrt(tmp_y*(1-tmp_y/tmp_sum))
+        new.weights[which(tmp_y<0.5 | (tmp_y+0.5)>tmp_sum)]<-1
+        new.weights<-matrix(new.weights, nS, nJ)
+        mh.weights<-cbind(mh.weights, new.weights) 
+      }else{ 
+        mh.weights<-cbind(mh.weights, matrix(1, nS, nJ))
+      }  
      if(any(na.omit(y.additional)>1)){slice<-FALSE}                                                                           # number of J-1 categories
      if(any(is.na(y.additional[,dim(y.additional)[2]]) & apply(data[,match(response.names[0:nJ+nt], names(data))], 1, function(x){any(is.na(x)==FALSE)}))){
        stop("multinomial responses must be either completely observed or completely missing")
@@ -311,7 +329,8 @@ if(MVasUV){
        stop("nzbinom data must be a column of 0/1s and then a column of positive integers")
      }
      y.additional<-cbind(y.additional, data[,match(response.names[1+nt], names(data))]) 
-     y.additional2<-cbind(y.additional2, matrix(0, nS,1)) 
+     y.additional2<-cbind(y.additional2, matrix(0, nS,1))
+     mh.weights<-cbind(mh.weights, matrix(1, nS,1))
 
      if(any(is.na(y.additional[,dim(y.additional)[2]]) & apply(data[,match(response.names[0:1+nt], names(data))], 1, function(x){any(is.na(x)==FALSE)}))){
        stop("both columns of nzbinom response must be either completely observed or completely missing")
@@ -330,7 +349,9 @@ if(MVasUV){
      mfac<-c(mfac, 0)  
      if(any(data[,which(names(data)==response.names[nt+1])]<data[,which(names(data)==response.names[nt])], na.rm=T)){stop("for censored traits left censoring point must be less than right censoring point")}
      y.additional<-cbind(y.additional, data[,which(names(data)==response.names[nt+1])]) # get upper interval
-     y.additional2<-cbind(y.additional2,matrix(0,nS,1)) 
+     y.additional2<-cbind(y.additional2,matrix(0,nS,1))
+     mh.weights<-cbind(mh.weights,matrix(1,nS,1))  
+
      if(family.names[nt]=="cenpoisson"){
        if(all(data[,response.names[0:1+nt]]%%1==0, na.rm=T)==FALSE | all(data[,response.names[0:1+nt]]>=0, na.rm=T)==FALSE){stop("Poisson data must be non-negative integers")}
        data[[response.names[nt]]][which(data[[response.names[nt]]]!=data[[response.names[nt+1]]])]<-data[[response.names[nt]]][which(data[[response.names[nt]]]!=data[[response.names[nt+1]]])]-1
@@ -351,6 +372,7 @@ if(MVasUV){
     mfac<-c(mfac, 0)  
     y.additional<-cbind(y.additional, data[,which(names(data)==response.names[nt+1])]) # get upper interval
     y.additional2<-cbind(y.additional2, matrix(0,nS, 1))# get upper interval
+    mh.weights<-cbind(mh.weights, matrix(1,nS, 1))# get upper interval
     data<-data[,-which(names(data)==response.names[nt+1]),drop=FALSE]                                      # remove upper interval from the response
     response.names<-response.names[-(nt+1)]
     nt<-nt+1
@@ -367,6 +389,7 @@ if(MVasUV){
    if(grepl("poisson", family[i])){
      y.additional<-cbind(y.additional, rep(1,nS), rep(0,nS))
      y.additional2<-cbind(y.additional2, matrix(0,nS,2))
+     mh.weights<-cbind(mh.weights, matrix(1,nS,2))
      if(all(data[,response.names[nt]]%%1==0, na.rm=T)==FALSE | all(data[,response.names[nt]]>=0, na.rm=T)==FALSE){
        stop("Poisson data must be non-negative integers")
      }
@@ -377,6 +400,7 @@ if(MVasUV){
 
     y.additional<-cbind(y.additional, rowSums(data[,match(response.names[0:1+nt], names(data))]), rep(0,nS))
     y.additional2<-cbind(y.additional2, matrix(0,nS,2))
+    mh.weights<-cbind(mh.weights, matrix(1,nS,2))
     
     if(all(data[,match(response.names[0:1+nt], names(data))]%%1==0, na.rm=T)==FALSE | all(data[,match(response.names[0:1+nt], names(data))]>=0, na.rm=T)==FALSE){
      stop("binomial data must be non-negative integers")
@@ -388,6 +412,7 @@ if(MVasUV){
   if(grepl("tobit", family[i])){
     y.additional<-cbind(y.additional, rep(1,nS), rep(0,nS))
     y.additional2<-cbind(y.additional2, matrix(0,nS, 2))
+    mh.weights<-cbind(mh.weights, matrix(1,nS, 2))
     if(all(data[,response.names[nt]]>=0, na.rm=T)==FALSE){
      stop("tobit data must be non-negative")
     }
@@ -419,6 +444,7 @@ if(dist.preffix=="nc" | dist.preffix=="ms"){
 
   y.additional<-cbind(y.additional, data[,which(names(data)==response.names[nt+1])])
   y.additional2<-cbind(y.additional2, data[,which(names(data)==response.names[nt+2])])# get upper interval
+  mh.weights<-cbind(mh.weights, matrix(1,nS, 1))
   data<-data[,-which(names(data)%in%response.names[c(nt+1, nt+2)]),drop=FALSE]                                                # remove upper interval from the response
   response.names<-response.names[-c(nt+1, nt+2)]
   nt<-nt+1
@@ -433,7 +459,8 @@ if(grepl("^ztmb", family[i])){
        stop("ztmb data must be zero or 1")
      }
      y.additional<-cbind(y.additional,matrix(NA,nS,nJ))
-     y.additional2<-cbind(y.additional2,matrix(0,nS,nJ))                                                        # remove first category
+     y.additional2<-cbind(y.additional2,1-data[,match(response.names[1:nJ-1+nt], names(data))])
+     mh.weights<-cbind(mh.weights, matrix(1,nS, nJ))                        # remove first category
      family.names[nt]<-"ztmb"
      ones<-rep(1,length(family.names))
      ones[nt]<-nJ
@@ -475,6 +502,7 @@ if(grepl("^ztmb", family[i])){
 }
 y.additional<-cbind(y.additional,matrix(NA,nS,1))
 y.additional2<-cbind(y.additional2,matrix(0,nS,1)) 
+mh.weights<-cbind(mh.weights, matrix(1,nS, 1))
 nt<-nt+1
 }
 }	
@@ -497,7 +525,7 @@ if(MVasUV){
 data$units<-as.factor(data$units)
 data$MCMC_y.additional<-c(y.additional) 
 data$MCMC_y.additional2<-c(y.additional2) 
-
+data$MCMC_mh.weights<-c(mh.weights) 
 ######################################################
 # for (random) meta-analysis add weights/model terms #
 ###################################################### 	
@@ -936,7 +964,7 @@ proposal<-c()
 for(i in 1:nR){
  mp<-matrix(data$MCMC_y[cnt+1:(nfl[i+nG]*nrl[i+nG])-1], nrl[i+nG], nfl[i+nG])
  fp<-matrix(match(data$MCMC_family.names, family.types)[cnt+1:(nfl[i+nG]*nrl[i+nG])-1], nrl[i+nG], nfl[i+nG])
- proposal<-c(proposal, AMtune[i+nG]*((fp==11)*(mp==0 & is.na(mp)==FALSE))[,1])
+ proposal<-c(proposal, AMtune[i+nG]*((fp==11)*(mp==0 & !is.na(mp)))[,1])
  missing.pattern<-fp*(is.na(mp)==FALSE) # 0 for missing data 1 for gaussian >1 for other
  mvtype_tmp<-apply(missing.pattern, 1,function(x){all(x==1 | x==0 | x==20)})-2 # -2 if observed non-gaussian non-threshold present, -1 otherwise 
 
@@ -994,15 +1022,25 @@ if(is.null(start$liab)){
       }          
       if(family_set=="multinomial" | family_set=="ztmb" | family_set=="ztmultinomial"){
 
+        non_inf<-c()
+        if(family_set=="multinomial"){
+          non_inf<-which(!(data_tmp$MCMC_y>0 | data_tmp$MCMC_y.additional2>0))
+          make_miss<-non_inf
+        }  
         if(family_set=="ztmultinomial"){
-          data_tmp<-subset(data_tmp, MCMC_y>0 & MCMC_y.additional2>0)
-        }else{
-          data_tmp<-subset(data_tmp, MCMC_y>0 | MCMC_y.additional2>0)
+          non_inf<-which(!(data_tmp$MCMC_y>0 & data_tmp$MCMC_y.additional2>0))
+          make_miss<-which(!(data_tmp$MCMC_y>0))
+        }  
+
+        if(length(non_inf)>0){
+          missing_set<-c(missing_set, trait_set[make_miss])
+          trait_set<-trait_set[-make_miss]
+          data_tmp<-data_tmp[-non_inf,]
         }
       
         if(length(table(data_tmp$MCMC_y))>2){
           m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional2)~1, family="quasibinomial", data=data_tmp))
-          v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y+data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
+          v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y+data_tmp$MCMC_y.additional2)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
           mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
         }else{
           v<-1
@@ -1097,17 +1135,21 @@ if(length(dummy_set)>0){
 }
 if(length(trait_set)>0){
   l_tmp<-sort(rnorm(length(trait_set), mu, sqrt(v)))
-  mix<-sample(1:length(l_tmp),max(1,as.integer(length(l_tmp)/2)))
-  l_tmp[mix]<-l_tmp[rev(mix)] # mix up 50% of latent variables to stop complete separation
-  data$MCMC_liab[trait_set][order(data$MCMC_y[trait_set])]<-l_tmp
+  if(family_set=="multinomial" | family_set=="ztmultinomial"){
+    l_tmp<-l_tmp[rank((data$MCMC_y/data$MCMC_y.additional)[trait_set])]
+  }else{
+    l_tmp<-l_tmp[rank(data$MCMC_y[trait_set])]
+  }
+  l_tmp<-rnorm(length(trait_set), mu+rLV*(l_tmp-mu), sqrt(v*(1-rLV^2)))
+  data$MCMC_liab[trait_set]<-l_tmp
 }
 }
 }
 }else{
   if(length(c(start$liab))!=length(data$MCMC_y)){stop("liabilities must have the same dimensions as the response")}
-  if(any(is.na(start$liab))){stop("starting liabilities must not contain missing vlaues")}
+  if(any(is.na(start$liab))){stop("starting liabilities must not contain missing values")}
   if(any(data$MCMC_family.names=="cengaussian" & (start$liab>data$MCMC_y.additional | start$liab<data$MCMC_y))){
-   stop("starting liabilities for censored gaussian data must lie between consoring points")
+   stop("starting liabilities for censored Gaussian data must lie between censoring points")
  }
  data$MCMC_liab<-c(start$liab)
 }
@@ -1286,7 +1328,7 @@ if(DIC==TRUE){
 
 output<-.C("MCMCglmm",
   as.double(data$MCMC_y),   
-  as.double(c(data$MCMC_y.additional, data$MCMC_y.additional2)),
+  as.double(c(data$MCMC_y.additional, data$MCMC_y.additional2, data$MCMC_mh.weights)),
   as.double(data$MCMC_liab), 
   as.integer(mvtype),   
   as.integer(length(data$MCMC_y)),
@@ -1349,7 +1391,7 @@ output<-.C("MCMCglmm",
   as.integer(unlist(me_rterm)-1),                  
   as.double(unlist(lapply(me_prior_prob, c))),   
   as.double(unlist(lapply(me_Xi, c))),     
-  as.integer(c(nme, stme-1, nmec, nmei, nmeo))        
+  as.integer(c(nme, stme-1, nmec, nmei, nmeo))
   )
 
 Sol<-t(matrix(output[[27]], sum((nfl*nrl)[1:nG])*pr+dim(X)[2], nkeep))
