@@ -79,7 +79,8 @@ void MCMCglmm(
         int *me_rtermP,        // vector indexing which me_outcome a set of resdiuals are informative about 
         double *me_prior_probP,   //  prior category probabilities for each me_outcome    
         double *me_XiP,       // me interaction design matrix
-        int *meP              // number of po terms, where first covariate for each term appears in X, number of covariates in each term
+        int *meP       // number of po terms, where first covariate for each term appears in X, number of covariates in each term
+
 ){         
 
 int     i, j, k,l,p,cnt,cnt2,cnt3,cnt4, rterm,itt,record,dimG,nthordinal,
@@ -2164,11 +2165,7 @@ if(itt>0){
   
          for(i=0; i<dimG; i++){
             record=cnt2+nlGR[k]*i+j;
-           if(familyP[record]==3 || familyP[record]==27){
-              linki_tmp[k]->x[i] = rnorm(0.0,1.0/sqrt((1.0+yP[record])*(1.0-yP[record]/(y2P[record]+1.0))));
-            }else{
-              linki_tmp[k]->x[i] = rnorm(0.0,1.0);
-            }  
+            linki_tmp[k]->x[i] = rnorm(0.0,y2P[record+ny*2]);
             linki[k]->x[i] = linky->x[record];
             predi[k]->x[i] =  pred->x[record];
          }
@@ -2654,6 +2651,7 @@ if(itt>0){
 
                      densityl1 -= log(pkk_update(linki[k], y2P[record], present, nthmnl+2, i));
                      densityl2 -= log(pkk_update(linki_tmp[k], y2P[record], present, nthmnl+2, i));
+
                      nthmnl = 0;
                      mndenom1 = 1.0;
                      mndenom2 = 1.0;
@@ -2686,11 +2684,10 @@ if(itt>0){
              }
              // don't need to worry about the Jacobian below because they cancel
            }
-  
+
            densityl1 += cs_dmvnorm(linki[k], predi[k], ldet[k], Ginv[k]);
            densityl2 += cs_dmvnorm(linki_tmp[k], predi[k], ldet[k], Ginv[k]);
-           
-  
+
            zn[p] *= rACCEPT; 
            wn[p] *= rACCEPT;
            wn[p] ++;

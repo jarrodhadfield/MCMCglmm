@@ -293,7 +293,8 @@ if(MVasUV){
      y.additional2<-cbind(y.additional2, matrix(data[,match(response.names[nJ+nt], names(data))], nS,nJ))      # get n of the reference category
      if(grepl("ztmultinomial", family[i])){
         tmp_y<-unlist(data[,match(response.names[0:(nJ-1)+nt], names(data))])
-        tmp_sum<-rep(rowSums(data[,match(response.names[0:nJ+nt], names(data))]), nJ) 
+        tmp_sum<-rep(rowSums(data[,match(response.names[0:nJ+nt], names(data))]), nJ)
+        tmp_pres<-rep(rowSums(data[,match(response.names[0:nJ+nt], names(data))]>0), nJ)  
         new.weights<-1.0/sqrt(tmp_y*(1-tmp_y/tmp_sum))
         new.weights[which(tmp_y<0.5 | (tmp_y+0.5)>tmp_sum)]<-1
         new.weights<-matrix(new.weights, nS, nJ)
@@ -524,8 +525,19 @@ if(MVasUV){
 }
 data$units<-as.factor(data$units)
 data$MCMC_y.additional<-c(y.additional) 
-data$MCMC_y.additional2<-c(y.additional2) 
-data$MCMC_mh.weights<-c(mh.weights) 
+data$MCMC_y.additional2<-c(y.additional2)
+
+if(!is.null(tune$mh_weights)){ 
+  if(length(c(tune$mh_weights))!=length(data$MCMC_y)){stop("mh_weights must have the same dimensions as the response")}
+  if(any(is.na(tune$mh_weights))){stop("mh_weights must not contain missing values")}
+  if(any(tune$mh_weights<=0)){stop("mh_weights must be positive")}
+
+  data$MCMC_mh.weights<-c(tune$mh_weights)
+}else{
+  data$MCMC_mh.weights<-c(mh.weights)
+}  
+
+ 
 ######################################################
 # for (random) meta-analysis add weights/model terms #
 ###################################################### 	
@@ -733,23 +745,23 @@ if(any(rterm.family=="threshold" | rterm.family=="ordinal")){
 
 rterm.family<-rterm.family[trait.ordering]
 
-if(is.null(tune)){
+if(is.null(tune$MH_V)){
   AMtune=c(rep(FALSE, nG), rep(TRUE, nR))
-  tune<-as.list(1:nR)
+  tune$MH_V<-as.list(1:nR)
   for(i in 1:nR){
-    tune[[i]] = diag(nfl[nG+i])
+    tune$MH_V[[i]] = diag(nfl[nG+i])
   }
 }else{
   AMtune=rep(FALSE, nR+nG)
   if(nR>1){
-    tune<-sapply(diag(tune), as.matrix, simplify=FALSE)
+    tune$MH_V<-sapply(diag(tune$MH_V), as.matrix, simplify=FALSE)
   }else{
-    tune<-list(tune)
+    tune$MH_V<-list(tune$MH_V)
   }
   for(i in 1:nR){
-    tune[[i]]<-as.matrix(tune[[i]])
-    if(dim(tune[[i]])[1]!= dim(tune[[i]])[2] |  dim(tune[[i]])[2]!= nfl[nG+i]){stop(paste("proposal distribution ", i, " is the wrong dimension"))}
-    if(is.positive.definite(tune[[i]])==FALSE){stop(paste("proposal distribution ", i, " is not positive definite"))}
+    tune$MH_V[[i]]<-as.matrix(tune$MH_V[[i]])
+    if(dim(tune$MH_V[[i]])[1]!= dim(tune$MH_V[[i]])[2] |  dim(tune$MH_V[[i]])[2]!= nfl[nG+i]){stop(paste("proposal distribution ", i, " is the wrong dimension"))}
+    if(is.positive.definite(tune$MH_V[[i]])==FALSE){stop(paste("proposal distribution ", i, " is not positive definite"))}
   }
 }	
 
@@ -1357,7 +1369,7 @@ output<-.C("MCMCglmm",
   as.double(Var),
   as.double(PLiab),
   as.integer(data$MCMC_family.names),
-  as.double(c(unlist(tune))),
+  as.double(c(unlist(tune$MH_V))),
   as.integer(verbose),
   as.double(BvpP),
   as.double(BmupP),
