@@ -453,14 +453,15 @@ if(dist.preffix=="nc" | dist.preffix=="ms"){
 
 
 if(grepl("^ztmb", family[i])){
+
      nJ<-as.numeric(substr(family[i],5,nchar(family[i])))                                                                        # number of J-1 categories
      if(nJ<2){stop("ztmb must have at least 2 categories")}   
      mfac<-c(mfac, rep(nJ-1,nJ))
      if(any(data[,match(response.names[1:nJ-1+nt], names(data))]%%1!=0, na.rm=T) | min(data[,match(response.names[1:nJ-1+nt], names(data))], na.rm=T)<0 | max(data[,match(response.names[1:nJ-1+nt], names(data))], na.rm=T)>1){
        stop("ztmb data must be zero or 1")
      }
-     y.additional<-cbind(y.additional,matrix(NA,nS,nJ))
-     y.additional2<-cbind(y.additional2,1-data[,match(response.names[1:nJ-1+nt], names(data))])
+     y.additional<-cbind(y.additional,matrix(1,nS,nJ))
+     y.additional2<-cbind(y.additional2,1-as.matrix(data[,match(response.names[1:nJ-1+nt], names(data))]))
      mh.weights<-cbind(mh.weights, matrix(1,nS, nJ))                        # remove first category
      family.names[nt]<-"ztmb"
      ones<-rep(1,length(family.names))
@@ -1033,7 +1034,6 @@ if(is.null(start$liab)){
         mu<-log(mu)-0.5*v
       }          
       if(family_set=="multinomial" | family_set=="ztmb" | family_set=="ztmultinomial"){
-
         non_inf<-c()
         if(family_set=="multinomial"){
           non_inf<-which(!(data_tmp$MCMC_y>0 | data_tmp$MCMC_y.additional2>0))
