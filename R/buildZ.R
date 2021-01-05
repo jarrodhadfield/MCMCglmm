@@ -148,7 +148,7 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE){
 
       if(any(is.na(rfactor))){warning("missing values in random predictors")}
       
-      ZZ[[k]]<-Matrix(0,nrl,nd)
+      ZZ[[k]]<-Matrix(0,nrl,nd, doDiag=FALSE)
       ZZ[[k]][,2][1]<-1              # force it out of being upper triangle!!!!
       ZZ[[k]]@p<-as.integer(c(0, cumsum(!is.na(rfactor))))
       ZZ[[k]]@i<-as.integer(na.omit(data_pos)-1)
@@ -211,7 +211,7 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE){
       
       for(i in 1:nfl){
     
-        Xtmp<-Matrix(0,nd,nd)
+        Xtmp<-Matrix(0,nd,nd,doDiag=FALSE)
         Xcol<-X[,i,drop=FALSE]
         Xtmp@p<-as.integer(rep(0:c(length(Xcol@i)-1),diff(c(0,Xcol@i+1))))
         Xtmp@p[(length(Xtmp@p)+1):(nd+1)]<-length(Xcol@i)

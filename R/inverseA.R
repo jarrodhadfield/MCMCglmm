@@ -66,7 +66,7 @@ function (pedigree = NULL, nodes = "ALL", scale = TRUE, reduced=FALSE, tol=.Mach
         Tinv.x <- c(rep(-0.5, length(dnmiss) + length(snmiss)), 
             rep(1, n))
         el.order <- order(Tinv.col + Tinv.row/(n + 1), decreasing = FALSE)
-        Tinv <- Matrix(0, n, n)
+        Tinv <- Matrix(0, n, n, doDiag=FALSE)
         Tinv[1, 2] <- 1
         Tinv@i <- as.integer(Tinv.row[el.order] - 1)
         Tinv@p <- as.integer(c(match(1:n, Tinv.col[el.order]), 
@@ -80,7 +80,7 @@ function (pedigree = NULL, nodes = "ALL", scale = TRUE, reduced=FALSE, tol=.Mach
             as.double(Tinv@x), as.integer(n), as.integer(length(Tinv@x)))
         inbreeding <- output[[4]]
         dii <- output[[5]]
-        Ainv <- Matrix(0, n, n)
+        Ainv <- Matrix(0, n, n, doDiag=FALSE)
         Ainv[1, 2] <- 1
         Ainv@i <- output[[6]][1:output[[10]]]
         Ainv@p <- output[[7]]
@@ -166,7 +166,7 @@ function (pedigree = NULL, nodes = "ALL", scale = TRUE, reduced=FALSE, tol=.Mach
           node.names<-pedigree[,1][parents]
           pedigree[,2][parents]<-pedigree[,1][parents]
         }
-        Ainv <- Matrix(0, length(dam), length(dam))
+        Ainv <- Matrix(0, length(dam), length(dam), doDiag=FALSE)
         off <- tapply(id, dam, function(x) {
             x
         })

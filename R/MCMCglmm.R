@@ -824,7 +824,7 @@ nL<-dim(L)[2]/dim(L)[1]  # number of structural parameters
 pL<-FALSE
 warning("priors for sir/path parameters not implemented")
 }else{
- L<-Matrix(0,0,0)
+ L<-Matrix(0,0,0, doDiag=FALSE)
  nL<-0
  Lnames=NULL
 }
