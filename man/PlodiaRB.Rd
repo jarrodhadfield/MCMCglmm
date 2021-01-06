@@ -5,7 +5,7 @@
 granulosis virus PiGV.}
 \description{Resistance (as a binary trait) of Indian meal moth (\emph{Plodia 
 interpunctella}) caterpillars to the granulosis virus PiGV.}
-\usage{PlodiaRB}
+\usage{data(PlodiaRB)}
 \format{a data frame with 784 rows and 4 columns, with variables indicating full-
 sib family (\code{FSfamly}), date of egg laying (\code{date_laid}) and assaying 
 (\code{date_Ass}), and a binary variable indicating whether an individual was 

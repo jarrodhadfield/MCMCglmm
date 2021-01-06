@@ -1,4 +1,4 @@
-#source("~/Work/AManal/MCMCglmm_2.19/vignettes/Figures/TEST.R")
+#source("~/Work/MCMCglmm/vignettes/Figures/TEST.R")
 library(MASS)
 library(MCMCglmm)
 
@@ -6,7 +6,7 @@ verbose=FALSE
 plotit=FALSE
 DICtest=TRUE
 SUMtest=TRUE
-nsim<-50
+nsim<-1
 nitt<-13000
 thin<-10
 burnin<-3000
@@ -475,7 +475,9 @@ print(i)
 
 # Jennys data - once as gaussian once as binomial 32 seconds
 
-if(file.exists("~/Work/Jenny/Data/Intermediate/ThirdC.R")){
+jenny<-file.exists("~/Work/Jenny/Data/Intermediate/ThirdC.R")
+
+if(jenny){
 
   m1R<-dget("~/Work/Jenny/Data/Intermediate/ThirdC.R")
   res13<-matrix(NA, nsim,39)
@@ -1442,6 +1444,7 @@ print(i)
 psets<-c(psets, tpar)
 
 res40<-matrix(0, nsim, 2)
+
 print("res40")  # Reduced phylogenetic probit model
 data(BTped)
 
@@ -1921,7 +1924,7 @@ for(i in 1:nsim){
  
   dat<-data.frame(y.sd=y.sd, df=df, scale=scale)
   
-  m1<-MCMCglmm(cbind(y.sd, scale, df)~1, data=dat, family="ncst", nitt=nitt, thin=thin, burnin=burnin)
+  m1<-MCMCglmm(cbind(y.sd, scale, df)~1, data=dat, family="ncst", nitt=nitt, thin=thin, burnin=burnin, verbose=verbose)
   
   res50[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
   if(SUMtest){
@@ -1959,7 +1962,7 @@ for(i in 1:nsim){
 
   dat<-data.frame(mu.hat=mu.hat, se=se, df=df)
   
-  m1<-MCMCglmm(cbind(mu.hat, se, df)~1, data=dat, family="msst")
+  m1<-MCMCglmm(cbind(mu.hat, se, df)~1, data=dat, family="msst", verbose=verbose)
   
   res51[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
   if(SUMtest){
@@ -1977,11 +1980,11 @@ psets<-c(psets, tpar)
 
 
 
-est<-colMeans(cbind(res1, res2, res3, res3b, res4, res4c, res5,res5b,res6, res7,res7b, res8,res9, res10, res11, res12, res13, res14, res15, res17a,res17b, res18, res19, res19b, res20, res21, res21b, res21c, res22, res23, res24, res25, res26, res27, res28, res29, res30, res31, res32, res33, res34, res35, res36, res37, res38, res39, res40, res41, res42, res43, res44, res45, res46, res47, res48, res49, res50, res51), na.rm=T)
+est<-colMeans(cbind(res1, res2, res3, res3b, res4, res4c, res5,res5b,res6, res7,res7b, res8,res9, res10, res11, res12, if(jenny){res13}, if(jenny){res14}, res15, res17a,res17b, res18, res19, res19b, res20, res21, res21b, res21c, res22, res23, res24, res25, res26, res27, res28, res29, res30, res31, res32, res33, res34, res35, res36, res37, res38, res39, res40, res41, res42, res43, res44, res45, res46, res47, res48, res49, res50, res51), na.rm=T)
 
-np<-c(ncol(res1), ncol(res2), ncol(res3), ncol(res3b), ncol(res4), ncol(res4c), ncol(res5),ncol(res5b),ncol(res6), ncol(res7),ncol(res7b), ncol(res8),ncol(res9), ncol(res10), ncol(res11), ncol(res12), ncol(res13), ncol(res14), ncol(res15), ncol(res17a),ncol(res17b), ncol(res18), ncol(res19), ncol(res19b), ncol(res20), ncol(res21), ncol(res21b), ncol(res21c), ncol(res22), ncol(res23), ncol(res24), ncol(res25), ncol(res26), ncol(res27), ncol(res28), ncol(res29), ncol(res30), ncol(res31), ncol(res32), ncol(res33), ncol(res34), ncol(res35), ncol(res36), ncol(res37), ncol(res38), ncol(res39), ncol(res40), ncol(res41), ncol(res42), ncol(res43), ncol(res44), ncol(res45), ncol(res46), ncol(res47), ncol(res48), ncol(res49), ncol(res50), ncol(res51))
+np<-c(ncol(res1), ncol(res2), ncol(res3), ncol(res3b), ncol(res4), ncol(res4c), ncol(res5),ncol(res5b),ncol(res6), ncol(res7),ncol(res7b), ncol(res8),ncol(res9), ncol(res10), ncol(res11), ncol(res12), if(jenny){ncol(res13)}, if(jenny){ncol(res14)}, ncol(res15), ncol(res17a),ncol(res17b), ncol(res18), ncol(res19), ncol(res19b), ncol(res20), ncol(res21), ncol(res21b), ncol(res21c), ncol(res22), ncol(res23), ncol(res24), ncol(res25), ncol(res26), ncol(res27), ncol(res28), ncol(res29), ncol(res30), ncol(res31), ncol(res32), ncol(res33), ncol(res34), ncol(res35), ncol(res36), ncol(res37), ncol(res38), ncol(res39), ncol(res40), ncol(res41), ncol(res42), ncol(res43), ncol(res44), ncol(res45), ncol(res46), ncol(res47), ncol(res48), ncol(res49), ncol(res50), ncol(res51))
 
-nam<-c("res1", "res2", "res3", "res3b", "res4", "res4c", "res5","res5b","res6", "res7","res7b", "res8","res9", "res10", "res11", "res12", "res13", "res14", "res15", "res17a","res17b", "res18", "res19", "res19b", "res20", "res21", "res21b", "res21c", "res22", "res23", "res24", "res25", "res26", "res27", "res28", "res29", "res30", "res31", "res32", "res33", "res34", "res35", "res36", "res37", "res38", "res39", "res40", "res41", "res42", "res43", "res44", "res45", "res46", "res47", "res48", "res49", "res50", "res51")
+nam<-c("res1", "res2", "res3", "res3b", "res4", "res4c", "res5","res5b","res6", "res7","res7b", "res8","res9", "res10", "res11", "res12", if(jenny){"res13"}, if(jenny){"res14"}, "res15", "res17a","res17b", "res18", "res19", "res19b", "res20", "res21", "res21b", "res21c", "res22", "res23", "res24", "res25", "res26", "res27", "res28", "res29", "res30", "res31", "res32", "res33", "res34", "res35", "res36", "res37", "res38", "res39", "res40", "res41", "res42", "res43", "res44", "res45", "res46", "res47", "res48", "res49", "res50", "res51")
 
 nam<-paste(rep(nam,np), unlist(sapply(np,function(x){1:x})), sep=".")
 

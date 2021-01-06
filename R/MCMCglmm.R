@@ -728,7 +728,7 @@ if(any(rterm.family=="threshold" | rterm.family=="ordinal")){
   nthordinal<-cumsum(rterm.family=="threshold" | rterm.family=="ordinal")*(rterm.family=="threshold" | rterm.family=="ordinal") 
 
   if(any(tapply(data$MCMC_family.names[which(data$MCMC_dummy==0)], data$MCMC_error.term[which(data$MCMC_dummy==0)], function(x){length(unique(x))>1 & any(x=="threshold" | x=="ordinal")}))){
-    stop("threshold/ordinal traits must have sperate residual variance from other traits")
+    stop("threshold/ordinal traits must have separate residual variance from other traits")
         #stop("threshold/ordinal traits can't have common cutpoints because they differ in their number of categories")
   }
 
@@ -1009,11 +1009,13 @@ if(is.null(start$liab)){
  data$MCMC_liab<-rnorm(length(data$MCMC_y)) 
  if(QUASI==TRUE){ 
   et.fn<-paste(data$MCMC_error.term, data$MCMC_family.names)
-
   for(i in unique(et.fn)){
     trait_set<-which(!is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
     missing_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
     dummy_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==1 & et.fn==i)
+    data_tmp<-data[trait_set,]
+    family_set<-data_tmp$MCMC_family.names[1]
+
     if(length(trait_set)<2){
       if(length(trait_set)==0){
         warning(paste("all observations are missing for error term ", i, ": liabilities sampled from Norm(0,1)", sep=""))
@@ -1021,8 +1023,6 @@ if(is.null(start$liab)){
       mu<-0
       v<-1
     }else{ 
-      data_tmp<-data[trait_set,]          
-      family_set<-data_tmp$MCMC_family.names[1]
       if(family_set=="poisson" | family_set=="ztpoisson"){
         mu<-mean(data_tmp$MCMC_y)
         v<-abs(log(((var(data_tmp$MCMC_y)-mu)/(mu^2))+1))
@@ -1148,11 +1148,11 @@ if(length(dummy_set)>0){
 if(length(trait_set)>0){
   l_tmp<-sort(rnorm(length(trait_set), mu, sqrt(v)))
   if(family_set=="multinomial" | family_set=="ztmultinomial"){
-    l_tmp<-l_tmp[rank((data$MCMC_y/data$MCMC_y.additional)[trait_set])]
+    l_tmp<-l_tmp[rank((data$MCMC_y/data$MCMC_y.additional)[trait_set], ties.method="random")]
   }else{
-    l_tmp<-l_tmp[rank(data$MCMC_y[trait_set])]
+    l_tmp<-l_tmp[rank(data$MCMC_y[trait_set], ties.method="random")]
   }
-  l_tmp<-rnorm(length(trait_set), mu+rLV*(l_tmp-mu), sqrt(v*(1-rLV^2)))
+  l_tmp<-rnorm(length(trait_set), as.vector(mu)+rLV*(l_tmp-as.vector(mu)), sqrt(v*(1-rLV^2)))
   data$MCMC_liab[trait_set]<-l_tmp
 }
 }

@@ -4,7 +4,7 @@
 \title{Phenoloxidase measures on caterpillars of the Indian meal moth.}
 \description{Phenoloxidase measures on caterpillars of the Indian meal moth 
 (\emph{Plodia interpunctella}).}
-\usage{PlodiaPO}
+\usage{data(PlodiaPO)}
 \format{a data frame with 511 rows and 3 columns, with variables indicating 
 full-sib family (\code{FSfamily}), phenoloxidase measures (\code{PO}), and plate 
 (\code{plate}). PO has undergone a Box-Cox power transformation of 0.141}

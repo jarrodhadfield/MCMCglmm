@@ -2,11 +2,11 @@ doc/Lecture.*\.pdf
 doc/.*\.tex
 doc/.*\.bib
 vignettes/Lecture[1-9]-[a-zA-z]*\.pdf
-vignettes/jss.bst
-vignettes/jss.cls
+vignettes/jss[.]cls$
+vignettes/jss[.]bst$
 vignettes/.*\.aux
-vignettes/.*\.bbl
 vignettes/.*\.blg
+vignettes/.*\.bbl
 vignettes/.*\.idx
 vignettes/.*\.log
 vignettes/.*\.out

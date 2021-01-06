@@ -5,7 +5,7 @@
 PiGV.}
 \description{Resistance of Indian meal moth (\emph{Plodia interpunctella}) 
 caterpillars to the granulosis virus PiGV.}
-\usage{PlodiaR}
+\usage{data(PlodiaR)}
 \format{a data frame with 50 rows and 5 columns, with variables indicating full-
 sib family (\code{FSfamly}), date of egg laying (\code{date_laid}) and assaying 
 (\code{date_Ass}), and the number of individuals from the family that were 

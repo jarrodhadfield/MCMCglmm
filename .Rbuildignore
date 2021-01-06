@@ -1,10 +1,10 @@
 vignettes/Lecture[1-9][-][a-z].*[.]pdf$
-vignettes/jss[.]bst$
 vignettes/jss[.]cls$
+vignettes/jss[.]bst$
 vignettes/CourseNotes[.]tex$
 vignettes/.*[.]aux$
-vignettes/.*[.]bbl$
 vignettes/.*[.]blg$
+vignettes/.*[.]bbl$
 vignettes/.*[.]idx$
 vignettes/.*[.]log$
 vignettes/.*[.]out$
