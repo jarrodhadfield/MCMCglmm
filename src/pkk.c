@@ -4,7 +4,7 @@ double pkk(double *prob, double size, int k){
 
   int i;
 
-  double end[0];
+  double end[1];
   end[0] = 0.0;
   double *pend = end;
 
@@ -40,7 +40,7 @@ double pkk_update(const cs *linki, double size, int *present, int K, int final_i
   int i, k, cnt;
   double sump = 0.0;
 
-  double end[0];
+  double end[1];
   end[0] = 0.0;
   double *pend = end;
 
