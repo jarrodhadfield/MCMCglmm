@@ -7,6 +7,6 @@ Imports: corpcor, tensorA, cubature, methods
 Suggests:  rgl, combinat, mvtnorm, orthopolynom
 Author:Jarrod Hadfield
 Maintainer: Jarrod Hadfield <j.hadfield@ed.ac.uk>
-Description: MCMC Generalised Linear Mixed Models. 
+Description: Fits Multivariate Generalised Linear Mixed Models (and related models) using Markov chain Monte Carlo techniques. 
 License: GPL (>= 2)
 SystemRequirements: C++11

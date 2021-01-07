@@ -35,7 +35,7 @@ diagonal matrix and it is this matrix that is conditioned on.
   if \code{n} = 1 a matrix equal in dimension to \code{V}, if \code{n}>1 a 
 matrix of dimension \code{n} x \code{length(V)}
 }
-\note{In versions of MCMCglmm >1.10 the arguments to \code{rIW} have changed so that they are more intuitive in the context of \code{\link{MCMCglmm}}.  Following the notation of Wikipedia (\url{http://en.wikipedia.org/wiki/Inverse-Wishart_distribution}) the inverse scale matrix \eqn{{\bm \Psi}=(\texttt{V*nu})}{Psi = \code{V*nu}}. In earlier versions of MCMCglmm (<1.11) \eqn{{\bm \Psi} = \texttt{V}^{-1}}{Psi=\code{solve(V)}}. Although the old parameterisation is consistent with the \code{\link[MCMCpack]{riwish}} function in MCMCpack and the \code{\link[bayesm]{rwishart}} function in bayesm it is inconsistent with the prior definition for \code{\link{MCMCglmm}}.  The following pieces of code are sampling from the same distributions: 
+\note{In versions of MCMCglmm >1.10 the arguments to \code{rIW} have changed so that they are more intuitive in the context of \code{\link{MCMCglmm}}.  Following the notation of Wikipedia (\url{https://en.wikipedia.org/wiki/Inverse-Wishart_distribution}) the inverse scale matrix \eqn{{\bm \Psi}=(\texttt{V*nu})}{Psi = \code{V*nu}}. In earlier versions of MCMCglmm (<1.11) \eqn{{\bm \Psi} = \texttt{V}^{-1}}{Psi=\code{solve(V)}}. Although the old parameterisation is consistent with the \code{\link[MCMCpack]{riwish}} function in MCMCpack and the \code{\link[bayesm]{rwishart}} function in bayesm it is inconsistent with the prior definition for \code{\link{MCMCglmm}}.  The following pieces of code are sampling from the same distributions: 
 
 \tabular{ll}{
 \code{\link[MCMCpack]{riwish}(nu, nu*V)} \tab from MCMCpack\cr
