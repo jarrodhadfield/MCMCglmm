@@ -484,28 +484,28 @@ if(grepl("^ztmb", family[i])){
     if(all(data[,response.names[nt]]%%1==0, na.rm=T)==FALSE | all(data[,response.names[nt]]>=1, na.rm=T)==FALSE){stop("Zero-truncated Poisson data must be positive integers")}
   }
   if(family.names[nt]=="exponential"){ 
-   if(any(data[,response.names[nt]]<0, na.rm=T)){stop("Exponential data must be positive")}
- }	
- if(family.names[nt]=="geometric"){ 
-   if(all(data[,response.names[nt]]%%1==0, na.rm=T)==FALSE | all(data[,response.names[nt]]>=0, na.rm=T)==FALSE){stop("Geometric data must be non-negative integers")}
- }	
- if(family.names[nt]=="ordinal" | family.names[nt]=="threshold"){
-  mfac[length(mfac)]<-length(ncutpoints)  
-  data[,response.names[nt]]<-as.numeric(as.factor(data[,response.names[nt]]))
-  if(all(is.na(data[,response.names[nt]]))){ 
-    ncutpoints<-c(ncutpoints, 3)
-    stcutpoints[[length(stcutpoints)+1]]<-c(-Inf, 0, Inf)
-  }else{
-    if(max(data[,response.names[nt]], na.rm=T)>2){slice<-FALSE}  
-    ncutpoints<-c(ncutpoints, max(data[,response.names[nt]], na.rm=T)+1)
-    stcutpoints[[length(stcutpoints)+1]]<-qnorm(cumsum(c(0, prop.table(table(data[,response.names[nt]])))))
-    ordinal.names<-c(ordinal.names, response.names[nt]) 	
-  }    
-}
-y.additional<-cbind(y.additional,matrix(NA,nS,1))
-y.additional2<-cbind(y.additional2,matrix(0,nS,1)) 
-mh.weights<-cbind(mh.weights, matrix(1,nS, 1))
-nt<-nt+1
+    if(any(data[,response.names[nt]]<0, na.rm=T)){stop("Exponential data must be positive")}
+  }	
+  if(family.names[nt]=="geometric"){ 
+    if(all(data[,response.names[nt]]%%1==0, na.rm=T)==FALSE | all(data[,response.names[nt]]>=0, na.rm=T)==FALSE){stop("Geometric data must be non-negative integers")}
+  }	
+  if(family.names[nt]=="ordinal" | family.names[nt]=="threshold"){
+    mfac[length(mfac)]<-length(ncutpoints)  
+    data[,response.names[nt]]<-as.numeric(as.factor(data[,response.names[nt]]))
+    if(all(is.na(data[,response.names[nt]]))){ 
+      ncutpoints<-c(ncutpoints, 3)
+      stcutpoints[[length(stcutpoints)+1]]<-c(-Inf, 0, Inf)
+    }else{
+      if(max(data[,response.names[nt]], na.rm=T)>2){slice<-FALSE}  
+      ncutpoints<-c(ncutpoints, max(data[,response.names[nt]], na.rm=T)+1)
+      stcutpoints[[length(stcutpoints)+1]]<-qnorm(cumsum(c(0, prop.table(table(data[,response.names[nt]])))))
+      ordinal.names<-c(ordinal.names, response.names[nt]) 	
+    }    
+  }
+  y.additional<-cbind(y.additional,matrix(NA,nS,1))
+  y.additional2<-cbind(y.additional2,matrix(0,nS,1)) 
+  mh.weights<-cbind(mh.weights, matrix(1,nS, 1))
+  nt<-nt+1
 }
 }	
 nt<-nt-1
@@ -538,7 +538,6 @@ if(!is.null(tune$mh_weights)){
   data$MCMC_mh.weights<-c(mh.weights)
 }  
 
- 
 ######################################################
 # for (random) meta-analysis add weights/model terms #
 ###################################################### 	
@@ -1180,8 +1179,10 @@ observed<-as.numeric(is.na(data$MCMC_y)==FALSE)
 data$MCMC_y[is.na(data$MCMC_y)]<-0
 data$MCMC_y.additional[is.na(data$MCMC_y.additional)]<-0
 data$MCMC_y.additional2[is.na(data$MCMC_y.additional2)]<-0
+data$MCMC_mh.weights[is.na(data$MCMC_mh.weights)]<-1
 data$MCMC_y[which(data$MCMC_y==-Inf | data$MCMC_y==Inf)]<-sign(data$MCMC_y[which(data$MCMC_y==-Inf | data$MCMC_y==Inf)])*1e+32
 data$MCMC_y.additional[which(data$MCMC_y.additional==-Inf | data$MCMC_y.additional==Inf)]<-sign(data$MCMC_y.additional[which(data$MCMC_y.additional==-Inf | data$MCMC_y.additional==Inf)])*1e+32
+
 
 if(any(data$MCMC_family.names=="gaussian")){                                       # replace liabilities of ovserved gaussian data with data                                    
 data$MCMC_liab[which(data$MCMC_family.names=="gaussian" & observed)]<-data$MCMC_y[which(data$MCMC_family.names=="gaussian" & observed)]
