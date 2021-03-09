@@ -1008,7 +1008,15 @@ if(is.null(start$liab)){
  data$MCMC_liab<-rnorm(length(data$MCMC_y)) 
  if(QUASI==TRUE){ 
   et.fn<-paste(data$MCMC_error.term, data$MCMC_family.names)
+ 
   for(i in unique(et.fn)){
+
+    if(i=="1 gaussian"){
+      print(dim(data))
+      print(data$MCMC_dummy[which(et.fn==i)])
+    }
+
+
     trait_set<-which(!is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
     missing_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
     dummy_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==1 & et.fn==i)
