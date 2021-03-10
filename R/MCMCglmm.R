@@ -671,6 +671,7 @@ for(r in 1:length(rmodel.terms)){
        stop("number of levels in G and R structure do match for cov=TRUE")
      }
      Z[,ustart+1:(covu*Zlist$nrl)]<-Z[,ustart+1:(covu*Zlist$nrl)]+Zlist$Z%*%kronecker(beta_rr, Diagonal(Zlist$nrl))
+     print("Jarrod why add to an not just replace?")
    }
  }
 
@@ -703,8 +704,18 @@ if(nadded>0){
  data<-rbind(data,data[dim(data)[1]+1:nadded,])       
  data$MCMC_dummy[dim(data)[1]-(nadded-1):0]<-1 
  data$MCMC_family.names[dim(data)[1]-(nadded-1):0]<-"gaussian"  
- if(ngstructures!=0){
-   Z<-rbind(Z, as(matrix(0,nadded,ncol(Z)), "sparseMatrix"))  
+ if(ngstructures!=0){ 
+   Zaug<-as(matrix(0,nadded,ncol(Z)), "sparseMatrix")
+   if(covu!=0){
+    if(ngstructures==1){
+      ustart<-0
+    }else{
+      ustart<-sum(nfl[1:(ngstructures-1)]*nrl[1:(ngstructures-1)])
+    }
+    print("Jarrod the problem is here; positions on Z need to be added for dummy data involved in covu")
+   # Zaug[,ustart+1:(covu*nrl)]<-Zaug[,ustart+1:(covu*nrl)]+Zaug%*%kronecker(beta_rr, nrl)
+
+   Z<-rbind(Z, Zaug)  
  }
 }
 
@@ -1019,6 +1030,7 @@ if(is.null(start$liab)){
 
     if(length(trait_set)<2){
       if(length(trait_set)==0 & length(missing_set)!=0){
+        print(missing_set)
         warning(paste("all observations are missing for error term ", i, ": liabilities sampled from Norm(0,1)", sep=""))
       }
       mu<-0
