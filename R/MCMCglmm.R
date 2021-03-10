@@ -1011,12 +1011,6 @@ if(is.null(start$liab)){
  
   for(i in unique(et.fn)){
 
-    if(i=="1 gaussian"){
-      print(dim(data))
-      print(data$MCMC_dummy[which(et.fn==i)])
-    }
-
-
     trait_set<-which(!is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
     missing_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
     dummy_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==1 & et.fn==i)
@@ -1024,7 +1018,7 @@ if(is.null(start$liab)){
     family_set<-data_tmp$MCMC_family.names[1]
 
     if(length(trait_set)<2){
-      if(length(trait_set)==0){
+      if(length(trait_set)==0 & length(missing_set)!=0){
         warning(paste("all observations are missing for error term ", i, ": liabilities sampled from Norm(0,1)", sep=""))
       }
       mu<-0

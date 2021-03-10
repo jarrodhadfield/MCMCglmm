@@ -30,7 +30,7 @@
     
     if(is.null(object$meta)){object$meta<-FALSE}
       
-    if((length(rcomponents)+object$meta)!=length(object$Random$nrt)){stop("if mev was used, add my_model$meta=TRUE and rerun. If not, the model is a covu model and predictions are not yet implented for this type of moedl")}
+    if((length(rcomponents)+object$meta)!=length(object$Random$nrt)){stop("if mev was used, add my_model$meta=TRUE and rerun. If not, the model is a covu model and predictions are not yet implemented for this type of model")}
     if(any(mcomponents%in%rcomponents==FALSE)){stop("marginal formula does not correspond to model formula")}
 
     marginalise<-rep(as.numeric(rcomponents%in%mcomponents), object$Random$nrt)
