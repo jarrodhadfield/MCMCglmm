@@ -725,6 +725,7 @@ for (k = 0 ; k < nGR; k++){
   }
   tvc += dimG*dimG;
 }
+
 tvc -= covu*covu;
 
 cnt2=0;
@@ -1974,7 +1975,7 @@ if(itt>0){
           cs_spfree(G[nG]);
           G[nG] = cs_schur(G_rr, covu, beta_rr);
           ldet[nG] = log(cs_invR(G[nG], Ginv[nG]));
-          
+
           for (i = 0; i < covu; i++){                     // iterate through kr
             for (j = 0; j < GRdim[nG]; j++){              // iterate through first ks entries
               for(l=0; l<nlGR[nG]; l++){

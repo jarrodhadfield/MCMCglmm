@@ -1837,6 +1837,16 @@ psets<-c(psets, tpar)
 
 
 # covu
+library(MCMCglmm)
+library(MASS)
+verbose=FALSE
+plotit=FALSE
+DICtest=TRUE
+SUMtest=TRUE
+nsim<-1
+nitt<-13000
+thin<-10
+burnin<-3000
 
 print("res49")
 res49<-matrix(NA, nsim,13)
@@ -1859,6 +1869,7 @@ for(i in 1:nsim){
   yc<--1+u[individual[which(measure=="c")],1]+rnorm(2*n,0,sqrt(Vr))
 
   dat<-data.frame(y=c(ya,yb,yc), type=type, individual=individual, measure=measure)
+  dat<-dat[sample(1:nrow(dat),nrow(dat)/2),]
  
   prior<-list(R=list(R1=list(V=V, nu=3, covu=TRUE), R2=list(V=Vr, nu=1)))
 
@@ -1897,6 +1908,7 @@ for(i in 1:nsim){
 print(i)
 
  }
+ 
 psets<-c(psets, tpar)
 
 

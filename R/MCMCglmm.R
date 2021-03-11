@@ -670,8 +670,8 @@ for(r in 1:length(rmodel.terms)){
      if((nfl[length(nfl)-1]*nrl[length(nrl)-1])!=(covu*Zlist$nrl)){
        stop("number of levels in G and R structure do match for cov=TRUE")
      }
+     covu_missing<-colSums(Zlist$Z)==0
      Z[,ustart+1:(covu*Zlist$nrl)]<-Z[,ustart+1:(covu*Zlist$nrl)]+Zlist$Z%*%kronecker(beta_rr, Diagonal(Zlist$nrl))
-     print("Jarrod why add to an not just replace?")
    }
  }
 
@@ -706,15 +706,22 @@ if(nadded>0){
  data$MCMC_family.names[dim(data)[1]-(nadded-1):0]<-"gaussian"  
  if(ngstructures!=0){ 
    Zaug<-as(matrix(0,nadded,ncol(Z)), "sparseMatrix")
-   if(covu!=0){
+   if(covu!=0 & length(covu_missing)!=0){
     if(ngstructures==1){
       ustart<-0
     }else{
       ustart<-sum(nfl[1:(ngstructures-1)]*nrl[1:(ngstructures-1)])
-    }
-    print("Jarrod the problem is here; positions on Z need to be added for dummy data involved in covu")
-   # Zaug[,ustart+1:(covu*nrl)]<-Zaug[,ustart+1:(covu*nrl)]+Zaug%*%kronecker(beta_rr, nrl)
+    } 
+    print(covu)
+    print(as.numeric(covu_missing))
+    print(nrl[ngstructures])
+    print(nfl[ngstructures]-covu)
+    
 
+
+    Zaug_cov<-Diagonal((nfl[ngstructures]-covu)*nrl[ngstructures],as.numeric(covu_missing))[which(covu_missing),]
+    Zaug[1:sum(covu_missing),ustart+1:(covu*nrl[ngstructures])]<-kronecker(beta_rr, Diagonal(sum(covu_missing)/(nfl[ngstructures]-covu)))%*%Zaug_cov
+   }
    Z<-rbind(Z, Zaug)  
  }
 }
