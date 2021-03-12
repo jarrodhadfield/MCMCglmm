@@ -487,6 +487,9 @@ if(jenny){
 
   firstP<-read.table("~/Work/Jenny/Data/Raw/Third_paternal.txt", header=T)
   firstP$day<-as.factor(firstP$day)
+  firstP$virus<-as.factor(firstP$virus)
+  firstP$f2rep<-as.factor(firstP$f2rep)
+  firstP$line<-as.factor(firstP$line)
 
   coef<-apply(cbind(m1R$Sol, m1R$VCV), 2, median)
   G<-list(G1=matrix(coef[9:33],5,5), G2=as.matrix(coef[34]))
