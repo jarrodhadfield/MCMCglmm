@@ -712,15 +712,14 @@ if(nadded>0){
     }else{
       ustart<-sum(nfl[1:(ngstructures-1)]*nrl[1:(ngstructures-1)])
     } 
-    print(covu)
-    print(as.numeric(covu_missing))
-    print(nrl[ngstructures])
-    print(nfl[ngstructures]-covu)
-    
+     
+return(covu_missing)     
+    Zaug_cov<-Diagonal(nfl[ngstructures+1]*nrl[ngstructures],as.numeric(covu_missing))[which(covu_missing),]
 
-
-    Zaug_cov<-Diagonal((nfl[ngstructures]-covu)*nrl[ngstructures],as.numeric(covu_missing))[which(covu_missing),]
-    Zaug[1:sum(covu_missing),ustart+1:(covu*nrl[ngstructures])]<-kronecker(beta_rr, Diagonal(sum(covu_missing)/(nfl[ngstructures]-covu)))%*%Zaug_cov
+    print(dim(Zaug_cov))
+    print(dim(kronecker(beta_rr, Diagonal(nrl[ngstructures]))[which(covu_missing),]))
+    print(dim(Zaug[1:sum(covu_missing),ustart+1:(covu*nrl[ngstructures])]))
+    Zaug[1:sum(covu_missing),ustart+1:(covu*nrl[ngstructures])]<-Zaug_cov%*%kronecker(beta_rr, Diagonal(nrl[ngstructures]))[which(covu_missing),]
    }
    Z<-rbind(Z, Zaug)  
  }
