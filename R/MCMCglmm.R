@@ -712,14 +712,7 @@ if(nadded>0){
     }else{
       ustart<-sum(nfl[1:(ngstructures-1)]*nrl[1:(ngstructures-1)])
     } 
-     
-return(covu_missing)     
-    Zaug_cov<-Diagonal(nfl[ngstructures+1]*nrl[ngstructures],as.numeric(covu_missing))[which(covu_missing),]
-
-    print(dim(Zaug_cov))
-    print(dim(kronecker(beta_rr, Diagonal(nrl[ngstructures]))[which(covu_missing),]))
-    print(dim(Zaug[1:sum(covu_missing),ustart+1:(covu*nrl[ngstructures])]))
-    Zaug[1:sum(covu_missing),ustart+1:(covu*nrl[ngstructures])]<-Zaug_cov%*%kronecker(beta_rr, Diagonal(nrl[ngstructures]))[which(covu_missing),]
+    Zaug[1:sum(covu_missing),ustart+1:(covu*nrl[ngstructures])]<-kronecker(beta_rr, Diagonal(nrl[ngstructures]))[which(covu_missing),]
    }
    Z<-rbind(Z, Zaug)  
  }
@@ -1036,7 +1029,6 @@ if(is.null(start$liab)){
 
     if(length(trait_set)<2){
       if(length(trait_set)==0 & length(missing_set)!=0){
-        print(missing_set)
         warning(paste("all observations are missing for error term ", i, ": liabilities sampled from Norm(0,1)", sep=""))
       }
       mu<-0
