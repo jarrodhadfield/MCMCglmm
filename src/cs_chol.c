@@ -19,7 +19,11 @@ csn *cs_chol (const cs *A, const css *S)
     s = c + n ;
     Cp = C->p ; Ci = C->i ; Cx = C->x ;
     N->L = L = cs_spalloc (n, n, cp [n], 1, 0) ;    /* allocate result */
-    if (!L) return (cs_ndone (N, E, c, x, 0)) ;
+    if(L==NULL){
+     PutRNGstate();
+     error("Out of memory - can't form the Cholesky factor\n");
+    }
+    // if (!L) return (cs_ndone (N, E, c, x, 0)) ;
     Lp = L->p ; Li = L->i ; Lx = L->x ;
     for (k = 0 ; k < n ; k++) Lp [k] = c [k] = cp [k] ;
     for (k = 0 ; k < n ; k++)	    /* compute L(:,k) for L*L' = C */
@@ -49,11 +53,14 @@ csn *cs_chol (const cs *A, const css *S)
 	    Lx [p] = lki ;
 	}
 	/* --- Compute L(k,k) ----------------------------------------------- */
-	if (d <= 0) {return (cs_ndone (N, E, c, x, 0)) ; /* not pos def */}	
+	if (d <= 0) {
+	return (cs_ndone (N, E, c, x, 0)) ; /* not pos def */
+	}	
 	p = c [k]++ ;
 	Li [p] = k ;		    /* store L(k,k) = sqrt (d) in column k */
 	Lx [p] = sqrt (d) ;
     }
     Lp [n] = cp [n] ;		    /* finalize L */
+
     return (cs_ndone (N, E, c, x, 1)) ; /* success: free E,s,x; return N */
 }

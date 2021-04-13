@@ -13,8 +13,8 @@ cs *cs_directsum(cs **KGinv, int nG, int nGR){
 
     C = cs_spalloc (cn, cn, cnz, 1, 0) ;	 /* allocate result */
 
-    if (!C ) return (cs_done (C, NULL, NULL, 0));   
-//     if (!C ) error("cs_directsum out of memory");  
+    if (!C ) error("cs_directsum out of memory");  
+ //   if (!C ) return (cs_done (C, NULL, NULL, 0));   
 
     Cp = C->p ; Ci = C->i ; Cx = C->x;
    

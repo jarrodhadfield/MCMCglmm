@@ -21,6 +21,10 @@ css *cs_schol (int order, const cs *A)
     cs_spfree (C) ;
     S->cp = cs_malloc (n+1, sizeof (int)) ; /* allocate result S->cp */
     S->unz = S->lnz = cs_cumsum (S->cp, c, n) ; /* find column pointers for L */
+    if(S->lnz > INT_MAX){
+       PutRNGstate();
+       error("Integer overflow when forming the symbolic Cholesky factor - problem too large\n");
+    }    
     cs_free (c) ;
     return ((S->lnz >= 0) ? S : cs_sfree (S)) ;
 }

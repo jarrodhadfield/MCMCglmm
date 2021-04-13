@@ -16,6 +16,7 @@ extern "C" {
 #define CS_SUBSUB 1
 #define CS_DATE "Nov 1, 2007"	    /* CSparse release date */
 #define CS_COPYRIGHT "Copyright (c) Timothy A. Davis, 2006-2007"
+#define CS_OVERFLOW(n,size) (n > INT_MAX / (int) size)
 
 
 /* --- primary CSparse routines and data structures ------------------------- */

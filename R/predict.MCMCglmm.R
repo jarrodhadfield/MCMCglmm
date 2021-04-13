@@ -31,6 +31,7 @@
     if(is.null(object$meta)){object$meta<-FALSE}
       
     if((length(rcomponents)+object$meta)!=length(object$Random$nrt)){stop("if mev was used, add my_model$meta=TRUE and rerun. If not, the model is a covu model and predictions are not yet implemented for this type of model")}
+
     if(any(mcomponents%in%rcomponents==FALSE)){stop("marginal formula does not correspond to model formula")}
 
     marginalise<-rep(as.numeric(rcomponents%in%mcomponents), object$Random$nrt)
@@ -68,12 +69,12 @@
 
     if(posterior=="mean"){
       object$VCV<-matrix(colMeans(object$VCV), 1, ncol(object$VCV))
-	  object$Sol<-matrix(colMeans(object$Sol), 1, ncol(object$Sol))
+	    object$Sol<-matrix(colMeans(object$Sol), 1, ncol(object$Sol))
       it<-1
     }
     if(posterior=="mode"){
       object$VCV<-matrix(posterior.mode(object$VCV, ...), 1, ncol(object$VCV))
-	  object$Sol<-matrix(posterior.mode(object$Sol, ...), 1, ncol(object$Sol))
+	    object$Sol<-matrix(posterior.mode(object$Sol, ...), 1, ncol(object$Sol))
       it<-1
     }
     if(is.null(it)){
@@ -108,7 +109,7 @@
     if(is.null(object$Random$nfl)==FALSE){  # there are random effects
       st<-c(1,cumsum(object$Random$nrl*object$Random$nfl)+1)  # starting column for random effects of each component 
       st<-st[-length(st)]
-      end<-cumsum(object$Random$nrl*object$Random$nfl)        # ennding column for random effects of each component 
+      end<-cumsum(object$Random$nrl*object$Random$nfl)        # ending column for random effects of each component 
       keep<-unlist(mapply(st[which(marginalise==0)], end[which(marginalise==0)], FUN=":"))    # random effects to be kept
     }else{
       keep<-NULL

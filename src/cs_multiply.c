@@ -14,8 +14,6 @@ cs *cs_multiply (const cs *A, const cs *B)
     x = values ? cs_malloc (m, sizeof (double)) : NULL ; /* get workspace */
     C = cs_spalloc (m, n, anz + bnz, values, 0) ;	 /* allocate result */
     if (!C || !w || (values && !x)) return (cs_done (C, w, x, 0)) ;
-//    if (!C || !w || (values && !x)) error("cs_multiply out of memory");   
-
     Cp = C->p ;
     for (j = 0 ; j < n ; j++)
     {

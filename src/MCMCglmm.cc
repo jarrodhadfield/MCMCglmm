@@ -314,6 +314,8 @@ cs*     *ivar = new cs*[nGR];
 cs*     *me_prior_prob = new cs*[nme];
 cs*     *me_post_prob = new cs*[nme];
 cs*     *me_Xi = new cs*[nme];
+
+//Rprintf("read X");
 /****************************************************/ 
 /* read in fixed-effects design matrix X and priors */
 /****************************************************/
@@ -446,6 +448,8 @@ if(nL>0){
   pvLL = cs_chol(pvL, pvLS);                  // cholesky factorisation of pvL^{-1} for forming N(0, pvL)
 }
 
+
+//Rprintf("read Z");
 
 /*******************************************/ 
 /* read in random-effects design matrix Z  */
@@ -753,9 +757,9 @@ for (k = 0 ; k < nGR; k++){  // Antedependce priors
   }
 }
        
-/**************************************/	
-/* Read in any condtional submatrices */
-/**************************************/
+/***************************************/	
+/* Read in any conditional submatrices */
+/***************************************/
 	
 for(k = 0 ; k < nGR; k++){	
   dimG = GRdim[k];
@@ -920,7 +924,10 @@ for (k = nG ; k < nGR; k++){
   propCinvL[k+nGR] = cs_chol(propCinv[k+nGR], propCinvS[k+nGR]);
 }
 
-// allocate vecotors for pseudo-random effects z* and [0, *a] 
+// allocate vectors for pseudo-random effects z* and [0, *a] 
+
+
+//Rprintf("allocate pseudo-random effects ");
 
 zstar = cs_spalloc(ny, 1, ny, true, false);
 linky = cs_spalloc(ny, 1, ny, true, false);
@@ -1041,6 +1048,7 @@ Omega = cs_omega(KGinv, nG, pvB);
 // form MME = M + Omega; mixed model equations 
 
 MME = cs_add(M, Omega, 1.0, 1.0); 
+
 S = cs_schol(1, MME);                            // Symbolic factorisation - only has to be done once
 
 // If sim/rec model then:
@@ -1160,6 +1168,8 @@ if(nalpha>0){
 	
 GetRNGstate();                                   // get seed for random number generation
 
+//Rprintf("start MCMC");
+
 /**********************************************************************************************************/
 /***** MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC MCMC *****/
 /**********************************************************************************************************/
@@ -1169,7 +1179,9 @@ for (itt = 0; itt < (nitt+DICP[0]); itt++){
 /***************************/
 /* form G and R structures */
 /***************************/
-						
+
+//Rprintf("form G and R structures");
+
   for (k = 0 ; k < nGR; k++){                         
     if(updateP[k]>0 || (updateP[nGR+1]>0 && covu>0 && (k==nG || k==(nG-1)))){
       if(AtermP[k]>=0){
@@ -1449,6 +1461,7 @@ if(itt>0){
 /************************/
 /* sample pseudo vector */
 /************************/
+//Rprintf("sample pseudo vectors\n");  
 
    cs_gaxpy(W, astar->x, zstar->x);
   
@@ -1473,6 +1486,9 @@ if(itt>0){
 
    L = cs_chol(MME, S); 
 
+//Rprintf("L formed\n");
+
+
    if(L==NULL){
      PutRNGstate();
      error("Mixed model equations singular: use a (stronger) prior\n");
@@ -1482,10 +1498,15 @@ if(itt>0){
       location_tmp->x[i] = 0.0;
    }
 
+//Rprintf("start inverting\n");
+
    cs_ipvec (S->pinv, location->x, location_tmp->x, MME->n);	 // x = P*b 
    cs_lsolve(L->L,location_tmp->x);                                // x = L\x 
    cs_ltsolve (L->L, location_tmp->x);		                 // x = L'\x 
    cs_pvec (S->pinv, location_tmp->x, location->x, MME->n);        // b = P'*x 
+
+//Rprintf("finish inverting\n");
+
 
    for (i = 0 ; i < dimAS ; i++){
       location->x[i] += astar->x[i];
