@@ -378,7 +378,7 @@
           keep<-keep[-c(1:(length(keep)/2))]
           rm.obs<-c(rm.obs, keep)
           post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], size, FUN=function(mu,v){normal.ztb(mu,v, size, approx)})
+          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], rep(size, each=nrow(post.pred)), FUN=function(mu,v, size){normal.ztb(mu,v, size, approx)})
         }
       }
     }
