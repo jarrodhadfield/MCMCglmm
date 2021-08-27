@@ -121,20 +121,20 @@ priorformat<-function(prior, start, nfl, meta, diagR, vtype){
          if(prior$fix!=0){
            CM<-prior$V[prior$fix:nrow(prior$V),prior$fix:nrow(prior$V)]         
            if(prior$fix!=1){
-             if(is.null(prior$n)){
+             if(is.null(prior$nu)){
                stop("nu not specified for some prior$G/prior$R elements")
              }
-             if(length(prior$n)!=1){
+             if(length(prior$nu)!=1){
                stop("nu in prior should be a scalar")
              }
            }else{
              prior$nu=1
            }
          }else{
-           if(is.null(prior$n)){
+           if(is.null(prior$nu)){
              stop("nu not specified for some prior$G/prior$R elements")
            }
-           if(length(prior$n)!=1){
+           if(length(prior$nu)!=1){
              stop("nu in prior should be a scalar")
            }
          }
@@ -175,7 +175,7 @@ priorformat<-function(prior, start, nfl, meta, diagR, vtype){
          }
        }
 
-       prior<-mapply(x=cumsum(nfl)-(nfl-1), y=cumsum(nfl),  function(x,y){list(V=as.matrix(prior$V[x:y,x:y, drop=FALSE]), nu=prior$n, fix=pfix(x,y), alpha.mu=prior$alpha.mu[x:y], alpha.V=as.matrix(prior$alpha.V[x:y,x:y, drop=FALSE]), beta.mu=prior$beta.mu, beta.V=prior$beta.V, covu=prior$covu)}, SIMPLIFY=FALSE)
+       prior<-mapply(x=cumsum(nfl)-(nfl-1), y=cumsum(nfl),  function(x,y){list(V=as.matrix(prior$V[x:y,x:y, drop=FALSE]), nu=prior$nu, fix=pfix(x,y), alpha.mu=prior$alpha.mu[x:y], alpha.V=as.matrix(prior$alpha.V[x:y,x:y, drop=FALSE]), beta.mu=prior$beta.mu, beta.V=prior$beta.V, covu=prior$covu)}, SIMPLIFY=FALSE)
        start<-mapply(x=cumsum(nfl)-(nfl-1), y=cumsum(nfl),  function(x,y){list(start=as.matrix(start[x:y,x:y, drop=FALSE]))}, SIMPLIFY=FALSE)
 
        return(list(prior=prior, start=start))
