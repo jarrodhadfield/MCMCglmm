@@ -706,7 +706,7 @@ if(nadded>0){
  data$MCMC_family.names[dim(data)[1]-(nadded-1):0]<-"gaussian"  
  if(ngstructures!=0){ 
    Zaug<-as(matrix(0,nadded,ncol(Z)), "sparseMatrix")
-   if(covu!=0 & length(covu_missing)!=0){
+   if(covu!=0 && length(covu_missing)!=0){
     if(ngstructures==1){
       ustart<-0
     }else{
