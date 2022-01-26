@@ -1,3 +1,4 @@
+vignettes/.*.$
 vignettes/Lecture[1-9][-][a-z].*[.]pdf$
 vignettes/jss[.]cls$
 vignettes/jss[.]bst$
