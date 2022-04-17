@@ -1,12 +1,12 @@
 at.level<-function(x,level){
   
-    if(is.factor(x)==FALSE){stop("x in at.level is not a factor")}
+    if(!is.factor(x)){stop("x in at.level is not a factor")}
   
     if(is.numeric(level)){
-       if(level<0 | level>nlevels(x)){stop("If level is numeric it must lie between one and nlevels(x)")}
+       if(any(level<0 | level>nlevels(x))){stop("If level is numeric it must lie between one and nlevels(x)")}
     	 M<-outer(x, levels(x)[level], "==")
     }else{
-    	 if(!level%in%levels(x)){stop("level is not in levels(x)")}
+    	 if(any(!level%in%levels(x))){stop("level is not in levels(x)")}
        M<-outer(x, level, "==")
      }
 	    mode(M)<-"numeric"
@@ -14,10 +14,13 @@ at.level<-function(x,level){
 	}
 	
 at.set<-function(x,level){
-         if(is.factor(x)==FALSE){stop("x in at.set is not a factor")}
+     if(!is.factor(x)){stop("x in at.set is not a factor")}
+
 	  if(is.numeric(level)){
+	  	 if(any(level<0 | level>nlevels(x))){stop("If level is numeric it must lie between one and nlevels(x)")}
 	    M<-x%in%(levels(x)[level])
 	  	}else{
+	  	 if(any(!level%in%levels(x))){stop("level is not in levels(x)")}
 	    M<-x%in%level
 		}
 	    mode(M)<-"numeric"

@@ -102,7 +102,11 @@ if(is.null(family)){
      if(is.factor(data$trait)==FALSE){
        stop("trait must be a factor")
      }
-     if(any(tapply(data$family, data$trait, function(x){length(unique(x))})!=1)){
+     if(nlevels(data$trait)>length(unique(data$trait))){
+       warning("some levels in trait are not used and have been dropped")
+       data$trait<-droplevels(data$trait)
+     }
+     if(any(tapply(data$family, data$trait, function(x){length(unique(x))})!=1, na.rm=TRUE)){
        stop("all data from the same trait must come from the same distribution")
      }
      rterm.family<-data$family[match(levels(data$trait), data$trait)]
