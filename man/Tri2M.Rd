@@ -20,7 +20,7 @@ elements.}
   \item{diag}{logical: if\code{TRUE} diagonal elements are included.}
 }
 \value{
-  \item{}{numeric or matrix}
+  numeric or matrix
 }
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
 \examples{

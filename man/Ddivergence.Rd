@@ -11,7 +11,7 @@ Ddivergence(CA=NULL, CB=NULL, n=10000)
   \item{n}{number of Monte Carlo samples for approximating the integral}
 }
 \value{
-  \item{}{d-divergence}
+  d-divergence
 }
 \note{In versions of MCMCglmm <2.26 Ovaskainen's (2008) d-divergence was incorrectly calculated.
 }	

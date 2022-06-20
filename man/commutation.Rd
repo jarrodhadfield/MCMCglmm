@@ -12,7 +12,7 @@ commutation(m, n)
   \item{n}{integer; number of columns of A}
 }
 \value{
-  \item{}{Commutation Matrix}
+  Commutation Matrix
 }
 \references{Magnus, J. R. & Neudecker, H. (1979) Annals of Statistics 7 (2) 381-394}
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}

@@ -10,7 +10,7 @@ Ptensor(x, k)
   \item{k}{kth central moment}
 }
 \value{
-   \item{}{tensor}
+   tensor
  }
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
 \examples{

@@ -12,7 +12,7 @@ KPPM(m, k)
   \item{k}{integer}
 }
 \value{
-  \item{}{Matrix}
+  Matrix
 }
 \references{Schott, J.R.(2003) Journal of Multivariate Analysis 87 (1) 177-190}
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}

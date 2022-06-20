@@ -12,7 +12,7 @@ knorm(V, k)
   \item{k}{kth central moment, must be even}
 }
 \value{
-   \item{}{tensor}
+   tensor
 }
 \references{Schott, J.R.(2003) Journal of Multivariate Analysis 87 (1) 177-190}
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}

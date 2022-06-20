@@ -12,7 +12,7 @@ pkk(prob, size)
   \item{size}{integer, say N, specifying the total number of objects that are put into K boxes in the typical multinomial experiment.}
 }
 \value{
-  \item{}{numeric; probability that there is at least one object ine ach ofthe K boxes}
+  probability that there is at least one object in each of the K boxes
 }
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
 \examples{
