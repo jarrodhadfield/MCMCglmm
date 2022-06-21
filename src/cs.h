@@ -1,6 +1,7 @@
 #ifndef _CS_H
 #define _CS_H
 #include <R.h>
+#include <limits.h>
 
 
 #ifdef __cplusplus

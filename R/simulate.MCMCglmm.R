@@ -21,7 +21,7 @@
   }
 
   if(!is.null(marginal)){
-    if(class(marginal)!="formula"){stop("marginal should be NULL or a formula")}
+    if(!is(marginal, "formula")){stop("marginal should be NULL or a formula")}
   }
 
   if(!is.null(posterior)){

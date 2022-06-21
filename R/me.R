@@ -3,7 +3,7 @@
   
    if(!type%in%c("dberkson", "classical", "berkson", "dclassical")){stop("type must be one of 'classical', 'berkson', 'dclassical' or 'dberkson'")}
    if(type!="dberkson"){stop(paste("Sorry, meausrement error type", type, "not yet implemented"))}
-   if(class(formula)!="formula"){stop("formula not passed to formula in me")}
+   if(!is(formula, "formula")){stop("formula not passed to formula in me")}
    if(type!="dberkson" & is.null(error)){stop("Continuous covariates with mesurement error requie a standard error for 'error'")}
 
    formula<-update.formula(formula, ~.-1)

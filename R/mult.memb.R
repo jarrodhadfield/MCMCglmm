@@ -1,6 +1,6 @@
 mult.memb<-function(formula = NULL){
 
-  if(class(formula)!="formula"){stop("formula not passed to mult.memb")}
+  if(!is(formula, "formula")){stop("formula not passed to mult.memb")}
 
   fac<-attr(terms(formula), "term.labels")
   Z<-model.matrix(as.formula(paste("~", fac[1], -1), env=attr(formula, ".Environment")))

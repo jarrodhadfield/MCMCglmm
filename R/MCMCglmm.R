@@ -5,10 +5,13 @@
 
   if(missing(data)){stop("data argument is missing")}
   if(missing(fixed)){stop("fixed is missing")}
-  if(class(fixed)!="formula"){stop("fixed should be a formula")}
-  if(class(rcov)!="formula"){stop("rcov should be a formula")}
-  if(class(random)!="formula" & class(random)!="NULL"){stop("random should be a formula")}
 
+  if(!is(fixed, "formula")){stop("fixed should be a formula")}
+  if(!is(rcov, "formula")){stop("rcov should be a formula")}
+  if(!is.null(random)){
+    if(!is(random, "formula")){stop("random should be a formula")}
+  }
+  
   reserved.names<-c("units", "MCMC_y", "MCMC_y.additional","MCMC_y.additional2", "MCMC_mh.weights", "MCMC_liab","MCMC_meta", "MCMC_mev", "MCMC_family.names", "MCMC_error.term", "MCMC_dummy")
   family.types<-c("gaussian", "poisson", "multinomial", "notyet_weibull", "exponential", "cengaussian", "cenpoisson", "notyet_cenweibull", "cenexponential",  "notyet_zigaussian", "zipoisson", "notyet_ziweibull", "notyet_ziexponential", "ordinal", "hupoisson", "ztpoisson", "geometric", "zapoisson", "zibinomial", "threshold", "zitobit", "nzbinom", "ncst", "msst", "hubinomial", "ztmb", "ztmultinomial")
 

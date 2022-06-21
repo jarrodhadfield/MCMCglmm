@@ -1,7 +1,7 @@
 "buildV"<-function(object, marginal=object$Random$formula, diag=TRUE, it=NULL, posterior="mean", ...){
 
   if(!is.null(marginal)){
-    if(class(marginal)!="formula"){stop("marginal should be NULL or a formula")}
+    if(!is(marginal,"formula")){stop("marginal should be NULL or a formula")}
   }
   if(!is.null(it)){
     if(length(it)>1){stop("it should be an integer")}
