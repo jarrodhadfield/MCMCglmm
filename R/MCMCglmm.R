@@ -675,7 +675,7 @@ for(r in 1:length(rmodel.terms)){
        ustart<-sum(nfl[1:(ngstructures-1)]*nrl[1:(ngstructures-1)])
      }
      if((nfl[length(nfl)-1]*nrl[length(nrl)-1])!=(covu*Zlist$nrl)){
-       stop("number of levels in G and R structure do match for cov=TRUE")
+       stop("number of levels in G and R structure do not match for covu=TRUE")
      }
      covu_missing<-colSums(Zlist$Z)==0
      Z[,ustart+1:(covu*Zlist$nrl)]<-Z[,ustart+1:(covu*Zlist$nrl)]+Zlist$Z%*%kronecker(beta_rr, Diagonal(Zlist$nrl))

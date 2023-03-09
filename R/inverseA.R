@@ -3,7 +3,7 @@ function (pedigree = NULL, nodes = "ALL", scale = TRUE, reduced=FALSE, tol=.Mach
 {
     ped = TRUE
     if (length(attr(pedigree, "class")) != 0) {
-        if (attr(pedigree, "class") == "phylo") {
+        if (any(attr(pedigree, "class") == "phylo")) {
             ped = FALSE
         }
     }
