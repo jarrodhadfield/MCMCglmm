@@ -45,14 +45,14 @@ void MCMCglmm(
         double *VarP,        // Posterior distribution of (co)variances
         double *PLiabP,      // Posterior distribution of liabilities
         int *familyP,        // distribution of response variables
-        double *propCP,      // proposal distribition for liabilities
+        double *propCP,      // proposal distribution for liabilities
         bool *verboseP,      // print iterations and MH acceptance ratio to screen
         double *BvpP,        // inverse prior covariance matrix for beta  with final number indicating diagonal (1) or non diagonal (0)      
         double *BmupP,       // prior mean vector for beta     
         int *mfacP,          // vector of J-1 levels for each multinomial response 
       	int *observedP,	     // vector of 1 (observed) and 0 (missing)
       	int *diagP,          // is a us matrix in fact diagonal?
-        int *AMtuneP,        // should adaptive Metroplis algorithm be used
+        int *AMtuneP,        // should adaptive Metropolis algorithm be used
       	int *DICP,	     // should DIC be computed
         double *dbarP,
         int *proposal,
@@ -66,21 +66,20 @@ void MCMCglmm(
         double *xAVpP,     
         int *nzmaxAVpP,        
         int *PXtermsP,
-        int *iLXP,              // Design matrix to form Gianola & Sorensen's Lambda         
+        int *iLXP,              // Design matrix to form Gianola & Sorensen's Lambda or theta_scale W       
         int *pLXP,        
         double *xLXP,
-        double *lambdaP,        
+        double *lambdaP,       // posterior for Lambda or theta_scale W
         double *LvpP,          // prior for structural parameters
         double *LmupP,
         double *nanteBP,       // orders of antedependence beta's per structure then numbers of betas and then whether constant variance
         double *anteBvpP,      // inverse prior covariance matrix for antedpendence betas     
         double *anteBmupP,    // prior mean vector for antedpendence betas
         bool *truncP,          // should latent variables be truncated tp prevent under/overflow for cat/mult/thresh/ord distributions and zero-processes in zi/za/hu?
-        int *me_rtermP,        // vector indexing which me_outcome a set of resdiuals are informative about 
+        int *me_rtermP,        // vector indexing which me_outcome a set of residuals are informative about 
         double *me_prior_probP,   //  prior category probabilities for each me_outcome    
         double *me_XiP,       // me interaction design matrix
         int *meP       // number of po terms, where first covariate for each term appears in X, number of covariates in each term
-
 ){         
 
 int     i, j, k,l,p,cnt,cnt2,cnt3,cnt4, rterm,itt,record,dimG,nthordinal,
@@ -113,9 +112,11 @@ double   mndenom1 = 1.0,  // sum(exp(l_{j}) for all j) and l_old
 int     nrowX =  dimP[0], ncolX =  dimP[1],  nzmaxX = nzmaxP[0]; 
 int     nrowZ =  dimP[2], ncolZ =  dimP[3],  nzmaxZ = nzmaxP[1];
 int     nrowLX =  dimP[4], ncolLX =  dimP[5],  nzmaxLX = nzmaxP[2];
+int     nrowWS =  dimP[6], ncolWS =  dimP[7],  nzmaxWS = nzmaxP[3];
 
 int     nL;
 bool    path;
+bool    thetaS = nrowWS==nrowX;
 
 if(nrowLX!=0){
   if(nrowLX!=nrowX){
@@ -274,7 +275,14 @@ for(i=0; i<nme; i++){
   nmeo[i] = meP[3*nme+1+i];
 }  
 
-cs      *X, *Z, *W,  *Wt, *KRinv, *WtmKRinv, *WtmKRinvtmp, *M, *Omega, *MME, *zstar, *astar, *astar_tmp, *location, *location_tmp, *linky, *mulinky,  *pred, *mupred, *dev, *bvA, *bvAbv, *tbv, *pvB, *pmuB, *Brv, *Xalpha, *tXalpha, *Alphainv, *muAlpha, *XtmKRinv, *XtmKRinvtmp, *alphaM, *alphaMME, *alphaastar, *alphapred, *alphazstar, *alphaastar_tmp, *alphalocation, *alphalocation_tmp, *Worig, *LambdaX, *pvL, *pmuL, *Lrv, *I, *linky_orig, *Y, *tY, *ILY, *w, *tYKrinv, *tYKrinvY, *tYKrinvw, *lambda_dev, *tl, *tlV, *tlVl, *exLambda, *exLambdaX, *mulambda, *G_rr, *Ginv_rr, *beta_rr;
+double theta_scale = 1.0,
+       thetaC,
+       thetamu, 
+       pvtheta, 
+       pmutheta;
+int    theta_vpos[2]; // R-structure and position in R structure of variance for scaled observations
+
+cs      *X, *Z, *W,  *Wt, *KRinv, *WtmKRinv, *WtmKRinvtmp, *M, *Omega, *MME, *zstar, *astar, *astar_tmp, *location, *location_tmp, *linky, *mulinky,  *pred, *mupred, *dev, *bvA, *bvAbv, *tbv, *pvB, *pmuB, *Brv, *Xalpha, *tXalpha, *Alphainv, *muAlpha, *XtmKRinv, *XtmKRinvtmp, *alphaM, *alphaMME, *alphaastar, *alphapred, *alphazstar, *alphaastar_tmp, *alphalocation, *alphalocation_tmp, *Worig, *LambdaX, *pvL, *pmuL, *Lrv, *I, *linky_orig, *Y, *tY, *ILY, *w, *tYKrinv, *tYKrinvY, *tYKrinvw, *lambda_dev, *tl, *tlV, *tlVl, *exLambda, *exLambdaX, *mulambda, *G_rr, *Ginv_rr, *beta_rr, *Wscale, *predscale;
 
 csn	*L, *pvBL, *alphaL, *AlphainvL, *pvLL, *tYKrinvYL;
 css     *S, *pvBS, *alphaS, *AlphainvS, *pvLS, *LambdaS, *tYKrinvYS, *GinvS_rr;
@@ -448,6 +456,38 @@ if(nL>0){
   pvLL = cs_chol(pvL, pvLS);                  // cholesky factorisation of pvL^{-1} for forming N(0, pvL)
 }
 
+/**************************/ 
+/* read in Wscale if need */
+/**************************/
+
+if(thetaS){
+
+  Wscale = cs_spalloc(nrowWS, ncolWS, nzmaxWS, true, false); 
+                                                    
+  for (i = 0 ; i < nzmaxWS ; i++){
+    Wscale->i[i] = iLXP[i];
+    Wscale->x[i] = xLXP[i];
+  }
+  for (i = 0 ; i <= ncolWS ; i++){
+    Wscale->p[i] = pLXP[i];
+  }
+
+  pmutheta = LmupP[0];
+  pvtheta = LvpP[0];
+
+  cnt=0;
+
+  for(i=nG; i<nGR; i++){
+    for(j=0; j<GRdim[i]; j++){
+      cnt += nlGR[i];
+      if(Wscale->i[0]<cnt){
+          theta_vpos[0] = i;
+          theta_vpos[1] = j;
+        break;
+      }
+    }
+  } 
+}
 
 //Rprintf("read Z");
 
@@ -556,7 +596,7 @@ for(k=0; k<nG; k++){
   if(AtermP[k]>=0){
 
     dimG = GRdim[k];
-    A[k] = cs_spalloc(nlGR[k], nlGR[k], nzmaxP[3+AtermP[k]], true, false);  
+    A[k] = cs_spalloc(nlGR[k], nlGR[k], nzmaxP[4+AtermP[k]], true, false);  
     bv[k] = cs_spalloc(nlGR[k], dimG, nlGR[k]*dimG, true, false);
     bv_tmp[k] = cs_spalloc(nlGR[k], dimG, nlGR[k]*dimG, true, false);
 
@@ -564,11 +604,11 @@ for(k=0; k<nG; k++){
     cnt3=0;
 
     for (i = 0; i < AtermP[k]; i++){
-     cnt2 += nzmaxP[3+i];
-     cnt3 += dimP[6+i]+1;
+     cnt2 += nzmaxP[4+i];
+     cnt3 += dimP[8+i]+1;
     }            
 
-    for (i = 0; i < nzmaxP[3+AtermP[k]]; i++){
+    for (i = 0; i < nzmaxP[4+AtermP[k]]; i++){
       A[k]->i[i] = iAP[i+cnt2];
       A[k]->x[i] = xAP[i+cnt2];
     }
@@ -1519,7 +1559,7 @@ if(itt>0){
 
    pred = cs_multiply(W, location);
    cs_sortdv(pred); 
-   dev = cs_add(linky, pred, 1.0, -1.0);   
+   dev = cs_add(linky, pred, 1.0, -1.0);
 
    cnt2 = ncolX;
 
@@ -1844,12 +1884,60 @@ if(itt>0){
     cnt2 += nlGR[i]*dimG;
   }
 
+/**********************************/
+/* update theta_scale parameters  */   
+/**********************************/   
+//Rprintf("sample theta_scale parameters\n");
+
+if(thetaS){
+  predscale = cs_multiply(Wscale, location);
+  
+  thetaC = 0.0;
+  thetamu = 0.0;
+
+  for(j=0; j<predscale->nzmax; j++){
+    thetaC += pow(predscale->x[j],2.0);
+    thetamu += predscale->x[j]*dev->x[predscale->i[j]];
+  }  
+
+  thetamu /= thetaC;
+  thetamu += theta_scale;
+  thetamu -= pmutheta;
+  thetamu *= thetaC/(thetaC+pvtheta);
+  thetamu += pmutheta;
+
+  thetaC  = G[theta_vpos[0]]->x[(GRdim[theta_vpos[0]]+1)*theta_vpos[1]]/(thetaC+pvtheta);
+  // need to make sure correct residual variance is used
+
+  theta_scale = rnorm(thetamu, sqrt(thetaC));
+
+  for(i=0; i<ncolWS; i++){
+    for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
+      for(k=W->p[i]; k<W->p[i+1]; k++){
+        if(W->i[k]==Wscale->i[j]){
+          W->x[k]  = Wscale->x[j]*theta_scale;
+          break;
+        }
+      }  
+    }  
+  }
+
+  cs_spfree(pred);
+  pred = cs_multiply(W, location);
+  cs_spfree(Wt);
+  Wt = cs_transpose(W, true);
+
+  cs_spfree(predscale);      
+
+} 
+
+
 /********************************************************/
-/* update recusrive-simultaneous structural parameters  */   
+/* update recursive-simultaneous structural parameters  */   
 /********************************************************/
 
 
-  if(nL>0){     
+  if(nL>0){    
     if(missing){
       if(path){     
         // linky_orig updated when sampling liabilities, but  Y also needs to be updated. 
@@ -3022,6 +3110,9 @@ if(itt>0){
          lambdaP[i+post_cnt*nL] = lambda[lambda_old]->x[i];        
        }
      }
+     if(thetaS){
+       lambdaP[post_cnt] = theta_scale;        
+     }
      if(pr){
        if(nalpha>0){
          cnt=0;
@@ -3172,7 +3263,10 @@ if(itt>0){
     cs_spfree(tYKrinvY);   
     cs_spfree(tYKrinvw);   
     cs_spfree(w);   
-  }                                                
+  }
+  if(thetaS){
+    cs_spfree(Wscale);                                            
+  }
   cs_nfree(L);
   cs_sfree(S);
   cs_nfree(pvBL);

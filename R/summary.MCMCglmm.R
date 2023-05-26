@@ -13,8 +13,8 @@
   solutions<-cbind(colMeans(object$Sol[,1:nF,drop=FALSE]), coda::HPDinterval(object$Sol[,1:nF,drop=FALSE]), effectiveSize(object$Sol[,1:nF,drop=FALSE]), 2*pmax(0.5/dim(object$Sol)[1], pmin(colSums(object$Sol[,1:nF,drop=FALSE]>0)/dim(object$Sol)[1], 1-colSums(object$Sol[,1:nF,drop=FALSE]>0)/dim(object$Sol)[1])))
   if(nL>0){
   solutions<-rbind(solutions, cbind(colMeans(object$Lambda), coda::HPDinterval(object$Lambda),effectiveSize(object$Lambda), 2*pmax(0.5/dim(object$Lambda)[1], pmin(colSums(object$Lambda>0)/dim(object$Lambda)[1], 1-colSums(object$Lambda>0)/dim(object$Sol)[1]))))
-
   }
+
   colnames(solutions)<-c("post.mean", "l-95% CI", "u-95% CI", "eff.samp", "pMCMC")
 
   random.formula=object$Random$formula
@@ -40,6 +40,13 @@
     colnames(cutpoints)<-c("post.mean", "l-95% CI", "u-95% CI", "eff.samp")
 
   }
+  if(is.null(object$ThetaS)){
+     theta_scale<-NULL
+  }else{
+    theta_scale<-cbind(colMeans(object$ThetaS), coda::HPDinterval(object$ThetaS), effectiveSize(object$ThetaS), 2*pmax(0.5/dim(object$ThetaS)[1], pmin(colSums(object$ThetaS>0)/dim(object$ThetaS)[1], 1-colSums(object$ThetaS>0)/dim(object$ThetaS)[1])))
+
+      colnames(theta_scale)<-c("post.mean", "l-95% CI", "u-95% CI", "eff.samp", "pMCMC")
+  }
   if(is.null(object$Random$nrt)){
     Gterms<-NULL
   }else{
@@ -47,7 +54,7 @@
   }
   Rterms<-rep(rep(1:length(object$Residual$nrt), object$Residual$nrt), object$Residual$nfl^2) 
 
-  output<-list(DIC=DIC, fixed.formula=fixed.formula, random.formula=random.formula,residual.formula=residual.formula, solutions=solutions, Gcovariances=Gcovariances, Gterms=Gterms,  Rcovariances=Rcovariances,Rterms=Rterms, cstats=cstats,cutpoints=cutpoints)
+  output<-list(DIC=DIC, fixed.formula=fixed.formula, random.formula=random.formula,residual.formula=residual.formula, solutions=solutions, Gcovariances=Gcovariances, Gterms=Gterms,  Rcovariances=Rcovariances,Rterms=Rterms, cstats=cstats,cutpoints=cutpoints, theta_scale=theta_scale)
   attr(output, "class")<-c("summary.MCMCglmm", "list")
   output
 }
@@ -90,9 +97,15 @@
  cat("\n Location effects:", paste(as.expression(x$fixed.formula)), "\n\n")
  printCoefmat(as.data.frame(x$solutions), has.Pvalue=has.Pvalue, digits=digits, eps.Pvalue=eps.Pvalue, ...)
 
- if(is.null(x$cutpoints)==FALSE){
-   cat("\n Cutpoints:", "\n")
+ if(!is.null(x$cutpoints)){
+   cat("\n Cutpoints:", "\n\n")
    print(as.data.frame(x$cutpoints), digits=digits, ...)
  }
+
+  if(!is.null(x$theta_scale)){
+   cat("\n Theta scale parameter:", "\n\n")
+   printCoefmat(as.data.frame(x$theta_scale), has.Pvalue=has.Pvalue, digits=digits, eps.Pvalue=eps.Pvalue, ...)
+ }
+
 }
 

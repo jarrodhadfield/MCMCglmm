@@ -25,6 +25,7 @@
   \item{Rterms}{indexes residuals (co)variances by the component terms defined in the rcov formula}
   \item{csats}{chain length, burn-in and thinning interval}
   \item{cutpoints}{posterior mean, 95\% HPD interval and effective sample size of cut-points from an ordinal model}
+  \item{theta_scale}{posterior mean, 95\% HPD interval, MCMC p-values and effective sample size of scaling parameter in theta_scale models.}
  }
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
 \seealso{\code{\link{MCMCglmm}}}

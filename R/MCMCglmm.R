@@ -1,4 +1,4 @@
-"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE){
+"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL){
 
   orig.na.action<-options("na.action")[[1]]
   options("na.action"="na.pass")	
@@ -60,6 +60,22 @@ if(is.null(start$r)){
 }else{
   rLV<-start$r
   if(rLV<(-1) | rLV>1) {stop("start$r should be between -1 and 1")}
+}
+
+if(!is.null(theta_scale)){
+  if(!is.list(theta_scale)){
+    stop("theta_scale should be a list with 'factor', 'level', 'fixed' and/or 'random'")
+  }else{
+    if(is.null(theta_scale$factor)){stop("theta_scale should have an element 'factor' giving the column that separates records")
+    }else{
+      if(!theta_scale$factor%in%names(data)){stop("theta_scale$factor does not appear in data")}
+    }
+    if(is.null(theta_scale$level)){stop("theta_scale should have an element 'level' giving the level of 'factor' defining records that should have scaled terms")
+    }else{
+      if(!theta_scale$level%in%levels(eval(parse(text=theta_scale$factor), data))){stop("theta_scale$level is not a level in theta_scale$factor in data")}
+    }
+    if(is.null(theta_scale$fixed) & is.null(theta_scale$random)){stop("theta_scale should have elements 'fixed' and/or 'random' giving the indices of the terms to be scaled")}
+  }
 }
 
 original.fixed<-fixed                                                                            # original model specification
@@ -712,7 +728,7 @@ if(nadded>0){
  data$MCMC_dummy[dim(data)[1]-(nadded-1):0]<-1 
  data$MCMC_family.names[dim(data)[1]-(nadded-1):0]<-"gaussian"  
  if(ngstructures!=0){ 
-   Zaug<-as(matrix(0,nadded,ncol(Z)), "sparseMatrix")
+   Zaug<-Matrix(0,nadded,ncol(Z), doDiag=FALSE)
    if(covu!=0 && length(covu_missing)!=0){
     if(ngstructures==1){
       ustart<-0
@@ -734,7 +750,7 @@ data$MCMC_error.term<-rep(1:sum(nfl[nG+1:nR]), rep(nrl[nG+1:nR], nfl[nG+1:nR]))
 if(ngstructures==0){
   Z<-as(matrix(0,1,0), "sparseMatrix")
 }else{                                                    # rearrange data to match R-structure
-Z<-Z[ordering,,drop=FALSE]                                            
+  Z<-Z[ordering,,drop=FALSE]                                            
 }
 
 mfac<-mfac[trait.ordering]
@@ -815,107 +831,109 @@ sir<-any(grepl("sir\\(", dimnames(X)[[2]]))
 
 if(sir & !is.null(path.terms)){"path and sir functions cannot be used together: fit using sir function only"}
 
-if(sir | !is.null(path.terms)){  # Do structural parameters exist?
-if(sir){
- if(any(family.names!="gaussian")){stop("currently simultaneous/recursive models can only be fitted to Gaussian data unless path() is used")}
- L<-X[,grep("sir\\(", dimnames(X)[[2]]),drop=FALSE]
- L<-as(L, "sparseMatrix")
- if(any(is.na(data$MCMC_y) & rowSums(L)!=0)){
-   stop("currently missing observations cannot be augmented if they depend on simultaneous/recursive terms unless path() is used")
- }
- pL<-unique(cumsum(((duplicated(attr(X, "assign"))==FALSE)+(grepl("sir\\(", dimnames(X)[[2]])==FALSE))>0)[grep("sir\\(", dimnames(X)[[2]])])
-       # position of structural parameters
- Lnames<-grep("sir\\(", attr(terms(fixed), "term.labels"))
- Lnames<-attr(terms(fixed), "term.labels")[Lnames]
- X<-X[,-grep("sir\\(", dimnames(X)[[2]]),drop=FALSE]
+  if(sir | !is.null(path.terms)){  # Do structural parameters exist?
+  if(!is.null(theta_scale)){"path and sir functions cannot be used together with theta_scale"}
+
+  if(sir){
+   if(any(family.names!="gaussian")){stop("currently simultaneous/recursive models can only be fitted to Gaussian data unless path() is used")}
+   L<-X[,grep("sir\\(", dimnames(X)[[2]]),drop=FALSE]
+   L<-as(L, "sparseMatrix")
+   if(any(is.na(data$MCMC_y) & rowSums(L)!=0)){
+     stop("currently missing observations cannot be augmented if they depend on simultaneous/recursive terms unless path() is used")
+   }
+   pL<-unique(cumsum(((duplicated(attr(X, "assign"))==FALSE)+(grepl("sir\\(", dimnames(X)[[2]])==FALSE))>0)[grep("sir\\(", dimnames(X)[[2]])])
+         # position of structural parameters
+   Lnames<-grep("sir\\(", attr(terms(fixed), "term.labels"))
+   Lnames<-attr(terms(fixed), "term.labels")[Lnames]
+   X<-X[,-grep("sir\\(", dimnames(X)[[2]]),drop=FALSE]
+  }else{
+   if(nR>1){stop("path models can only have one R-term")}
+   if(any(family.names=="threshold")){stop("path models are not implemented for threshold responses")}
+   if(sum(ncutpoints)>0){stop("path models are not implemented for ordinal responses with >2 categories")}
+   L<-as(model.matrix(path.terms), "sparseMatrix")
+   if(nrow(L)!=nfl[nG+1]){stop("path design matrix is the wrong dimension; perhaps k is wrong")}
+   Lnames<-attr(terms(path.terms), "term.labels")
+  }
+  nL<-dim(L)[2]/dim(L)[1]  # number of structural parameters
+  pL<-FALSE
+  warning("priors for sir/path parameters not implemented")
 }else{
- if(nR>1){stop("path models can only have one R-term")}
- if(any(family.names=="threshold")){stop("path models are not implemented for threshold responses")}
- if(sum(ncutpoints)>0){stop("path models are not implemented for ordinal responses with >2 categories")}
- L<-as(model.matrix(path.terms), "sparseMatrix")
- if(nrow(L)!=nfl[nG+1]){stop("path design matrix is the wrong dimension; perhaps k is wrong")}
- Lnames<-attr(terms(path.terms), "term.labels")
-}
-nL<-dim(L)[2]/dim(L)[1]  # number of structural parameters
-pL<-FALSE
-warning("priors for sir/path parameters not implemented")
-}else{
- L<-Matrix(0,0,0, doDiag=FALSE)
  nL<-0
  Lnames=NULL
 }
 
 me<-any(grepl("me\\(", dimnames(X)[[2]]))
 if(me){
- if(any(grepl(":me\\(", as.character(fixed)[2]))){
-  stop("interactions with me terms must be of the form me():, rather than :me()")
-}
-if(any(grepl("\\* me\\(", as.character(fixed)[2]))){
- stop("*me() not allowed - use me():")
-}  
-me_sf<-close.bracket("me\\(~", as.character(fixed)[2])
-     # get start and end of the me terms
-meo_terms<-mapply(me_sf[,1], me_sf[,2], FUN=substr, x=as.character(fixed)[2])
-     # get me() formula
-mei_terms<-rep(NA, length(meo_terms))
-     # see if they're interacted with anything
-me_extras<-mapply(me_sf[,2]+1, nchar(as.character(fixed)[2]), FUN=substr, x=as.character(fixed)[2])
-if(any(grepl("^ \\*", me_extras))){stop("me()* not allowed - use me():")}
-me_extras_pos<-which(substr(me_extras, 1, 2)!=":(" & substr(me_extras, 1,1)==":")
-if(length(me_extras_pos)>0){
- for(i in 1:length(me_extras_pos)){
-   mei_terms[i]<-substr(me_extras[i], 2, gregexpr(" |$", me_extras[i])[[1]][1])
- }
-}
-me_extras_pos<-which(substr(me_extras, 1, 2)==":(")
-if(length(me_extras_pos)>0){
- for(i in 1:length(me_extras_pos)){
-  mei_terms[i]<-substr(me_extras[i], 2, close.bracket(":\\(", me_extras[i])[1,2])
-}  
-}
-
-if(any(grepl("me\\(", mei_terms))){
- stop("interactions between me() terms are not allowed - sorry")
-} 
-
-me_prior_prob<-sapply(meo_terms, function(x){attr(eval(parse(text=x), data), "me_prior_prob")}, simplify=FALSE)
-nmeo<-unlist(lapply(me_prior_prob, nrow))
-nmec<-unlist(lapply(me_prior_prob, ncol))
-me_type<-lapply(me_prior_prob, function(x){attr(x,"type")})
-me_group<-lapply(me_prior_prob, function(x){attr(x,"group")})
-me_rterm<-paste(unlist(mapply(function(x,y){rep(x, each=y)}, 1:length(nrl[nG+1:nR]), nrl[nG+1:nR]*nfl[nG+1:nR])), unlist(mapply(function(x,y){rep(1:x, y)}, nrl[nG+1:nR], nfl[nG+1:nR])))
-
-if(any(unlist(lapply(me_group, function(x){tapply(x, me_rterm, function(y){length(unique(y))})}))>1)){
- stop("observations in the same residual structure must belong to the same me group")
-}
-
-me_rterm<-unlist(lapply(me_group, function(x){x[match(unique(me_rterm),me_rterm)]}))
-me_Xi<-sapply(mei_terms, function(x){if(!is.na(x)){model.matrix(as.formula(paste0("~", x, "-1")), data)}else{model.matrix(~1, data)}}, simplify=FALSE)
-nmei<-unlist(lapply(me_Xi, ncol))
-
-stme<-1:ncol(X)
-
-for(i in 1:ncol(X)){
- stme[i]<-substr(colnames(X)[i], close.bracket("me\\(~", colnames(X)[i])[1], close.bracket("me\\(~", colnames(X)[i])[2])
-}
-stme<-match(meo_terms, stme)
-
-for(i in 1:length(meo_terms)){
-       # reorder terms so categories vary slowest
- me_order<-1:(nmei[i]*(nmec[i]-1))
- for(j in 2:nmec[i]){
-  facname<-paste0("me\\(.*\\)", colnames(me_prior_prob[[i]])[j])
-  if(nmei[i]!=sum(grepl(facname, colnames(X)))){
-    stop("levels dropped in terms intercated with 'me' term; try fitting terms in the interaction in a different order")
+  if(!is.null(theta_scale)){stop("me terms not allowed with theta_scale")}
+  if(any(grepl(":me\\(", as.character(fixed)[2]))){
+    stop("interactions with me terms must be of the form me():, rather than :me()")
   }
-  me_order[nmei[i]*(j-2)+1:nmei[i]]<-which(grepl(facname, colnames(X)))
-}
-X[,stme[i]-1+1:(nmei[i]*(nmec[i]-1))]<-X[,me_order]
-colnames(X)[stme[i]-1+1:(nmei[i]*(nmec[i]-1))]<-colnames(X)[me_order]
-}   
-nme<-length(meo_terms)
-     # need to reorder columns of X
-X[,grep("me\\(", colnames(X))][which(X[,grep("me\\(", colnames(X))]==0)]<-1e-18
+  if(any(grepl("\\* me\\(", as.character(fixed)[2]))){
+   stop("*me() not allowed - use me():")
+  }  
+  me_sf<-close.bracket("me\\(~", as.character(fixed)[2])
+       # get start and end of the me terms
+  meo_terms<-mapply(me_sf[,1], me_sf[,2], FUN=substr, x=as.character(fixed)[2])
+       # get me() formula
+  mei_terms<-rep(NA, length(meo_terms))
+       # see if they're interacted with anything
+  me_extras<-mapply(me_sf[,2]+1, nchar(as.character(fixed)[2]), FUN=substr, x=as.character(fixed)[2])
+  if(any(grepl("^ \\*", me_extras))){stop("me()* not allowed - use me():")}
+  me_extras_pos<-which(substr(me_extras, 1, 2)!=":(" & substr(me_extras, 1,1)==":")
+  if(length(me_extras_pos)>0){
+   for(i in 1:length(me_extras_pos)){
+     mei_terms[i]<-substr(me_extras[i], 2, gregexpr(" |$", me_extras[i])[[1]][1])
+   }
+  }
+  me_extras_pos<-which(substr(me_extras, 1, 2)==":(")
+  if(length(me_extras_pos)>0){
+   for(i in 1:length(me_extras_pos)){
+      mei_terms[i]<-substr(me_extras[i], 2, close.bracket(":\\(", me_extras[i])[1,2])
+   }  
+  }
+
+  if(any(grepl("me\\(", mei_terms))){
+   stop("interactions between me() terms are not allowed - sorry")
+  } 
+
+  me_prior_prob<-sapply(meo_terms, function(x){attr(eval(parse(text=x), data), "me_prior_prob")}, simplify=FALSE)
+  nmeo<-unlist(lapply(me_prior_prob, nrow))
+  nmec<-unlist(lapply(me_prior_prob, ncol))
+  me_type<-lapply(me_prior_prob, function(x){attr(x,"type")})
+  me_group<-lapply(me_prior_prob, function(x){attr(x,"group")})
+  me_rterm<-paste(unlist(mapply(function(x,y){rep(x, each=y)}, 1:length(nrl[nG+1:nR]), nrl[nG+1:nR]*nfl[nG+1:nR])), unlist(mapply(function(x,y){rep(1:x, y)}, nrl[nG+1:nR], nfl[nG+1:nR])))
+
+  if(any(unlist(lapply(me_group, function(x){tapply(x, me_rterm, function(y){length(unique(y))})}))>1)){
+   stop("observations in the same residual structure must belong to the same me group")
+  }
+
+  me_rterm<-unlist(lapply(me_group, function(x){x[match(unique(me_rterm),me_rterm)]}))
+  me_Xi<-sapply(mei_terms, function(x){if(!is.na(x)){model.matrix(as.formula(paste0("~", x, "-1")), data)}else{model.matrix(~1, data)}}, simplify=FALSE)
+  nmei<-unlist(lapply(me_Xi, ncol))
+
+  stme<-1:ncol(X)
+
+  for(i in 1:ncol(X)){
+   stme[i]<-substr(colnames(X)[i], close.bracket("me\\(~", colnames(X)[i])[1], close.bracket("me\\(~", colnames(X)[i])[2])
+  }
+  stme<-match(meo_terms, stme)
+
+  for(i in 1:length(meo_terms)){
+         # reorder terms so categories vary slowest
+   me_order<-1:(nmei[i]*(nmec[i]-1))
+   for(j in 2:nmec[i]){
+    facname<-paste0("me\\(.*\\)", colnames(me_prior_prob[[i]])[j])
+    if(nmei[i]!=sum(grepl(facname, colnames(X)))){
+      stop("levels dropped in terms intercated with 'me' term; try fitting terms in the interaction in a different order")
+    }
+    me_order[nmei[i]*(j-2)+1:nmei[i]]<-which(grepl(facname, colnames(X)))
+  }
+  X[,stme[i]-1+1:(nmei[i]*(nmec[i]-1))]<-X[,me_order]
+  colnames(X)[stme[i]-1+1:(nmei[i]*(nmec[i]-1))]<-colnames(X)[me_order]
+  }   
+  nme<-length(meo_terms)
+       # need to reorder columns of X
+  X[,grep("me\\(", colnames(X))][which(X[,grep("me\\(", colnames(X))]==0)]<-1e-18
 }else{
   me_prior_prob<-0
   me_Xi<-0
@@ -949,6 +967,50 @@ if(any(apply(X,1, function(x){all(x==0)}))){
  X[,1][which(apply(X,1, function(x){all(x==0)}))]<-1e-18 
 }
 
+if(!is.null(theta_scale)){
+  # "Jarrod: forming L is VERY slow - should be able to speed up using i,p,x slots"
+  # deleting columns - need to delete i and x between p[d] and p[d]-1 where d is the column to be deleted
+  # deleting rows - need to delete i and x where i==d and d is the row to be deleted
+  # p then needs to be updated to reflect the new structure (hard!). 
+
+  theta_scale$scale_pos<-which(eval(parse(text=theta_scale$factor), data)==theta_scale$level)
+
+  if(length(unique(data$MCMC_error.term[theta_scale$scale_pos]))>1){stop("Only models in which the residual variance is homogeneous over observations that have scaled random/fixed effects (theta_scale) are allowed")}
+  
+  if(!is.null(theta_scale$fixed)){
+    if(any((theta_scale$fixed%%1)!=0) | any(theta_scale$fixed<1) | any(theta_scale$fixed>ncol(X))){
+       stop(paste("theta_scale$fixed should be an integer between 1 and the number of fixed terms:", ncol(X)))
+    }
+    if(any(duplicated(theta_scale$fixed))){stop("there should be no duplicate indices in theta_scale$fixed")}
+    Xscale<-X
+    if(length(unique(theta_scale$fixed))!=ncol(X)){
+      Xscale[,-theta_scale$fixed]<-0
+    }
+    Xscale[-theta_scale$scale_pos,]<-0
+  }else{
+    Xscale<-Matrix(0, nrow(X), ncol(X),doDiag=FALSE)
+  }
+  if(!is.null(theta_scale$random)){ 
+    if(any((theta_scale$random%%1)!=0) | any(theta_scale$random<1) | any(theta_scale$random>sum(nfl[1:nG]))){
+       stop(paste("theta_scale$random should be an integer between 1 and the number of random effect components:", sum(nfl[1:nG])))
+    }
+    if(any(duplicated(theta_scale$random))){stop("there should be no duplicate indices in theta_scale$random")}
+    Zscale<-Z
+    theta_scale$random<-which(rep(1:sum(nfl[1:nG]), rep(nrl[1:nG], nfl[1:nG]))%in%theta_scale$random)
+    if(length(theta_scale$random)!=ncol(Z)){
+      Zscale[,-theta_scale$random]<-0
+    }
+    Zscale[-theta_scale$scale_pos,]<-0
+  }else{
+    Zscale<-Matrix(0, nrow(Z), ncol(Z),doDiag=FALSE)
+  }  
+  L<-cbind(Xscale, Zscale)
+}
+
+if(is.null(theta_scale) & !nL>0){
+  L<-as(matrix(0,1,0), "sparseMatrix")
+}
+
 #####################################
 # Check prior for the fixed effects #
 #####################################
@@ -958,25 +1020,38 @@ if(is.null(prior$B)){
   prior$L=list(V=diag(nL)*1e+10, mu=matrix(0,nL,1))
 }else{
   if(is.matrix(prior$B$mu)==FALSE){
-   prior$B$mu<-matrix(prior$B$mu,  length(prior$B$mu), 1)
- }
- if(is.matrix(prior$B$V)==FALSE){
+    prior$B$mu<-matrix(prior$B$mu,  length(prior$B$mu), 1)
+  }
+  if(is.matrix(prior$B$V)==FALSE){
    prior$B$V<-as.matrix(prior$B$V)
- }	
- if(is.positive.definite(prior$B$V)==FALSE){stop("fixed effect V prior is not positive definite")}
- if((dim(X)[2]+nL)!=dim(prior$B$mu)[1]){stop("fixed effect mu prior is the wrong dimension")}
- if((dim(X)[2]+nL)!=dim(prior$B$V)[1] | (dim(X)[2]+nL)!=dim(prior$B$V)[2]){stop("fixed effect V prior is the wrong dimension")}
-
- if(nL>0){
-  if(any(prior$B$V[pL,-pL, drop=FALSE]!=0)){stop("sorry - sir effects and classic fixed effects have to be independent a priori")}
-  prior$L$mu<-prior$B$mu[pL,1, drop=FALSE]
-  prior$L$V<-prior$B$V[pL,pL, drop=FALSE]
-  prior$B$mu<-prior$B$mu[-pL,1, drop=FALSE]
-  prior$B$V<-prior$B$V[-pL,-pL, drop=FALSE]
-}else{
-  prior$L=list(V=diag(0)*1e+10, mu=matrix(0,nL,1))
-}   
+  }	
+  if(is.positive.definite(prior$B$V)==FALSE){stop("fixed effect V prior is not positive definite")}
+  if((dim(X)[2]+nL)!=dim(prior$B$mu)[1]){stop("fixed effect mu prior is the wrong dimension")}
+  if((dim(X)[2]+nL)!=dim(prior$B$V)[1] | (dim(X)[2]+nL)!=dim(prior$B$V)[2]){stop("fixed effect V prior is the wrong dimension")}
+  if(nL>0){
+    if(any(prior$B$V[pL,-pL, drop=FALSE]!=0)){stop("sorry - sir effects and classic fixed effects have to be independent a priori")}
+    prior$L$mu<-prior$B$mu[pL,1, drop=FALSE]
+    prior$L$V<-prior$B$V[pL,pL, drop=FALSE]
+    prior$B$mu<-prior$B$mu[-pL,1, drop=FALSE]
+    prior$B$V<-prior$B$V[-pL,-pL, drop=FALSE]
+  }else{
+    prior$L=list(V=diag(0)*1e+10, mu=matrix(0,nL,1))
+  }   
 }	   
+
+if(is.null(prior$S) | is.null(theta_scale)){
+  prior$S=list(V=diag(!is.null(theta_scale))*1e+10, mu=matrix(0,!is.null(theta_scale),1))
+}else{
+  if(length(prior$S$mu)!=1){stop("prior$S$mu should be a single number")}
+  if(!is.matrix(prior$S$mu)){
+    prior$S$mu<-matrix(prior$S$mu, 1, 1)
+  }
+  if(length(prior$S$V)!=1){stop("prior$S$V should be a single number")}
+  if(!is.matrix(prior$S$V)){
+    prior$S$V<-matrix(prior$S$V, 1, 1)
+  }  
+  if(!is.positive.definite(prior$S$V)){stop("prior$S$V should be positive")}
+}    
 
 ################
 # Missing data #
@@ -1262,13 +1337,20 @@ anteBvpP<-unlist(lapply(GRprior, function(x){if(!is.null(x$beta.V)){c(solve(x$be
 
 BvpP<-c(solve(prior$B$V), sum(prior$B$V!=0)==dim(prior$B$V)[1])
 BmupP<-c(prior$B$mu)
+
 if(nL>0){
   LvpP<-c(solve(prior$L$V), sum(prior$L$V!=0)==dim(prior$L$V)[1])
   LmupP<-c(prior$L$mu)
-}else{
+}
+if(!is.null(theta_scale)){  # use LvpP for theta_scale prior: theta_scale and sir models cannot be use together
+  LvpP<-c(solve(prior$S$V), sum(prior$S$V!=0)==dim(prior$S$V)[1])
+  LmupP<-c(prior$S$mu)
+}
+if(!nL>0 & is.null(theta_scale)){
   LvpP<-1
   LmupP<-0
 }
+
 
 AmupP<-unlist(lapply(GRprior, function(x){x$alpha.mu}))
 PXterms<-unlist(lapply(GRprior, function(x){all(x$alpha.V==0)==FALSE}))
@@ -1331,7 +1413,8 @@ if(nkeep<1){stop("burnin is equal to, or greater than number of iterations")}
 if(nG==0){pr<-FALSE}
 
 Loc<-1:((sum((nfl*nrl)[1:nG])*pr+dim(X)[2]+nL*0)*nkeep)
-lambda<-1:(nL*nkeep)
+
+lambda<-1:(nL*nkeep+(!is.null(theta_scale))*nkeep)
 
 if(ncutpoints_store>0){
   CP<-1:(ncutpoints_store*nkeep)
@@ -1358,14 +1441,16 @@ if(DIC==TRUE){
  }
 }
 
+
+
 output<-.C("MCMCglmm",
   as.double(data$MCMC_y),   
   as.double(c(data$MCMC_y.additional, data$MCMC_y.additional2, data$MCMC_mh.weights)),
   as.double(data$MCMC_liab), 
   as.integer(mvtype),   
   as.integer(length(data$MCMC_y)),
-  as.integer(c(X@Dim,Z@Dim, L@Dim, unlist(lapply(ginverse, function(x){x@Dim[1]})))),  
-  as.integer(c(length(X@x),length(Z@x),length(L@x),unlist(lapply(ginverse, function(x){length(x@x)})))),       
+  as.integer(c(X@Dim,Z@Dim, if(nL>0){L@Dim}else{c(0,0)}, if(!is.null(theta_scale)){L@Dim}else{c(0,0)}, unlist(lapply(ginverse, function(x){x@Dim[1]})))),  
+  as.integer(c(length(X@x),length(Z@x),if(nL>0){length(L@x)}else{0}, if(!is.null(theta_scale)){length(L@x)}else{0}, unlist(lapply(ginverse, function(x){length(x@x)})))),       
   as.integer(X@i),         
   as.integer(X@p),        
   as.double(X@x),         	  
@@ -1441,6 +1526,15 @@ if(nL>0){
  lambda<-mcmc(lambda, start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
 }else{
  lambda<-NULL
+}
+
+
+if(!is.null(theta_scale)){       
+ thetaS<-matrix(output[[55]], nkeep,1)  
+ colnames(thetaS)<-"theta_scale"    
+ thetaS<-mcmc(thetaS, start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
+}else{
+ thetaS<-NULL
 }
 
 if(ncutpoints_store!=0){
@@ -1618,6 +1712,7 @@ for(i in 1:nR){
 output<-list(
   Sol=mcmc(Sol, start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin),
   Lambda = lambda,
+  ThetaS = thetaS,
   VCV=mcmc(VCV, start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin),
   CP=CP,
   Liab=Liab,
@@ -1635,7 +1730,8 @@ output<-list(
   family=family, 
   Tune=list2bdiag(Tune),
   meta=!is.null(mev),
-  y.additional=y.additional
+  y.additional=y.additional,
+  Wscale=L 
   )
 
 class(output)<-c("MCMCglmm")
