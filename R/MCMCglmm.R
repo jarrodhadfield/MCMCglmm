@@ -1097,166 +1097,167 @@ cnt<-cnt+nfl[i+nG]*nrl[i+nG]
 if(any(mvtype==0) & !is.null(path.terms)){stop("slice samlping not possible with path/sir models")}
 
 if(is.null(start$liab)){
- data$MCMC_liab<-rnorm(length(data$MCMC_y)) 
- if(QUASI==TRUE){ 
-  et.fn<-paste(data$MCMC_error.term, data$MCMC_family.names)
- 
-  for(i in unique(et.fn)){
+  data$MCMC_liab<-rnorm(length(data$MCMC_y)) 
+  if(QUASI==TRUE){ 
+    et.fn<-paste(data$MCMC_error.term, data$MCMC_family.names)
 
-    trait_set<-which(!is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
-    missing_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
-    dummy_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==1 & et.fn==i)
-    data_tmp<-data[trait_set,]
-    family_set<-data_tmp$MCMC_family.names[1]
+    for(i in unique(et.fn)){
 
-    if(length(trait_set)<2){
-      if(length(trait_set)==0 & length(missing_set)!=0){
-        warning(paste("all observations are missing for error term ", i, ": liabilities sampled from Norm(0,1)", sep=""))
-      }
-      mu<-0
-      v<-1
-    }else{ 
-      if(family_set=="poisson" | family_set=="ztpoisson"){
-        mu<-mean(data_tmp$MCMC_y)
-        v<-abs(log(((var(data_tmp$MCMC_y)-mu)/(mu^2))+1))
-        mu<-log(mu)-0.5*v
-      }
-      if(family_set=="cenpoisson"){
-        mu<-mean(data_tmp$MCMC_y+1)
-        v<-abs(log(abs(((var(data_tmp$MCMC_y+1)-mu)/(mu^2))+1)))
-        mu<-log(mu)-0.5*v
-      }          
-      if(family_set=="multinomial" | family_set=="ztmb" | family_set=="ztmultinomial"){
-        non_inf<-c()
-        if(family_set=="multinomial"){
-          non_inf<-which(!(data_tmp$MCMC_y>0 | data_tmp$MCMC_y.additional2>0))
-          make_miss<-non_inf
-        }  
-        if(family_set=="ztmultinomial"){
-          non_inf<-which(!(data_tmp$MCMC_y>0 & data_tmp$MCMC_y.additional2>0))
-          make_miss<-which(!(data_tmp$MCMC_y>0))
-        }  
+      trait_set<-which(!is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
+      missing_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==0 & et.fn==i)
+      dummy_set<-which(is.na(data$MCMC_y) & data$MCMC_dummy==1 & et.fn==i)
+      data_tmp<-data[trait_set,]
+      family_set<-data_tmp$MCMC_family.names[1]
 
-        if(length(non_inf)>0){
-          missing_set<-c(missing_set, trait_set[make_miss])
-          trait_set<-trait_set[-make_miss]
-          data_tmp<-data_tmp[-non_inf,]
+      if(length(trait_set)<2){
+        if(length(trait_set)==0 & length(missing_set)!=0){
+          warning(paste("all observations are missing for error term ", i, ": liabilities sampled from Norm(0,1)", sep=""))}
+        mu<-0
+        v<-1
+      }else{ 
+        if(family_set=="poisson" | family_set=="ztpoisson"){
+          mu<-mean(data_tmp$MCMC_y)
+          v<-abs(log(((var(data_tmp$MCMC_y)-mu)/(mu^2))+1))
+          mu<-log(mu)-0.5*v
         }
-      
-        if(length(table(data_tmp$MCMC_y))>2){
-          m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional2)~1, family="quasibinomial", data=data_tmp))
-          v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y+data_tmp$MCMC_y.additional2)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
-          mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
-        }else{
+        if(family_set=="cenpoisson"){
+          mu<-mean(data_tmp$MCMC_y+1)
+          v<-abs(log(abs(((var(data_tmp$MCMC_y+1)-mu)/(mu^2))+1)))
+          mu<-log(mu)-0.5*v
+        }          
+        if(family_set=="multinomial" | family_set=="ztmb" | family_set=="ztmultinomial"){
+          non_inf<-c()
+          if(family_set=="multinomial"){
+            non_inf<-which(!(data_tmp$MCMC_y>0 | data_tmp$MCMC_y.additional2>0))
+            make_miss<-non_inf
+          }  
+          if(family_set=="ztmultinomial"){
+            non_inf<-which(!(data_tmp$MCMC_y>0 & data_tmp$MCMC_y.additional2>0))
+            make_miss<-which(!(data_tmp$MCMC_y>0))
+          }  
+
+          if(length(non_inf)>0){
+            missing_set<-c(missing_set, trait_set[make_miss])
+            trait_set<-trait_set[-make_miss]
+            data_tmp<-data_tmp[-non_inf,]
+          }
+
+          if(length(table(data_tmp$MCMC_y))>2){
+            m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional2)~1, family="quasibinomial", data=data_tmp))
+            v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y+data_tmp$MCMC_y.additional2)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
+            mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
+          }else{
+            v<-1
+            mu<-0
+          }
+        }
+        if(family_set=="nzbinom"){ 
           v<-1
-          mu<-0
+          mu<-plogis(1-(1-mean(data_tmp$MCMC_y, na.rm=TRUE))^(1/mean(data_tmp$MCMC_y.additional, na.rm=TRUE)))
+        }
+        if(family_set=="exponential" | family_set=="cenexponential"){
+          if(any(data_tmp$MCMC_y==0)){
+            data_tmp$MCMC_y[which(data_tmp$MCMC_y==0)]<-1e-6
+          }
+          m1<-summary(glm(MCMC_y~1, family="Gamma", data=data_tmp))
+          v<-abs((as.numeric(m1$dispersion[1])-1)/2)
+          mu<-as.numeric(m1$coef[1])
+        }
+        if(family_set=="geometric"){
+          mu<-1/(mean(data_tmp$MCMC_y)+1)
+          mu<-log(mu)-log(1-mu)
+          v<-mu^2
+        }
+        if(family_set=="ordinal" | family_set=="threshold"){
+          v<-1
+          mu<-qnorm(cumsum(c(0,table(data_tmp$MCMC_y)/length(data_tmp$MCMC_y))), 0, sqrt(1+(data_tmp$MCMC_family.names[1]=="ordinal")))[2]
+          if(any(abs(mu)==Inf)){
+            mu[which(abs(mu)==Inf)]<-7*sign(mu[which(abs(mu)==Inf)])
+          }  
+        }
+        if(family_set=="cengaussian"){ 
+          v<-var(apply(cbind(data_tmp$MCMC_y,data_tmp$MCMC_y.additional),1,function(x){mean(x[which(abs(x)!=Inf)])}))
+          mu<-mean(apply(cbind(data_tmp$MCMC_y,data_tmp$MCMC_y.additional),1,function(x){mean(x[which(abs(x)!=Inf)])}))
+        }
+        if(family_set=="gaussian"){ 
+          v<-var(data_tmp$MCMC_y)
+          mu<-mean(data_tmp$MCMC_y)
+        }
+        if(family_set=="zipoisson" | family_set=="hupoisson" | family_set=="zapoisson"){
+          if(max(data_tmp$MCMC_y)==1){
+            mu<-mean(data_tmp$MCMC_y==1)
+            if(family_set!="zapoisson"){
+              mu<-log(mu/(1-mu))
+            }else{  
+              mu<-log(-log(mu))
+            }
+            v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
+          }else{
+            data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]  
+            mu<-mean(data_tmp$MCMC_y)
+            v<-abs(log(((var(data_tmp$MCMC_y)-mu)/(mu^2))+1))
+            mu<-log(mu)-0.5*v
+          }
+        }
+        if(family_set=="zibinomial" | family_set=="hubinomial"){
+          if(max(data_tmp$MCMC_y)==1){
+            mu<-mean(data_tmp$MCMC_y==1)
+            mu<-log(mu/(1-mu))
+            v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
+          }else{
+            data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]  
+            m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional-MCMC_y)~1, family="quasibinomial", data=data_tmp))
+            v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
+            mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
+          }
+        }
+        if(family_set=="zitobit"){
+          if(max(data_tmp$MCMC_y)==1){
+            mu<-mean(data_tmp$MCMC_y==1)
+            mu<-log(mu/(1-mu))
+            v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
+          }else{
+            v<-var(data_tmp$MCMC_y[-which(data_tmp$MCMC_y==0)], na.rm=TRUE)
+            mu<-mean(data_tmp$MCMC_y[-which(data_tmp$MCMC_y==0)], na.rm=TRUE)
+          }
+        }
+        if(family_set=="ncst" | family_set=="msst"){
+          mu<-mean(data_tmp$MCMC_y*data_tmp$MCMC_y.additional, na.rm=TRUE)
+          v<-var(data_tmp$MCMC_y*data_tmp$MCMC_y.additional, na.rm=TRUE)
         }
       }
-      if(family_set=="nzbinom"){ 
-      v<-1
-      mu<-plogis(1-(1-mean(data_tmp$MCMC_y, na.rm=TRUE))^(1/mean(data_tmp$MCMC_y.additional, na.rm=TRUE)))
+      if(is.na(v) | is.na(mu)){
+        warning(paste("good starting values not obtained for error term", i, "liabilities: using Norm(0,1)"))
+        if(is.na(v)){v<-1}
+        if(is.na(mu)){mu<-0}
       }
-      if(family_set=="exponential" | family_set=="cenexponential"){
-      if(any(data_tmp$MCMC_y==0)){
-        data_tmp$MCMC_y[which(data_tmp$MCMC_y==0)]<-1e-6
+      if(length(missing_set)>0){
+        data$MCMC_liab[missing_set]<-rnorm(length(missing_set),mu, sqrt(v))
       }
-      m1<-summary(glm(MCMC_y~1, family="Gamma", data=data_tmp))
-      v<-abs((as.numeric(m1$dispersion[1])-1)/2)
-      mu<-as.numeric(m1$coef[1])
-    }
-    if(family_set=="geometric"){
-      mu<-1/(mean(data_tmp$MCMC_y)+1)
-      mu<-log(mu)-log(1-mu)
-      v<-mu^2
-    }
-    if(family_set=="ordinal" | family_set=="threshold"){
-      v<-1
-      mu<-qnorm(cumsum(c(0,table(data_tmp$MCMC_y)/length(data_tmp$MCMC_y))), 0, sqrt(1+(data_tmp$MCMC_family.names[1]=="ordinal")))[2]
-      if(any(abs(mu)==Inf)){
-        mu[which(abs(mu)==Inf)]<-7*sign(mu[which(abs(mu)==Inf)])
-      }  
-    }
-    if(family_set=="cengaussian"){ 
-      v<-var(apply(cbind(data_tmp$MCMC_y,data_tmp$MCMC_y.additional),1,function(x){mean(x[which(abs(x)!=Inf)])}))
-      mu<-mean(apply(cbind(data_tmp$MCMC_y,data_tmp$MCMC_y.additional),1,function(x){mean(x[which(abs(x)!=Inf)])}))
-    }
-    if(family_set=="gaussian"){ 
-      v<-var(data_tmp$MCMC_y)
-      mu<-mean(data_tmp$MCMC_y)
-    }
-    if(family_set=="zipoisson" | family_set=="hupoisson" | family_set=="zapoisson"){
-      if(max(data_tmp$MCMC_y)==1){
-        mu<-mean(data_tmp$MCMC_y==1)
-        if(family_set!="zapoisson"){
-         mu<-log(mu/(1-mu))
-       }else{
-         mu<-log(-log(mu))
-       }
-       v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
-     }else{
-      data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]  
-      mu<-mean(data_tmp$MCMC_y)
-      v<-abs(log(((var(data_tmp$MCMC_y)-mu)/(mu^2))+1))
-      mu<-log(mu)-0.5*v
+      if(length(dummy_set)>0){
+        data$MCMC_liab[dummy_set]<-rnorm(length(dummy_set), 0, sqrt(v))
+      }
+      if(length(trait_set)>0){
+        l_tmp<-sort(rnorm(length(trait_set), mu, sqrt(v)))
+        if(family_set=="multinomial" | family_set=="ztmultinomial"){
+          l_tmp<-l_tmp[rank((data$MCMC_y/data$MCMC_y.additional)[trait_set], ties.method="random")]
+        }else{
+          l_tmp<-l_tmp[rank(data$MCMC_y[trait_set], ties.method="random")]
+        }
+        l_tmp<-rnorm(length(trait_set), as.vector(mu)+rLV*(l_tmp-as.vector(mu)), sqrt(v*(1-rLV^2)))
+        data$MCMC_liab[trait_set]<-l_tmp
+      }
     }
   }
-  if(family_set=="zibinomial" | family_set=="hubinomial"){
-    if(max(data_tmp$MCMC_y)==1){
-      mu<-mean(data_tmp$MCMC_y==1)
-      mu<-log(mu/(1-mu))
-      v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
-    }else{
-     data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]  
-     m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional-MCMC_y)~1, family="quasibinomial", data=data_tmp))
-     v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
-     mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
-   }
- }
- if(family_set=="zitobit"){
-  if(max(data_tmp$MCMC_y)==1){
-    mu<-mean(data_tmp$MCMC_y==1)
-    mu<-log(mu/(1-mu))
-    v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
-  }else{
-    v<-var(data_tmp$MCMC_y[-which(data_tmp$MCMC_y==0)], na.rm=TRUE)
-    mu<-mean(data_tmp$MCMC_y[-which(data_tmp$MCMC_y==0)], na.rm=TRUE)
-  }
-}
-if(family_set=="ncst" | family_set=="msst"){
-  mu<-mean(data_tmp$MCMC_y*data_tmp$MCMC_y.additional, na.rm=TRUE)
-  v<-var(data_tmp$MCMC_y*data_tmp$MCMC_y.additional, na.rm=TRUE)
-}
-}
-if(is.na(v) | is.na(mu)){
-  warning(paste("good starting values not obtained for error term", i, "liabilities: using Norm(0,1)"))
-  if(is.na(v)){v<-1}
-  if(is.na(mu)){mu<-0}
-}
-if(length(missing_set)>0){
-  data$MCMC_liab[missing_set]<-rnorm(length(missing_set),mu, sqrt(v))
-}
-if(length(dummy_set)>0){
-  data$MCMC_liab[dummy_set]<-rnorm(length(dummy_set), 0, sqrt(v))
-}
-if(length(trait_set)>0){
-  l_tmp<-sort(rnorm(length(trait_set), mu, sqrt(v)))
-  if(family_set=="multinomial" | family_set=="ztmultinomial"){
-    l_tmp<-l_tmp[rank((data$MCMC_y/data$MCMC_y.additional)[trait_set], ties.method="random")]
-  }else{
-    l_tmp<-l_tmp[rank(data$MCMC_y[trait_set], ties.method="random")]
-  }
-  l_tmp<-rnorm(length(trait_set), as.vector(mu)+rLV*(l_tmp-as.vector(mu)), sqrt(v*(1-rLV^2)))
-  data$MCMC_liab[trait_set]<-l_tmp
-}
-}
-}
 }else{
   if(length(c(start$liab))!=length(data$MCMC_y)){stop("liabilities must have the same dimensions as the response")}
   if(any(is.na(start$liab))){stop("starting liabilities must not contain missing values")}
   if(any(data$MCMC_family.names=="cengaussian" & (start$liab>data$MCMC_y.additional | start$liab<data$MCMC_y))){
    stop("starting liabilities for censored Gaussian data must lie between censoring points")
  }
- data$MCMC_liab<-c(start$liab)
+ data$MCMC_dummy
+ data$MCMC_liab<-rnorm(nrow(data))
+ data$MCMC_liab[which(data$MCMC_dummy==0)]<-c(start$liab)[ordering]
 }
 
 if(any(data$MCMC_family.names=="cengaussian" & (data$MCMC_liab>data$MCMC_y.additional | data$MCMC_liab<data$MCMC_y), na.rm=T)){
