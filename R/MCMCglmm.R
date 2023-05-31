@@ -1,4 +1,4 @@
-"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL){
+"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL, saveWS=TRUE){
 
   orig.na.action<-options("na.action")[[1]]
   options("na.action"="na.pass")	
@@ -21,93 +21,92 @@
 
   covu<-0
 
-  if(is.null(prior)==FALSE & any(names(prior)%in%c("R", "G", "B")==FALSE)){stop("prior list should contain elements R, G, and/or B only")}
+  if(is.null(prior)==FALSE & any(names(prior)%in%c("R", "G", "B", "S")==FALSE)){stop("prior list should contain elements R, G, and/or B only")}
 
   if(!is.null(prior)){ # reformat old-style prior 
-  if(!is.list(prior$R[[1]])){
-    prior$R<-list(R1=prior$R)
+    if(!is.list(prior$R[[1]])){
+      prior$R<-list(R1=prior$R)
+    }
   }
-}
-if(!is.null(prior$R[[1]]$covu)){
-  if(prior$R[[1]]$covu){
-    covu<-1
-    prior$G<-c(prior$G, list(prior$R[[1]]))
-    prior$G[[length(prior$G)]]$covu<-NULL
-    prior$G[[length(prior$G)]]$fix<-NULL
+  if(!is.null(prior$R[[1]]$covu)){
+    if(prior$R[[1]]$covu){
+      covu<-1
+      prior$G<-c(prior$G, list(prior$R[[1]]))
+      prior$G[[length(prior$G)]]$covu<-NULL
+      prior$G[[length(prior$G)]]$fix<-NULL
+    }
   }
-}
-if(!is.null(start$R)){
-  if(!is.list(start$R)){
-    start$R<-list(R1=start$R)
+  if(!is.null(start$R)){
+    if(!is.list(start$R)){
+      start$R<-list(R1=start$R)
+    }
+    if(covu!=0){
+      start$G<-c(start$G,list(start$R[[1]]))
+    }
   }
-  if(covu!=0){
-    start$G<-c(start$G,list(start$R[[1]]))
-  }
-}
 
-if(is.null(prior)==FALSE & any(names(prior)%in%c("R", "G", "B")==FALSE)){stop("prior list should contain elements R, G, and/or B only")}
-if(((is.null(start$G) & is.null(random)==FALSE) & is.null(start$R)==FALSE) | (is.null(start$R) & is.null(start$G)==FALSE)){stop("need both or neither starting R and G structures")}
-if(((is.null(prior$G) & is.null(random)==FALSE) & is.null(prior$R)==FALSE) | (is.null(prior$R) & is.null(prior$G)==FALSE)){stop("either both or neither R and G structures need a prior")}
+  if(((is.null(start$G) & is.null(random)==FALSE) & is.null(start$R)==FALSE) | (is.null(start$R) & is.null(start$G)==FALSE)){stop("need both or neither starting R and G structures")}
+  if(((is.null(prior$G) & is.null(random)==FALSE) & is.null(prior$R)==FALSE) | (is.null(prior$R) & is.null(prior$G)==FALSE)){stop("either both or neither R and G structures need a prior")}
 
-if(is.null(start$QUASI)){
-  QUASI=TRUE
-}else{
-  QUASI<-start$QUASI
-  if(is.logical(QUASI)==FALSE){stop("start$QUASI should be TRUE or FALSE")}
-}
-if(is.null(start$r)){
-  rLV<-0.8
-}else{
-  rLV<-start$r
-  if(rLV<(-1) | rLV>1) {stop("start$r should be between -1 and 1")}
-}
-
-if(!is.null(theta_scale)){
-  if(!is.list(theta_scale)){
-    stop("theta_scale should be a list with 'factor', 'level', 'fixed' and/or 'random'")
+  if(is.null(start$QUASI)){
+    QUASI=TRUE
   }else{
-    if(is.null(theta_scale$factor)){stop("theta_scale should have an element 'factor' giving the column that separates records")
-    }else{
-      if(!theta_scale$factor%in%names(data)){stop("theta_scale$factor does not appear in data")}
-    }
-    if(is.null(theta_scale$level)){stop("theta_scale should have an element 'level' giving the level of 'factor' defining records that should have scaled terms")
-    }else{
-      if(!theta_scale$level%in%levels(eval(parse(text=theta_scale$factor), data))){stop("theta_scale$level is not a level in theta_scale$factor in data")}
-    }
-    if(is.null(theta_scale$fixed) & is.null(theta_scale$random)){stop("theta_scale should have elements 'fixed' and/or 'random' giving the indices of the terms to be scaled")}
+    QUASI<-start$QUASI
+    if(is.logical(QUASI)==FALSE){stop("start$QUASI should be TRUE or FALSE")}
   }
-}
+  if(is.null(start$r)){
+    rLV<-0.8
+  }else{
+    rLV<-start$r
+    if(rLV<(-1) | rLV>1) {stop("start$r should be between -1 and 1")}
+  }
 
-original.fixed<-fixed                                                                            # original model specification
-original.random<-random 
-original.rcov<-rcov
-original.family<-family
+  if(!is.null(theta_scale)){
+    if(!is.list(theta_scale)){
+      stop("theta_scale should be a list with 'factor', 'level', 'fixed' and/or 'random'")
+    }else{
+      if(is.null(theta_scale$factor)){stop("theta_scale should have an element 'factor' giving the column that separates records")
+      }else{
+        if(!theta_scale$factor%in%names(data)){stop("theta_scale$factor does not appear in data")}
+      }
+      if(is.null(theta_scale$level)){stop("theta_scale should have an element 'level' giving the level of 'factor' defining records that should have scaled terms")
+      }else{
+        if(!theta_scale$level%in%levels(eval(parse(text=theta_scale$factor), data))){stop("theta_scale$level is not a level in theta_scale$factor in data")}
+      }
+      if(is.null(theta_scale$fixed) & is.null(theta_scale$random)){stop("theta_scale should have elements 'fixed' and/or 'random' giving the indices of the terms to be scaled")}
+    }
+  }
 
-response.names<-names(get_all_vars(as.formula(paste(as.character(fixed)[2], "~1")), data))       # response variable names 
-data[,response.names]<-model.frame(as.formula(paste(as.character(fixed)[2], "~1")), data)[[1]]
+  original.fixed<-fixed                                                                            # original model specification
+  original.random<-random 
+  original.rcov<-rcov
+  original.family<-family
 
-#########################################################################
-# for ginverse analyses form A and augment with missing nodes if needed #
-#########################################################################
+  response.names<-names(get_all_vars(as.formula(paste(as.character(fixed)[2], "~1")), data))       # response variable names 
+  data[,response.names]<-model.frame(as.formula(paste(as.character(fixed)[2], "~1")), data)[[1]]
 
-if(is.null(pedigree)==FALSE){  # back compatibility if pedigree is directly passed
-if(is.null(ginverse)){
- ginverse<-list(animal=inverseA(pedigree=pedigree, scale=scale, nodes=nodes)$Ainv)
-}else{
- if("animal"%in%names(ginverse)){stop("animal ginverse appears but pedigree has been passed")}
- ginverse$animal<-inverseA(pedigree=pedigree, scale=scale, nodes=nodes)$Ainv
-}
-}
+  #########################################################################
+  # for ginverse analyses form A and augment with missing nodes if needed #
+  #########################################################################
+
+  if(is.null(pedigree)==FALSE){  # back compatibility if pedigree is directly passed
+    if(is.null(ginverse)){
+     ginverse<-list(animal=inverseA(pedigree=pedigree, scale=scale, nodes=nodes)$Ainv)
+    }else{
+     if("animal"%in%names(ginverse)){stop("animal ginverse appears but pedigree has been passed")}
+     ginverse$animal<-inverseA(pedigree=pedigree, scale=scale, nodes=nodes)$Ainv
+    }
+  }
 
 if(is.null(ginverse)==FALSE){
- for(i in 1:length(ginverse)){           
+  for(i in 1:length(ginverse)){           
   if(is.null(rownames(ginverse[[i]]))){stop(paste(names(ginverse)[i], "ginverse must have non-null rownames"))}
   if(names(ginverse)[i]%in%names(data)==FALSE){stop(paste(names(ginverse)[i], "does not appear in data"))}
   if(any(na.omit(unique(data[,names(ginverse)[i]]))%in%rownames(ginverse[[i]])==FALSE)){stop(paste("some levels of", names(ginverse)[i], "do not have a row entry in ginverse"))}
   if(any(duplicated(rownames(ginverse[[i]])))){stop(paste("rownames of ", names(ginverse)[i], "ginverse must be unique"))}
   if(determinant(ginverse[[i]])$sign<=0){stop(paste(names(ginverse)[i], "ginverse is not positive definite"))}
   data[,names(ginverse)[i]]<-factor(data[,names(ginverse)[i]], levels=rownames(ginverse[[i]]))                        
-}
+  }
 }
 
 MVasUV=FALSE  # Multivaraite as Univariate
@@ -1651,18 +1650,26 @@ if(saveZ){
   }
 }
 
-if(saveXL==FALSE | nL==0){
+if((!saveWS | is.null(theta_scale)) & (!saveXL | nL==0)){
   L<-NULL
 }else{
- if(!is.null(path.terms)){
-   L<-kronecker(as.matrix(L), Diagonal(nrl[nG+1]))
- }
- Lordering<-rep(order(ordering),nL)+rep(((1:nL)-1)*length(ordering),each=length(ordering))
- L<-L[order(ordering),Lordering,drop=FALSE]
- Ldummy.data<-rep(dummy.data,nL)+rep(((1:nL)-1)*length(dummy.data),each=length(dummy.data))
- if(length(dummy.data)>0){
-   L<-L[-dummy.data,-Ldummy.data,drop=FALSE]
- }
+  if(saveWS & !is.null(theta_scale)){
+    L<-L[order(ordering),]
+    if(length(dummy.data)>0){
+      L<-L[-dummy.data,,drop=FALSE]
+    } 
+  }
+  if(saveXL & nL>0){
+    if(!is.null(path.terms)){
+      L<-kronecker(as.matrix(L), Diagonal(nrl[nG+1]))
+    }
+    Lordering<-rep(order(ordering),nL)+rep(((1:nL)-1)*length(ordering),each=length(ordering))
+    L<-L[order(ordering),Lordering,drop=FALSE]
+    Ldummy.data<-rep(dummy.data,nL)+rep(((1:nL)-1)*length(dummy.data),each=length(dummy.data))
+    if(length(dummy.data)>0){
+      L<-L[-dummy.data,-Ldummy.data,drop=FALSE]
+    }
+  }  
 }
 
 y.additional<-cbind(data$MCMC_y.additional, data$MCMC_y.additional2)[order(ordering),]

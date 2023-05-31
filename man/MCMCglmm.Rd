@@ -12,7 +12,8 @@ MCMCglmm(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL,
     data,start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",
     scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE,
     pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE,
-    saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL)
+    saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, 
+    theta_scale=NULL, saveWS=TRUE)
 }
 \arguments{
   \item{fixed}{\code{\link{formula}} for the fixed effects, multiple responses 
@@ -66,6 +67,7 @@ saved?}
   \item{ginverse}{a list of sparse inverse matrices (\eqn{{\bf A^{-1}}}{solve(A)}) that are proportional to the covariance structure of the random effects. The names of the matrices should correspond to columns in \code{data} that are associated with the random term. All levels of the random term should appear as rownames for the matrices.}
   \item{trunc}{logical: should latent variables in binary models be truncated to prevent under/overflow (+/-20 for categorical/multinomial models and +/-7 for threshold/probit models)? }
   \item{theta_scale}{optional list of 4 possible elements specifying a set of location effects (fixed or random) that are to be scaled by the parameter \code{theta_scale} for the subset of observations which have level \code{level} in factor \code{factor}: \code{factor}, \code{level}, \code{fixed} (position of fixed terms to be scaled) and \code{random} (position of random effect components).}
+  \item{saveWS}{logical: save design matrix for scaled effects.}
 }
 \value{
   \item{Sol}{Posterior Distribution of MME solutions, including fixed effects}
@@ -84,6 +86,7 @@ saved?}
   \item{family}{distribution of each datum}
   \item{Tune}{(co)variance matrix of the proposal distribution for the latent variables}
   \item{meta}{logical; was \code{mev} passed?}
+  \item{Wscale}{sparse design matrix for scaled terms.}
 }
 \references{
 	General analyses: Hadfield, J.D. (2010) Journal of Statistical Software 33 2 1-22

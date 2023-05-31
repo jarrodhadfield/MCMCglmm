@@ -9,8 +9,12 @@
 
   plot(x$Sol[,1:nF, drop=FALSE], ...)
   devAskNewPage(TRUE)
-  if(is.null(x$Lambda)==FALSE){
+  if(!is.null(x$Lambda)){
     plot(x$Lambda, ...)
+    devAskNewPage(TRUE)
+  }
+  if(!is.null(x$ThetaS)){
+    plot(x$ThetaS, ...)
     devAskNewPage(TRUE)
   }
   plot(x$VCV, ...)

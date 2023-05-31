@@ -1556,9 +1556,9 @@ if(itt>0){
 /* sample VCV matrices */
 /***********************/
 //Rprintf("sample G-VCV\n");
-
    pred = cs_multiply(W, location);
    cs_sortdv(pred); 
+
    dev = cs_add(linky, pred, 1.0, -1.0);
 
    cnt2 = ncolX;
@@ -1890,6 +1890,7 @@ if(itt>0){
 //Rprintf("sample theta_scale parameters\n");
 
 if(thetaS){
+
   predscale = cs_multiply(Wscale, location);
   
   thetaC = 0.0;
@@ -1901,11 +1902,9 @@ if(thetaS){
   }  
 
   thetamu /= thetaC;
-  thetamu += theta_scale;
-  thetamu -= pmutheta;
+  thetamu += theta_scale-pmutheta;
   thetamu *= thetaC/(thetaC+pvtheta);
   thetamu += pmutheta;
-
   thetaC  = G[theta_vpos[0]]->x[(GRdim[theta_vpos[0]]+1)*theta_vpos[1]]/(thetaC+pvtheta);
   // need to make sure correct residual variance is used
 
@@ -1915,20 +1914,33 @@ if(thetaS){
     for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
       for(k=W->p[i]; k<W->p[i+1]; k++){
         if(W->i[k]==Wscale->i[j]){
-          W->x[k]  = Wscale->x[j]*theta_scale;
+          W->x[k] = Wscale->x[j]*theta_scale;
           break;
         }
       }  
-    }  
+    }
   }
-
+  if(nalpha>0){
+    for(i=0; i<ncolWS; i++){
+      for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
+        for(k=W->p[i]; k<W->p[i+1]; k++){
+          if(W->i[k]==Wscale->i[j]){
+            Worig->x[k] = Wscale->x[j]*theta_scale;
+            break;
+          }
+        }  
+      }
+    }
+  }
+   
   cs_spfree(pred);
   pred = cs_multiply(W, location);
+  cs_sortdv(pred);
   cs_spfree(Wt);
   Wt = cs_transpose(W, true);
 
-  cs_spfree(predscale);      
-
+  cs_spfree(predscale);
+        
 } 
 
 
@@ -2920,7 +2932,7 @@ if(thetaS){
      alphaL = cs_chol(alphaMME, alphaS); 
   
      if(alphaL==NULL){
-  PutRNGstate();
+       PutRNGstate();
        error("alpha equations singular: use a (stronger) prior for the alphas\n");
      }
   
@@ -3017,7 +3029,7 @@ if(thetaS){
      cs_spfree(Wt);
      Wt = cs_transpose(W, true);                               
    }
-  
+
 /***********************/
 /*  store posterior   */
 /***********************/
