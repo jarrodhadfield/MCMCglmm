@@ -34,9 +34,7 @@ for random effect meta-analysis.}
   \item{prior}{optional list of prior specifications having 3 possible elements: 
 \code{R} (R-structure) \code{G} (G-structure) and \code{B} (fixed effects). \code{B} is a list containing the expected value (\code{mu}) and a 
 (co)variance matrix (\code{V}) representing the strength of belief: the defaults are \code{B$mu}=0 and \code{B$V}=I*1e+10, where where I is an identity matrix of appropriate dimension.  The priors for the variance structures (\code{R} and \code{G}) are lists with the expected (co)variances (\code{V}) and degree of belief parameter (\code{nu}) for the inverse-Wishart, and also the mean vector (\code{alpha.mu}) and covariance matrix (\code{alpha.V}) for the redundant working parameters. The defaults are \code{nu}=0, \code{V}=1, \code{alpha.mu}=0, and \code{alpha.V}=0. When \code{alpha.V} is non-zero, parameter expanded algorithms are used.} 
-  \item{tune}{optional (co)variance matrix defining the proposal distribution 
-for the latent variables. If NULL an adaptive algorithm is used which ceases to 
-adapt once the burn-in phase has finished.}
+  \item{tune}{optional list with elements \code{mh_V} and/or \code{mh_weights} \code{mh_V} should be a list with as many elements as there are R-structure terms with each element being the (co)variance matrix defining the proposal distribution for the associated latent variables. If NULL an adaptive algorithm is used which ceases to adapt once the burn-in phase has finished. \code{mh_weights} should be equal to the number of latent variables and acts as a scaling factor for the proposal standard deviations.}
   \item{pedigree}{ordered pedigree with 3 columns id, dam and sire or a 
 \code{phylo} object. This argument is retained for back compatibility - see ginverse argument for a more general formulation.}
   \item{nodes}{pedigree/phylogeny nodes to be estimated. The default, 

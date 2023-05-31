@@ -1910,22 +1910,24 @@ if(thetaS){
 
   theta_scale = rnorm(thetamu, sqrt(thetaC));
 
-  for(i=0; i<ncolWS; i++){
-    for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
-      for(k=W->p[i]; k<W->p[i+1]; k++){
-        if(W->i[k]==Wscale->i[j]){
-          W->x[k] = Wscale->x[j]*theta_scale;
-          break;
-        }
-      }  
-    }
-  }
   if(nalpha>0){
     for(i=0; i<ncolWS; i++){
       for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
         for(k=W->p[i]; k<W->p[i+1]; k++){
           if(W->i[k]==Wscale->i[j]){
-            Worig->x[k] = Wscale->x[j]*theta_scale;
+            W->x[k] = Wscale->x[j]*theta_scale;
+            Worig->x[k] = W->x[k];
+            break;
+          }
+        }  
+      }
+    }
+  }else{  
+    for(i=0; i<ncolWS; i++){
+      for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
+        for(k=W->p[i]; k<W->p[i+1]; k++){
+          if(W->i[k]==Wscale->i[j]){
+            W->x[k] = Wscale->x[j]*theta_scale;
             break;
           }
         }  
@@ -2288,7 +2290,7 @@ if(thetaS){
   
          for(i=0; i<dimG; i++){
             record=cnt2+nlGR[k]*i+j;
-            linki_tmp[k]->x[i] = rnorm(0.0,y2P[record+ny*2]);
+            linki_tmp[k]->x[i] = rnorm(0.0,1.0);
             linki[k]->x[i] = linky->x[record];
             predi[k]->x[i] =  pred->x[record];
          }
@@ -2317,7 +2319,8 @@ if(thetaS){
          }
   	 
          if(mvtype[cnt+j]<0){         // has to be MHed
-           cs_ltsolve(propCinvL[p]->L, linki_tmp[k]->x);           
+           cs_ltsolve(propCinvL[p]->L, linki_tmp[k]->x); 
+           //ideally should multiply linki_tmp by y2P[record+ny*2]      
   
            if(path){ // Solve Lambda%*%l using LU factorisation to recover original latent variables 
   
