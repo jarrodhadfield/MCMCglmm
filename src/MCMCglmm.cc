@@ -2320,8 +2320,7 @@ if(thetaS){
   	 
          if(mvtype[cnt+j]<0){         // has to be MHed
            cs_ltsolve(propCinvL[p]->L, linki_tmp[k]->x); 
-           //ideally should multiply linki_tmp by y2P[record+ny*2]      
-  
+
            if(path){ // Solve Lambda%*%l using LU factorisation to recover original latent variables 
   
              for(i=0; i<dimG; i++){
@@ -2351,8 +2350,9 @@ if(thetaS){
   
            if(mvtype[cnt+j]>0){break;} // has been Gibbsed, or is fully observed and Gaussian and therefore known
   
-           linki_tmp[k]->x[i] += linki[k]->x[i];
-  
+           linki_tmp[k]->x[i] += y2P[record+ny*2]*linki[k]->x[i];
+           // y2P[record+ny*2+i] are the mh_weights
+
            if(familyP[record]==1 && observedP[record]==1){;
              linki_tmp[k]->x[i] = linki[k]->x[i];
   

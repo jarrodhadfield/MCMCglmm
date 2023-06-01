@@ -762,9 +762,6 @@ if(!is.null(tune)){
   if(!names(tune)%in%c("mh_V", "mh_weights")){
     stop("tune should be a list with elements 'mh_V' and /or 'mh_weights'")
   } 
-  if("mh_weights"%in%names(tune)){
-    stop("tune$mh_weights not fully iplemented")
-  } 
 }
 
 if(is.null(tune$mh_V)){
