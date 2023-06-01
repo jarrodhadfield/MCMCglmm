@@ -2350,8 +2350,10 @@ if(thetaS){
   
            if(mvtype[cnt+j]>0){break;} // has been Gibbsed, or is fully observed and Gaussian and therefore known
   
-           linki_tmp[k]->x[i] += y2P[record+ny*2]*linki[k]->x[i];
-           // y2P[record+ny*2+i] are the mh_weights
+           linki_tmp[k]->x[i]*=y2P[record+ny*2];
+           //weigh by mh_weights
+
+           linki_tmp[k]->x[i] += linki[k]->x[i];
 
            if(familyP[record]==1 && observedP[record]==1){;
              linki_tmp[k]->x[i] = linki[k]->x[i];

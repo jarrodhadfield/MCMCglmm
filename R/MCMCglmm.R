@@ -21,7 +21,11 @@
 
   covu<-0
 
-  if(is.null(prior)==FALSE & any(names(prior)%in%c("R", "G", "B", "S")==FALSE)){stop("prior list should contain elements R, G, and/or B only")}
+  if(!is.null(tune) & !any(names(tune)%in%c("mh_V", "mh_weights"))){
+    stop("tune list should contain elements 'mh_V' and /or 'mh_weights' only")
+  }
+
+  if(!is.null(prior) & !any(names(prior)%in%c("R", "G", "B", "S"))){stop("prior list should contain elements R, G, and/or B only")}
 
   if(!is.null(prior)){ # reformat old-style prior 
     if(!is.list(prior$R[[1]])){
@@ -757,12 +761,6 @@ if(any(rterm.family=="threshold" | rterm.family=="ordinal")){
 }
 
 rterm.family<-rterm.family[trait.ordering]
-
-if(!is.null(tune)){
-  if(!names(tune)%in%c("mh_V", "mh_weights")){
-    stop("tune should be a list with elements 'mh_V' and /or 'mh_weights'")
-  } 
-}
 
 if(is.null(tune$mh_V)){
   AMtune=c(rep(FALSE, nG), rep(TRUE, nR))
