@@ -963,7 +963,7 @@ if(!is.null(theta_scale)){
   
   if(!is.null(theta_scale$fixed)){
     if(any((theta_scale$fixed%%1)!=0) | any(theta_scale$fixed<1) | any(theta_scale$fixed>ncol(X))){
-       stop(paste("theta_scale$fixed should be an integer between 1 and the number of fixed terms:", ncol(X)))
+       stop(paste("theta_scale$fixed should be integers between 1 and the number of fixed terms:", ncol(X)))
     }
     if(any(duplicated(theta_scale$fixed))){stop("there should be no duplicate indices in theta_scale$fixed")}
     Xscale<-X
@@ -976,7 +976,7 @@ if(!is.null(theta_scale)){
   }
   if(!is.null(theta_scale$random)){ 
     if(any((theta_scale$random%%1)!=0) | any(theta_scale$random<1) | any(theta_scale$random>sum(nfl[1:nG]))){
-       stop(paste("theta_scale$random should be an integer between 1 and the number of random effect components:", sum(nfl[1:nG])))
+       stop(paste("theta_scale$random should be integers between 1 and the number of random effect components:", sum(nfl[1:nG])))
     }
     if(any(duplicated(theta_scale$random))){stop("there should be no duplicate indices in theta_scale$random")}
     Zscale<-Z

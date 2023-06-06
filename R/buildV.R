@@ -33,7 +33,7 @@
   rcomponents<-split.direct.sum(as.character(object$Random$formula)[2])
 
   if(length(rcomponents)!=length(object$Random$nrt)){stop("sorry - not implented for covu models")}
-  if(!is.nul(object$ThetaS)){stop("sorry - not implemented for theta_scale models")}
+  if(!is.null(object$ThetaS)){stop("sorry - not implemented for theta_scale models")}
 
   mcomponents<-split.direct.sum(as.character(marginal)[2])
 

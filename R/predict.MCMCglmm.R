@@ -256,7 +256,7 @@
         I<-Diagonal(nrow(object$XL))
         post.pred<-t(sapply(1:nrow(object$Sol), function(i){as.vector(solve(I-object$XL%*%kronecker(object$Lambda[i,], I), post.pred[i,]))}))
       }
-      if(!is.nul(object$ThetaS)){stop("sorry - prediction not yet available for theta_scale models")}
+      if(!is.null(object$ThetaS)){stop("sorry - prediction not yet available for theta_scale models")}
 
       if(any(object$family%in%c("poisson","cenpoisson"))){
         keep<-which(object$family%in%c("poisson","cenpoisson"))

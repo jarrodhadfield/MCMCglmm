@@ -1915,13 +1915,28 @@ if(thetaS){
       for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
         for(k=W->p[i]; k<W->p[i+1]; k++){
           if(W->i[k]==Wscale->i[j]){
-            W->x[k] = Wscale->x[j]*theta_scale;
-            Worig->x[k] = W->x[k];
+            Worig->x[k] = Wscale->x[j]*theta_scale;
             break;
           }
         }  
       }
     }
+
+    cnt = ncolX;  // must be a better way of updating W!
+    cnt2 = 0;
+    for (k = 0; k < nG; k++){
+      dimG = GRdim[k];
+      for (i = 0; i < dimG; i++){
+        if(PXtermsP[k]==1){    // parameter expanded 
+          for (j = Worig->p[cnt]; j < Worig->p[cnt+nlGR[k]]; j++){ 
+            W->x[j] = Worig->x[j]*alphalocation->x[cnt2];     
+          }
+          cnt2 ++; 
+        }
+        cnt += nlGR[k];
+      }
+    } 
+
   }else{  
     for(i=0; i<ncolWS; i++){
       for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
