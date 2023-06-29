@@ -1911,8 +1911,8 @@ if(thetaS){
   if(nalpha>0){
     for(i=0; i<ncolWS; i++){
       for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
-        for(k=W->p[i]; k<W->p[i+1]; k++){
-          if(W->i[k]==Wscale->i[j]){
+        for(k=Worig->p[i]; k<Worig->p[i+1]; k++){
+          if(Worig->i[k]==Wscale->i[j]){
             Worig->x[k] = Wscale->x[j]*theta_scale;
             break;
           }
@@ -1920,7 +1920,19 @@ if(thetaS){
       }
     }
 
-    cnt = ncolX;  // must be a better way of updating W!
+    // must be a better way of updating W!
+    for(i=0; i<ncolX; i++){
+      for(j=Wscale->p[i]; j<Wscale->p[i+1]; j++){
+        for(k=W->p[i]; k<W->p[i+1]; k++){
+          if(W->i[k]==Wscale->i[j]){
+            W->x[k] = Wscale->x[j]*theta_scale;
+            break;
+          }
+        }  
+      }
+    }
+
+    cnt = ncolX;  
     cnt2 = 0;
     for (k = 0; k < nG; k++){
       dimG = GRdim[k];
