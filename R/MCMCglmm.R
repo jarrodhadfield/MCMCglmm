@@ -21,11 +21,11 @@
 
   covu<-0
 
-  if(!is.null(tune) & !any(names(tune)%in%c("mh_V", "mh_weights"))){
+  if(!is.null(tune) & !all(names(tune)%in%c("mh_V", "mh_weights"))){
     stop("tune list should contain elements 'mh_V' and /or 'mh_weights' only")
   }
 
-  if(!is.null(prior) & !any(names(prior)%in%c("R", "G", "B", "S"))){stop("prior list should contain elements R, G, and/or B only")}
+  if(!is.null(prior) & !all(names(prior)%in%c("R", "G", "B", "S"))){stop("prior list should contain elements R, G, and/or B and/or S only")}
 
   if(!is.null(prior)){ # reformat old-style prior 
     if(!is.list(prior$R[[1]])){

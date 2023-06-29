@@ -1901,10 +1901,8 @@ if(thetaS){
     thetamu += predscale->x[j]*dev->x[predscale->i[j]];
   }  
 
-  thetamu /= thetaC;
-  thetamu += theta_scale-pmutheta;
-  thetamu *= thetaC/(thetaC+pvtheta);
-  thetamu += pmutheta;
+  thetamu += thetaC*theta_scale+pmutheta*pvtheta;
+  thetamu /= (thetaC+pvtheta);
   thetaC  = G[theta_vpos[0]]->x[(GRdim[theta_vpos[0]]+1)*theta_vpos[1]]/(thetaC+pvtheta);
   // need to make sure correct residual variance is used
 
