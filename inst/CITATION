@@ -1,8 +1,9 @@
 citHeader("To cite MCMCglmm in publications use:")
 
-citEntry(entry = "Article",
+bibentry(
+  bibtype = "Article",
   title        = "MCMC Methods for Multi-Response Generalized Linear Mixed Models: The {MCMCglmm} {R} Package",
-  author       = personList(as.person("Jarrod D Hadfield")),
+  author       = person(c("Jarrod", "D."), "Hadfield"),
   journal      = "Journal of Statistical Software",
   year         = "2010",
   volume       = "33",

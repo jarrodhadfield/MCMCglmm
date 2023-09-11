@@ -180,9 +180,7 @@ function (pedigree = NULL, nodes = "ALL", scale = TRUE, reduced=FALSE, tol=.Mach
         Ainv[(dam[which(dam != "-998")] - 1) * dim(Ainv)[1] + 
             id[which(dam != "-998")]] <- (-1/inbreeding[id[which(dam != 
             "-998")]])
-        Ainv[(id[which(dam != "-998")] - 1) * dim(Ainv)[1] + 
-            dam[which(dam != "-998")]] <- (-1/inbreeding[id[which(dam != 
-            "-998")]])
+        Ainv<-as(forceSymmetric(Ainv, uplo="L"), "generalMatrix")   
         if (nodes[1] != "ALL") {
             if (nodes[1] == "TIPS") {
                 Ainv <- Ainv[, tips][tips, ] - Ainv[, -tips][tips, 
