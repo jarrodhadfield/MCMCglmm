@@ -3,11 +3,12 @@
 \title{Design Matrix for Simultaneous and Recursive Relationships between Responses}
 \description{Forms design matrix for simultaneous and recursive relationships between responses}
 \usage{
-sir(formula1=NULL, formula2=NULL)
+sir(formula1=NULL, formula2=NULL, diag0=FALSE)
 }
 \arguments{
   \item{formula1}{formula}
   \item{formula2}{formula}
+  \item{diag0}{logical: should the design matrix have zero's along the diagonal}
 }
 \value{
     design matrix 

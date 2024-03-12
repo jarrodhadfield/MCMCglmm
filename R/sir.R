@@ -1,4 +1,4 @@
-"sir"<-function(formula1=NULL, formula2=NULL){
+"sir"<-function(formula1=NULL, formula2=NULL, diag0=FALSE){
 
    if(!is(formula1, "formula")){stop("formula not passed to formula1 in sir")}
    if(!is(formula2, "formula")){stop("formula not passed to formula2 in sir")}
@@ -15,8 +15,12 @@
    if(dim(X1)[2]!=dim(X2)[2]){
      stop("sir formulae invalid: factor levels of intersecting variables have to be the same")
    }else{
-     X1%*%t(X2)
+     X<-X1%*%t(X2)
+     if(diag0){
+        diag(X)<-0
+     } 
    }
+   return(X)
 }
 
 
