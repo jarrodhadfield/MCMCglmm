@@ -115,7 +115,7 @@ function (pedigree = NULL, nodes = "ALL", scale = TRUE, reduced=FALSE, tol=.Mach
             stop("phylogeny tip/node labels are not unique")
         }
         if (is.rooted(pedigree) == FALSE) {
-            stop("phyloegny needs to be rooted")
+            stop("phylogeny needs to be rooted")
         }
         if (is.null(pedigree$edge.length)) {
             warning("no branch lengths: compute.brlen from ape has been used")
