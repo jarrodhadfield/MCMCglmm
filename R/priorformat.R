@@ -18,10 +18,10 @@ priorformat<-function(prior, start, nfl, meta, diagR, vtype){
             prior$V<-as.matrix(prior$V)
          }
          if(!is.null(prior$alpha.mu) & diagR>0){
-            stop("Parameter exapnded priors not implemented for residual structures")
+            stop("Parameter expanded priors not implemented for residual structures")
          }
          if(!is.null(prior$alpha.V) & diagR>0){
-           stop("Parameter exapnded priors not implemented for residual structures")
+           stop("Parameter expanded priors not implemented for residual structures")
          }
          if(is.null(prior$covu)){
            prior$covu<-FALSE

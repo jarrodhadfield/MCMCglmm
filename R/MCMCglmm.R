@@ -24,6 +24,12 @@
   if(!is.null(tune) & !all(names(tune)%in%c("mh_V", "mh_weights"))){
     stop("tune list should contain elements 'mh_V' and /or 'mh_weights' only")
   }
+  if(!is.null(start) & !all(names(start)%in%c("G", "R", "liab", "Liab", "QUASI", "r"))){
+    if(any(names(start)=="Liab")){
+        names(start)[which(names(start)=="Liab")]<-"liab"
+    }
+    stop("start list should contain elements 'G', 'R', 'Liab', 'QUASI' and/or 'r' only")
+  }
 
   if(!is.null(prior) & !all(names(prior)%in%c("R", "G", "B", "S"))){stop("prior list should contain elements R, G, and/or B and/or S only")}
 
@@ -1057,7 +1063,7 @@ for(i in 1:nR){
  mvtype_tmp<-apply(missing.pattern, 1,function(x){all(x==1 | x==0 | x==20)})-2 # -2 if observed non-gaussian non-threshold present, -1 otherwise 
 
  if(nfl[i+nG]==1 & slice){    # if univariate 
- mvtype_tmp[which(missing.pattern==14 || missing.pattern==22)]<-0  # ordinal/nzbinom
+ mvtype_tmp[which(missing.pattern==14 | missing.pattern==22)]<-0  # ordinal/nzbinom
  if(max(mp, na.rm=T)==1){                   # binary
  mvtype_tmp[which(missing.pattern==3)]<-0
 }    
