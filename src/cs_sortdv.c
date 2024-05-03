@@ -3,9 +3,12 @@
 void cs_sortdv(const cs *A){
 
     int i;
-    double k[A->m];
+    double *k= malloc((A->m)*sizeof(double));
 
-  
+    if(k == NULL) {
+         error("could not allocate memory on cs_sortdv");
+    }
+
     for (i = 0 ; i < A->m; i++){   
        k[A->i[i]] = A->x[i]; 
     }
@@ -14,6 +17,7 @@ void cs_sortdv(const cs *A){
        A->x[i] = k[i];
     }
 
+    free(k);
 }
 
 
