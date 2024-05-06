@@ -13,8 +13,8 @@ cs *cs_cbind(const cs *A, const cs *B){
     Ai = A->i; Bi = B->i; 
     Ax = A->x; Bx = B->x; 
     C = cs_spalloc (cm, cn, cnz, 1, 0) ;	 /* allocate result */
-    if (!C ) return (cs_done (C, NULL, NULL, 0)) ;
-//    if (!C ) error("cs_cbind out of memory"); 
+//    if (!C ) return (cs_done (C, NULL, NULL, 0)) ;
+    if (!C ) Rf_error("cs_cbind out of memory"); 
     Ci = C->i;
     Cx = C->x;
     Cp = C->p;

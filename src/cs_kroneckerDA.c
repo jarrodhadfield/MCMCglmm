@@ -8,7 +8,8 @@ cs *cs_kroneckerDA(double *D, int n, const cs *A){
     if (!CS_CSC (A)) return (NULL);                         
     an = A->n ; anz = A->p[an]; 
     C = cs_spalloc (an*n, an*n, anz*n, 1, 0) ;	 /* allocate result */
-    if (!C ) return (cs_done (C, NULL, NULL, 0));  
+    if (!C ) Rf_error("cs_kroneckerDA out of memory");  
+    // if (!C ) return (cs_done (C, NULL, NULL, 0));  
 
     cnt = 0;	
     for (i = 0 ; i < n ; i++){

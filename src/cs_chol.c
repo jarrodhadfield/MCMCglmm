@@ -21,7 +21,7 @@ csn *cs_chol (const cs *A, const css *S)
     N->L = L = cs_spalloc (n, n, cp [n], 1, 0) ;    /* allocate result */
     if(L==NULL){
      PutRNGstate();
-     error("Out of memory - can't form the Cholesky factor\n");
+     Rf_error("Out of memory - can't form the Cholesky factor\n");
     }
     // if (!L) return (cs_ndone (N, E, c, x, 0)) ;
     Lp = L->p ; Li = L->i ; Lx = L->x ;

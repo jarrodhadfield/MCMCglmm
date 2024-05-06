@@ -29,7 +29,7 @@ cs *cs_rinvwishart(const cs *A, double nu, const css *As){
     U = cs_chol(A, As);  
     if(U==NULL){
       PutRNGstate();
-      error("ill-conditioned cross-product: can't form Cholesky factor\n");
+      Rf_error("ill-conditioned cross-product: can't form Cholesky factor\n");
     }
 
     C = cs_multiply(U->L,T);              // t(T)%*%chol(A)

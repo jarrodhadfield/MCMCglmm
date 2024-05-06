@@ -103,7 +103,7 @@ cs *cs_rAnte(const cs *location, int start, int dimG, int nlGR, int nk, const cs
       RinvL = cs_chol(Rinv, RinvS);
 
       if(RinvL==NULL){
-        error("problems with ginverse in antependence model");
+        Rf_error("problems with ginverse in antependence model");
       }
       
 // Jarrod: could speed things up by using AinvL and AinvS and going through one at a time
@@ -168,7 +168,7 @@ cs *cs_rAnte(const cs *location, int start, int dimG, int nlGR, int nk, const cs
 
     if(L==NULL){
       PutRNGstate();
-      error("antedependence equations singular: use a (stronger) prior\n");
+      Rf_error("antedependence equations singular: use a (stronger) prior\n");
     }
 
     cs_ipvec (S->pinv, beta->x, beta_tmp->x, MME->n);	 // x = P*b 

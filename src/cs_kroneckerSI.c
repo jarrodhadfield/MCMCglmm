@@ -22,7 +22,9 @@ cs *cs_kroneckerSI(const cs *A, int nI){
     am = A->m ; an = A->n ; anz = A->nzmax; Ap = A->p ; Ai = A->i ; Ax = A->x ;
     cm = am*nI; cn = an*nI; cnz = anz*nI;
     C = cs_spalloc (cm, cn, cnz, 1, 0) ;	 /* allocate result */
-    if (!C ) return (cs_done (C, NULL, NULL, 0));   
+
+    if (!C ) Rf_error("cs_kroneckerSI out of memory");  
+//    if (!C ) return (cs_done (C, NULL, NULL, 0));   
 
     Cp = C->p ; Ci = C->i ; Cx = C->x ;   
     cnt = 0;	

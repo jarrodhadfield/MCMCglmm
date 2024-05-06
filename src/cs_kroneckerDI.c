@@ -6,7 +6,9 @@ cs *cs_kroneckerDI(double *D, int n, int nI){
     cs *C;
 
     C = cs_spalloc (n*nI, n*nI, n*nI, 1, 0) ;	 /* allocate result */
-    if (!C ) return (cs_done (C, NULL, NULL, 0));   
+
+    if (!C ) Rf_error("cs_kroneckerDI out of memory");  
+   // if (!C ) return (cs_done (C, NULL, NULL, 0));   
 
     cnt=0;
     for(i = 0; i<n; i++){	

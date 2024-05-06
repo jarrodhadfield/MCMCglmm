@@ -11,7 +11,8 @@ cs *cs_kroneckerA(const cs *G, const cs *A){
 
     cn = an*gn; cnz = anz*gnz;
     C = cs_spalloc (cn, cn, cnz, 1, 0) ;	 /* allocate result */
-    if (!C ) return (cs_done (C, NULL, NULL, 0));  
+    if (!C ) Rf_error("cs_kroneckerA out of memory");  
+   // if (!C ) return (cs_done (C, NULL, NULL, 0));  
     Cp = C->p ; Ci = C->i ; Cx = C->x ;   
     cnt = 0;	
     for (i = 0 ; i < gn ; i++){

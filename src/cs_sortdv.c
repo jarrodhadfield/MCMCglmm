@@ -6,7 +6,7 @@ void cs_sortdv(const cs *A){
     double *k= malloc((A->m)*sizeof(double));
 
     if(k == NULL) {
-         error("could not allocate memory on cs_sortdv");
+         Rf_error("could not allocate memory on cs_sortdv");
     }
 
     for (i = 0 ; i < A->m; i++){   

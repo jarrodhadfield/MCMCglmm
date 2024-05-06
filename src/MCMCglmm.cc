@@ -1452,7 +1452,7 @@ if(itt>0){
       KGinvL[k] = cs_chol(KGinv[k] , KGinvS[k]);
       if(KGinvL[k]==NULL){
         PutRNGstate();
-        error("G-structure %i is ill-conditioned (possibly because of ginverse): use proper priors if you haven't, or rescale data if you have\n", k+1);
+        Rf_error("G-structure %i is ill-conditioned (possibly because of ginverse): use proper priors if you haven't, or rescale data if you have\n", k+1);
       }
       for(i=0; i<(nlGR[k]*dimG); i++){
         bv_tmp[k]->x[i] = rnorm(0.0,1.0);
@@ -1531,7 +1531,7 @@ if(itt>0){
 
    if(L==NULL){
      PutRNGstate();
-     error("Mixed model equations singular: use a (stronger) prior\n");
+     Rf_error("Mixed model equations singular: use a (stronger) prior\n");
    }
 
    for (i = 0 ; i < dimAS; i++){
@@ -1634,7 +1634,7 @@ if(itt>0){
      
      if(GinvL[i]==NULL){
        PutRNGstate();
-       error("G-structure %i is ill-conditioned: use proper priors if you haven't or rescale data if you have\n", i+1);
+       Rf_error("G-structure %i is ill-conditioned: use proper priors if you haven't or rescale data if you have\n", i+1);
      }
    }
    cnt2 += nlGR[i]*dimG;  
@@ -1783,7 +1783,7 @@ if(itt>0){
       GinvL[nG] = cs_chol(Ginv[nG], GinvS[nG]);    
       if(GinvL[nG]==NULL || GinvL[nG-1]==NULL){
          PutRNGstate();
-         error("G-R structure is ill-conditioned: use proper priors if you haven't or rescale data if you have\n");
+         Rf_error("G-R structure is ill-conditioned: use proper priors if you haven't or rescale data if you have\n");
       }           
     }
   }
@@ -1878,7 +1878,7 @@ if(itt>0){
       GinvL[i] = cs_chol(Ginv[i], GinvS[i]);                 // cholesky factorisation of R^{-1} for Gibbs sampling fully missing data. 
       if(GinvL[i]==NULL){
         PutRNGstate();
-        error("R-structure %i is ill-conditioned: use proper priors if you haven't or rescale data if you have\n", i+nG);
+        Rf_error("R-structure %i is ill-conditioned: use proper priors if you haven't or rescale data if you have\n", i+nG);
       }
     }
     cnt2 += nlGR[i]*dimG;
@@ -2666,7 +2666,7 @@ if(thetaS){
   
                  case 21: /* zitobit */
                     PutRNGstate();
-                    error("sorry- zitobit not yet implemented\n");
+                    Rf_error("sorry- zitobit not yet implemented\n");
                   break;
   
                  case 22: /* nzbinom */
@@ -2963,7 +2963,7 @@ if(thetaS){
   
      if(alphaL==NULL){
        PutRNGstate();
-       error("alpha equations singular: use a (stronger) prior for the alphas\n");
+       Rf_error("alpha equations singular: use a (stronger) prior for the alphas\n");
      }
   
      for(i=0; i<nalpha; i++){

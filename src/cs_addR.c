@@ -14,7 +14,7 @@ cs *cs_addR (const cs *A, const cs *B, double alpha, double beta)
     x = values ? cs_malloc (m, sizeof (double)) : NULL ;    /* get workspace */
     C = cs_spalloc (m, n, anz + bnz, values, 0) ;	    /* allocate result*/
     if (!C || !w || (values && !x)) return (cs_done (C, w, x, 0)) ;
-//    if (!C || !w || (values && !x)) error("cs_addR, out of memory"); 
+//    if (!C || !w || (values && !x)) Rf_error("cs_addR, out of memory"); 
     Cp = C->p ; Ci = C->i ; Cx = C->x ;
     for (j = 0 ; j < n ; j++)
     {
