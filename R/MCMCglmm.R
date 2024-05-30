@@ -1151,7 +1151,7 @@ if(is.null(start$liab)){
           }
           m1<-summary(glm(MCMC_y~1, family="Gamma", data=data_tmp))
           v<-abs((as.numeric(m1$dispersion[1])-1)/2)
-          mu<-as.numeric(m1$coef[1])
+          mu<-log(as.numeric(m1$coef[1]))
         }
         if(family_set=="geometric"){
           mu<-1/(mean(data_tmp$MCMC_y)+1)
