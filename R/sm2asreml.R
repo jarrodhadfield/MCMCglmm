@@ -11,6 +11,7 @@
   }else{
     attr(ginv, "rowNames")<-rownames
   }
+  attr(ginv, "INVERSE")<-TRUE
   return(ginv)
 }
 

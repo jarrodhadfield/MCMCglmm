@@ -6,7 +6,7 @@ verbose=FALSE
 plotit=FALSE
 DICtest=TRUE
 SUMtest=TRUE
-nsim<-1
+nsim<-10
 nitt<-13000
 thin<-10
 burnin<-3000
@@ -17,7 +17,7 @@ psets<-c()
 print("res1")
 R<-diag(1)
 res1<-matrix(NA, nsim,2)
-prior<-list(R=list(V=as.matrix(1), n=1))
+prior<-list(R=list(V=as.matrix(1), nu=1))
 tpar<-c(1, 1)
 
 psets<-c(psets, tpar)
@@ -51,7 +51,7 @@ print(i)
 # multinomial test J=1 test 0.9 seconds  OK
 print("res2")
 res2<-matrix(NA, nsim,2)
-prior<-list(R=list(V=as.matrix(1), n=1))
+prior<-list(R=list(V=as.matrix(1), nu=1))
 tpar<-c(1,1)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
@@ -74,14 +74,14 @@ print(i)
 # categorical test J=1 test 0.9 seconds OK
 print("res3")
 res3<-matrix(NA, nsim,3)
-prior<-list(R=list(V=as.matrix(1), n=1, fix=1))
+prior<-list(R=list(V=as.matrix(1), nu=1, fix=1))
 tpar<-c(1,3/2, 1)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
 x<-rnorm(100)
 y<-rbinom(100,1,plogis(rnorm(100,1+x*1.5,1)))
 data=data.frame(y1=y, y2=1-y, x=x)
-prior<-list(R=list(V=as.matrix(1), n=1, fix=1))
+prior<-list(R=list(V=as.matrix(1), nu=1, fix=1))
 m1<-MCMCglmm(y1~x, family="categorical", data=data, prior=prior,verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
 if(SUMtest){
 summary(m1)
@@ -99,13 +99,13 @@ print(i)
 # categorical test J=1 test with slice sampling 0.9 seconds OK
 print("res3b")
 res3b<-matrix(NA, nsim,2)
-prior<-list(R=list(V=as.matrix(1), n=1, fix=1))
+prior<-list(R=list(V=as.matrix(1), nu=1, fix=1))
 tpar<-c(1,1)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
 y<-rbinom(100,1,plogis(rnorm(100,1,1)))
 data=data.frame(y1=y, y2=1-y)
-prior<-list(R=list(V=as.matrix(1), n=1, fix=1))
+prior<-list(R=list(V=as.matrix(1), nu=1, fix=1))
 if(DICtest){
 m1<-MCMCglmm(y1~1, family="categorical", data=data, prior=prior,verbose=verbose, nitt=3, thin=1, burnin=1, pl=TRUE, slice=TRUE)
 d<-sum(dbinom(data$y1, 1, plogis(m1$Liab[1,]), log=TRUE))
@@ -134,7 +134,7 @@ print("res4")
 res4<-matrix(NA, nsim,3)
 R<-as.matrix(2)
 G<-as.matrix(1)
-prior<-list(R=list(V=as.matrix(1), n=1), G=list(G1=list(V=G, n=1)))
+prior<-list(R=list(V=as.matrix(1), nu=1), G=list(G1=list(V=G, nu=1)))
 tpar<-c(-1,1,2)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
@@ -171,7 +171,7 @@ R<-as.matrix(2)
 G<-as.matrix(1)
 tpar<-c(-1,1,2)
 psets<-c(psets, tpar)
-prior=list(R=list(V=R, n=1, fix=1),G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=R, nu=1, fix=1),G=list(G1=list(V=G, nu=1)))
 for(i in 1:nsim){
 fac<-as.factor(sample(1:75,300,replace=TRUE))
 y<-mvrnorm(300, c(-1), R)+mvrnorm(75, c(0), G)[fac]
@@ -196,7 +196,7 @@ print("res5")
 res5<-matrix(NA, nsim,3)
 R<-as.matrix(2)
 G<-as.matrix(1)
-prior=list(R=list(V=R, n=1),G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=R, nu=1),G=list(G1=list(V=G, nu=1)))
 tpar<-c(-1,1,2)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
@@ -250,7 +250,7 @@ print("res6")
 res6<-matrix(NA, nsim,6)
 G=matrix(c(1,0.5,0.5,2),2,2)
 R<-as.matrix(2)
-prior=list(R=list(V=R, n=1),G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=R, nu=1),G=list(G1=list(V=G, nu=1)))
 tpar<-c(-1, 1, 0.5, 0.5, 2, 2)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
@@ -281,7 +281,7 @@ res7<-matrix(NA,nsim,4)
 res7b<-matrix(NA,nsim,6)
 R<-as.matrix(2)
 G=matrix(c(1,0,0,2),2,2)
-prior=list(R=list(V=R, n=1),G=list(G1=list(V=G, n=2)))
+prior=list(R=list(V=R, nu=1),G=list(G1=list(V=G, nu=2)))
 tpar<-c(-1, 1, 2, 2)
 for(i in 1:nsim){
 fac<-as.factor(sample(1:75,300,replace=TRUE))
@@ -319,7 +319,7 @@ psets<-c(psets, c(-1, 1, 2, 2), c(-1, 1,0,0, 2, 2))
 print("res8")
 res8<-matrix(NA, nsim,6)
 R=matrix(c(1,0.5,0.5,2),2,2)
-prior=list(R=list(V=R, n=1))
+prior=list(R=list(V=R, nu=1))
 tpar<-c(-1,1,1,0.5,0.5,2)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
@@ -366,7 +366,7 @@ print(i)
 print("res9")
 res9<-matrix(NA, nsim,4)
 R=matrix(c(1,0,0,2),2,2)
-prior=list(R=list(V=R, n=2))
+prior=list(R=list(V=R, nu=2))
 tpar<-c(-1,1,1,2)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
@@ -404,7 +404,7 @@ R=matrix(c(1,0,0,2),2,2)
 G=matrix(c(2,0,0,1),2,2)
 tpar<-c(-1,1,2,1,1,2)
 psets<-c(psets, tpar)
-prior=list(R=list(V=R, n=1),G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=R, nu=1),G=list(G1=list(V=G, nu=1)))
 for(i in 1:nsim){
 fac<-as.factor(sample(1:75,300,replace=TRUE))
 y<-mvrnorm(300, c(-1,1), R)+mvrnorm(75, c(0,0), G)[fac,]
@@ -429,7 +429,7 @@ R=matrix(c(1,0,0,2),2,2)
 G=matrix(c(2,0.5,0.5,1),2,2)
 tpar<-c(-1,1,2,0.5,0.5,1,1,2)
 psets<-c(psets, tpar)
-prior=list(R=list(V=R, n=1),G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=R, nu=1),G=list(G1=list(V=G, nu=1)))
 for(i in 1:nsim){
 fac<-as.factor(sample(1:75,300,replace=TRUE))
 y<-mvrnorm(300, c(-1,1), R)+mvrnorm(75, c(0,0), G)[fac,]
@@ -456,7 +456,7 @@ print("res12")
 res12<-matrix(NA, nsim,3)
 R<-as.matrix(2)
 G<-as.matrix(1)
-prior=list(R=list(V=R, n=100),G=list(G1=list(V=G, n=100)), B=list(mu=0, V=0.000000001))
+prior=list(R=list(V=R, nu=100),G=list(G1=list(V=G, nu=100)), B=list(mu=0, V=0.000000001))
 tpar<-c(0,1,2)
 psets<-c(psets, tpar)
 for(i in 1:nsim){
@@ -496,7 +496,7 @@ if(jenny){
 
 
   R<-diag(coef[35:39])
-  prior=list(R=list(V=R, n=5),G=list(G1=list(V=G[[1]], n=1), G2=list(V=G[[2]], n=1)))
+  prior=list(R=list(V=R, nu=5),G=list(G1=list(V=G[[1]], nu=1), G2=list(V=G[[2]], nu=1)))
 
 
   for(i in 1:nsim){
@@ -547,7 +547,7 @@ psets<-c(psets, coef, coef)
 res15<-matrix(NA, nsim,3)
 print("res15")
 R<-as.matrix(2)
-prior=list(R=list(V=R, n=1))
+prior=list(R=list(V=R, nu=1))
 tpar<-c(-1,1,2)
 
 for(i in 1:nsim){
@@ -616,7 +616,7 @@ psets<-c(psets, tpar, tpar)
 res18<-matrix(NA, nsim,2)
 #print("res18")
 tpar<-c(0,1)
-prior=list(R=list(V=diag(1), n=1))
+prior=list(R=list(V=diag(1), nu=1))
 for(i in 1:nsim){
 l<-rpois(100, exp(rnorm(100,0,1)))
 y<-cut(l,c(seq(0,10,2), Inf), include.lowest=TRUE, right=FALSE)
@@ -646,7 +646,7 @@ res19b<-matrix(0, nsim, 6)
 
 print("res19")
 R<-diag(2)
-prior=list(R=list(V=R, n=1, fix=2))
+prior=list(R=list(V=R, nu=1, fix=2))
 tune=list(diag(2))
 tpar<-c(1,-1,1,-1/2, 1, 1)
 for(i in 1:nsim){
@@ -681,7 +681,7 @@ psets<-c(psets, tpar)
 
 print("res19b")
 R<-diag(2)
-prior=list(R=list(V=R, n=1, fix=2),G=list(G1=list(V=1, n=1)))
+prior=list(R=list(V=R, nu=1, fix=2),G=list(G1=list(V=1, nu=1)))
 tune=list(diag(2))
 tpar<-c(1, -0.5, 0.2, 1,1,1)
     for(i in 1:nsim){
@@ -717,7 +717,7 @@ res20<-matrix(NA, nsim,6)
 print("res20")
 tune<-diag(2)
 R=matrix(c(2,0.25,0.25,1),2,2)
-prior=list(R=list(V=R, n=2, fix=2))
+prior=list(R=list(V=R, nu=2, fix=2))
 tpar<-c(-1,1,2,0.25, 0.25,1)
 for(i in 1:nsim){
 y<-mvrnorm(300, c(-1,1), R)
@@ -761,8 +761,8 @@ res21c<-matrix(NA, nsim,7)
 print("res21")
 G=matrix(c(2,0,0,1),2,2)
 R=matrix(1,1,1)
-prior=list(R=list(V=R, n=1), G=list(G1=list(V=G[1,1,drop=FALSE], n=1), G2=list(V=G[2,2,drop=FALSE], n=0.1)))
-prior2=list(R=list(V=R, n=1), G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=R, nu=1), G=list(G1=list(V=G[1,1,drop=FALSE], nu=1), G2=list(V=G[2,2,drop=FALSE], nu=0.1)))
+prior2=list(R=list(V=R, nu=1), G=list(G1=list(V=G, nu=1)))
 
 int.slope<-mvrnorm(300, c(0,0), G)
 ind<-gl(300,3)
@@ -812,7 +812,7 @@ print("res22")
 res22<-matrix(NA, nsim,10)
 R=diag(2)
 G=matrix(c(2,0.5,0.5,1),2,2)
-prior=list(R=list(V=R, n=1, fix=1),G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=R, nu=1, fix=1),G=list(G1=list(V=G, nu=1)))
 tpar<-c(-1,0,2,0.5,0.5,1,1,0,0,1)
 
 for(i in 1:nsim){
@@ -846,7 +846,7 @@ print("res23")
 res23<-matrix(NA, nsim,3)
 R<-as.matrix(1)
 G<-as.matrix(2)
-prior=list(R=list(V=R, n=1, fix=1))
+prior=list(R=list(V=R, nu=1, fix=1))
 tpar<-c(-1,0.5,1)
 
 for(i in 1:nsim){
@@ -896,7 +896,7 @@ print("res24")
 res24<-matrix(NA, nsim,5)
 R<-as.matrix(1)
 G<-as.matrix(2)
-prior=list(R=list(V=R, n=1, fix=1)) 
+prior=list(R=list(V=R, nu=1, fix=1)) 
 cp<-c(0.5,1)
 tpar<-c(cp,-1,1,1)
 for(i in 1:nsim){
@@ -932,7 +932,7 @@ print("res25")
 res25<-matrix(NA, nsim,13)
 R<-diag(2)
 G<-matrix(c(1,0.5,0.5,1),2,2)
-prior=list(R=list(V=R, n=1, fix=1),G=list(G1=list(V=G, n=2)))
+prior=list(R=list(V=R, nu=1, fix=1),G=list(G1=list(V=G, nu=2)))
 for(i in 1:nsim){
 fac<-as.factor(sample(1:75,300,replace=TRUE))
 x<-runif(300)
@@ -1066,7 +1066,7 @@ print("res29")
 res29<-matrix(NA, nsim,12)
 R<-cbind(c(1,-0.35), c(-0.35,1))
 
-prior=list(R=list(V=diag(2), n=3)) #,G=list(G1=list(V=G, n=1)))
+prior=list(R=list(V=diag(2), nu=3)) #,G=list(G1=list(V=G, nu=1)))
 for(i in 1:nsim){
 	fac<-as.factor(sample(1:75,300,replace=TRUE))
 	x<-runif(300)
@@ -1196,7 +1196,7 @@ psets<-c(psets, tpar)
 print("res33")
 res33<-matrix(0, nsim, 6)
 R<-diag(2)
-prior=list(R=list(V=R, n=1, fix=2))
+prior=list(R=list(V=R, nu=1, fix=2))
 tune=list(diag(2))
 tpar<-c(0, -1, 1, 1/2, 1, 1)
 for(i in 1:nsim){
@@ -1278,11 +1278,11 @@ print("res35")
 
 res35<-matrix(0, nsim, 3)
 
-prior<-list(R=list(V=as.matrix(1), n=1, fix=1))
+prior<-list(R=list(V=as.matrix(1), nu=1, fix=1))
 tpar<-c(0.5,-1, 1)
 for(i in 1:nsim){
 
-prior<-list(R=list(V=as.matrix(1), n=1, fix=1))
+prior<-list(R=list(V=as.matrix(1), nu=1, fix=1))
 
 x<-rnorm(100)
 y<-rnorm(100, 0.5-x)

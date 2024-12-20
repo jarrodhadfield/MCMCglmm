@@ -1,4 +1,4 @@
-"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL, saveWS=TRUE){
+"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL, saveWS=TRUE, aggregate=NULL){
 
   orig.na.action<-options("na.action")[[1]]
   options("na.action"="na.pass")	
@@ -528,11 +528,17 @@ if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names
 
 ###**************************************########################
 
+if(!is.null(aggregate)){
+  varying<-sapply(c("", paste0(aggregate, "_")), function(x){paste0(x, response.names)}, simplify=FALSE)
+}else{
+  varying<-response.names
+}
+
 if(MVasUV){
-  data<-reshape(data, varying=response.names, v.names="MCMC_y", direction="long", idvar="units", timevar=NULL)       # reshape the data into long format 
+  data<-reshape(data, varying=varying, v.names=c("MCMC_y", aggregate), direction="long", idvar="units", timevar=NULL)       # reshape the data into long format 
   data$MCMC_family.names<-family.names
 }else{
-  data<-reshape(data, varying=response.names, v.names="MCMC_y", direction="long", timevar="trait", idvar="units")       # reshape the data into long format 
+  data<-reshape(data, varying=varying, v.names=c("MCMC_y", aggregate), direction="long", timevar="trait", idvar="units")       # reshape the data into long format 
   data$trait<-factor(response.names[data$trait], response.names)
   if(length(response.names)!=length(family.names)){stop("family must have the same length as the number of responses")}
   data$MCMC_family.names<-rep(family.names, each=nS)

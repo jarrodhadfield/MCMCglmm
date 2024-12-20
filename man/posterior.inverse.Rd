@@ -10,12 +10,12 @@ posterior.inverse(x)
 }
 \value{
   posterior of inverse (co)variance matrices
- }
+}
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
 \seealso{\code{\link{posterior.cor}}, \code{\link{posterior.evals}}, \code{\link{posterior.ante}}}
 \examples{
-v<-rIW(diag(2),3, n=1000)
-plot(posterior.inverse(mcmc(v)))
+  V<-rIW(diag(2),3, n=1000)
+  inv.V<-posterior.inverse(v)
 }
 \keyword{distribution}
 
