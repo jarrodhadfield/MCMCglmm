@@ -1,0 +1,12 @@
+---
+title: "Categorical Random Interactions"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Categorical Random Interactions

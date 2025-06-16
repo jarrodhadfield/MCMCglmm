@@ -1,0 +1,13 @@
+---
+title: "Multi-response Models"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Multi-response Models
+

@@ -1,0 +1,13 @@
+---
+title: "Continuous Random Interactions"
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Continuous Random Interactions
+
