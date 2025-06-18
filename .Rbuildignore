@@ -19,3 +19,6 @@ src/symbols[.]rds
 ^pkgdown$
 ^\.github$
 ^vignettes/articles$
+.github$
+.git$
+_pkgdown.yml$

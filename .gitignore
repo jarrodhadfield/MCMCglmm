@@ -1,2 +1,4 @@
 docs
-src/*.o
+src/*.o$
+src/*.so$
+vignettes/articles/_2.Bayes_and_MCMC_files/figure-html/*.png$
