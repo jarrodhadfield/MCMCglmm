@@ -6,10 +6,10 @@ verbose=FALSE
 plotit=FALSE
 DICtest=TRUE
 SUMtest=TRUE
-nsim<-1
-nitt<-13
-thin<-1
-burnin<-3
+nsim<-100
+nitt<-13000
+thin<-10
+burnin<-3000
 
 psets<-c()
 
@@ -1409,7 +1409,7 @@ print(i)
 psets<-c(psets, tpar)
 
 res39<-matrix(0, nsim, 12)
-print("res39")  # Block-diagonal R-structure with augmented animal model
+print("res39")  # Block-diagonal R-structure with animal model
 data(BTped)
 
 tpar<-c(0,0,1, 0, 0,1,1,0, 0,1,2,2)
@@ -1428,9 +1428,9 @@ y2<-y2+rbv(BTped, 1)[which(!is.na(BTped[,2]))]
 
 dat<-data.frame(y1=y1, y2=y2, fac=fac, id=BTped[,1][which(!is.na(BTped[,2]))])
 
-A<-inverseA(BTped)
+A<-inverseA(BTped)$Ainv
 
-m1<-MCMCglmm(cbind(y1,y2)~trait-1, random=~us(trait):id, rcov=~us(trait:at.level(fac,1)):units+idh(trait:at.level(fac,2)):units, data=dat, family=rep("gaussian", 2), prior=prior, verbose=verbose,nitt=nitt*5, thin=thin*5, burnin=burnin*5)
+m1<-MCMCglmm(cbind(y1,y2)~trait-1, random=~us(trait):id, rcov=~us(trait:at.level(fac,1)):units+idh(trait:at.level(fac,2)):units, data=dat, family=rep("gaussian", 2), prior=prior, verbose=verbose, ginverse=list(id=A), nitt=nitt, thin=thin, burnin=burnin)
 
 if(SUMtest){
 summary(m1)
@@ -2055,16 +2055,33 @@ nam<-c("res1", "res2", "res3", "res3b", "res4", "res4c", "res5","res5b","res6", 
 
 nam<-paste(rep(nam,np), unlist(sapply(np,function(x){1:x})), sep=".")
 
-names(est)<-nam
+names(est)<-names(psets)<-nam
 
 plot(est~psets)
 abline(0,1)
 
+stop()
 library(MCMCglmm)
 
-dat<-data.frame(y1=rnorm(100), y2=rpois(100,1), y3=rpois(100,2), y4=rpois(100,1), type=gl(2,50))
+dat<-data.frame(y1=rnorm(100), y2=rpois(100,1), y3=rpois(100,2), y4=rpois(100,1), type=gl(2,50), y5=sample(1:3, 100, replace=TRUE))
 
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idh(at.level(type,1)):trait:units+idh(at.level(type,2)):trait:units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
 
 
+
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait:at.level(type,1)):units+idh(trait:at.level(type,2)):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
+
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idh(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
+
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
+
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
+
+m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idh(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE)
+
+m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE)
+
+dat<-data.frame(y1=rnorm(100), y2=rnorm(100))
+
+m1<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
 

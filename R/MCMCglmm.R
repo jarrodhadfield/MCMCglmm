@@ -152,37 +152,6 @@ if(is.null(family)){
 }                                                                            # response distribution
 }
 
-    # zero-inflated and multinomial>2 need to be preserved in the same R-structure even if idh 
-
-diagR<-1  # should the residual structure be diagonal even if us is used?
-
-if(any(grepl("hu|zi|za|multinomial[3-9]|[0-9][0-9]|ztmb", family.names))){ 
-  if(length(grep("idh\\(trait|us\\(trait|trait:units|units:trait|corg\\(trait|corgh\\(trait|cors\\(trait|idv\\(trait|ante.*\\(trait|sub\\(trait", rcov))==0){
-    stop("Mutivariate error structures (i.e. using the term 'trait') are required for multinomial data with more than 2 categories, or zero-inflated/altered/hurdle models.")
-  }else{
-    if(length(grep("idh\\(", rcov))>0){
-      diagR<-2
-      rcov=as.formula(paste(gsub("idh\\(", "us\\(", rcov), collapse=""))
-    }
-    print(rcov)
-    if(length(grep("trait:units|units:trait", rcov))>0){
-      rcov=~us(trait):units
-      diagR<-3
-    }
-  }	  
-}
-
-if(any(grepl("path\\(", fixed))){ 
-  if(length(grep("idh\\(", rcov))>0){
-    diagR<-2
-    rcov=as.formula(paste(gsub("idh\\(", "us\\(", rcov), collapse=""))
-  }
-  if(length(grep("trait:units|units:trait", rcov))>0){
-    diagR<-3
-    rcov=~us(trait):units
-  }
-}
-
 
 nS<-dim(data)[1]                               # number of subjects
 nt<-1                                          # number of traits (to be iterated because y may change dimension with multinomial/categorical/censored distributions)
@@ -205,7 +174,6 @@ if(MVasUV){
   }
   if(any(family.names=="ordinal" |  family.names=="threshold")){
     ordinal.traits<-sort(unique(as.numeric(data$trait)[which(family.names=="ordinal" |  family.names=="threshold")]))
-    print(ordinal.traits)
     for(i in 1:length(ordinal.traits)){
       trait.i<-levels(data$trait)[ordinal.traits[i]]
       data[,response.names][which(data$trait==trait.i)]<-as.numeric(as.factor(data[,response.names][which(data$trait==trait.i)]))
@@ -266,31 +234,19 @@ if(MVasUV){
         if(nJ>1){
           slice<-FALSE
         }  
-        if(length(grep("idh\\(trait|us\\(trait|trait:units|units:trait|corg\\(trait|corgh\\(trait|cors\\(trait|idv\\(trait|ante.*\\(trait", rcov))==0 & nJ>1){
-         stop("For error structures involving categorical data with more than 2 categories please use trait:units or variance.function(trait):units.")
-       }else{
-        if(length(grep("idh\\(", rcov))>0  & nJ>1){
-          diagR<-2
-          rcov=as.formula(paste(gsub("idh\\(", "us\\(", rcov), collapse=""))
-        }
-        if(length(grep("trait:units|units:trait", rcov))>0  & nJ>1){
-          rcov=~us(trait):units
-          diagR<-3
-        }
-      }	  
-      mfac<-c(mfac, rep(nJ-1,nJ))           
-      data<-data[,-which(names(data)==response.names[nt]), drop=FALSE]    # remove original variable
-      row.names(data)<-row.names(cont)
-      data<-cbind(data, cont)     # add new variables to data.frame
-      ones<-rep(1, length(response.names))
-      ones[which(response.names==response.names[nt])]<-nJ
-      response.names<-rep(response.names, ones)
-      family.names<-rep(family.names, ones)
-      family.names[which(response.names==response.names[nt])]<-"multinomial"
-      response.names[which(response.names==response.names[nt])]<-new.names
-      nt<-nt+nJ
-      y.additional<-cbind(y.additional, matrix(1,nS,nJ))
-      y.additional2<-cbind(y.additional2, matrix(1-rowSums(cont),nS,nJ))
+        mfac<-c(mfac, rep(nJ-1,nJ))           
+        data<-data[,-which(names(data)==response.names[nt]), drop=FALSE]    # remove original variable
+        row.names(data)<-row.names(cont)
+        data<-cbind(data, cont)     # add new variables to data.frame
+        ones<-rep(1, length(response.names))
+        ones[which(response.names==response.names[nt])]<-nJ
+        response.names<-rep(response.names, ones)
+        family.names<-rep(family.names, ones)
+        family.names[which(response.names==response.names[nt])]<-"multinomial"
+        response.names[which(response.names==response.names[nt])]<-new.names
+        nt<-nt+nJ
+        y.additional<-cbind(y.additional, matrix(1,nS,nJ))
+        y.additional2<-cbind(y.additional2, matrix(1-rowSums(cont),nS,nJ))
     }
 
 ######################
@@ -519,7 +475,26 @@ nt<-nt-1
 
 if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names[which((family.names%in%family.types)==FALSE)]), "not a supported distribution"))}
 
-###**************************************########################
+# zero-inflated and multinomial>2 need to be preserved in the same R-structure even if idh 
+
+diagR<-1  # should the residual structure be diagonal even if us is used?
+
+if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0), grepl("path\\(", fixed)))){ 
+  if(length(grep("idhm\\(trait|us\\(trait|idvm\\(trait|corg\\(trait|corgh\\(trait|cors\\(trait|ante.*\\(trait|sub\\(trait", rcov))==0){
+    stop("For error structures involving multinomial/categorical data with more than 2 categories, zero-inflated/altered/hurdle models, or path models, please use variance.function(trait):units. If you tried trait:units you can replace this with idvm(trait):units. If you tried idh(trait):units or idv(trait):units you can replace them with idhm(trait):units or idvm(trait):units, respectively")
+  }  
+}
+
+if(length(grep("idhm\\(", rcov))>0){
+  diagR<-2
+  rcov=as.formula(paste(gsub("idhm\\(", "us\\(", rcov), collapse=""))
+}
+if(length(grep("idvm\\(", rcov))>0){
+  rcov=~us(trait):units
+  diagR<-3
+}
+
+###########################
 
 if(!is.null(aggregate)){
   varying<-sapply(c("", paste0(aggregate, "_")), function(x){paste0(x, response.names)}, simplify=FALSE)
@@ -699,7 +674,7 @@ for(r in 1:length(rmodel.terms)){
 
 nR<-nr-nG-1  # number of R structures
 
-if(nR>1 & diagR!=1){stop("sorry - block-diagonal R structures not yet implemented for responses involving multinomial data with more than 2 categories or zero-infalted/altered/hurdle models")}
+if(nR>1 & diagR!=1){stop("sorry - multiple R structures not yet implemented for idhm or idvm structures")}
 
 missing<-which(colSums(ZR)==0)
 nadded<-length(missing)
@@ -757,8 +732,6 @@ if(ngstructures==0){
 
 if(any(is.na(trait.ordering))){stop("For this data-structure each trait must be associated with a unique R-rterm")}
 
-print(trait.ordering)
-print(mfac)
 mfac<-mfac[trait.ordering]
 
 if(is.null(tune$mh_V)){
@@ -1301,8 +1274,8 @@ for(i in which(update=="cors")){
 }	
 
 GRvpP<-unlist(GRvpP)
-if(diagR==3){  # need to add aditional prior nu because of way trait:units are updated
-GRprior[[nG+nR]]$n<-GRprior[[nG+nR]]$n+(nrl[nG+nR]+1)*(dim(GRprior[[nG+nR]]$V)[1]-1)
+if(diagR==3){  # need to add additional prior nu because of way trait:units are updated
+GRprior[[nG+nR]]$n<-GRprior[[nG+nR]]$n+(nrl[nG+nR]+1)*(nfl[nG+nR]-1)
 }
 GRnpP<-unlist(lapply(GRprior, function(x){c(x$n)}))      
 
@@ -1575,24 +1548,6 @@ if(covu>0){
   nrt<-nrt[-ngstructures]
   nG<-nG-1
   ngstructures<-ngstructures-1
-}
-
-if(diagR==2){  # idh structures that were held as us 
-VCV<-VCV[,-c(((dim(VCV)[2]-nfl[nG+1]^2+1):dim(VCV)[2])[-diag(matrix(1:(nfl[nG+1]^2),nfl[nG+1],nfl[nG+1]))]),drop=FALSE]          
-colnames(VCV)[(dim(VCV)[2]-nfl[nG+1]+1):dim(VCV)[2]]<-sapply(colnames(VCV)[(dim(VCV)[2]-nfl[nG+1]+1):dim(VCV)[2]], function(x){substr(x, gregexpr(":", x)[[1]][ceiling(length(gregexpr(":", x)[[1]])/2)]+1, nchar(x))})
-nfl<-c(nfl,rep(1,nfl[nG+1]-1))
-nrl<-c(nrl,rep(nrl[nG+1],nfl[nG+1]-1))
-nrt[ngstructures+1]<-nfl[nG+1]
-nR<-nfl[nG+1]
-nfl[nG+1]<-1        
-}
-if(diagR==3){ # trait:unit structures that were held as us 
-VCV<-VCV[,-((dim(VCV)[2]-nfl[nG+1]^2+2):dim(VCV)[2]),drop=FALSE]
-colnames(VCV)[dim(VCV)[2]]<-"trait:units" 
-nrl[nG+1]<-nrl[nG+1]*nfl[nG+1]
-nfl[nG+1]<-1
-nrt[ngstructures+1]<-1
-nR<-1
 }
 
 if(DIC){

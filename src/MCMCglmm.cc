@@ -1692,6 +1692,7 @@ if(itt>0){
           Gtmp[nG]->x[j+dimG*k-1] = Gtmp[nG]->x[(j-1)*dimG+k];
         }
       }
+
       if(diagR>0){
         cnt=0;  
         for(j=0; j<dimG; j++){
@@ -1822,6 +1823,7 @@ if(itt>0){
           Gtmp[i]->x[j+dimG*k-1] = Gtmp[i]->x[(j-1)*dimG+k];
         }
       }
+
       if(diagR>0){
         cnt=0;  
         for(j=0; j<dimG; j++){
@@ -2263,7 +2265,7 @@ if(thetaS){
        rterm=0;
 
        for(k=nG; k<nGR; k++){      // Iterate through R-structures
-         for(i=0; i<dimG; i++){    // Iterate through first indiviual to find any ordinal variables
+         for(i=0; i<dimG; i++){    // Iterate through first individual to find any ordinal variables
            dimG = GRdim[k];
            record=cnt2+nlGR[k]*i;
            if(familyP[record]==14 || familyP[record]==20){

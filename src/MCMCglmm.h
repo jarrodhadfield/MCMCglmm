@@ -24,6 +24,8 @@ cs *cs_inv(const cs *C);
 /* returns the inverse of the dense matrix C*/
 double cs_invR(const cs *C, const cs *A);
 /* overwrites A with the inverse of the dense matrix C*/
+double cs_invdiagR(const cs *C, const cs *A);
+/* overwrites A with the inverse of the dense matrix C diagonalised*/
 cs *cs_kroneckerA(const cs *G, const cs *A);
 /* forms the kronecker product of G and A*/
 void cs_kroneckerAupdate(const cs *G, const cs *A, const cs *C);

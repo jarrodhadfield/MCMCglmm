@@ -26,6 +26,12 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
   if(length(grep("^idv\\(", x))>0){
     vtype<-"idv"
   }
+  if(length(grep("^idvm\\(", x))>0){
+    vtype<-"idvm"
+  }
+  if(length(grep("^idhm\\(", x))>0){
+    vtype<-"idvm"
+  }
   if(length(grep("^ante.*\\(", x))>0){
     vtype<-gsub("\\(.*", "", x)
   }
@@ -39,7 +45,7 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
     rtype<-"str"
   }
 
-  fformula<-gsub("^(us|corg|corgh|corh|cor|cors|idh|idv|antec?[0-9]*v?|sub)\\(", "", x)
+  fformula<-gsub("^(us|corg|corgh|corh|cor|cors|idh|idv|idhm|idvm|antec?[0-9]*v?|sub)\\(", "", x)
 
   if(grepl("^str\\(|^mm\\(", fformula)){
     fformula<-paste("):", fformula, sep="")
@@ -275,7 +281,7 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
       }
       vnames<-colnames(X)  
 
-      if(vtype=="us" | substr(vtype,1,3)=="cor" | substr(vtype,1,4)=="ante" | vtype=="sub"){
+      if(vtype=="us" | substr(vtype,1,3)=="cor" | substr(vtype,1,4)=="ante" | vtype=="sub" | vtype=="idhm" | vtype=="idvm"){
         if(Aterm==0 & rtype=="iid" & covu==FALSE){                     # if multivariate G-structure and no Ginv term drop levels where all effects are zero
           missing<-matrix(diff(Zsave@p)!=0, nrl, nfl)
           missing<-which(rowSums(missing)==0)
@@ -302,13 +308,13 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
         rterms<-""
       }
       if(rtype=="iid"){
-        if(vtype[1]=="us" | grepl("cor", vtype[1]) | substr(vtype[1],1,4)=="ante" | vtype[1]=="sub"){
+        if(vtype[1]=="us" | grepl("cor", vtype[1]) | substr(vtype[1],1,4)=="ante" | vtype[1]=="sub"| vtype[1]=="idhm" | vtype[1]=="idvm"){
           vnames<-paste(expand.grid(vnames, vnames)[,1],expand.grid(vnames, vnames)[,2], sep="MCMCsplit")
         }
         vnames<-paste(vnames, paste(rterms[select.terms], collapse=":"), sep=".")
       }
       if(rtype=="mm"){
-        if(vtype[1]=="us" | grepl("cor", vtype[1]) | substr(vtype[1],1,4)=="ante" | vtype[1]=="sub"){
+        if(vtype[1]=="us" | grepl("cor", vtype[1]) | substr(vtype[1],1,4)=="ante" | vtype[1]=="sub" | vtype[1]=="idhm" | vtype[1]=="idvm"){
           vnames<-paste(expand.grid(vnames, vnames)[,1],expand.grid(vnames, vnames)[,2], sep="MCMCsplit")
         }
         vnames<-paste(vnames, paste(rterms, collapse="+"), sep=".")
