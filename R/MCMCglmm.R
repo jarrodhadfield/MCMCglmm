@@ -137,7 +137,6 @@ if(is.null(family)){
      if(any(tapply(data$family, data$trait, function(x){length(unique(x))})!=1, na.rm=TRUE)){
        stop("all data from the same trait must come from the same distribution")
      }
-     rterm.family<-data$family[match(levels(data$trait), data$trait)]
    }           
    family.names<-as.character(data$family)   
    MVasUV=TRUE
@@ -165,6 +164,7 @@ if(any(grepl("hu|zi|za|multinomial[3-9]|[0-9][0-9]|ztmb", family.names))){
       diagR<-2
       rcov=as.formula(paste(gsub("idh\\(", "us\\(", rcov), collapse=""))
     }
+    print(rcov)
     if(length(grep("trait:units|units:trait", rcov))>0){
       rcov=~us(trait):units
       diagR<-3
@@ -194,34 +194,35 @@ if(MVasUV){
   if(any(family.names=="categorical")){
     ncat<-tapply(data[,response.names][which(family.names=="categorical")], as.character(data$trait[which(family.names=="categorical")]), function(x){length(unique(x))})
     for(i in 1:length(ncat)){
-     trait.i<-unique(data$trait[which(family.names=="categorical")])[i]
-     data[,response.names][which(data$trait==trait.i)]<-as.numeric(as.factor(data[,response.names][which(data$trait==trait.i)]))-1
-   }
-   if(any(ncat>2)){
+      trait.i<-sort(unique(data$trait[which(family.names=="categorical")]))[i]
+      data[,response.names][which(data$trait==trait.i)]<-as.numeric(as.factor(data[,response.names][which(data$trait==trait.i)]))-1
+    }
+    if(any(ncat>2)){
      stop("For setting up multi-trait models as univariate the responses cannot come from distributions that require more than one data column or have more than one liability (i.e. censored, multinomial, zero-inflated, categorical with k>2): set it up as multivariate using cbind(...)")
-   }
-   y.additional[which(family.names=="categorical"),]<-1
-   family.names[which(family.names=="categorical")]<-"multinomial"
- }
- if(any(family.names=="ordinal" |  family.names=="threshold")){
-  ordinal.traits<-unique(as.numeric(data$trait)[which(family.names=="ordinal" |  family.names=="threshold")])
-  for(i in 1:length(ordinal.traits)){
-   trait.i<-levels(data$trait)[ordinal.traits[i]]
-   data[,response.names][which(data$trait==trait.i)]<-as.numeric(as.factor(data[,response.names][which(data$trait==trait.i)]))
- }
- if(length(ordinal.traits)>2){slice<-FALSE}
- mfac[ordinal.traits]<-0:(length(ordinal.traits)-1)
- ncutpoints<-tapply(data[,response.names][which(family.names=="ordinal" | family.names=="threshold")], data$trait[which(family.names=="ordinal" |  family.names=="threshold")], function(x){length(unique(na.omit(x)))})+1
- stcutpoints<-tapply(data[,response.names][which(family.names=="ordinal" | family.names=="threshold")], data$trait[which(family.names=="ordinal" |  family.names=="threshold")], function(x){qnorm(cumsum(c(0, prop.table(table(x)))))})
- ordinal.names<-levels(data$trait)[ordinal.traits]
- if(any(is.na(ncutpoints))){
-  ordinal.names<-ordinal.names[-which(is.na(ncutpoints))]
-  stcutpoints<-stcutpoints[-which(is.na(ncutpoints))]
-  ncutpoints<-ncutpoints[-which(is.na(ncutpoints))]
-}
-}else{
-  ncutpoints<-c()
-}
+    }
+    y.additional[which(family.names=="categorical"),]<-1
+    family.names[which(family.names=="categorical")]<-"multinomial"
+  }
+  if(any(family.names=="ordinal" |  family.names=="threshold")){
+    ordinal.traits<-sort(unique(as.numeric(data$trait)[which(family.names=="ordinal" |  family.names=="threshold")]))
+    print(ordinal.traits)
+    for(i in 1:length(ordinal.traits)){
+      trait.i<-levels(data$trait)[ordinal.traits[i]]
+      data[,response.names][which(data$trait==trait.i)]<-as.numeric(as.factor(data[,response.names][which(data$trait==trait.i)]))
+    }
+    if(length(ordinal.traits)>2){slice<-FALSE}
+
+    mfac[ordinal.traits]<-0:(length(ordinal.traits)-1)
+    ncutpoints<-tapply(data[,response.names][which(family.names=="ordinal" | family.names=="threshold")], data$trait[which(family.names=="ordinal" |  family.names=="threshold")], function(x){length(unique(na.omit(x)))})+1
+    stcutpoints<-tapply(data[,response.names][which(family.names=="ordinal" | family.names=="threshold")], data$trait[which(family.names=="ordinal" |  family.names=="threshold")], function(x){qnorm(cumsum(c(0, prop.table(table(x)))))})
+ 
+    ordinal.names<-levels(data$trait)[ordinal.traits]
+    stcutpoints<-stcutpoints[ordinal.traits]
+    ncutpoints<-ncutpoints[ordinal.traits]
+
+  }else{
+    ncutpoints<-c()
+  }
 }else{
   if(any(names(data)=="trait")){
     stop("trait is a reserved variable please remove or rename this column in the data.frame")
@@ -230,7 +231,7 @@ if(MVasUV){
                             # For multinomial models it stores the number of k-2 categories associated with each R-term
                             # For ztmb models it stores the number of k-1 categories associated with each R-term
                             # For zero inflated models it indicates whether the R-term is for the Poisson part (0) or zero inflation part (1)
-                            # For ordinal/threshold responses it indicates whether its the (i-1)^th ordinal response. 
+                            # For ordinal/threshold responses it indicates whether it's the (i-1)^th ordinal response. 
                             # All other traits get a zero
                             # For example with responses multinomialA, multinomialA,  multinomialA, multinomialB, multinomialB, ordinalC, zero-inflationD, ordinalE
                             # there are 7 R-terms (A:2, B:1, C:1, D:2, E:1) with mfac=c(1,1,0,0,0,1,1) 
@@ -238,14 +239,11 @@ if(MVasUV){
   ncutpoints<-c()           # number of cutpoints for ordinal variables = k+1
   stcutpoints<-list()         
   ordinal.names<-c()
-  rterm.family<-c()
 
   y.additional<-matrix(NA, nS,0)                 # matrix equal in dimension to y holding the additional parameters of the distribution (n, upper interval etc.)
   y.additional2<-matrix(NA, nS,0)
 
   for(i in 1:length(family)){
-
-    rterm.family<-c(rterm.family, family[i])
 
     dist.preffix<-substr(family[i],1,2)                  
     if(nt>length(response.names)){stop("family is the wrong length")}
@@ -265,10 +263,8 @@ if(MVasUV){
         }
         colnames(cont)<-new.names  
         nJ<-dim(cont)[2]
-        rterm.family[length(rterm.family)]<-paste("multinomial", nJ+1, sep="") 
         if(nJ>1){
           slice<-FALSE
-          rterm.family<-c(rterm.family, rep(rterm.family[length(rterm.family)], nJ-1))  
         }  
         if(length(grep("idh\\(trait|us\\(trait|trait:units|units:trait|corg\\(trait|corgh\\(trait|cors\\(trait|idv\\(trait|ante.*\\(trait", rcov))==0 & nJ>1){
          stop("For error structures involving categorical data with more than 2 categories please use trait:units or variance.function(trait):units.")
@@ -311,7 +307,6 @@ if(MVasUV){
 
      if(nJ>1){
        slice<-FALSE
-       rterm.family<-c(rterm.family, rep(rterm.family[length(rterm.family)], nJ-1))  
      }                                                                           # number of J-1 categories
      if(nJ<1){stop("Multinomial must have at least 2 categories")}	 
      mfac<-c(mfac, rep(nJ-1,nJ))  
@@ -399,8 +394,6 @@ if(MVasUV){
 ########################
   
   if(dist.preffix=="zi" || dist.preffix=="hu" || dist.preffix=="za"){
-
-   rterm.family<-c(rterm.family, rterm.family[length(rterm.family)])
 
    if(grepl("poisson", family[i])){
      y.additional<-cbind(y.additional, rep(1,nS), rep(0,nS))
@@ -626,15 +619,15 @@ for(r in 1:length(rmodel.terms)){
  if(r==(ngstructures+1)){nG<-nr-1}  # number of (new) G structures
  if(r<=ngstructures){
    if(covu!=0 & r==ngstructures){
-     Zlist<-buildZ(rmodel.terms[r], data=data, nginverse=names(ginverse), covu=TRUE)
+     Zlist<-buildZ(rmodel.terms[r], data=data, nginverse=names(ginverse), covu=TRUE, mfac=mfac)
    }else{
-     Zlist<-buildZ(rmodel.terms[r], data=data, nginverse=names(ginverse))
+     Zlist<-buildZ(rmodel.terms[r], data=data, nginverse=names(ginverse), mfac=mfac)
    }
  }else{
    if(covu!=0 & r==(ngstructures+1)){
-     Zlist<-buildZ(rmodel.terms[r], data=data, covu=TRUE)
+     Zlist<-buildZ(rmodel.terms[r], data=data, covu=TRUE, mfac=mfac)
    }else{
-     Zlist<-buildZ(rmodel.terms[r], data=data)
+     Zlist<-buildZ(rmodel.terms[r], data=data, mfac=mfac)
    }
  }
 
@@ -668,8 +661,11 @@ for(r in 1:length(rmodel.terms)){
    }else{
      Z<-cbind(Z, Zlist$Z)     
    }
+
  }else{
+
    trait.ordering<-c(trait.ordering, Zlist$trait.ordering)
+
    if(r==(ngstructures+1)){
      ZR<-Zlist$Z
      Zlist$nfl<-Zlist$nfl+covu             
@@ -743,36 +739,27 @@ data<-data[ordering,]
 
 data$MCMC_error.term<-rep(1:sum(nfl[nG+1:nR]), rep(nrl[nG+1:nR], nfl[nG+1:nR]))
 
+if(any(c("ordinal", "threshold")%in%data$MCMC_family.names)){
+  eterms_with_ordinal<-unique(data$MCMC_error.term[which(data$MCMC_dummy==0 & data$MCMC_family.names%in%c("ordinal", "threshold"))])
+  # get error terms associated with ordinal and threshold traits
+  eterms_with_ordinal<-tapply(data$trait, data$MCMC_error.term, function(x){length(unique(x))})[eterms_with_ordinal]
+  # get number of traits associated with these error terms
+  if(any(eterms_with_ordinal>1)){
+    stop("threshold/ordinal traits must be uniquely associated with a single R-term")
+  }
+}
+
 if(ngstructures==0){
   Z<-as(matrix(0,1,0), "sparseMatrix")
 }else{                                                    # rearrange data to match R-structure
   Z<-Z[ordering,,drop=FALSE]                                            
 }
 
+if(any(is.na(trait.ordering))){stop("For this data-structure each trait must be associated with a unique R-rterm")}
+
+print(trait.ordering)
+print(mfac)
 mfac<-mfac[trait.ordering]
-
-if(any(rterm.family=="threshold" | rterm.family=="ordinal")){
-
-  nthordinal<-cumsum(rterm.family=="threshold" | rterm.family=="ordinal")*(rterm.family=="threshold" | rterm.family=="ordinal") 
-
-  if(any(tapply(data$MCMC_family.names[which(data$MCMC_dummy==0)], data$MCMC_error.term[which(data$MCMC_dummy==0)], function(x){length(unique(x))>1 & any(x=="threshold" | x=="ordinal")}))){
-    stop("threshold/ordinal traits must have separate residual variance from other traits")
-        #stop("threshold/ordinal traits can't have common cutpoints because they differ in their number of categories")
-  }
-
-  ncutpoints<-ncutpoints[nthordinal[trait.ordering]]
-
-  stcutpoints<-stcutpoints[nthordinal[trait.ordering]]
-  stcutpoints<-lapply(stcutpoints, function(x){
-   x<-x-x[2]
-   x[1]<--1e+64
-   x[length(x)]<-1e+64
-   x})
-  stcutpoints<-unlist(stcutpoints)
-  ordinal.names<-ordinal.names[nthordinal[trait.ordering]]
-}
-
-rterm.family<-rterm.family[trait.ordering]
 
 if(is.null(tune$mh_V)){
   AMtune=c(rep(FALSE, nG), rep(TRUE, nR))
@@ -1395,7 +1382,16 @@ nordinal<-length(ncutpoints)
 if(nordinal==0){
   ncutpoints<-1
   stcutpoints<-1
+}else{
+  stcutpoints<-lapply(stcutpoints, function(x){
+     x<-x-x[2]
+     x[1]<--1e+64
+     x[length(x)]<-1e+64
+     x})
+   stcutpoints<-unlist(stcutpoints)
 }  # no cutpoints need to be estimated if cutpoints=3 (standard binary)
+
+
 ncutpoints_store<-sum((ncutpoints-3)*(ncutpoints>3))
 
 data$MCMC_family.names<-match(data$MCMC_family.names, family.types)     # add measurement error variances and y.additional 
@@ -1437,8 +1433,6 @@ if(DIC==TRUE){
    DIC<-FALSE
  }
 }
-
-
 
 output<-.C("MCMCglmm",
   as.double(data$MCMC_y),   
@@ -1533,6 +1527,7 @@ if(!is.null(theta_scale)){
 }else{
  thetaS<-NULL
 }
+
 
 if(ncutpoints_store!=0){
  CP<-mcmc(t(matrix(output[[45]],ncutpoints_store, nkeep)), start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
@@ -1723,7 +1718,7 @@ output<-list(
   Liab=Liab,
   Fixed=list(formula=original.fixed, nfl=nF, nll=nL),
   Random=list(formula = original.random, nfl=Gnfl, nrl=Gnrl, nat=Gnat, nrt=Gnrt),
-  Residual=list(formula = original.rcov, nfl=Rnfl, nrl=Rnrl, nrt=Rnrt, family=rterm.family, original.family=original.family),
+  Residual=list(formula = original.rcov, nfl=Rnfl, nrl=Rnrl, nrt=Rnrt, original.family=original.family),
   Deviance=deviance,
   DIC=DIC,
   X=X,

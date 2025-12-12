@@ -468,6 +468,7 @@ if(thetaS){
     Wscale->i[i] = iLXP[i];
     Wscale->x[i] = xLXP[i];
   }
+
   for (i = 0 ; i <= ncolWS ; i++){
     Wscale->p[i] = pLXP[i];
   }
@@ -1220,7 +1221,7 @@ for (itt = 0; itt < (nitt+DICP[0]); itt++){
 /* form G and R structures */
 /***************************/
 
-//Rprintf("form G and R structures");
+//Rprintf("form G and R structures\n");
 
   for (k = 0 ; k < nGR; k++){                         
     if(updateP[k]>0 || (updateP[nGR+1]>0 && covu>0 && (k==nG || k==(nG-1)))){
@@ -1428,6 +1429,7 @@ if(itt>0){
 /*  sample vectors from  */
 /*      their prior      */
 /*************************/
+
 //Rprintf("sample vectors\n");	
 
 /* beta */
@@ -1501,6 +1503,7 @@ if(itt>0){
 /************************/
 /* sample pseudo vector */
 /************************/
+
 //Rprintf("sample pseudo vectors\n");  
 
    cs_gaxpy(W, astar->x, zstar->x);
@@ -1522,6 +1525,7 @@ if(itt>0){
 /*************/
 /* solve MME */
 /*************/
+
 //Rprintf("solve MME\n");
 
    L = cs_chol(MME, S); 
@@ -1555,7 +1559,9 @@ if(itt>0){
 /***********************/
 /* sample VCV matrices */
 /***********************/
+
 //Rprintf("sample G-VCV\n");
+
    pred = cs_multiply(W, location);
    cs_sortdv(pred); 
 
@@ -1643,6 +1649,7 @@ if(itt>0){
 /************************/
 /* Sample G-R Structure */
 /************************/
+
 //Rprintf("sample G-R-VCV\n");
 
   if(covu>0){
@@ -1791,12 +1798,14 @@ if(itt>0){
 /**********************/
 /* Sample R Structure */
 /**********************/
+
 //Rprintf("sample R-VCV\n");
 
    cnt2=0;
 
    for(i=nG; i<nGR; i++){  
     dimG = GRdim[i];
+
     if(updateP[i]>0){               
       for(j=0; j<dimG; j++){
         for(k=j; k<dimG; k++){
@@ -1887,9 +1896,10 @@ if(itt>0){
 /**********************************/
 /* update theta_scale parameters  */   
 /**********************************/   
-//Rprintf("sample theta_scale parameters\n");
 
 if(thetaS){
+
+  //Rprintf("sample theta_scale parameters\n");
 
   predscale = cs_multiply(Wscale, location);
   
@@ -1975,8 +1985,10 @@ if(thetaS){
 /* update recursive-simultaneous structural parameters  */   
 /********************************************************/
 
-
   if(nL>0){    
+
+    //Rprintf("sample recursive-simultaneous parameters\n");
+    
     if(missing){
       if(path){     
         // linky_orig updated when sampling liabilities, but  Y also needs to be updated. 
@@ -2105,6 +2117,7 @@ if(thetaS){
 /**********************/
 /* calculate deviance */   
 /**********************/
+
 //Rprintf("calculate deviance\n");
 
   dbar =0.0;
@@ -2238,6 +2251,9 @@ if(thetaS){
 /********************/
 
      if(cp){  
+
+      //Rprintf("sample cutpoints\n");
+
        for(i=0; i<nordinal; i++){ 
          for(j=2; j<(ncutpointsP[i]-1); j++){ 
             newcutpoints[cumsum_ncutpoints[i]+j] = rtnorm(oldcutpoints[cumsum_ncutpoints[i]+j], sdcp[i], newcutpoints[cumsum_ncutpoints[i]+j-1], oldcutpoints[cumsum_ncutpoints[i]+j+1]);
@@ -2257,7 +2273,7 @@ if(thetaS){
              }else{
                cutpointMHR[nthordinal] = dcutpoints(pred, yP, observedP, record,record+nlGR[k], oldcutpoints, newcutpoints, cumsum_ncutpoints[nthordinal], ncutpointsP[nthordinal], sdcp[nthordinal], sqrt(G[k]->x[i*(dimG+1)]));
              }
-             // to be made campatible with path/sir models because linky is actually Lambda%*%y so linky and predy need to be premultiplied by solve(Lambda)
+             // to be made compatible with path/sir models because linky is actually Lambda%*%y so linky and predy need to be premultiplied by solve(Lambda)
 
              wncp[nthordinal] *= rACCEPT;
              zncp[nthordinal] *= rACCEPT;
@@ -2286,16 +2302,17 @@ if(thetaS){
 /***********************/
 /* sample liabilities  */   
 /***********************/
-//Rprintf("sample liabilities\n");	
 
    if(missing){
+
+     //Rprintf("sample liabilities\n");  
   
      cnt2=0;
      cnt=0;
      rterm=0;  // indexes the individual R-level so with the terms in the R-structure (1 1-dimensional, and 1 2 dimensional) {1} + {2, 3}
   
      for(k=nG; k<nGR; k++){      // Iterate through R-structures
-  
+
        dimG = GRdim[k];
      	 propCinv[k] = cs_inv(propC[k]);
     	 propCinvL[k] = cs_chol(propCinv[k], propCinvS[k]); 
@@ -2470,7 +2487,7 @@ if(thetaS){
           		   break;
            
           		   case 7: /* Censored Poisson */
-          	             densityl1 += log(ppois(y2P[record], exp(linki[k]->x[i]), true, false)-ppois(yP[record], exp(linki[k]->x[i]), true, false));
+          	       densityl1 += log(ppois(y2P[record], exp(linki[k]->x[i]), true, false)-ppois(yP[record], exp(linki[k]->x[i]), true, false));
           		     densityl2 += log(ppois(y2P[record], exp(linki_tmp[k]->x[i]), true, false)-ppois(yP[record], exp(linki_tmp[k]->x[i]), true, false));
           		   break;
   				 
@@ -2548,6 +2565,7 @@ if(thetaS){
                      densityl1 += log(pnorm(oldcutpoints[int(yP[record])+cumsum_ncutpoints[nthordinal]]-linki[k]->x[i], 0.0, 1.0, true,false)-pnorm(oldcutpoints[int(yP[record])-1+cumsum_ncutpoints[nthordinal]]-linki[k]->x[i], 0.0, 1.0, true,false));
                      densityl2 += log(pnorm(oldcutpoints[int(yP[record])+cumsum_ncutpoints[nthordinal]]-linki_tmp[k]->x[i], 0.0, 1.0, true,false)-pnorm(oldcutpoints[int(yP[record])-1+cumsum_ncutpoints[nthordinal]]-linki_tmp[k]->x[i], 0.0, 1.0, true,false));
                    }
+
                  }
                  break;
   
@@ -2635,18 +2653,21 @@ if(thetaS){
                  break;
   
                  case 20: /* Threshold */
+
+
                    if(cp){   // with cutpoints only Gibbs if MH step of cutpoints is accepted
+                    
                      nthordinal = mfacP[rterm+i];
                      if(DICP[0]==1){
                        dbar += pcmvnorm(predi[k], linki[k], G[k], i, oldcutpoints[int(yP[record])-1+cumsum_ncutpoints[nthordinal]], oldcutpoints[int(yP[record])+cumsum_ncutpoints[nthordinal]]);    
-                     } 
+                     }
+
                      if(cutpoints_updated[nthordinal] == 1 || itt==0){
                          linky->x[record] = rtcmvnorm(predi[k], linki[k], G[k], i, oldcutpoints[int(yP[record])-1+cumsum_ncutpoints[nthordinal]], oldcutpoints[int(yP[record])+cumsum_ncutpoints[nthordinal]]);
                      }
                      linki[k]->x[i] = linky->x[record];
                      linki_tmp[k]->x[i] = linky->x[record];
                    }else{
-  
                // binary models can be directly Gibbsed
                      if(yP[record]>1.5){
                         if(DICP[0]==1){
@@ -2662,6 +2683,7 @@ if(thetaS){
                      linki[k]->x[i] = linky->x[record];
                      linki_tmp[k]->x[i] = linky->x[record];
                    }
+
                  break;
   
                  case 21: /* zitobit */

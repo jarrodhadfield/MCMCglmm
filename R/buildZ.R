@@ -1,7 +1,7 @@
-buildZ<-function(x, data, nginverse=NULL, covu=FALSE){
+buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
 
-  vtype="idh"   # form of covariances for the random effets of a random term classified by some factor 
-  rtype="iid"   # form of covariances between random effets of random terms
+  vtype="idh"   # form of covariances for the random effects of a random term classified by some factor 
+  rtype="iid"   # form of covariances between random effects of random terms
 
   if(length(grep("^us\\(", x))>0){
     vtype<-"us"
@@ -119,9 +119,23 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE){
   if(nfl==0 & fformula.exists){stop("variance function formula for some random term defines predictors that are all zero")}
 
   if(nfl==0){
-    trait.ordering<-data$trait[1]
+    if(length(unique(mfac))>1 & nlevels(data$trait)>1){
+      trait.ordering<-NA
+    }else{
+      trait.ordering<-data$trait[1]
+    }
   }else{
-    trait.ordering<-as.numeric(data$trait[X@i[X@p[1:ncol(X)]+1]+1])
+    trait.ordering<-1:nfl
+    for(k in 1:nfl){
+
+      traitk<-unique(as.numeric(data$trait)[X@i[X@p[k]:(X@p[k+1]-1)+1]+1]) # trait's associated with kth R-term
+
+      if(length(unique(mfac[traitk]))>1){
+        trait.ordering<-NA
+      }else{
+        trait.ordering[k]<-traitk[1]
+      }
+    }
   }
 
   ZZ<-list()

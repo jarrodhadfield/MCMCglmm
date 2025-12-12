@@ -6,10 +6,10 @@ verbose=FALSE
 plotit=FALSE
 DICtest=TRUE
 SUMtest=TRUE
-nsim<-10
-nitt<-13000
-thin<-10
-burnin<-3000
+nsim<-1
+nitt<-13
+thin<-1
+burnin<-3
 
 psets<-c()
 
@@ -1964,7 +1964,7 @@ for(i in 1:nsim){
 
   dat<-data.frame(mu.hat=mu.hat, se=se, df=df)
   
-  m1<-MCMCglmm(cbind(mu.hat, se, df)~1, data=dat, family="msst", verbose=verbose)
+  m1<-MCMCglmm(cbind(mu.hat, se, df)~1, data=dat, family="msst", verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
   
   res51[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
   if(SUMtest){
@@ -1981,12 +1981,77 @@ for(i in 1:nsim){
 psets<-c(psets, tpar)
 
 
+# bivariate ordinal with independent R structures that are in reverse order to trait levels.
 
-est<-colMeans(cbind(res1, res2, res3, res3b, res4, res4c, res5,res5b,res6, res7,res7b, res8,res9, res10, res11, res12, if(jenny){res13}, if(jenny){res14}, res15, res17a,res17b, res18, res19, res19b, res20, res21, res21b, res21c, res22, res23, res24, res25, res26, res27, res28, res29, res30, res31, res32, res33, res34, res35, res36, res37, res38, res39, res40, res41, res42, res43, res44, res45, res46, res47, res48, res49, res50, res51), na.rm=T)
+print("res52")
+res52<-matrix(NA, nsim,3)
 
-np<-c(ncol(res1), ncol(res2), ncol(res3), ncol(res3b), ncol(res4), ncol(res4c), ncol(res5),ncol(res5b),ncol(res6), ncol(res7),ncol(res7b), ncol(res8),ncol(res9), ncol(res10), ncol(res11), ncol(res12), if(jenny){ncol(res13)}, if(jenny){ncol(res14)}, ncol(res15), ncol(res17a),ncol(res17b), ncol(res18), ncol(res19), ncol(res19b), ncol(res20), ncol(res21), ncol(res21b), ncol(res21c), ncol(res22), ncol(res23), ncol(res24), ncol(res25), ncol(res26), ncol(res27), ncol(res28), ncol(res29), ncol(res30), ncol(res31), ncol(res32), ncol(res33), ncol(res34), ncol(res35), ncol(res36), ncol(res37), ncol(res38), ncol(res39), ncol(res40), ncol(res41), ncol(res42), ncol(res43), ncol(res44), ncol(res45), ncol(res46), ncol(res47), ncol(res48), ncol(res49), ncol(res50), ncol(res51))
+tpar<-c(1,-1, 1/2)
 
-nam<-c("res1", "res2", "res3", "res3b", "res4", "res4c", "res5","res5b","res6", "res7","res7b", "res8","res9", "res10", "res11", "res12", if(jenny){"res13"}, if(jenny){"res14"}, "res15", "res17a","res17b", "res18", "res19", "res19b", "res20", "res21", "res21b", "res21c", "res22", "res23", "res24", "res25", "res26", "res27", "res28", "res29", "res30", "res31", "res32", "res33", "res34", "res35", "res36", "res37", "res38", "res39", "res40", "res41", "res42", "res43", "res44", "res45", "res46", "res47", "res48", "res49", "res50", "res51")
+for(i in 1:nsim){
+  
+ y1<-as.numeric(as.factor(cut(rnorm(500, 1), c(-Inf, 0, 1/2, Inf))))
+ y2<-as.numeric(as.factor(cut(rnorm(500, -1), c(-Inf, 0, Inf))))
+
+ dat<-data.frame(y=c(y1,y2), trait=gl(2, 500), family=rep("threshold", 1000))
+
+ prior<-list(R=list(R1=list(V=1, fix=1), R2=list(V=1, fix=1)))
+
+ m1<-MCMCglmm(y~trait-1, rcov=~us(at.level(trait,2)):units+idh(at.level(trait,1)):units, data=dat, family=NULL, prior=prior, verbose=FALSE, nitt=nitt, thin=thin, burnin=burnin)
+
+  res52[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$CP))
+  if(SUMtest){
+    summary(m2)
+  }
+  if(plotit){
+    plot(mcmc(cbind(m1$Sol, m1$CP)), ask=FALSE)
+  }
+  if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$CP)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$CP)))[,2]<tpar)){
+    print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$CP)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$CP)))[,2]<tpar)/length(tpar), "res52 different from expected"))
+  }
+  print(i)
+}
+psets<-c(psets, tpar)
+
+# trivraiate long-format model with 3-level ordinal, Gaussian and 2-level ordinal. R-structure in different order to levels(trait)
+
+print("res53")
+res53<-matrix(NA, nsim,5)
+
+tpar<-c(1,0, -1, 1, 1/2)
+
+for(i in 1:nsim){
+ 
+ y1<-as.numeric(as.factor(cut(rnorm(500, 1), c(-Inf, 0, 1/2, Inf))))
+ y2<-rnorm(300)
+ y3<-as.numeric(as.factor(cut(rnorm(100, -1), c(-Inf, 0, Inf))))
+
+ dat<-data.frame(y=c(y1,y2, y3), trait=as.factor(c(rep(1,500),rep(2,300), rep(3,100))), family=c(rep("threshold", 500), rep("gaussian", 300), rep("threshold", 100)))
+
+ prior<-list(R=list(R1=list(V=1, fix=1), R2=list(V=1, fix=1), R3=list(V=1, nu=0)))
+
+ m1<-MCMCglmm(y~trait-1, rcov=~us(at.level(trait,1)):units+idh(at.level(trait,3)):units+idh(at.level(trait,2)):units, data=dat, family=NULL, prior=prior, verbose=FALSE, nitt=nitt, thin=thin, burnin=burnin)
+
+  res53[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV[,3]), posterior.mode(m1$CP))
+  if(SUMtest){
+    summary(m2)
+  }
+  if(plotit){
+    plot(mcmc(cbind(m1$Sol, m1$VCV[,3], m1$CP)), ask=FALSE)
+  }
+  if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,3], m1$CP)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,3], m1$CP)))[,2]<tpar)){
+    print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,3], m1$CP)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,3], m1$CP)))[,2]<tpar)/length(tpar), "res53 different from expected"))
+  }
+  print(i)
+}
+psets<-c(psets, tpar)
+
+
+est<-colMeans(cbind(res1, res2, res3, res3b, res4, res4c, res5,res5b,res6, res7,res7b, res8,res9, res10, res11, res12, if(jenny){res13}, if(jenny){res14}, res15, res17a,res17b, res18, res19, res19b, res20, res21, res21b, res21c, res22, res23, res24, res25, res26, res27, res28, res29, res30, res31, res32, res33, res34, res35, res36, res37, res38, res39, res40, res41, res42, res43, res44, res45, res46, res47, res48, res49, res50, res51, res52, res53), na.rm=T)
+
+np<-c(ncol(res1), ncol(res2), ncol(res3), ncol(res3b), ncol(res4), ncol(res4c), ncol(res5),ncol(res5b),ncol(res6), ncol(res7),ncol(res7b), ncol(res8),ncol(res9), ncol(res10), ncol(res11), ncol(res12), if(jenny){ncol(res13)}, if(jenny){ncol(res14)}, ncol(res15), ncol(res17a),ncol(res17b), ncol(res18), ncol(res19), ncol(res19b), ncol(res20), ncol(res21), ncol(res21b), ncol(res21c), ncol(res22), ncol(res23), ncol(res24), ncol(res25), ncol(res26), ncol(res27), ncol(res28), ncol(res29), ncol(res30), ncol(res31), ncol(res32), ncol(res33), ncol(res34), ncol(res35), ncol(res36), ncol(res37), ncol(res38), ncol(res39), ncol(res40), ncol(res41), ncol(res42), ncol(res43), ncol(res44), ncol(res45), ncol(res46), ncol(res47), ncol(res48), ncol(res49), ncol(res50), ncol(res51), ncol(res52), ncol(res53))
+
+nam<-c("res1", "res2", "res3", "res3b", "res4", "res4c", "res5","res5b","res6", "res7","res7b", "res8","res9", "res10", "res11", "res12", if(jenny){"res13"}, if(jenny){"res14"}, "res15", "res17a","res17b", "res18", "res19", "res19b", "res20", "res21", "res21b", "res21c", "res22", "res23", "res24", "res25", "res26", "res27", "res28", "res29", "res30", "res31", "res32", "res33", "res34", "res35", "res36", "res37", "res38", "res39", "res40", "res41", "res42", "res43", "res44", "res45", "res46", "res47", "res48", "res49", "res50", "res51", "res52", "res53")
 
 nam<-paste(rep(nam,np), unlist(sapply(np,function(x){1:x})), sep=".")
 
@@ -1994,6 +2059,12 @@ names(est)<-nam
 
 plot(est~psets)
 abline(0,1)
+
+library(MCMCglmm)
+
+dat<-data.frame(y1=rnorm(100), y2=rpois(100,1), y3=rpois(100,2), y4=rpois(100,1), type=gl(2,50))
+
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idh(at.level(type,1)):trait:units+idh(at.level(type,2)):trait:units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
 
 
 

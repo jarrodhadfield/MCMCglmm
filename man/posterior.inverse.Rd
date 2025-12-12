@@ -15,7 +15,7 @@ posterior.inverse(x)
 \seealso{\code{\link{posterior.cor}}, \code{\link{posterior.evals}}, \code{\link{posterior.ante}}}
 \examples{
   V<-rIW(diag(2),3, n=1000)
-  inv.V<-posterior.inverse(v)
+  inv.V<-posterior.inverse(V)
 }
 \keyword{distribution}
 
