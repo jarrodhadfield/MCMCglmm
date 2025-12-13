@@ -2082,8 +2082,8 @@ m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idhm(trait):units, family=c("gaussian"
 
 library(MCMCglmm)
 dat<-data.frame(y1=rnorm(100, 0, sqrt(2)), y2=rnorm(100, 0, sqrt(2)))
-
-m1<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
+prior<-list(R=list(V=diag(2), nu=1, fix=2))
+m1<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idhm(trait):units, prior=prior, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
 summary(m1)
 
 m2<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)

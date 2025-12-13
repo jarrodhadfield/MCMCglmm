@@ -14,10 +14,10 @@ cs *cs_rR(const cs *A, double nu, double nuR, const css *As, const cs *Roldinv, 
 	for (i = 0 ; i < dimG; i++){
 	  Rnewinv->p[i] = i*dimG;
 	  for (j = 0 ; j < dimG; j++){
-		Rnewinv->i[cnt] = j;
-		Rnewinv->x[cnt] = 0.0;
-                A->x[i*dimG+j] -= pG->x[i*dimG+j];
- 		cnt++;
+			Rnewinv->i[cnt] = j;
+			Rnewinv->x[cnt] = 0.0;
+    	A->x[i*dimG+j] -= pG->x[i*dimG+j];
+ 			cnt++;
 	  }
 	}
 	Rnewinv->p[dimG] = dimG*dimG;
@@ -36,7 +36,7 @@ cs *cs_rR(const cs *A, double nu, double nuR, const css *As, const cs *Roldinv, 
 /*  using \pi_{2} = Eq 3.4 in Liu and Daniels (2006) */
 /*****************************************************/
 
-        MH = Roldldet-Rnewldet;
+  MH = Roldldet-Rnewldet;
  
 	for (i = 0 ; i < dimG; i++){
           MH += log(Roldinv->x[i*dimG+i]);
