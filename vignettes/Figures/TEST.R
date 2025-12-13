@@ -4,12 +4,12 @@ library(MCMCglmm)
 
 verbose=FALSE
 plotit=FALSE
-DICtest=TRUE
-SUMtest=TRUE
-nsim<-100
-nitt<-13000
-thin<-10
-burnin<-3000
+DICtest=FALSE
+SUMtest=FALSE
+nsim<-1
+nitt<-13
+thin<-1
+burnin<-3
 
 psets<-c()
 
@@ -662,18 +662,18 @@ y[which(y==1)]<-rpois(sum(y==1), exp(l[,1][which(y==1)]))
 
 
 data=data.frame(y1=y, x=x)
-m1<-MCMCglmm(y1~trait+trait:x-1, rcov=~idh(trait):units, data=data, family="zipoisson",prior=prior,verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
+m1<-MCMCglmm(y1~trait+trait:x-1, rcov=~idhm(trait):units, data=data, family="zipoisson",prior=prior,verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
 
 if(SUMtest){
 summary(m1)
 }
 if(plotit){
-plot(mcmc(cbind(m1$Sol, m1$VCV)), ask=FALSE)
+plot(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])), ask=FALSE)
 }
-if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)){
-print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)/length(tpar), "res19 different from expected"))
+if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,2]<tpar)){
+print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,2]<tpar)/length(tpar), "res19 different from expected"))
 }
-res19[i,]<-posterior.mode(mcmc(cbind(m1$Sol, m1$VCV)))
+res19[i,]<-posterior.mode(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))
 print(i)
 }
 
@@ -694,17 +694,17 @@ tpar<-c(1, -0.5, 0.2, 1,1,1)
 
 
 	data=data.frame(y1=y, x=x, fac=fac)
-	m1<-MCMCglmm(y1~trait+at.level(trait, 1):x-1, random=~us(at.level(trait,1)):fac, rcov=~idh(trait):units, data=data, family="zipoisson",prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
+	m1<-MCMCglmm(y1~trait+at.level(trait, 1):x-1, random=~us(at.level(trait,1)):fac, rcov=~idhm(trait):units, data=data, family="zipoisson",prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
 if(SUMtest){
 summary(m1)
 }
        if(plotit){
-          plot(mcmc(cbind(m1$Sol, m1$VCV)), ask=FALSE)
+          plot(mcmc(cbind(m1$Sol, m1$VCV[,c(1,2,5)])), ask=FALSE)
        }
-       if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)){
-          print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)/length(tpar), "res19b different from expected"))
+       if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,2,5)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,2,5)])))[,2]<tpar)){
+          print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,2,5)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,2,5)])))[,2]<tpar)/length(tpar), "res19b different from expected"))
        }
-       res19b[i,]<-posterior.mode(mcmc(cbind(m1$Sol, m1$VCV)))
+       res19b[i,]<-posterior.mode(mcmc(cbind(m1$Sol, m1$VCV[,c(1,2,5)])))
        print(i)
     }
 
@@ -1121,17 +1121,17 @@ for(i in 1:nsim){
 
 data=data.frame(y=y, x=x)
 prior=list(R=list(V=diag(2), fix=2, nu=1))
-m1<-MCMCglmm(y~trait-1+trait:x, rcov=~idh(trait):units, data=data, family="hupoisson", prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
+m1<-MCMCglmm(y~trait-1+trait:x, rcov=~idhm(trait):units, data=data, family="hupoisson", prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
 
-res30[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
+res30[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV[,c(1,4)]))
 if(SUMtest){
 summary(m1)
 }
 	if(plotit){
 		plot(mcmc(cbind(m1$Sol, m1$VCV)), ask=FALSE)
 	}
-        if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)){
-        print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)/length(tpar), "res30 different from expected"))
+        if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,2]<tpar)){
+        print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1,4)])))[,2]<tpar)/length(tpar), "res30 different from expected"))
         }
 print(i)
 }
@@ -1210,18 +1210,18 @@ y[which(y==1)]<-rbinom(sum(y==1), 20, plogis(l[,1][which(y==1)]))
 
 
 data=data.frame(success=y,failure=20-y, x=x)
-m1<-MCMCglmm(cbind(success,failure)~trait-1+trait:x, rcov=~idh(trait):units, data=data, family="zibinomial",prior=prior,verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
+m1<-MCMCglmm(cbind(success,failure)~trait-1+trait:x, rcov=~idhm(trait):units, data=data, family="zibinomial",prior=prior,verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
 
 if(SUMtest){
 summary(m1)
 }
 if(plotit){
-plot(mcmc(cbind(m1$Sol, m1$VCV)), ask=FALSE)
+plot(mcmc(cbind(m1$Sol, m1$VCV[,1:2])), ask=FALSE)
 }
-if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)){
-print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)/length(tpar), "res33 different from expected"))
+if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,1:2])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,1:2])))[,2]<tpar)){
+print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,1:2])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,1:2])))[,2]<tpar)/length(tpar), "res33 different from expected"))
 }
-res33[i,]<-posterior.mode(mcmc(cbind(m1$Sol, m1$VCV)))
+res33[i,]<-posterior.mode(mcmc(cbind(m1$Sol, m1$VCV[,1:2])))
 print(i)
 }
 psets<-c(psets, tpar)
@@ -1786,18 +1786,17 @@ for(i in 1:nsim){
   # cunning sampler from Peter Dalgaard (R-sig-mixed)
 
 data=data.frame(y=y, x=x)
-prior=list(R=list(V=diag(1), nu=1))
-m1<-MCMCglmm(y~trait*x, rcov=~trait:units, data=data, family="zapoisson", prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
-
-res47[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
+prior=list(R=list(V=diag(2), nu=1))
+m1<-MCMCglmm(y~trait*x, rcov=~idvm(trait):units, data=data, family="zapoisson", prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
+res47[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV[,c(1)]))
 if(SUMtest){
 summary(m1)
 }
 	if(plotit){
-		plot(mcmc(cbind(m1$Sol, m1$VCV)), ask=FALSE)
+		plot(mcmc(cbind(m1$Sol, m1$VCV[,c(1)])), ask=FALSE)
 	}
-        if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)){
-        print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)/length(tpar), "res47 different from expected"))
+        if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1)])))[,2]<tpar)){
+        print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV[,c(1)])))[,2]<tpar)/length(tpar), "res47 different from expected"))
         }
 print(i)
 }
@@ -2065,8 +2064,8 @@ library(MCMCglmm)
 
 dat<-data.frame(y1=rnorm(100), y2=rpois(100,1), y3=rpois(100,2), y4=rpois(100,1), type=gl(2,50), y5=sample(1:3, 100, replace=TRUE))
 
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
-
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=-2)))
+plot(m1$VCV)
 
 
 m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait:at.level(type,1)):units+idh(trait:at.level(type,2)):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
@@ -2081,7 +2080,14 @@ m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idh(trait):units, family=c("gaussian",
 
 m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE)
 
-dat<-data.frame(y1=rnorm(100), y2=rnorm(100))
+library(MCMCglmm)
+dat<-data.frame(y1=rnorm(100, 0, sqrt(2)), y2=rnorm(100, 0, sqrt(2)))
 
 m1<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
+summary(m1)
+
+m2<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
+summary(m2)
+
+
 

@@ -1,4 +1,4 @@
-priorformat<-function(prior, start, nfl, meta, diagR, vtype){
+priorformat<-function(prior, start, nfl, meta, residual, vtype){
 
        if(is.null(prior)){
           prior<-list(V=diag(sum(nfl)), nu=0, fix=as.numeric(meta), alpha.mu=rep(0,sum(nfl)), alpha.V=diag(sum(nfl))*0, beta.mu=NULL, beta.V=NULL, covu=FALSE)
@@ -17,17 +17,14 @@ priorformat<-function(prior, start, nfl, meta, diagR, vtype){
          if(is.matrix(prior$V)==FALSE){
             prior$V<-as.matrix(prior$V)
          }
-         if(!is.null(prior$alpha.mu) & diagR>0){
+         if(!is.null(prior$alpha.mu) & residual!=0){
             stop("Parameter expanded priors not implemented for residual structures")
-         }
-         if(!is.null(prior$alpha.V) & diagR>0){
-           stop("Parameter expanded priors not implemented for residual structures")
          }
          if(is.null(prior$covu)){
            prior$covu<-FALSE
          }else{
-           if(diagR<1){
-             stop("covu is only an argument for residual structures")
+           if(residual!=1){
+             stop("covu is only an argument for the first residual structures")
            }else{
              if(!is.logical(prior$covu)){stop("covu should be logical")}
              if(prior$covu){
@@ -54,25 +51,13 @@ priorformat<-function(prior, start, nfl, meta, diagR, vtype){
          if(any(names(prior)%in%pnames==FALSE)){
             paste(paste(names(prior)[which(names(prior)%in%pnames==FALSE)], sep=" "), " are not valid prior specifications for G/R-structures")
          }
-         if(diagR==3){     # need to expand trait:units prior to us(trait):units prior      
-           if(dim(prior$V)[1]!=1){
+         if(!prior$covu){   
+           if(any(dim(prior$V)!=sum(nfl))){ # check not performed for covu - checked outside of priorformat
              stop("V is the wrong dimension for some prior$G/prior$R elements")
-           }
-           prior$V<-diag(sum(nfl))*as.numeric(prior$V)
-         }else{
-           if(any(dim(prior$V)!=sum(nfl))){
-             stop("V is the wrong dimension for some prior$G/prior$R elements")
-             # check not performed for covu - checked outside of priorformat
            }
          }
-         if(diagR==1){
-           if(!all(diag(prior$V)>0)){
-             stop("V is not positive definite for some prior$G/prior$R elements")
-           }
-         }else{
-           if(is.positive.definite(prior$V)==FALSE){
-             stop("V is not positive definite for some prior$G/prior$R elements")
-           }
+         if(is.positive.definite(prior$V)==FALSE){
+           stop("V is not positive definite for some prior$G/prior$R elements")
          }
          if(is.null(prior$alpha.V)){
             prior$alpha.V<-prior$V*0
@@ -118,6 +103,14 @@ priorformat<-function(prior, start, nfl, meta, diagR, vtype){
              prior$beta.V<-diag(nk)*1e+10
            }
          }
+         if(vtype[1]=="idvm" & nfl[1]>1){
+            if(var(diag(prior$V))>0){stop("for idvm structures all diagonal elements of V should be the same")}
+            if(prior$fix<2){         # either not fixed or not updated.
+              prior$nu<-prior$nu/nfl # need to spread prior over all informative component.
+            }else{
+              prior$nu<-prior$nu/(prior$fix-1)
+            }
+         }
          if(prior$fix!=0){
            CM<-prior$V[prior$fix:nrow(prior$V),prior$fix:nrow(prior$V)]         
            if(prior$fix!=1){
@@ -149,12 +142,6 @@ priorformat<-function(prior, start, nfl, meta, diagR, vtype){
          if(is.matrix(start)==FALSE){
            start<-as.matrix(start)
          }
-         if(diagR==3){     # need to expand trait:units prior to us(trait):units prior   
-           if(dim(start)[1]!=1){
-             stop("V is the wrong dimension for some strart$G/start$R elements")
-           }
-           start<-diag(sum(nfl))*start[1]
-         }	
          if(any(dim(start)!=sum(nfl)) ){
            stop("V is the wrong dimension for some start$G/start$R elements")
          }

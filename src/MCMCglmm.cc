@@ -51,7 +51,6 @@ void MCMCglmm(
         double *BmupP,       // prior mean vector for beta     
         int *mfacP,          // vector of J-1 levels for each multinomial response 
       	int *observedP,	     // vector of 1 (observed) and 0 (missing)
-      	int *diagP,          // is a us matrix in fact diagonal?
         int *AMtuneP,        // should adaptive Metropolis algorithm be used
       	int *DICP,	     // should DIC be computed
         double *dbarP,
@@ -98,8 +97,7 @@ int     i, j, k,l,p,cnt,cnt2,cnt3,cnt4, rterm,itt,record,dimG,nthordinal,
         burnin = chainP[2], 
         post_cnt = 0,
         tvc =0,          // total number of (co)variance components 
-        nordinal = nordinalP[0],
-        diagR = diagP[0];  // is the us R-structure diagionalised 0-no, 1-yes, 2-yes with identical variances
+        nordinal = nordinalP[0];
 
 // Multinomial counters 
  
@@ -807,7 +805,7 @@ for(k = 0 ; k < nGR; k++){
   if(covu>0 && k==nG){
     dimG += covu;
   }
-  if(((covu==0 || k!=nG) && updateP[k]!=2 && updateP[k]!=4) || (covu>0 && k==nG && updateP[nGR+1]!=2 && updateP[nGR+1]!=4)){
+  if(((covu==0 || k!=nG) && splitP[k]<0) || (covu>0 && k==nG && updateP[nGR+1]!=2 && updateP[nGR+1]!=4)){
     CM[k] = cs_spalloc(1,1,1,true, false);
         }else{	
     cnt = 0;	
@@ -1628,7 +1626,15 @@ if(itt>0){
           G[i] = cs_rAnte(location, cnt2, dimG, nlGR[i], nanteBP[i], pmuAnte[i], pvAnte[i], A[i], AtermP[i], ivar[i]->x, nanteBP[2*nGR+i], pG[i], GRnpP[i]);
         break;
       
-      	case 6:    
+        case 6:   
+          G[i] = cs_ridh(Gtmp[i], double(nlGR[i])+GRnpP[i], splitP[i], CM[i]);
+        break;
+
+        case 7:    
+          G[i] = cs_ridv(Gtmp[i], double(nlGR[i])+GRnpP[i], splitP[i], CM[i]);
+        break;
+
+        case 8:       
       	  cs_invR(Gtmp[i], Ginv[i]);
       	  G[i] = cs_rSinvwishart(Ginv[i], double(nlGR[i])+GRnpP[i], splitP[i]); 
       	break;	
@@ -1692,22 +1698,6 @@ if(itt>0){
           Gtmp[nG]->x[j+dimG*k-1] = Gtmp[nG]->x[(j-1)*dimG+k];
         }
       }
-
-      if(diagR>0){
-        cnt=0;  
-        for(j=0; j<dimG; j++){
-          for(k=0; k<dimG; k++){
-            if(j==k){
-              if(diagR==2 && cnt!=0){
-                Gtmp[nG]->x[0] += Gtmp[nG]->x[cnt] - pG[nG]->x[cnt];
-              }
-            }else{
-             Gtmp[nG]->x[cnt] = 0.0;
-            }
-            cnt++;
-          }
-        }	
-      }
       
       switch(updateP[nGR+1]){
 
@@ -1728,29 +1718,21 @@ if(itt>0){
         case 4:  
           G_rr = cs_rRsubinvwishart(Gtmp[nG], double(nlGR[nG]), splitP[nG], GRnpP[nG], pG[nG], CM[nG]);
         break;
-        
+
         case 6:    
+          G_rr = cs_ridh(Gtmp[i], double(nlGR[i])+GRnpP[i], splitP[i], CM[i]);
+        break;
+
+        case 7:    
+          G_rr = cs_ridv(Gtmp[i], double(nlGR[i])+GRnpP[i], splitP[i], CM[i]);
+        break;
+
+        case 8:    
           cs_invR(Gtmp[nG], Ginv_rr);
           G_rr = cs_rSinvwishart(Ginv_rr, double(nlGR[nG])+GRnpP[nG], splitP[nG]); 
         break;
       }
 	
-      if(diagR>0){
-        cnt=0;  
-        for(j=0; j<dimG; j++){
-          for(k=0; k<dimG; k++){
-      	    if(j==k){
-              if(diagR==2){
-                G_rr->x[cnt] = G_rr->x[0];
-              }                          
-            }else{
-              G_rr->x[cnt] = 0.0;
-            }
-            cnt++;
-          }
-      	}	
-      }
-
       ldet_rr = log(cs_invR(G_rr, Ginv_rr));
   
       G[nG] = cs_schur(G_rr, covu, beta_rr);
@@ -1823,22 +1805,6 @@ if(itt>0){
           Gtmp[i]->x[j+dimG*k-1] = Gtmp[i]->x[(j-1)*dimG+k];
         }
       }
-
-      if(diagR>0){
-        cnt=0;  
-        for(j=0; j<dimG; j++){
-    		  for(k=0; k<dimG; k++){
-    		    if(j==k){
-              if(diagR==2 && cnt!=0){
-               Gtmp[i]->x[0] += Gtmp[i]->x[cnt] - pG[i]->x[cnt];
-              }
-            }else{
-             Gtmp[i]->x[cnt] = 0.0;
-            }
-            cnt++;
-    		  }
-        }	
-      }
   
       switch(updateP[i]){
   
@@ -1863,27 +1829,21 @@ if(itt>0){
         case 5:
           G[i] = cs_rAnte(dev, cnt2, dimG, nlGR[i],nanteBP[i], pmuAnte[i], pvAnte[i], A[i], AtermP[i], ivar[i]->x, nanteBP[2*nGR+i], pG[i], GRnpP[i]);
         break;
-  
-    		case 6:    
+
+        case 6:   
+          G[i] = cs_ridh(Gtmp[i], double(nlGR[i])+GRnpP[i], splitP[i], CM[i]);
+        break;
+
+        case 7:    
+          G[i] = cs_ridv(Gtmp[i], double(nlGR[i])+GRnpP[i], splitP[i], CM[i]);
+        break;
+
+    		case 8:    
     		  cs_invR(Gtmp[i], Ginv[i]);
     		  G[i] = cs_rSinvwishart(Ginv[i], double(nlGR[i])+GRnpP[i], splitP[i]); 
     		break;
       }					
-      if(diagR>0){
-        cnt=0;  
-        for(j=0; j<dimG; j++){
-    		  for(k=0; k<dimG; k++){
-    		    if(j==k){
-              if(diagR==2){
-                G[i]->x[cnt] = G[i]->x[0];
-              }                          
-            }else{
-             G[i]->x[cnt] = 0.0;
-            }
-            cnt++;
-          }
-        }	
-      }
+
       ldet[i] = log(cs_invR(G[i], Ginv[i]));
       cs_nfree(GinvL[i]);	
       GinvL[i] = cs_chol(Ginv[i], GinvS[i]);                 // cholesky factorisation of R^{-1} for Gibbs sampling fully missing data. 

@@ -1,6 +1,6 @@
 buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
 
-  vtype="idh"   # form of covariances for the random effects of a random term classified by some factor 
+  vtype<-"idh"  # form of covariances for the random effects of a random term classified by some factor 
   rtype="iid"   # form of covariances between random effects of random terms
 
   if(length(grep("^us\\(", x))>0){
@@ -30,7 +30,7 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
     vtype<-"idvm"
   }
   if(length(grep("^idhm\\(", x))>0){
-    vtype<-"idvm"
+    vtype<-"idhm"
   }
   if(length(grep("^ante.*\\(", x))>0){
     vtype<-gsub("\\(.*", "", x)

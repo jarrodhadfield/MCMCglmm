@@ -477,21 +477,10 @@ if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names
 
 # zero-inflated and multinomial>2 need to be preserved in the same R-structure even if idh 
 
-diagR<-1  # should the residual structure be diagonal even if us is used?
-
 if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0), grepl("path\\(", fixed)))){ 
   if(length(grep("idhm\\(trait|us\\(trait|idvm\\(trait|corg\\(trait|corgh\\(trait|cors\\(trait|ante.*\\(trait|sub\\(trait", rcov))==0){
     stop("For error structures involving multinomial/categorical data with more than 2 categories, zero-inflated/altered/hurdle models, or path models, please use variance.function(trait):units. If you tried trait:units you can replace this with idvm(trait):units. If you tried idh(trait):units or idv(trait):units you can replace them with idhm(trait):units or idvm(trait):units, respectively")
   }  
-}
-
-if(length(grep("idhm\\(", rcov))>0){
-  diagR<-2
-  rcov=as.formula(paste(gsub("idhm\\(", "us\\(", rcov), collapse=""))
-}
-if(length(grep("idvm\\(", rcov))>0){
-  rcov=~us(trait):units
-  diagR<-3
 }
 
 ###########################
@@ -629,7 +618,7 @@ for(r in 1:length(rmodel.terms)){
      }
    }
 
-   GRtmp<-priorformat(if(NOpriorG){NULL}else{prior$G[[r]]},if(NOstartG){NULL}else{start$G[[r]]}, Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), diagR=0, vtype=Zlist$vtype)
+   GRtmp<-priorformat(prior=if(NOpriorG){NULL}else{prior$G[[r]]},start=if(NOstartG){NULL}else{start$G[[r]]}, nfl=Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), residual=0, vtype=Zlist$vtype)
 
    if(r==1){
      Z<-Zlist$Z
@@ -648,7 +637,7 @@ for(r in 1:length(rmodel.terms)){
      ZR<-cbind(ZR, Zlist$Z)     
    }
 
-   GRtmp<-priorformat(if(NOpriorG){NULL}else{prior$R[[r-ngstructures]]},if(NOstartG){NULL}else{start$R[[r-ngstructures]]}, Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), diagR=diagR, vtype=Zlist$vtype)
+   GRtmp<-priorformat(prior=if(NOpriorG){NULL}else{prior$R[[r-ngstructures]]},start=if(NOstartG){NULL}else{start$R[[r-ngstructures]]}, nfl=Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), residual=r-ngstructures, vtype=Zlist$vtype)
 
    if(r==(ngstructures+1) & covu>0){
      beta_rr<-t(solve(GRtmp$start[[1]]$start[1:covu, 1:covu, drop=FALSE], GRtmp$start[[1]]$start[1:covu, (covu+1):Zlist$nfl, drop=FALSE]))+1e-16
@@ -673,8 +662,6 @@ for(r in 1:length(rmodel.terms)){
 }
 
 nR<-nr-nG-1  # number of R structures
-
-if(nR>1 & diagR!=1){stop("sorry - multiple R structures not yet implemented for idhm or idvm structures")}
 
 missing<-which(colSums(ZR)==0)
 nadded<-length(missing)
@@ -1251,10 +1238,6 @@ if(nR>1){
 if(any(split>1 & grepl("corg|corgh", update))){stop("sorry, fix terms cannot yet be used in conjunction with corg/corh structures")}
 if(any(split>1 & grepl("ante", update))){stop("sorry, fix terms cannot yet be used in conjunction with antedependence structures")}
 
-if(diagR==2){  # need to reform priors such that the marginal distribution of us is equal to distribution of idh 
-GRprior[[nG+nR]]$V<-GRprior[[nG+nR]]$V*GRprior[[nG+nR]]$n/(GRprior[[nG+nR]]$n+(dim(GRprior[[nG+nR]]$V)[1]+1))
-GRprior[[nG+nR]]$n<-GRprior[[nG+nR]]$n+(dim(GRprior[[nG+nR]]$V)[1]+1)
-}	
 GRinv<-unlist(lapply(GR, function(x){c(solve(x))}))
 GRvpP<-lapply(GRprior, function(x){x$V*x$n})
 if(any(update=="corg")){  # correlation matrices get I which is removed from Gtmp.
@@ -1274,9 +1257,6 @@ for(i in which(update=="cors")){
 }	
 
 GRvpP<-unlist(GRvpP)
-if(diagR==3){  # need to add additional prior nu because of way trait:units are updated
-GRprior[[nG+nR]]$n<-GRprior[[nG+nR]]$n+(nrl[nG+nR]+1)*(nfl[nG+nR]-1)
-}
 GRnpP<-unlist(lapply(GRprior, function(x){c(x$n)}))      
 
 nanteP<-as.numeric(gsub("[a-z]", "", update))*grepl("ante", update)
@@ -1328,28 +1308,31 @@ update[grep("corg|corgh", update)]<-3
 update[which(split==1)]<-0
 update[grep("cors", update)]<-4
 update[grep("ante", update)]<-5
-update[grep("sub", update)]<-6
+update[which(update=="idhm")]<-6
+update[which(update=="idvm")]<-7
+update[grep("sub", update)]<-8
 
 update<-c(update, covu)
 
 if(covu>0){
   update<-c(update, update[nG+1])
   update[0:1+nG]<-0
+  # has last R and first G fixed (so not sampled) and moves update code to the end of the vector
 }else{
   update<-c(update, 0)
 }
 
     # update codes: 0 fixed - do not sample;
-    #             : 1 unstructured 
-    #             : 2 block diagonal constrained 
-    #             : 3 correlation
-    #             : 4 unstructured with correlation sub-matrix
-    #             : 5 ante-dependence structure
-    #             : 6 us + identity direct sum 
-
-    # diagR codes:  1 normal
-    #            :  2 idh(trait):units specification turned into us(trait):units to keep latent variables together
-    #            :  3 trait:units specification turned into us(trait):units to keep latent variables together
+    #             : 1 unstructured: us/idh
+    #             : 2 block diagonal constrained: us with fix
+    #             : 3 correlation: corg
+    #             : 4 unstructured with correlation sub-matrix: cors
+    #             : 5 ante-dependence structure: ante
+    #             : 6 heterogeneous diagonal: idhm 
+    #             : 7 homogeneous diagonal: idvm 
+    #             : 8 us + identity direct sum: sum
+    # update[] = TRUE if covu
+    # update[] = ** if covu and 0 otherwise
 
 nordinal<-length(ncutpoints)
 if(nordinal==0){
@@ -1407,6 +1390,7 @@ if(DIC==TRUE){
  }
 }
 
+print(split)
 output<-.C("MCMCglmm",
   as.double(data$MCMC_y),   
   as.double(c(data$MCMC_y.additional, data$MCMC_y.additional2, data$MCMC_mh.weights)),
@@ -1444,7 +1428,6 @@ output<-.C("MCMCglmm",
   as.double(BmupP),
   as.integer(mfac), 
   as.integer(observed),
-  as.integer(diagR-1),
   as.integer(AMtune),
   as.integer(DIC),
   as.double(dbar),	  

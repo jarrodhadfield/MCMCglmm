@@ -60,6 +60,10 @@ cs *cs_rRsubinvwishart(const cs *A, double nu, int split, double nuR, const cs *
 /* samples a correlation sub-matrix, then conditions on it and samples from inverse-Wishart given scale matrix A (CM is the correlation sub-matrix from the previous iteration)*/
 cs *cs_rR(const cs *A, double nu, double nuR, const css *As, const cs *Roldinv, double Roldldet, const cs *pG);
 /* samples a correlation matrix given scale matrix A */
+cs *cs_ridh(const cs *A, double nu, int split, const cs *CM);
+/* samples a heterogeneous diagonal covariance matrix given scale matrix A */
+cs *cs_ridv(const cs *A, double nu, int split, const cs *CM);
+/* samples a homogeneous diagonal covariance matrix given scale matrix A */
 cs *cs_rwishart(const cs *A, double nu, const css *As);
 /* samples from the Wishart*/
 void cs_sortdv(const cs *A);

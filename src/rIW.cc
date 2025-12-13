@@ -5,7 +5,7 @@ extern "C"{
 void rIW(
         double *nu,      // df
         double *V,       // inverse scale matrix
-	double *CMP,      // conditional submatrix 
+	      double *CMP,      // conditional submatrix 
         int *dimP,   // dimension
         int *splitP,   // dimension
         int *n,          // number of samples
