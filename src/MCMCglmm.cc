@@ -52,7 +52,7 @@ void MCMCglmm(
         int *mfacP,          // vector of J-1 levels for each multinomial response 
       	int *observedP,	     // vector of 1 (observed) and 0 (missing)
         int *AMtuneP,        // should adaptive Metropolis algorithm be used
-      	int *DICP,	     // should DIC be computed
+      	int *DICP,	         // should DIC be computed
         double *dbarP,
         int *proposal,
         int *ncutpointsP,    // number of cutpoints with -Inf, 0, C1,.... Cncutpoints, Inf
@@ -2194,7 +2194,7 @@ if(thetaS){
         if(nkeep>0){      // some gaussian observed traits
           if(ncond>0 || (nkeep+ncond)!=dimG){   // some non-gaussian or non-observed traits
             dbar += cs_dcmvnorm(linki[k], predi[k], G[k], keep, nkeep, cond, ncond);    // some gaussian observed
-// to be made campatible with path/sir models because linki is actually Lambda%*%l so linki/predi/G need to be multiplied by solve(Lambda)
+// to be made compatible with path/sir models because linki is actually Lambda%*%l so linki/predi/G need to be multiplied by solve(Lambda)
           }else{
             dbar += cs_dmvnorm(linki[k], predi[k], ldet[k], Ginv[k]);                    // all gaussian observed (this is OK for sir )
           }

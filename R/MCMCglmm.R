@@ -71,22 +71,6 @@
     if(rLV<(-1) | rLV>1) {stop("start$r should be between -1 and 1")}
   }
 
-  if(!is.null(theta_scale)){
-    if(!is.list(theta_scale)){
-      stop("theta_scale should be a list with 'factor', 'level', 'fixed' and/or 'random'")
-    }else{
-      if(is.null(theta_scale$factor)){stop("theta_scale should have an element 'factor' giving the column that separates records")
-      }else{
-        if(!theta_scale$factor%in%names(data)){stop("theta_scale$factor does not appear in data")}
-      }
-      if(is.null(theta_scale$level)){stop("theta_scale should have an element 'level' giving the level of 'factor' defining records that should have scaled terms")
-      }else{
-        if(!theta_scale$level%in%levels(eval(parse(text=theta_scale$factor), data))){stop("theta_scale$level is not a level in theta_scale$factor in data")}
-      }
-      if(is.null(theta_scale$fixed) & is.null(theta_scale$random)){stop("theta_scale should have elements 'fixed' and/or 'random' giving the indices of the terms to be scaled")}
-    }
-  }
-
   original.fixed<-fixed                                                                            # original model specification
   original.random<-random 
   original.rcov<-rcov
@@ -116,6 +100,28 @@ if(is.null(ginverse)==FALSE){
   if(any(duplicated(rownames(ginverse[[i]])))){stop(paste("rownames of ", names(ginverse)[i], "ginverse must be unique"))}
   if(determinant(ginverse[[i]])$sign<=0){stop(paste(names(ginverse)[i], "ginverse is not positive definite"))}
   data[,names(ginverse)[i]]<-factor(data[,names(ginverse)[i]], levels=rownames(ginverse[[i]]))                        
+  }
+}
+
+if(!is.null(theta_scale)){
+  if(!is.list(theta_scale)){
+    stop("theta_scale should be a list with 'factor', 'level', 'fixed' and/or 'random'")
+  }else{
+    if(is.null(theta_scale$factor)){stop("theta_scale should have an element 'factor' giving the column that separates records")
+    }else{
+      if(!theta_scale$factor%in%names(data) & theta_scale$factor!="trait"){stop("theta_scale$factor does not appear in data")}
+    }
+    if(is.null(theta_scale$level)){stop("theta_scale should have an element 'level' giving the level of 'factor' defining records that should have scaled terms")
+    }else{
+      if(theta_scale$factor=="trait"){
+         if(!theta_scale$level%in%response.names){
+          stop("theta_scale$level should be the name of a trait")
+         }
+      }else{
+        if(!theta_scale$level%in%levels(eval(parse(text=theta_scale$factor), data))){stop("theta_scale$level is not a level in theta_scale$factor in data")}
+      }
+    }
+    if(is.null(theta_scale$fixed) & is.null(theta_scale$random)){stop("theta_scale should have elements 'fixed' and/or 'random' giving the indices of the terms to be scaled")}
   }
 }
 
@@ -1390,7 +1396,6 @@ if(DIC==TRUE){
  }
 }
 
-print(split)
 output<-.C("MCMCglmm",
   as.double(data$MCMC_y),   
   as.double(c(data$MCMC_y.additional, data$MCMC_y.additional2, data$MCMC_mh.weights)),
@@ -1468,7 +1473,7 @@ if(pr){
 colnames(Sol)<-gsub("MCMC_", "", colnames(Sol))
 
 if(nL>0){       
- lambda<-t(matrix(output[[55]], nL, nkeep))  
+ lambda<-t(matrix(output[[54]], nL, nkeep))  
  colnames(lambda)<-Lnames     
  lambda<-mcmc(lambda, start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
 }else{
@@ -1477,7 +1482,7 @@ if(nL>0){
 
 
 if(!is.null(theta_scale)){       
- thetaS<-matrix(output[[55]], nkeep,1)  
+ thetaS<-matrix(output[[54]], nkeep,1)  
  colnames(thetaS)<-"theta_scale"    
  thetaS<-mcmc(thetaS, start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
 }else{
@@ -1486,7 +1491,7 @@ if(!is.null(theta_scale)){
 
 
 if(ncutpoints_store!=0){
- CP<-mcmc(t(matrix(output[[45]],ncutpoints_store, nkeep)), start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
+ CP<-mcmc(t(matrix(output[[44]],ncutpoints_store, nkeep)), start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
  colnames(CP)<-c(paste("cutpoint.trait", rep(ordinal.names, ncutpoints-3), ".", unlist(sapply(ncutpoints-3, function(x){if(x!=0){1:x}})), sep=""))
  colnames(CP)<-gsub("MCMC_", "", colnames(CP))
 }else{
@@ -1534,8 +1539,8 @@ if(covu>0){
 }
 
 if(DIC){
- deviance<-mcmc(-2*output[[40]][1:nkeep], start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
- DIC<--4*output[[40]][nkeep+1]+2*output[[40]][nkeep+2]
+ deviance<-mcmc(-2*output[[39]][1:nkeep], start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
+ DIC<--4*output[[39]][nkeep+1]+2*output[[39]][nkeep+2]
 }else{
  deviance<-NULL
  DIC<-NULL

@@ -4,12 +4,12 @@ library(MCMCglmm)
 
 verbose=FALSE
 plotit=FALSE
-DICtest=FALSE
+DICtest=TRUE
 SUMtest=FALSE
 nsim<-1
-nitt<-13
-thin<-1
-burnin<-3
+nitt<-13000
+thin<-10
+burnin<-3000
 
 psets<-c()
 
@@ -2000,7 +2000,7 @@ for(i in 1:nsim){
 
   res52[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$CP))
   if(SUMtest){
-    summary(m2)
+    summary(m1)
   }
   if(plotit){
     plot(mcmc(cbind(m1$Sol, m1$CP)), ask=FALSE)
@@ -2033,7 +2033,7 @@ for(i in 1:nsim){
 
   res53[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV[,3]), posterior.mode(m1$CP))
   if(SUMtest){
-    summary(m2)
+    summary(m1)
   }
   if(plotit){
     plot(mcmc(cbind(m1$Sol, m1$VCV[,3], m1$CP)), ask=FALSE)
@@ -2045,12 +2045,160 @@ for(i in 1:nsim){
 }
 psets<-c(psets, tpar)
 
+# path model 
 
-est<-colMeans(cbind(res1, res2, res3, res3b, res4, res4c, res5,res5b,res6, res7,res7b, res8,res9, res10, res11, res12, if(jenny){res13}, if(jenny){res14}, res15, res17a,res17b, res18, res19, res19b, res20, res21, res21b, res21c, res22, res23, res24, res25, res26, res27, res28, res29, res30, res31, res32, res33, res34, res35, res36, res37, res38, res39, res40, res41, res42, res43, res44, res45, res46, res47, res48, res49, res50, res51, res52, res53), na.rm=T)
+print("res54")
+res54<-matrix(NA, nsim,9)
 
-np<-c(ncol(res1), ncol(res2), ncol(res3), ncol(res3b), ncol(res4), ncol(res4c), ncol(res5),ncol(res5b),ncol(res6), ncol(res7),ncol(res7b), ncol(res8),ncol(res9), ncol(res10), ncol(res11), ncol(res12), if(jenny){ncol(res13)}, if(jenny){ncol(res14)}, ncol(res15), ncol(res17a),ncol(res17b), ncol(res18), ncol(res19), ncol(res19b), ncol(res20), ncol(res21), ncol(res21b), ncol(res21c), ncol(res22), ncol(res23), ncol(res24), ncol(res25), ncol(res26), ncol(res27), ncol(res28), ncol(res29), ncol(res30), ncol(res31), ncol(res32), ncol(res33), ncol(res34), ncol(res35), ncol(res36), ncol(res37), ncol(res38), ncol(res39), ncol(res40), ncol(res41), ncol(res42), ncol(res43), ncol(res44), ncol(res45), ncol(res46), ncol(res47), ncol(res48), ncol(res49), ncol(res50), ncol(res51), ncol(res52), ncol(res53))
+tpar<-c(2,1, -1, -1, 2, -1, 1, 2, 1/2)
 
-nam<-c("res1", "res2", "res3", "res3b", "res4", "res4c", "res5","res5b","res6", "res7","res7b", "res8","res9", "res10", "res11", "res12", if(jenny){"res13"}, if(jenny){"res14"}, "res15", "res17a","res17b", "res18", "res19", "res19b", "res20", "res21", "res21b", "res21c", "res22", "res23", "res24", "res25", "res26", "res27", "res28", "res29", "res30", "res31", "res32", "res33", "res34", "res35", "res36", "res37", "res38", "res39", "res40", "res41", "res42", "res43", "res44", "res45", "res46", "res47", "res48", "res49", "res50", "res51", "res52", "res53")
+for(i in 1:nsim){
+ 
+ fac<-gl(2,150)
+ y1<-rnorm(300, as.numeric(fac))
+ y2<-y1*2+rnorm(300, 1, sqrt(2))
+ y3<-rnorm(300, -1, sqrt(1/2))-y2
+
+ dat<-data.frame(y1=y1, y2=y2, y3=y3, fac=fac)
+
+ m1<-MCMCglmm(cbind(y1, y2, y3)~trait-1+at.level(trait,1):fac+path(1,2,3)+path(2,3,3), rcov=~idhm(trait):units, data=dat, family=rep("gaussian", 3), verbose=FALSE, nitt=nitt, thin=thin, burnin=burnin)
+
+
+  res54[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$Lambda), posterior.mode(m1$VCV[,c(1,5,9)]))
+  if(SUMtest){
+    summary(m1)
+  }
+  if(plotit){
+    plot(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])), ask=FALSE)
+  }
+  if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,2]<tpar)){
+    print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,2]<tpar)/length(tpar), "res54 different from expected"))
+  }
+  print(i)
+}
+psets<-c(psets, tpar)
+
+# covu with 1st-r component being a correlation matrix
+
+print("res55")
+res55<-matrix(NA, nsim,13)
+
+tpar<-c(1,1,-1, 2,0.5, 0.25, 0.5,1, -0.25, 0.25, -0.25, 1, 1/2)
+
+for(i in 1:nsim){
+
+  n<-500
+  V<-matrix(c(2,0.5, 0.25, 0.5,1, -0.25, 0.25, -0.25, 1),3,3)
+  Vr<-1/2
+
+  u<-mvrnorm(n, c(0,0,0), V)
+
+  ya<-1+u[,2]
+  yb<-1+u[,3]
+  individual<-as.factor(rep(1:n, 4))
+  type<-as.factor(c(rep("s", 2*n), rep("r",2*n)))
+  measure<-as.factor(c(rep("a", n),rep("b", n), rep("c",2*n)))
+  yc<--1+u[individual[which(measure=="c")],1]+rnorm(2*n,0,sqrt(Vr))
+
+  dat<-data.frame(y=c(ya,yb,yc), type=type, individual=individual, measure=measure)
+ 
+  prior<-list(R=list(R1=list(V=V, nu=3, covu=TRUE, fix=2), R2=list(V=Vr, nu=1)))
+
+    if(DICtest){
+    m1<-MCMCglmm(y~measure-1, random=~us(at.level(type,"r")):individual, rcov=~cors(at.level(type, "s"):measure):individual+us(at.level(type, "r")):units, data=dat, prior=prior, pr=TRUE, nitt=2, thin=1, burnin=1, verbose=FALSE)
+
+   Vest<-matrix(m1$VCV[1,1:9],3,3)
+
+   Vreg<-Vest[2:3,1]%*%solve(Vest[1,1])
+   Vres<-Vest[2:3,2:3]-Vest[2:3,1]%*%solve(Vest[1,1])%*%Vest[1,2:3]
+   dev<-0
+
+   for(j in 1:n){
+     dev<-dev+mvtnorm::dmvnorm(cbind(ya,yb)[j,], m1$Sol[1,1:2]+Vreg%*%m1$Sol[1,3+j], Vres, log=TRUE)
+   }
+   dev<-dev+sum(dnorm(yc, m1$Sol[1,3]+m1$Sol[1,3+1:n][individual[which(measure=="c")]], sqrt(m1$VCV[1,10]), log=TRUE))
+
+   if(abs(-2*dev-m1$Deviance[1])<1e-6){
+     print("Deviance OK for covu (res55)")
+   }else{
+     stop("Deviance wrong for covu (res55)")
+   }}
+
+   m1<-MCMCglmm(y~measure-1, random=~us(at.level(type,"r")):individual, rcov=~cors(at.level(type, "s"):measure):individual+us(at.level(type, "r")):units, data=dat, prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
+   if(SUMtest){
+    summary(m1)
+   }
+   res49[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
+
+	if(plotit){
+		plot(mcmc(cbind(m1$Sol, m1$VCV)), ask=FALSE)
+	}
+        if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)){
+        print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$VCV)))[,2]<tpar)/length(tpar), "res55 different from expected"))
+        }
+print(i)
+
+ }
+psets<-c(psets, tpar)
+
+# theta_scale model.
+print("res56")
+res56<-matrix(NA, nsim,9)
+
+tpar<-c(1,-1, 1, 3, 2, 1/2,0,0, 1)
+
+for(i in 1:nsim){
+ 
+ ffac<-gl(2,150)
+ rfac<-gl(50,3)
+ u<-rnorm(50, 0, sqrt(2))
+
+ y1<-rnorm(300, as.numeric(ffac), sqrt(1/2))+u[rfac]
+ y2<-rnorm(300, -1+(ffac==2)*3)+u[rfac]*3
+
+
+ dat<-data.frame(y1=y1, y2=y2, ffac=ffac, rfac=rfac)
+
+ m1<-MCMCglmm(cbind(y1, y2)~trait-1+ffac, random=~rfac, rcov=~us(trait):units, data=dat, family=rep("gaussian", 2), theta_scale=list(factor="trait", level="y2", fixed=3, random=1), verbose=FALSE, nitt=nitt, thin=thin, burnin=burnin)
+
+
+  res56[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$ThetaS), posterior.mode(m1$VCV))
+  if(SUMtest){
+    summary(m1)
+  }
+  if(DICtest){
+	m1<-MCMCglmm(cbind(y1, y2)~trait-1+ffac, random=~rfac, rcov=~us(trait):units, data=dat, family=rep("gaussian", 2), theta_scale=list(factor="trait", level="y2", fixed=3, random=1), verbose=FALSE, nitt=3, thin=1, burnin=1, pr=TRUE)
+
+	pred1<-m1$Sol[2,"traity1"]+m1$Sol[2, "ffac2"]*(dat$ffac==2)+m1$Sol[2, paste0("rfac.", 1:50)][dat$rfac]
+	pred2<-m1$Sol[2,"traity2"]+m1$ThetaS[2]*(m1$Sol[2, "ffac2"]*(dat$ffac==2)+m1$Sol[2, paste0("rfac.", 1:50)][dat$rfac])
+
+	dev1<-dat$y1-pred1
+	dev2<-dat$y2-pred2
+
+	dev<--2*sum(mvtnorm::dmvnorm(cbind(dat$y1-pred1,dat$y2-pred2), mean=c(0,0), sigma=matrix(c(m1$VCV[2,2:5]),2,2), log=TRUE))
+	if(abs(dev-m1$Deviance[2])<1e-6){
+	 print("Deviance OK for bivariate Gaussian theta_scale (res56)")
+	}else{
+	 stop("Deviance wrong for bivariate Gaussian theta_scale (res56)")
+	}
+  }
+  if(plotit){
+    plot(mcmc(cbind(m1$Sol, m1$ThetaS, m1$VCV)), ask=FALSE)
+  }
+  if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$ThetaS, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$ThetaS, m1$VCV)))[,2]<tpar)){
+    print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$ThetaS, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$ThetaS, m1$VCV)))[,2]<tpar)/length(tpar), "res56 different from expected"))
+  }
+  print(i)
+}
+psets<-c(psets, tpar)
+
+
+
+est<-colMeans(cbind(res1, res2, res3, res3b, res4, res4c, res5,res5b,res6, res7,res7b, res8,res9, res10, res11, res12, if(jenny){res13}, if(jenny){res14}, res15, res17a,res17b, res18, res19, res19b, res20, res21, res21b, res21c, res22, res23, res24, res25, res26, res27, res28, res29, res30, res31, res32, res33, res34, res35, res36, res37, res38, res39, res40, res41, res42, res43, res44, res45, res46, res47, res48, res49, res50, res51, res52, res53, res54, res55, res56), na.rm=T)
+
+np<-c(ncol(res1), ncol(res2), ncol(res3), ncol(res3b), ncol(res4), ncol(res4c), ncol(res5),ncol(res5b),ncol(res6), ncol(res7),ncol(res7b), ncol(res8),ncol(res9), ncol(res10), ncol(res11), ncol(res12), if(jenny){ncol(res13)}, if(jenny){ncol(res14)}, ncol(res15), ncol(res17a),ncol(res17b), ncol(res18), ncol(res19), ncol(res19b), ncol(res20), ncol(res21), ncol(res21b), ncol(res21c), ncol(res22), ncol(res23), ncol(res24), ncol(res25), ncol(res26), ncol(res27), ncol(res28), ncol(res29), ncol(res30), ncol(res31), ncol(res32), ncol(res33), ncol(res34), ncol(res35), ncol(res36), ncol(res37), ncol(res38), ncol(res39), ncol(res40), ncol(res41), ncol(res42), ncol(res43), ncol(res44), ncol(res45), ncol(res46), ncol(res47), ncol(res48), ncol(res49), ncol(res50), ncol(res51), ncol(res52), ncol(res53), ncol(res54), ncol(res55), ncol(res56))
+
+nam<-c("res1", "res2", "res3", "res3b", "res4", "res4c", "res5","res5b","res6", "res7","res7b", "res8","res9", "res10", "res11", "res12", if(jenny){"res13"}, if(jenny){"res14"}, "res15", "res17a","res17b", "res18", "res19", "res19b", "res20", "res21", "res21b", "res21c", "res22", "res23", "res24", "res25", "res26", "res27", "res28", "res29", "res30", "res31", "res32", "res33", "res34", "res35", "res36", "res37", "res38", "res39", "res40", "res41", "res42", "res43", "res44", "res45", "res46", "res47", "res48", "res49", "res50", "res51", "res52", "res53", "res54", "res55", "res56")
 
 nam<-paste(rep(nam,np), unlist(sapply(np,function(x){1:x})), sep=".")
 
@@ -2072,17 +2220,18 @@ m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait:at.level(type,1)):u
 
 m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idh(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
 
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
+m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=10, fix=2)))
 
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
+m2<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=10, fix=2)))
 
 m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idh(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE)
 
-m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE)
+m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=0, fix=2)))
 
 library(MCMCglmm)
 dat<-data.frame(y1=rnorm(100, 0, sqrt(2)), y2=rnorm(100, 0, sqrt(2)))
 prior<-list(R=list(V=diag(2), nu=1, fix=2))
+prior=NULL
 m1<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idhm(trait):units, prior=prior, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
 summary(m1)
 
