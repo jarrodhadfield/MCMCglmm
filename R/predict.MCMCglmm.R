@@ -149,28 +149,14 @@
          post.var<-buildV(object, marginal=marginal, diag=TRUE, it=NULL, posterior="all", ...)
       }
 
-      super.trait<-1:length(object$Residual$family)
-      cnt<-1
-      i<-1
-      while(i<=length(super.trait)){
-        if(!grepl("hu|zi|za|multinomial", object$Residual$family[i])){
-          super.trait[i]<-cnt
-          i<-i+1
-          cnt<-cnt+1
-        }else{
-          if(grepl("multinomial", object$Residual$family[i])){
-            nm<-as.numeric(substr(object$Residual$family[i], 12,nchar(object$Residual$family[i])))-1
-            super.trait[i+1:nm-1]<-cnt
-            i<-i+nm
-            cnt<-cnt+1
-          }else{
-            super.trait[i]<-cnt
-            super.trait[i+1]<-cnt
-            i<-i+2
-            cnt<-cnt+1
-          }
-        }
-      }
+      ordering<-object$ZR@i+1
+
+      post.pred<-post.pred[,ordering]         
+      post.var<-post.var[,ordering]
+      object$family<-object$family[ordering]
+      object$y.additional<-object$y.additional[ordering,]
+      object$error.term<-object$error.term[ordering]
+      # when predicting on the response scale best to order everything in terms of R-order 
 
       normal.evd<-function(mu, v, approx){
         if(approx=="numerical" || approx=="taylor2"){
@@ -280,8 +266,12 @@
         cp.names<-match(cp.names,unique(cp.names))
 
         for(k in 1:length(nord)){
+
           keep<-which(object$family%in%c("ordinal", "threshold") & object$error.term==nord[k])
-          CP<-cbind(-Inf, 0, object$CP[,which(cp.names==k), drop=FALSE], Inf)
+
+          which.ord<-object$Residual$mfac[nord[k]]+1 
+
+          CP<-cbind(-Inf, 0, object$CP[,which(cp.names==which.ord), drop=FALSE], Inf)
           q<-matrix(0,dim(post.pred)[1], length(keep))
 
           is.ordinal<-as.numeric(object$family[keep[1]]=="ordinal")
@@ -308,61 +298,105 @@
         post.pred[,keep]<-exp(0.5*log(df/2)+lgamma(df/2-1/2)-lgamma(df/2))*post.pred[,keep]
       }
 
-      for(k in unique(super.trait)){
-        if(any(grepl("multinomial", object$Residual$family))){
-          keep<-which(object$error.term%in%which(super.trait==k))
-          size<-object$y.additional[keep,1]
-          ncat<-sum(super.trait==k)
+
+      if(any(grepl("multinomial", object$family))){
+
+        keep<-grep("multinomial", object$family)
+        eterms<-unique(object$error.term[keep])
+        ncat<-rle(object$Residual$mfac[eterms])
+        ncat<-rep(ncat$values + 2, ncat$lengths/(ncat$values+1))
+        # recover the number of categories of each multinomial supertrait from mfac
+
+        et<-0
+        for(i in 1:length(ncat)){
+          keep<-which(grepl("multinomial", object$family) & object$error.term%in%eterms[et+1:(ncat[i]-1)])
+          size<-object$y.additional[keep[seq(1, by=ncat[i]-1, length(keep))],1]
+       
           for(j in 1:nrow(post.pred)){
-            prob<-matrix(post.pred[j,keep], length(keep)/sum(super.trait==k), ncat)
-            pvar<-matrix(post.var[j,keep], length(keep)/sum(super.trait==k), ncat)
-            if(ncat==1){
+            prob<-matrix(post.pred[j,keep], ncol=ncat[i]-1)
+            pvar<-matrix(post.var[j,keep], ncol=ncat[i]-1)
+            if(ncat[i]==1){
               post.pred[j,keep]<-t(sapply(1:nrow(prob), function(x){normal.logistic(prob[x,], pvar[x,], approx)}))*size
             }else{
               post.pred[j,keep]<-t(sapply(1:nrow(prob), function(x){normal.multilogistic(prob[x,], pvar[x,], approx)}))*size
             }
           }
-        }
-
-        if(any(grepl("hupoisson", object$Residual$family))){
-          keep<-which(object$error.term%in%which(super.trait==k))
-          keep<-keep[-c(1:(length(keep)/2))]
-          rm.obs<-c(rm.obs, keep)
-          post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.ztp(mu,v, approx)})
-        }
-        if(any(grepl("zapoisson", object$Residual$family))){
-          keep<-which(object$error.term%in%which(super.trait==k))
-          keep<-keep[-c(1:(length(keep)/2))]
-          rm.obs<-c(rm.obs, keep)
-          post.pred[,keep]<-1-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){normal.evd(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.ztp(mu,v, approx)})
-        }
-
-        if(any(grepl("zipoisson", object$Residual$family[which(super.trait==k)]))){
-          keep<-which(object$error.term%in%which(super.trait==k))
-          keep<-keep[-c(1:(length(keep)/2))]
-          rm.obs<-c(rm.obs, keep)
-          post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*exp(post.pred[,keep-length(keep)]+post.var[,keep-length(keep)]/2)
-        }
-        if(any(grepl("zibinomial", object$Residual$family))){
-          keep<-which(object$error.term%in%which(super.trait==k))
-          size<-object$y.additional[keep[1:(length(keep)/2)],1]
-          keep<-keep[-c(1:(length(keep)/2))]
-          rm.obs<-c(rm.obs, keep)
-          post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], FUN=function(mu,v){normal.logistic(mu,v, approx)})*size
-        }
-        if(any(grepl("hubinomial", object$Residual$family))){
-          keep<-which(object$error.term%in%which(super.trait==k))
-          size<-object$y.additional[keep[1:(length(keep)/2)],1]
-          keep<-keep[-c(1:(length(keep)/2))]
-          rm.obs<-c(rm.obs, keep)
-          post.pred[,keep]<-mapply(post.pred[,keep], post.var[,keep], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
-          post.pred[,keep-length(keep)]<-post.pred[,keep]*mapply(post.pred[,keep-length(keep)], post.var[,keep-length(keep)], rep(size, each=nrow(post.pred)), FUN=function(mu,v, size){normal.ztb(mu,v, size, approx)})
+          et<-cumsum(ncat[1:i]-1) # end point of the multinomial super.trait in eterms
         }
       }
+
+
+      if(any(grepl("hupoisson", object$family))){
+        keep<-grep("hupoisson", object$family)
+        eterms<-unique(object$error.term[keep])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(i in 1:length(eterms)){
+          keep1<-which(grepl("hupoisson", object$family) & object$error.term%in%(eterms[i]+1))
+          post.pred[,keep1]<-mapply(post.pred[,keep1], post.var[,keep1], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
+          keep2<-which(grepl("hupoisson", object$family) & object$error.term%in%(eterms[i]))
+          post.pred[,keep2]<-post.pred[,keep1]*mapply(post.pred[,keep2], post.var[,keep2], FUN=function(mu,v){normal.ztp(mu,v, approx)})
+          rm.obs<-c(rm.obs, keep1)
+        }  
+      }
+
+      if(any(grepl("zapoisson", object$family))){
+        keep<-grep("zapoisson", object$family)
+        eterms<-unique(object$error.term[keep])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(i in 1:length(eterms)){
+          keep1<-which(grepl("zapoisson", object$family) & object$error.term%in%(eterms[i]+1))
+          post.pred[,keep1]<-mapply(post.pred[,keep1], post.var[,keep1], FUN=function(mu,v){1-normal.evd(mu,v, approx)})
+          keep2<-which(grepl("zapoisson", object$family) & object$error.term%in%(eterms[i]))
+          post.pred[,keep2]<-post.pred[,keep1]*mapply(post.pred[,keep2], post.var[,keep2], FUN=function(mu,v){normal.ztp(mu,v, approx)})
+          rm.obs<-c(rm.obs, keep1)
+        }  
+      }
+
+      if(any(grepl("zipoisson", object$family))){
+        keep<-grep("zipoisson", object$family)
+        eterms<-unique(object$error.term[keep])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(i in 1:length(eterms)){
+          keep1<-which(grepl("zipoisson", object$family) & object$error.term%in%(eterms[i]+1))
+          post.pred[,keep1]<-mapply(post.pred[,keep1], post.var[,keep1], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
+          keep2<-which(grepl("zipoisson", object$family) & object$error.term%in%(eterms[i]))
+          post.pred[,keep2]<-post.pred[,keep1]*exp(post.pred[,keep2]+post.var[,keep2]/2)
+          rm.obs<-c(rm.obs, keep1)
+        }  
+      }
+
+      if(any(grepl("hubinomial", object$family))){
+        keep<-grep("hubinomial", object$family)
+        eterms<-unique(object$error.term[keep])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(i in 1:length(eterms)){
+          keep1<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[i]+1))
+          size<-object$y.additional[keep1]
+          post.pred[,keep1]<-mapply(post.pred[,keep1], post.var[,keep1], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
+          keep2<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[i]))
+          post.pred[,keep2]<-post.pred[,keep1]*mapply(post.pred[,keep2], post.var[,keep2], rep(size, each=nrow(post.pred)), FUN=function(mu,v, size){normal.ztb(mu,v, size, approx)})
+          rm.obs<-c(rm.obs, keep1)
+        }  
+      }
+
+      if(any(grepl("zibinomial", object$family))){
+        keep<-grep("zibinomial", object$family)
+        eterms<-unique(object$error.term[keep])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(i in 1:length(eterms)){
+          keep1<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[i]+1))
+          post.pred[,keep1]<-mapply(post.pred[,keep1], post.var[,keep1], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
+          size<-object$y.additional[keep1]
+          keep2<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[i]))
+          post.pred[,keep2]<-size*post.pred[,keep1]*mapply(post.pred[,keep2], post.var[,keep2], FUN=function(mu,v){normal.logistic(mu,v, approx)})
+          rm.obs<-c(rm.obs, keep1)
+        }  
+      }
+
+      post.pred<-post.pred[,order(ordering)]
+      rm.obs<-match(rm.obs, (1:length(ordering))[order(ordering)])
+      # put back in original order
+
     }
   }
   

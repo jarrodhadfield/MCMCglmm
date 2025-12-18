@@ -483,9 +483,19 @@ if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names
 
 # zero-inflated and multinomial>2 need to be preserved in the same R-structure even if idh 
 
-if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0), grepl("path\\(", fixed)))){ 
+if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0)))){ 
   if(length(grep("idhm\\(trait|us\\(trait|idvm\\(trait|corg\\(trait|corgh\\(trait|cors\\(trait|ante.*\\(trait|sub\\(trait", rcov))==0){
     stop("For error structures involving multinomial/categorical data with more than 2 categories, zero-inflated/altered/hurdle models, or path models, please use variance.function(trait):units. If you tried trait:units you can replace this with idvm(trait):units. If you tried idh(trait):units or idv(trait):units you can replace them with idhm(trait):units or idvm(trait):units, respectively")
+
+    stop("For path models, ")
+
+    stop("For error structures involving zero-inflated/altered/hurdle models the zero-trait must follow the non-zero-trait for each unit. This is most easily achieved by using rcov=~idh(trait):units.")
+
+    stop("For error structures involving multinomial/categorical data with more than 2 categories the traits for each unit must appear consecutively. This is most easily achieved by using rcov=~idh(trait):units or  rcov=~us(trait):units")
+
+
+
+
   }  
 }
 
@@ -1661,7 +1671,7 @@ output<-list(
   Liab=Liab,
   Fixed=list(formula=original.fixed, nfl=nF, nll=nL),
   Random=list(formula = original.random, nfl=Gnfl, nrl=Gnrl, nat=Gnat, nrt=Gnrt),
-  Residual=list(formula = original.rcov, nfl=Rnfl, nrl=Rnrl, nrt=Rnrt, original.family=original.family),
+  Residual=list(formula = original.rcov, nfl=Rnfl, nrl=Rnrl, nrt=Rnrt, original.family=original.family, mfac=mfac),
   Deviance=deviance,
   DIC=DIC,
   X=X,

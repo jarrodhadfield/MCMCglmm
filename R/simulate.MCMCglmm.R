@@ -133,29 +133,6 @@
   enew<-matrix(NA,sum(object$Residual$nfl*object$Residual$nrl),1)
 
   it<-sample(1:nrow(object$Sol), nsim, replace=posterior!="all")
-
-  super.trait<-1:length(object$Residual$family)
-  cnt<-1
-  i<-1
-  while(i<=length(super.trait)){
-    if(!grepl("hu|zi|za|multinomial", object$Residual$family[i])){
-      super.trait[i]<-cnt
-      i<-i+1
-      cnt<-cnt+1
-    }else{
-      if(grepl("multinomial", object$Residual$family[i])){
-        nm<-as.numeric(substr(object$Residual$family[i], 12,nchar(object$Residual$family[i])))-1
-        super.trait[i+1:nm-1]<-cnt
-        i<-i+nm
-        cnt<-cnt+1
-      }else{
-        super.trait[i]<-cnt
-        super.trait[i+1]<-cnt
-        i<-i+2
-        cnt<-cnt+1
-      }
-    }
-  }
     
   rm.obs<-c()
 
@@ -225,6 +202,14 @@
 
     if(type=="response"){
 
+      ordering<-object$ZR@i+1
+      ynew<-ynew[ordering,,drop=FALSE]        
+ 
+      object$family<-object$family[ordering]
+      object$y.additional<-object$y.additional[ordering,]
+      object$error.term<-object$error.term[ordering]
+      # when predicting on the response scale best to order everything in terms of R-order 
+
       if(any(object$family%in%c("poisson", "cenpoisson"))){
         trans<-which(object$family=="poisson" | object$family=="cenpoisson")
         ynew[trans,i]<-rpois(length(trans), exp(ynew[trans,i]))
@@ -249,7 +234,9 @@
 
         for(k in 1:length(nord)){
           trans<-which(object$family%in%c("ordinal", "threshold") & object$error.term==nord[k])
-          CP<-c(-Inf, 0, object$CP[it[i],which(cp.names==k)], Inf)
+          which.ord<-object$Residual$mfac[nord[k]]+1 
+
+          CP<-c(-Inf, 0, object$CP[it[i],which(cp.names==which.ord)], Inf)
           q<-matrix(NA,length(trans), length(CP)-1)
 
           if(object$family[trans[1]]=="ordinal"){
@@ -258,7 +245,7 @@
             }
             ynew[trans,i]<-apply(q, 1, function(x){sample(1:ncol(q), 1, prob=x)})-1
           }else{
-            ynew[trans,i]<-as.numeric(cut(ynew[trans,i], c(-Inf, 0, object$CP[it[i],which(cp.names==k), drop=FALSE], Inf)))-1     
+            ynew[trans,i]<-as.numeric(cut(ynew[trans,i], c(-Inf, 0, object$CP[it[i],which(cp.names==which.ord), drop=FALSE], Inf)))-1     
           }  
         }
       }
@@ -275,68 +262,100 @@
         df<-object$y.additional[trans,2]
         ynew[trans,i]<-rt(length(trans), df,  ynew[trans,i]/scale)*scale
       }
-      
-      for(k in unique(super.trait)){
-        if(any(grepl("multinomial", object$Residual$family[which(super.trait==k)]))){
-          trans<-which(object$error.term%in%which(super.trait==k))
-          prob<-matrix(ynew[trans,i], length(trans)/sum(super.trait==k), sum(super.trait==k))
-          size<-object$y.additional[trans,1]
+
+      if(any(grepl("multinomial", object$family))){
+
+        trans<-grep("multinomial", object$family)
+        eterms<-unique(object$error.term[trans])
+        ncat<-rle(object$Residual$mfac[eterms])
+        ncat<-rep(ncat$values + 2, ncat$lengths/(ncat$values+1))
+        # recover the number of categories of each multinomial supertrait from mfac
+
+        et<-0
+        for(j in 1:length(ncat)){
+          trans<-which(grepl("multinomial", object$family) & object$error.term%in%eterms[et+1:(ncat[j]-1)])
+          size<-object$y.additional[trans[seq(1, by=ncat[j]-1, length(trans))],1]
+          prob<-matrix(ynew[trans,i], ncol=ncat[j]-1)
           ynew[trans,i]<-t(sapply(1:nrow(prob), function(x){rmultinom(1, size=size[x], prob= c(1,exp(prob[x,]))/(1+sum(exp(prob[x,]))))}))[,-1]
-        }
-        if(any(grepl("hupoisson", object$Residual$family[which(super.trait==k)]))){
-          trans<-which(object$error.term%in%which(super.trait==k))
-          prob<-matrix(ynew[trans,i], length(trans)/sum(super.trait==k), sum(super.trait==k))
-          if(i==1){
-            rm.obs<-c(rm.obs, trans[-c(1:(length(trans)/sum(super.trait==k)))])
-          }
-          prob[,2]<-rbinom(nrow(prob), 1, 1-plogis(prob[,2]))
-          prob[,2][which(prob[,2]==1)]<-qpois(runif(sum(prob[,2]==1), dpois(0, exp(prob[,1][which(prob[,2]==1)])), 1), exp(prob[,1][which(prob[,2]==1)]))
-          ynew[trans,i]<-prob[,2]
-        }
-        if(any(grepl("zapoisson", object$Residual$family[which(super.trait==k)]))){
-          trans<-which(object$error.term%in%which(super.trait==k))
-          prob<-matrix(ynew[trans,i], length(trans)/sum(super.trait==k), sum(super.trait==k))
-          if(i==1){
-            rm.obs<-c(rm.obs, trans[-c(1:(length(trans)/sum(super.trait==k)))])
-          }
-          prob[,2]<-rbinom(nrow(prob), 1, pexp(exp(prob[,2])))
-          prob[,2][which(prob[,2]==1)]<-qpois(runif(sum(prob[,2]==1), dpois(0, exp(prob[,1][which(prob[,2]==1)])), 1), exp(prob[,1][which(prob[,2]==1)]))
-          ynew[trans,i]<-prob[,2]
-        }
-        if(any(grepl("zipoisson", object$Residual$family[which(super.trait==k)]))){
-          trans<-which(object$error.term%in%which(super.trait==k))
-          if(i==1){
-            rm.obs<-c(rm.obs, trans[-c(1:(length(trans)/sum(super.trait==k)))])
-          }
-          prob<-matrix(ynew[trans,i], length(trans)/sum(super.trait==k), sum(super.trait==k))
-          prob[,2]<-rbinom(nrow(prob), 1, 1-plogis(prob[,2]))
-          prob[,2][which(prob[,2]==1)]<-rpois(sum(prob[,2]==1), exp(prob[,1][which(prob[,2]==1)]))
-          ynew[trans,i]<-prob[,2]
-        }
-        if(any(grepl("zibinomial", object$Residual$family[which(super.trait==k)]))){
-          trans<-which(object$error.term%in%which(super.trait==k))
-          if(i==1){
-            rm.obs<-c(rm.obs, trans[-c(1:(length(trans)/sum(super.trait==k)))])
-          }
-          size<-object$y.additional[trans[1:(length(trans)/2)],1]
-          prob<-matrix(ynew[trans,i], length(trans)/sum(super.trait==k), sum(super.trait==k))
-          prob[,2]<-rbinom(nrow(prob), 1, 1-plogis(prob[,2]))
-          prob[,2][which(prob[,2]==1)]<-rbinom(sum(prob[,2]==1), size[which(prob[,2]==1)], plogis(prob[,1][which(prob[,2]==1)]))
-          ynew[trans,i]<-prob[,2]
-        }
-        if(any(grepl("hubinomial", object$Residual$family[which(super.trait==k)]))){
-          trans<-which(object$error.term%in%which(super.trait==k))
-          if(i==1){
-            rm.obs<-c(rm.obs, trans[-c(1:(length(trans)/sum(super.trait==k)))])
-          }
-          size<-object$y.additional[trans[1:(length(trans)/2)],1]
-          prob<-matrix(ynew[trans,i], length(trans)/sum(super.trait==k), sum(super.trait==k))
-          prob[,2]<-rbinom(nrow(prob), 1, 1-plogis(prob[,2]))
-          prob[,2][which(prob[,2]==1)]<-qbinom(runif(sum(prob[,2]==1), dbinom(0, plogis(prob[,1][which(prob[,2]==1)]), size=size[which(prob[,2]==1)])), size=size[which(prob[,2]==1)], prob=plogis(prob[,1][which(prob[,2]==1)]))
-          ynew[trans,i]<-prob[,2]
+          et<-cumsum(ncat[1:j]-1) # end point of the multinomial super.trait in eterms
         }
       }
+
+      if(any(grepl("hupoisson", object$family))){
+        trans<-grep("hupoisson", object$family)
+        eterms<-unique(object$error.term[trans])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(j in 1:length(eterms)){
+          trans1<-which(grepl("hupoisson", object$family) & object$error.term%in%(eterms[j]+1))
+          ynew[trans1,i]<-rbinom(length(trans1), 1, 1-plogis(ynew[trans1,i]))
+          trans2<-which(grepl("hupoisson", object$family) & object$error.term%in%(eterms[j]))
+          nz<-which(ynew[trans1,i]==1)
+          ynew[trans1,i][nz]<-qpois(runif(length(nz), dpois(0, exp(ynew[trans2,i][nz])), 1), exp(ynew[trans2,i][nz]))
+          rm.obs<-c(rm.obs, trans2)
+        }  
+      }
+
+      if(any(grepl("zapoisson", object$family))){
+        trans<-grep("zapoisson", object$family)
+        eterms<-unique(object$error.term[trans])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(j in 1:length(eterms)){
+          trans1<-which(grepl("zapoisson", object$family) & object$error.term%in%(eterms[j]+1))
+          ynew[trans1,i]<-rbinom(length(trans1), 1, pexp(exp(ynew[trans1,i])))
+          trans2<-which(grepl("zapoisson", object$family) & object$error.term%in%(eterms[j]))
+          nz<-which(ynew[trans1,i]==1)
+          ynew[trans1,i][nz]<-qpois(runif(length(nz), dpois(0, exp(ynew[trans2,i][nz])), 1), exp(ynew[trans2,i][nz]))
+          rm.obs<-c(rm.obs, trans2)
+        }  
+      }
+
+      if(any(grepl("zipoisson", object$family))){
+        trans<-grep("zipoisson", object$family)
+        eterms<-unique(object$error.term[trans])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(j in 1:length(eterms)){
+          trans1<-which(grepl("zipoisson", object$family) & object$error.term%in%(eterms[j]+1))
+          ynew[trans1,i]<-rbinom(length(trans1), 1, 1-plogis(ynew[trans1,i]))
+          trans2<-which(grepl("zipoisson", object$family) & object$error.term%in%(eterms[j]))
+          nz<-which(ynew[trans1,i]==1)
+          ynew[trans1,i][nz]<-rpois(length(nz), exp(ynew[trans2,i][nz]))
+          rm.obs<-c(rm.obs, trans2)
+        }  
+      }
+
+      if(any(grepl("hubinomial", object$family))){
+        trans<-grep("hubinomialn", object$family)
+        eterms<-unique(object$error.term[trans])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(j in 1:length(eterms)){
+          trans1<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[j]+1))
+          size<-object$y.additional[trans1]
+          ynew[trans1,i]<-rbinom(length(trans1), 1, 1-plogis(ynew[trans1,i]))
+          trans2<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[j]))
+          nz<-which(ynew[trans1,i]==1)
+          ynew[trans1,i][nz]<-qbinom(runif(length(nz), dbinom(0, plogis(ynew[trans2,i][nz]), size=size[nz]), size=size[nz], prob=plogis(ynew[trans2,i][nz])))
+          rm.obs<-c(rm.obs, trans2)
+        }  
+      }
+
+      if(any(grepl("zibinomial", object$family))){
+        trans<-grep("zibinomialn", object$family)
+        eterms<-unique(object$error.term[trans])
+        eterms<-eterms[seq(1, by=2, length(eterms))]
+        for(j in 1:length(eterms)){
+          trans1<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[j]+1))
+          size<-object$y.additional[trans1]
+          ynew[trans1,i]<-rbinom(length(trans1), 1, 1-plogis(ynew[trans1,i]))
+          trans2<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[j]))
+          nz<-which(ynew[trans1,i]==1)
+          ynew[trans1,i][nz]<-rbinom(length(nz), prob=plogis(ynew[trans2,i][nz]), size=size[nz])
+          rm.obs<-c(rm.obs, trans2)
+        }  
+      }
     }
+    ynew<-ynew[order(ordering),,drop=FALSE]
+    rm.obs<-match(rm.obs, (1:length(ordering))[order(ordering)])
+    # put back in original order
   }
   if(length(rm.obs)>0){
     ynew<-ynew[-rm.obs,]
