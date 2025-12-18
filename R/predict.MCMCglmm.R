@@ -273,40 +273,21 @@
         post.pred[,keep]<-exp(-post.pred[,keep]+0.5*post.var[,keep])
       }
 
-      if(any(object$family%in%c("ordinal"))){      
+      if(any(object$family%in%c("ordinal", "threshold"))){      
 
-        nord<-unique(object$error.term[which(object$family=="ordinal")])
+        nord<-unique(object$error.term[which(object$family%in%c("ordinal", "threshold"))])
         cp.names<-substr(colnames(object$CP), 10, regexpr("\\.[1-9]$|\\.[1-9][0-9]$", colnames(object$CP))-1)
         cp.names<-match(cp.names,unique(cp.names))
 
         for(k in 1:length(nord)){
-
-          keep<-which(object$family%in%c("ordinal") & object$error.term==nord[k])
+          keep<-which(object$family%in%c("ordinal", "threshold") & object$error.term==nord[k])
           CP<-cbind(-Inf, 0, object$CP[,which(cp.names==k), drop=FALSE], Inf)
           q<-matrix(0,dim(post.pred)[1], length(keep))
 
-          for(i in 2:(dim(CP)[2]-1)){
-            q<-q+(pnorm(CP[,i+1]-post.pred[,keep],0,sqrt(post.var[,keep]+1))-pnorm(CP[,i]-post.pred[,keep],0,sqrt(post.var[,keep]+1)))*(i-1)
-          }
-
-          post.pred[,keep]<-q
-          rm(q)
-        } 
-      }
-
-      if(any(object$family%in%c("threshold"))){      
-      
-        nord<-unique(object$error.term[which(object$family=="threshold")])
-        cp.names<-substr(colnames(object$CP), 10, regexpr("\\.[1-9]$|\\.[1-9][0-9]$", colnames(object$CP))-1)
-        cp.names<-match(cp.names,unique(cp.names))
-
-        for(k in 1:length(nord)){
-          keep<-which(object$family%in%c("threshold") & object$error.term==nord[k])
-          CP<-cbind(-Inf, 0, object$CP[,which(cp.names==k), drop=FALSE], Inf)
-          q<-matrix(0,dim(post.pred)[1], length(keep))
+          is.ordinal<-as.numeric(object$family[keep[1]]=="ordinal")
 
           for(i in 2:(dim(CP)[2]-1)){
-            q<-q+(pnorm(CP[,i+1]-post.pred[,keep],0,sqrt(post.var[,keep]))-pnorm(CP[,i]-post.pred[,keep],0,sqrt(post.var[,keep])))*(i-1)
+            q<-q+(pnorm(CP[,i+1]-post.pred[,keep],0,sqrt(post.var[,keep]+is.ordinal))-pnorm(CP[,i]-post.pred[,keep],0,sqrt(post.var[,keep]+is.ordinal)))*(i-1)
           }
 
           post.pred[,keep]<-q

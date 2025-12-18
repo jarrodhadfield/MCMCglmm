@@ -241,31 +241,25 @@
         trans<-which(object$family=="ztpoisson")
         ynew[trans,i]<-qpois(runif(length(trans), dpois(0, exp(ynew[trans,i])), 1), exp(ynew[trans,i]))  
       }
-      if(any(object$family%in%"ordinal")){
+      if(any(object$family%in%c("ordinal", "threshold"))){
 
-        nord<-unique(object$error.term[which(object$family=="ordinal")])
+        nord<-unique(object$error.term[which(object$family%in%c("ordinal", "threshold"))])
         cp.names<-substr(colnames(object$CP), 10, regexpr("\\.[1-9]$|\\.[1-9][0-9]$", colnames(object$CP))-1)
         cp.names<-match(cp.names,unique(cp.names))
 
         for(k in 1:length(nord)){
-          trans<-which(object$family=="ordinal" & object$error.term==nord[k])
+          trans<-which(object$family%in%c("ordinal", "threshold") & object$error.term==nord[k])
           CP<-c(-Inf, 0, object$CP[it[i],which(cp.names==k)], Inf)
           q<-matrix(NA,length(trans), length(CP)-1)
-          for(j in 1:(length(CP)-1)){
-            q[,j]<-pnorm(CP[j+1]-ynew[trans,i], 0, 1)-pnorm(CP[j]-ynew[trans,i], 0, 1)
-          }
-          ynew[trans,i]<-apply(q, 1, function(x){sample(1:ncol(q), 1, prob=x)})-1
-        }
-      }
-      if(any(object$family%in%"threshold")){
 
-        nord<-unique(object$error.term[which(object$family=="threshold")])
-        cp.names<-substr(colnames(object$CP), 10, regexpr("\\.[1-9]$|\\.[1-9][0-9]$", colnames(object$CP))-1)
-        cp.names<-match(cp.names,unique(cp.names))
-
-        for(k in 1:length(nord)){
-          trans<-which(object$family=="threshold" & object$error.term==nord[k])
-          ynew[trans,i]<-as.numeric(cut(ynew[trans,i], c(-Inf, 0, object$CP[it[i],which(cp.names==k), drop=FALSE], Inf)))-1         
+          if(object$family[trans[1]]=="ordinal"){
+            for(j in 1:(length(CP)-1)){
+              q[,j]<-pnorm(CP[j+1]-ynew[trans,i], 0, 1)-pnorm(CP[j]-ynew[trans,i], 0, 1)
+            }
+            ynew[trans,i]<-apply(q, 1, function(x){sample(1:ncol(q), 1, prob=x)})-1
+          }else{
+            ynew[trans,i]<-as.numeric(cut(ynew[trans,i], c(-Inf, 0, object$CP[it[i],which(cp.names==k), drop=FALSE], Inf)))-1     
+          }  
         }
       }
 

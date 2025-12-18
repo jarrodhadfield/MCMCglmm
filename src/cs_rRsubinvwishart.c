@@ -48,7 +48,7 @@ cs *cs_rRsubinvwishart(const cs *A, double nu, int split, double nuR, const cs *
     IW = cs_rCinvwishart(Ainv, nu, split, CM);
 
     for (i = 0 ; i < nC*nC; i++){
-      oldCM->x[i] = CM->x[i];  // overwite old conditional matrix
+      oldCM->x[i] = CM->x[i];  // overwrite old conditional matrix
     }
 
     cs_spfree(A22);
