@@ -333,7 +333,7 @@
           ynew[trans1,i]<-rbinom(length(trans1), 1, 1-plogis(ynew[trans1,i]))
           trans2<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[j]))
           nz<-which(ynew[trans1,i]==1)
-          ynew[trans1,i][nz]<-qbinom(runif(length(nz), dbinom(0, plogis(ynew[trans2,i][nz]), size=size[nz]), size=size[nz], prob=plogis(ynew[trans2,i][nz])))
+          ynew[trans1,i][nz]<-qbinom(runif(length(nz), dbinom(0, plogis(ynew[trans2,i][nz]), size=size[nz])), size=size[nz], prob=plogis(ynew[trans2,i][nz]))
           rm.obs<-c(rm.obs, trans2)
         }  
       }
