@@ -117,6 +117,8 @@ cs *cs_rCinvwishart(const cs *A, double nu, int split, const cs *CM){
     } 
     IW->p[nA] = nA*nA;
 
+    cs_print(IW, TRUE);
+
     cs_spfree(T1inv);
     cs_spfree(A11);
     cs_spfree(A12);
