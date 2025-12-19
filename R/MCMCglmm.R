@@ -244,12 +244,15 @@ if(MVasUV){
         data<-data[,-which(names(data)==response.names[nt]), drop=FALSE]    # remove original variable
         row.names(data)<-row.names(cont)
         data<-cbind(data, cont)     # add new variables to data.frame
-        ones<-rep(1, length(response.names))
-        ones[which(response.names==response.names[nt])]<-nJ
-        response.names<-rep(response.names, ones)
-        family.names<-rep(family.names, ones)
-        family.names[which(response.names==response.names[nt])]<-"multinomial"
-        response.names[which(response.names==response.names[nt])]<-new.names
+
+        response.names[nt]<-new.names[1]
+        family.names[nt]<-"multinomial"
+
+        if(nJ>1){
+          response.names<-append(response.names, new.names[-1], nt)
+          family.names<-append(family.names, rep("multinomial", nJ-1), nt)
+        }
+
         nt<-nt+nJ
         y.additional<-cbind(y.additional, matrix(1,nS,nJ))
         y.additional2<-cbind(y.additional2, matrix(1-rowSums(cont),nS,nJ))
@@ -284,14 +287,14 @@ if(MVasUV){
      }	 
      data<-data[,-which(names(data)==response.names[nt+nJ]),drop=FALSE]                                                        # remove first category
      response.names<-response.names[-(nt+nJ)]
+
      if(grepl("ztmultinomial", family[i])){
        family.names[nt]<-"ztmultinomial"
+       family.names<-append(family.names, rep("ztmultinomial", nJ-1), nt)
      }else{
        family.names[nt]<-"multinomial"
+       family.names<-append(family.names, rep("multinomial", nJ-1), nt)
      }
-     ones<-rep(1,length(family.names))
-     ones[nt]<-nJ
-     family.names<-rep(family.names, ones)
      nt<-nt+nJ
    }
 
@@ -391,12 +394,11 @@ if(MVasUV){
   colnames(cont)<-paste(dist.preffix, response.names[nt], sep="_")
   data<-cbind(data, cont)
   mfac<-c(mfac, c(0,1))
-  ones<-rep(1, length(response.names))
-  ones[which(response.names==response.names[nt])]<-2
-  response.names<-rep(response.names, ones)
-  family.names<-rep(family.names, ones)
-  family.names[which(response.names==response.names[nt])]<-family.names[nt]
-  response.names[which(response.names==response.names[nt])]<-c(response.names[nt], paste(dist.preffix, response.names[nt], sep="_"))
+
+  response.names<-append(response.names, paste(dist.preffix, response.names[nt], sep="_"), nt)
+
+  family.names<-append(family.names, family.names[nt], nt)
+
   nt<-nt+2			  
 }
 
@@ -432,9 +434,9 @@ if(grepl("^ztmb", family[i])){
      y.additional2<-cbind(y.additional2,1-as.matrix(data[,match(response.names[1:nJ-1+nt], names(data))]))
 
      family.names[nt]<-"ztmb"
-     ones<-rep(1,length(family.names))
-     ones[nt]<-nJ
-     family.names<-rep(family.names, ones)
+            
+     family.names<-append(family.names, rep("ztmb", nJ-1), nt)
+
      nt<-nt+nJ
   }
 
@@ -1152,22 +1154,37 @@ if(is.null(start$liab)){
             }
             v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
           }else{
-            data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]  
+            if(any(data_tmp$MCMC_y==0)){
+             data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]
+            }else{
+              warning("response fitted as zi/hu/zapoisson but no zeros")
+            }
+
             mu<-mean(data_tmp$MCMC_y)
             v<-abs(log(((var(data_tmp$MCMC_y)-mu)/(mu^2))+1))
             mu<-log(mu)-0.5*v
           }
         }
         if(family_set=="zibinomial" | family_set=="hubinomial"){
+               
           if(max(data_tmp$MCMC_y)==1){
             mu<-mean(data_tmp$MCMC_y==1)
             mu<-log(mu/(1-mu))
             v<-diag(GRprior[[nG+nR]]$V)[length(diag(GRprior[[nG+nR]]$V))]
           }else{
-            data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]  
-            m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional-MCMC_y)~1, family="quasibinomial", data=data_tmp))
-            v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
-            mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2) 
+            if(any(data_tmp$MCMC_y==0)){
+            data_tmp<-data_tmp[-which(data_tmp$MCMC_y==0),]
+            }else{
+              warning("response fitted as zi/hubinomial but no zeros")
+            }
+            if(nrow(data_tmp)==0){
+              mu<-0
+              v<-1
+            }else{  
+              m1<-summary(glm(cbind(MCMC_y, MCMC_y.additional-MCMC_y)~1, family="quasibinomial", data=data_tmp))
+              v<-abs(((as.numeric(m1$dispersion[1])-1)/(mean(data_tmp$MCMC_y.additional)-1))/(plogis(m1$coef[1])*(1-plogis(m1$coef[1]))))
+              mu<-m1$coef[1]*sqrt(1 + v*((16 * sqrt(3))/(15 * pi))^2)
+            } 
           }
         }
         if(family_set=="zitobit"){
