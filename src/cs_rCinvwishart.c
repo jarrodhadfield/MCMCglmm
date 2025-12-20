@@ -72,9 +72,14 @@ cs *cs_rCinvwishart(const cs *A, double nu, int split, const cs *CM){
     A11Schurinv = cs_inv(A11Schur);
     varT2inv = cs_kroneckerA(T1, A11Schurinv);
 
-
     T2s = cs_schol(0, varT2inv);
     varT2invL = cs_chol(varT2inv, T2s);
+
+    if(varT2invL==NULL){
+       PutRNGstate();
+       Rf_error("Ill-conditioned covariance matrix with fix term: use proper priors if you haven't or rescale data if you have\n");
+    }
+
     cs_ltsolve(varT2invL->L, Rv);
     
     for (i = 0 ; i < (nC*split); i++){
@@ -135,6 +140,7 @@ cs *cs_rCinvwishart(const cs *A, double nu, int split, const cs *CM){
     cs_nfree(varT2invL);
     cs_sfree(T2s);
     cs_sfree(As);
+
     return (cs_done (IW, NULL, NULL, 1)) ;	/* success; free workspace, return C */
 
 }
