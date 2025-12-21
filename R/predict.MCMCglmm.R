@@ -70,11 +70,23 @@
     if(posterior=="mean"){
       object$VCV<-matrix(colMeans(object$VCV), 1, ncol(object$VCV))
 	    object$Sol<-matrix(colMeans(object$Sol), 1, ncol(object$Sol))
+      if(!is.null(object$CP)){
+        object$CP<-matrix(colMeans(object$CP), 1, ncol(object$CP))
+      }
+      if(!is.null(object$Lambda)){
+        object$Lambda<-matrix(colMeans(object$Lambda), 1, ncol(object$Lambda))
+      }
       it<-1
     }
     if(posterior=="mode"){
       object$VCV<-matrix(posterior.mode(object$VCV, ...), 1, ncol(object$VCV))
 	    object$Sol<-matrix(posterior.mode(object$Sol, ...), 1, ncol(object$Sol))
+      if(!is.null(object$CP)){
+        object$CP<-matrix(posterior.mode(object$CP, ...), 1, ncol(object$CP))
+      }
+      if(!is.null(object$Lambda)){
+        object$Lambda<-matrix(posterior.mode(object$Lambda, ...), 1, ncol(object$Lambda))
+      }
       it<-1
     }
     if(is.null(it)){
@@ -141,8 +153,11 @@
     W<-cbind(object$X, object$Z)
     W<-W[,c(1:object$Fixed$nfl, object$Fixed$nfl+keep), drop=FALSE]
   
-    post.pred<-t(apply(object$Sol,1, function(x){(W%*%x)@x}))
-
+    if(nrow(object$Sol)==1){
+       post.pred<-t(as.matrix(W%*%t(object$Sol)))
+    }else{
+       post.pred<-t(apply(object$Sol,1, function(x){(W%*%x)@x}))
+    }
     if(type=="response"){
  
       if(any(object$family!="gaussian" & object$family!="cengaussian" & object$family!="ncst")){
@@ -151,8 +166,8 @@
 
       ordering<-object$ZR@i+1
 
-      post.pred<-post.pred[,ordering]         
-      post.var<-post.var[,ordering]
+      post.pred<-post.pred[,ordering, drop=FALSE]         
+      post.var<-post.var[,ordering, drop=FALSE]
       object$family<-object$family[ordering]
       object$y.additional<-object$y.additional[ordering,]
       object$error.term<-object$error.term[ordering]
@@ -272,7 +287,7 @@
           which.ord<-object$Residual$mfac[nord[k]]+1 
 
           CP<-cbind(-Inf, 0, object$CP[,which(cp.names==which.ord), drop=FALSE], Inf)
-          q<-matrix(0,dim(post.pred)[1], length(keep))
+          q<-matrix(0, dim(post.pred)[1], length(keep))
 
           is.ordinal<-as.numeric(object$family[keep[1]]=="ordinal")
 
@@ -371,9 +386,9 @@
         eterms<-eterms[seq(1, by=2, length(eterms))]
         for(i in 1:length(eterms)){
           keep1<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[i]+1))
-          size<-object$y.additional[keep1]
           post.pred[,keep1]<-mapply(post.pred[,keep1], post.var[,keep1], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
           keep2<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[i]))
+          size<-object$y.additional[keep2,1]
           post.pred[,keep2]<-post.pred[,keep1]*mapply(post.pred[,keep2], post.var[,keep2], rep(size, each=nrow(post.pred)), FUN=function(mu,v, size){normal.ztb(mu,v, size, approx)})
           rm.obs<-c(rm.obs, keep1)
         }  
@@ -386,14 +401,14 @@
         for(i in 1:length(eterms)){
           keep1<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[i]+1))
           post.pred[,keep1]<-mapply(post.pred[,keep1], post.var[,keep1], FUN=function(mu,v){1-normal.logistic(mu,v, approx)})
-          size<-object$y.additional[keep1]
           keep2<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[i]))
+          size<-object$y.additional[keep2,1]
           post.pred[,keep2]<-size*post.pred[,keep1]*mapply(post.pred[,keep2], post.var[,keep2], FUN=function(mu,v){normal.logistic(mu,v, approx)})
           rm.obs<-c(rm.obs, keep1)
         }  
       }
 
-      post.pred<-post.pred[,order(ordering)]
+      post.pred<-post.pred[,order(ordering), drop=FALSE]
       rm.obs<-match(rm.obs, (1:length(ordering))[order(ordering)])
       # put back in original order
 
@@ -401,13 +416,13 @@
   }
   
   if(length(rm.obs)>0){
-    post.pred<-post.pred[,-rm.obs]
+    post.pred<-post.pred[,-rm.obs, drop=FALSE]
   }
 
-  if(is.matrix(post.pred)){
+  if(nrow(post.pred)>1){
     pred<-matrix(colMeans(post.pred), dim(post.pred)[2],1)
   }else{
-    pred<-matrix(post.pred, length(post.pred),1)
+    pred<-t(post.pred)
   }  
 
   if(interval!="none"){

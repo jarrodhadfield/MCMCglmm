@@ -324,29 +324,29 @@
       }
 
       if(any(grepl("hubinomial", object$family))){
-        trans<-grep("hubinomialn", object$family)
+        trans<-grep("hubinomial", object$family)
         eterms<-unique(object$error.term[trans])
         eterms<-eterms[seq(1, by=2, length(eterms))]
         for(j in 1:length(eterms)){
           trans1<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[j]+1))
-          size<-object$y.additional[trans1]
           ynew[trans1,i]<-rbinom(length(trans1), 1, 1-plogis(ynew[trans1,i]))
           trans2<-which(grepl("hubinomial", object$family) & object$error.term%in%(eterms[j]))
-          nz<-which(ynew[trans1,i]==1)
+          size<-object$y.additional[trans2,1]
+          nz<-which(ynew[trans1,i]==1)      
           ynew[trans1,i][nz]<-qbinom(runif(length(nz), dbinom(0, plogis(ynew[trans2,i][nz]), size=size[nz])), size=size[nz], prob=plogis(ynew[trans2,i][nz]))
           rm.obs<-c(rm.obs, trans2)
         }  
       }
 
       if(any(grepl("zibinomial", object$family))){
-        trans<-grep("zibinomialn", object$family)
+        trans<-grep("zibinomial", object$family)
         eterms<-unique(object$error.term[trans])
         eterms<-eterms[seq(1, by=2, length(eterms))]
         for(j in 1:length(eterms)){
           trans1<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[j]+1))
-          size<-object$y.additional[trans1]
           ynew[trans1,i]<-rbinom(length(trans1), 1, 1-plogis(ynew[trans1,i]))
           trans2<-which(grepl("zibinomial", object$family) & object$error.term%in%(eterms[j]))
+          size<-object$y.additional[trans2,1]
           nz<-which(ynew[trans1,i]==1)
           ynew[trans1,i][nz]<-rbinom(length(nz), prob=plogis(ynew[trans2,i][nz]), size=size[nz])
           rm.obs<-c(rm.obs, trans2)
