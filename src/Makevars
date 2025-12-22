@@ -1,4 +1,0 @@
-CFLAGS   += -g -O0
-CXXFLAGS += -g -O0
-FFLAGS   += -g -O0
-FCFLAGS  += -g -O0
