@@ -754,27 +754,6 @@ if(any(grepl("hu|zi|za|ztmb|multinomial", family.names))){
     stop("Residuals for hu/zi/za traits or multinomial traits measured on the same unit must appear in the same R-component")
   }
 
-  is_contiguous <- function(x) {
-    
-    r <- rle(x)
-    vals <- r$values
-    
-    # Indices of runs that are not NA
-    idx_non_na <- which(!is.na(vals))
-    
-    # For each non-NA run, record its value and its run index
-    df <- data.frame(
-      value = vals[idx_non_na],
-      run   = idx_non_na
-    )
-    
-    # For each distinct non-NA value, count how many *separate runs* it has
-    runs_per_value <- tapply(df$run, df$value, length)
-    
-    # Every non-NA value must appear in exactly one run
-    all(runs_per_value == 1)
-  }
-
   eterms_with_hu<-0
 
   for(i in 1:nR){
