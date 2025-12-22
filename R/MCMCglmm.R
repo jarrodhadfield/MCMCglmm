@@ -131,7 +131,7 @@ if(is.null(family)){
    stop("no family specified")
  }else{
    if(is.null(data$trait)){
-     stop("data.frame needs to have a column indexing traits if fitting multivaraite models as univariate")
+     stop("data.frame needs to have a column indexing traits if fitting multivariate models as univariate")
    }else{
      if(is.factor(data$trait)==FALSE){
        stop("trait must be a factor")
@@ -143,7 +143,7 @@ if(is.null(family)){
      if(any(tapply(data$family, data$trait, function(x){length(unique(x))})!=1, na.rm=TRUE)){
        stop("all data from the same trait must come from the same distribution")
      }
-   }           
+   }        
    family.names<-as.character(data$family)   
    MVasUV=TRUE
    if(any(grepl("cen|multinomial|zi|hu|za|nzbinom|ncst|msst|ztmb", family.names))){ 
@@ -487,17 +487,16 @@ if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names
 
 if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0)))){ 
   if(length(grep("idhm\\(trait|us\\(trait|idvm\\(trait|corg\\(trait|corgh\\(trait|cors\\(trait|ante.*\\(trait|sub\\(trait", rcov))==0){
-    stop("For error structures involving multinomial/categorical data with more than 2 categories, zero-inflated/altered/hurdle models, or path models, please use variance.function(trait):units. If you tried trait:units you can replace this with idvm(trait):units. If you tried idh(trait):units or idv(trait):units you can replace them with idhm(trait):units or idvm(trait):units, respectively")
 
-    stop("For path models, ")
+    print("jarrod  - need to sub idhm and idvm here")
+    print("jarrod  - need to do this for path models also")
+ #   stop("For error structures involving multinomial/categorical data with more than 2 categories, zero-inflated/altered/hurdle models, or path models, please use variance.function(trait):units. If you tried trait:units you can replace this with idvm(trait):units. If you tried idh(trait):units or idv(trait):units you can replace them with idhm(trait):units or idvm(trait):units, respectively")
 
-    stop("For error structures involving zero-inflated/altered/hurdle models the zero-trait must follow the non-zero-trait for each unit. This is most easily achieved by using rcov=~idh(trait):units.")
+ #   stop("For path models, ")
 
-    stop("For error structures involving multinomial/categorical data with more than 2 categories the traits for each unit must appear consecutively. This is most easily achieved by using rcov=~idh(trait):units or  rcov=~us(trait):units")
+ #   stop("For error structures involving zero-inflated/altered/hurdle models the zero-trait must follow the non-zero-trait for each unit. This is most easily achieved by using rcov=~idh(trait):units.")
 
-
-
-
+ #   stop("For error structures involving multinomial/categorical data with more than 2 categories the traits for each unit must appear consecutively. This is most easily achieved by using rcov=~idh(trait):units or  rcov=~us(trait):units")
   }  
 }
 
@@ -728,6 +727,74 @@ if(any(c("ordinal", "threshold")%in%data$MCMC_family.names)){
     stop("threshold/ordinal traits must be uniquely associated with a single R-term")
   }
 }
+
+# zero-inflated and multinomial>2 residuals need to appear contiguously in R-structure
+
+if(any(grepl("hu|zi|za|ztmb|multinomial", family.names))){ 
+
+  unit_trait<-as.character(data$trait)
+
+  unit_trait[grep("^hu", data$MCMC_family.names)]<-gsub("^hu_", "", unit_trait[grep("^hu", data$MCMC_family.names)])
+  unit_trait[grep("^zi", data$MCMC_family.names)]<-gsub("^zi_", "", unit_trait[grep("^zi", data$MCMC_family.names)])
+  unit_trait[grep("^za", data$MCMC_family.names)]<-gsub("^za_", "", unit_trait[grep("^za", data$MCMC_family.names)])
+  unit_trait[grep("^multinomial", data$MCMC_family.names)]<-gsub("\\.[0-9]*$", "", unit_trait[grep("^multinomial", data$MCMC_family.names)])
+  unit_trait[grep("^ztmb", data$MCMC_family.names)]<-gsub("\\.[0-9]*$", "", unit_trait[grep("^ztmb", data$MCMC_family.names)])
+  # obtain original traits
+
+  unit_trait<-paste(unit_trait, data$units)
+  # unique observations
+
+  unit_trait[!grepl("^hu|^zi|^za|ztmb|multinomial", data$MCMC_family.names)]<-NA
+  # NA trait types we don't care about
+
+  r_component<-rep(1:nR, nrl[nG+1:nR]*nfl[nG+1:nR])
+  # obtain r-component for each unit_trait
+
+  if(any(tapply(r_component, unit_trait, var)!=0, na.rm=TRUE)){
+    stop("Residuals for hu/zi/za traits or multinomial traits measured on the same unit must appear in the same R-component")
+  }
+
+  is_contiguous <- function(x) {
+    
+    r <- rle(x)
+    vals <- r$values
+    
+    # Indices of runs that are not NA
+    idx_non_na <- which(!is.na(vals))
+    
+    # For each non-NA run, record its value and its run index
+    df <- data.frame(
+      value = vals[idx_non_na],
+      run   = idx_non_na
+    )
+    
+    # For each distinct non-NA value, count how many *separate runs* it has
+    runs_per_value <- tapply(df$run, df$value, length)
+    
+    # Every non-NA value must appear in exactly one run
+    all(runs_per_value == 1)
+  }
+
+  eterms_with_hu<-0
+
+  for(i in 1:nR){
+    # iterate through R-components
+
+    eterms_with_hu<-eterms_with_hu+1:nfl[nG+i]
+    
+    # get associated error terms
+
+    unit_trait_pos<-c(t(matrix(unit_trait[which(data$MCMC_error.term%in%eterms_with_hu)], ncol=nfl[nG+i])))
+    # order unit_trait by the order they are evaluated
+
+    if(!is_contiguous(unit_trait_pos)){
+     stop("Residuals for hu/zi/za traits or multinomial traits measured on the same unit must appear contiguously in the same R-component. This is most easily achieved by using the R-structure us(trait):units or idh(trait):units")
+    }
+    
+    eterms_with_hu<-max(eterms_with_hu)     
+  }
+}
+
 
 if(ngstructures==0){
   Z<-as(matrix(0,1,0), "sparseMatrix")
