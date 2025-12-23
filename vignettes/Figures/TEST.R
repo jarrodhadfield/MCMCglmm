@@ -6,7 +6,7 @@ verbose=FALSE
 plotit=FALSE
 DICtest=TRUE
 SUMtest=FALSE
-nsim<-1
+nsim<-10
 nitt<-13000
 thin<-10
 burnin<-3000
@@ -2071,8 +2071,8 @@ for(i in 1:nsim){
   if(plotit){
     plot(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])), ask=FALSE)
   }
-  if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,2]<tpar)){
-    print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV[,c(1,5,9)])))[,2]<tpar)/length(tpar), "res54 different from expected"))
+  if(any(HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV)))[,2]<tpar)){
+    print(paste(sum(HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV)))[,1]>tpar | HPDinterval(mcmc(cbind(m1$Sol, m1$Lambda, m1$VCV)))[,2]<tpar)/length(tpar), "res54 different from expected"))
   }
   print(i)
 }
@@ -2206,3 +2206,5 @@ names(est)<-names(psets)<-nam
 
 plot(est~psets)
 abline(0,1)
+
+

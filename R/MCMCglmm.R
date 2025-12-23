@@ -605,6 +605,7 @@ if(!NOstartG){
 for(r in 1:length(rmodel.terms)){
 
  if(r==(ngstructures+1)){nG<-nr-1}  # number of (new) G structures
+
  if(r<=ngstructures){
    if(covu!=0 & r==ngstructures){
      Zlist<-buildZ(rmodel.terms[r], data=data, nginverse=names(ginverse), covu=TRUE, mfac=mfac)
@@ -615,7 +616,7 @@ for(r in 1:length(rmodel.terms)){
    if(covu!=0 & r==(ngstructures+1)){
      Zlist<-buildZ(rmodel.terms[r], data=data, covu=TRUE, mfac=mfac)
    }else{
-     Zlist<-buildZ(rmodel.terms[r], data=data, mfac=mfac, convert_rcov=convert_rcov[r-nG])
+     Zlist<-buildZ(rmodel.terms[r], data=data, mfac=mfac, convert_rcov=convert_rcov[r-ngstructures])
    }
  }
 
@@ -685,7 +686,11 @@ for(r in 1:length(rmodel.terms)){
  }
 }
 
+
 nR<-nr-nG-1  # number of R structures
+
+
+
 
 missing<-which(colSums(ZR)==0)
 nadded<-length(missing)
