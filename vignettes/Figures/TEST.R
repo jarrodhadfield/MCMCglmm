@@ -1787,8 +1787,8 @@ for(i in 1:nsim){
 
 data=data.frame(y=y, x=x)
 prior=list(R=list(V=diag(2), nu=1))
-m1<-MCMCglmm(y~trait*x, rcov=~idvm(trait):units, data=data, family="zapoisson", prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
-res47[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV[,c(1)]))
+m1<-MCMCglmm(y~trait*x, rcov=~idv(trait):units, data=data, family="zapoisson", prior=prior, verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
+res47[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
 if(SUMtest){
 summary(m1)
 }
@@ -2061,10 +2061,10 @@ for(i in 1:nsim){
 
  dat<-data.frame(y1=y1, y2=y2, y3=y3, fac=fac)
 
- m1<-MCMCglmm(cbind(y1, y2, y3)~trait-1+at.level(trait,1):fac+path(1,2,3)+path(2,3,3), rcov=~idhm(trait):units, data=dat, family=rep("gaussian", 3), verbose=FALSE, nitt=nitt, thin=thin, burnin=burnin)
+ m1<-MCMCglmm(cbind(y1, y2, y3)~trait-1+at.level(trait,1):fac+path(1,2,3)+path(2,3,3), rcov=~idh(trait):units, data=dat, family=rep("gaussian", 3), verbose=FALSE, nitt=nitt, thin=thin, burnin=burnin)
 
 
-  res54[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$Lambda), posterior.mode(m1$VCV[,c(1,5,9)]))
+  res54[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$Lambda), posterior.mode(m1$VCV))
   if(SUMtest){
     summary(m1)
   }
@@ -2206,37 +2206,3 @@ names(est)<-names(psets)<-nam
 
 plot(est~psets)
 abline(0,1)
-
-stop()
-library(MCMCglmm)
-
-dat<-data.frame(y1=rnorm(100), y2=rpois(100,1), y3=rpois(100,2), y4=rpois(100,1), type=gl(2,50), y5=sample(1:3, 100, replace=TRUE))
-
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=-2)))
-plot(m1$VCV)
-
-
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait:at.level(type,1)):units+idh(trait:at.level(type,2)):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
-
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idh(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE)
-
-m1<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=10, fix=2)))
-
-m2<-MCMCglmm(cbind(y1, y2, y3, y4)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "multinomial3"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=10, fix=2)))
-
-m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idh(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE)
-
-m1<-MCMCglmm(cbind(y1, y5)~trait-1, rcov=~idhm(trait):units, family=c("gaussian", "categorical"), data=dat, verbose=FALSE, prior=list(R=list(V=diag(3), nu=0, fix=2)))
-
-library(MCMCglmm)
-dat<-data.frame(y1=rnorm(100, 0, sqrt(2)), y2=rnorm(100, 0, sqrt(2)))
-prior<-list(R=list(V=diag(2), nu=1, fix=2))
-prior=NULL
-m1<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idhm(trait):units, prior=prior, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
-summary(m1)
-
-m2<-MCMCglmm(cbind(y1, y2)~trait-1, rcov=~idvm(trait):units, family=c("gaussian", "gaussian"), data=dat, verbose=FALSE)
-summary(m2)
-
-
-

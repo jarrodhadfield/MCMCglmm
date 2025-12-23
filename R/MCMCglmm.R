@@ -1569,8 +1569,6 @@ if(!is.null(theta_scale)){
  thetaS<-NULL
 }
 
-print(ordinal.names)
-print(ncutpoints)
 if(ncutpoints_store!=0){
  CP<-mcmc(t(matrix(output[[44]],ncutpoints_store, nkeep)), start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
  colnames(CP)<-c(paste("cutpoint.trait", rep(ordinal.names, ncutpoints-3), ".", unlist(sapply(ncutpoints-3, function(x){if(x!=0){1:x}})), sep=""))
