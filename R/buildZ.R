@@ -1,4 +1,4 @@
-buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
+buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL, convert_rcov=0){
 
   vtype<-"idh"  # form of covariances for the random effects of a random term classified by some factor 
   rtype="iid"   # form of covariances between random effects of random terms
@@ -146,7 +146,7 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
 
   ZZ<-list()
   
-    for(k in 1:max(1,(1-(rtype=="iid"))*length(rterms))){  # iterate through Rterms or evalute once if iid
+    for(k in 1:max(1,(1-(rtype=="iid"))*length(rterms))){  # iterate through Rterms or evaluate once if iid
 
       if(rtype=="iid"){
         select.terms<-1:length(rterms)
@@ -307,18 +307,27 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
       if(length(rterms)==0){
         rterms<-""
       }
+
       if(rtype=="iid"){
+        if(convert_rcov==1){
+          idv.vnames<-paste(vnames, paste(rterms[select.terms], collapse=":"), sep=".")
+        }    
         if(vtype[1]=="us" | grepl("cor", vtype[1]) | substr(vtype[1],1,4)=="ante" | vtype[1]=="sub"| vtype[1]=="idhm" | vtype[1]=="idvm"){
           vnames<-paste(expand.grid(vnames, vnames)[,1],expand.grid(vnames, vnames)[,2], sep="MCMCsplit")
         }
         vnames<-paste(vnames, paste(rterms[select.terms], collapse=":"), sep=".")
       }
+
       if(rtype=="mm"){
+        if(convert_rcov==1){
+          idv.vnames<-paste(vnames, paste(rterms, collapse="+"), sep=".")
+        }   
         if(vtype[1]=="us" | grepl("cor", vtype[1]) | substr(vtype[1],1,4)=="ante" | vtype[1]=="sub" | vtype[1]=="idhm" | vtype[1]=="idvm"){
           vnames<-paste(expand.grid(vnames, vnames)[,1],expand.grid(vnames, vnames)[,2], sep="MCMCsplit")
         }
         vnames<-paste(vnames, paste(rterms, collapse="+"), sep=".")
       }
+
       if(rtype=="str"){
         nfl<-nfl*length(rterms)
         if(vtype[1]!="idh"){
@@ -333,6 +342,20 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL){
         }
         vtype<-rep("us", length(vtype))
       }
+      if(convert_rcov==1){
+        vnames[seq(1, by=nfl+1, length=nfl)]<-idv.vnames
+      }
+      if(convert_rcov==2){
+        if(idv.vnames=="trait"){
+          vnames[1]<-"trait:units"
+        }else{
+          vnames[1]<-"units:trait"
+        }  
+      }
+      if(convert_rcov==3){
+        vnames[1]<-idv.vnames[1]
+      }
+
       return(list(Z=Zsave, nfl=nfl, nrl=nrl, Aterm=Aterm, vtype=vtype, vnames=vnames, trait.ordering=trait.ordering))
     }
 }

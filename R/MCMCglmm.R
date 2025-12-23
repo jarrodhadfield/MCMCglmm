@@ -481,23 +481,29 @@ if(grepl("^ztmb", family[i])){
 nt<-nt-1
 }
 
+
 if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names[which((family.names%in%family.types)==FALSE)]), "not a supported distribution"))}
 
-# zero-inflated and multinomial>2 need to be preserved in the same R-structure even if idh 
 
-if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0)))){ 
-  if(length(grep("idhm\\(trait|us\\(trait|idvm\\(trait|corg\\(trait|corgh\\(trait|cors\\(trait|ante.*\\(trait|sub\\(trait", rcov))==0){
+rcov_terms<-split.direct.sum(as.character(rcov)[2])
+convert_rcov<-rep(0, length(rcov_terms))
 
-    print("jarrod  - need to sub idhm and idvm here")
-    print("jarrod  - need to do this for path models also")
- #   stop("For error structures involving multinomial/categorical data with more than 2 categories, zero-inflated/altered/hurdle models, or path models, please use variance.function(trait):units. If you tried trait:units you can replace this with idvm(trait):units. If you tried idh(trait):units or idv(trait):units you can replace them with idhm(trait):units or idvm(trait):units, respectively")
 
- #   stop("For path models, ")
+if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0), grepl("path\\(", fixed)))){ 
 
- #   stop("For error structures involving zero-inflated/altered/hurdle models the zero-trait must follow the non-zero-trait for each unit. This is most easily achieved by using rcov=~idh(trait):units.")
+# for back-compatibility need to turn idh/idv/trait:units R structures 
+# into their matrix equivalents when super.traits or path terms fitted 
 
- #   stop("For error structures involving multinomial/categorical data with more than 2 categories the traits for each unit must appear consecutively. This is most easily achieved by using rcov=~idh(trait):units or  rcov=~us(trait):units")
-  }  
+  convert_rcov[grep("idh\\(", rcov_terms)]<-1
+  convert_rcov[grep("^trait:units$|^units:traits$", rcov_terms)]<-2
+  convert_rcov[grep("idv\\(", rcov_terms)]<-3
+
+  rcov_terms<-gsub("idh\\(", "idhm\\(", rcov_terms)
+  rcov_terms<-gsub("^trait:units$|^units:traits$", "idvm\\(trait\\):units", rcov_terms)
+  rcov_terms<-gsub("idv\\(", "idvm\\(", rcov_terms)
+
+  rcov<-as.formula(paste0("~", paste(rcov_terms, collapse="+"))) 
+
 }
 
 ###########################
@@ -608,7 +614,7 @@ for(r in 1:length(rmodel.terms)){
    if(covu!=0 & r==(ngstructures+1)){
      Zlist<-buildZ(rmodel.terms[r], data=data, covu=TRUE, mfac=mfac)
    }else{
-     Zlist<-buildZ(rmodel.terms[r], data=data, mfac=mfac)
+     Zlist<-buildZ(rmodel.terms[r], data=data, mfac=mfac, convert_rcov=convert_rcov[r-nG])
    }
  }
 
@@ -1571,8 +1577,53 @@ if(ncutpoints_store!=0){
  CP<-NULL
 }
 
-
 VCV<-t(matrix(output[[28]], length(GRinv)-covu^2, nkeep))
+
+if(any(convert_rcov!=0)){
+
+# for back-compatibility resize idh/idv/trait:units R-structures coerced to idhm/idvm into multiple 1-d R-components
+
+  rpos<-nG+1
+
+  for(i in 1:length(convert_rcov)){
+
+    orig_nfl<-nfl[rpos]
+    orig_nrl<-nrl[rpos]
+    if(rpos==1){
+      VCV_pos<-1:(orig_nfl^2)
+    }else{
+      VCV_pos<-sum(nfl[1:(rpos-1)]^2)+1:(orig_nfl^2)
+    }
+
+    if(convert_rcov[i]==1){  # idh structures that were held as idhm 
+      VCV_rm<-VCV_pos[-diag(matrix(1:(orig_nfl^2),orig_nfl,orig_nfl))]
+      VCV<-VCV[,-VCV_rm,drop=FALSE]
+      variance.names<-variance.names[-VCV_rm]  
+      nfl<-append(nfl,rep(1,orig_nfl-1), rpos)
+      nfl[rpos]<-1
+      nrl<-append(nrl,rep(orig_nrl,orig_nfl-1), rpos)
+      nrt[ngstructures+i]<-orig_nfl 
+      nR<-nR+orig_nfl-1
+      rpos<-rpos+orig_nfl
+    }
+    if(convert_rcov[i]==2){  # trait:units structures that were held as idhm 
+      VCV_rm<-VCV_pos[-1]
+      VCV<-VCV[,-VCV_rm,drop=FALSE]
+      variance.names<-variance.names[-VCV_rm] 
+      nrl[rpos]<-orig_nfl*orig_nrl
+      nfl[rpos]<-1
+      nrt[ngstructures+i]<-1
+    }
+    if(convert_rcov[i]==3){ # idv structures that were held as idvm  
+      VCV_rm<-VCV_pos[-1]
+      VCV<-VCV[,-VCV_rm,drop=FALSE]
+      variance.names<-variance.names[-VCV_rm]
+      nrl[rpos]<-orig_nfl*orig_nrl
+      nfl[rpos]<-1
+      nrt[ngstructures+i]<-1
+    }
+  }
+}
 
 if(covu){
  if(nG==1){
