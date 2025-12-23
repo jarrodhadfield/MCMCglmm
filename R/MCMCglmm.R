@@ -465,6 +465,7 @@ if(grepl("^ztmb", family[i])){
     if(all(is.na(data[,response.names[nt]]))){ 
       ncutpoints<-c(ncutpoints, 3)
       stcutpoints[[length(stcutpoints)+1]]<-c(-Inf, 0, Inf)
+      ordinal.names<-c(ordinal.names, response.names[nt])
     }else{
       if(max(data[,response.names[nt]], na.rm=T)>2){slice<-FALSE}  
       ncutpoints<-c(ncutpoints, max(data[,response.names[nt]], na.rm=T)+1)
@@ -1568,7 +1569,8 @@ if(!is.null(theta_scale)){
  thetaS<-NULL
 }
 
-
+print(ordinal.names)
+print(ncutpoints)
 if(ncutpoints_store!=0){
  CP<-mcmc(t(matrix(output[[44]],ncutpoints_store, nkeep)), start=burnin+1, end=burnin+1+(nkeep-1)*thin, thin=thin)
  colnames(CP)<-c(paste("cutpoint.trait", rep(ordinal.names, ncutpoints-3), ".", unlist(sapply(ncutpoints-3, function(x){if(x!=0){1:x}})), sep=""))
