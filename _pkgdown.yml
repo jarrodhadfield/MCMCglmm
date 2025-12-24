@@ -1,0 +1,40 @@
+url: https://jarrodhadfield.github.io/MCMCglmm
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left:
+      - reference
+      - articles
+      - course-notes
+    right:
+      - github
+
+  components:
+    reference:
+      text: "Reference"
+      href: reference/index.html
+
+    articles:
+      text: "Articles"
+      href: articles/index.html
+
+    course-notes:
+      text: "Course notes"
+      href: course-notes/index.html
+
+    github:
+      icon: fa-github
+      href: https://github.com/jarrodhadfield/MCMCglmm
+
+home:
+  links:
+    - text: "MCMCglmm Course Notes (bookdown)"
+      href: course-notes/
+
+articles:
+  - title: "Vignettes"
+    contents:
+      - CourseNotes   # the short overview vignette

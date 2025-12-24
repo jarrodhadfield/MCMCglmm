@@ -1,0 +1,277 @@
+---
+title: Parameter Expansion
+abstract: ~
+author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
+date: '2025-12-24'
+vignette: |-
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Lecture8-knitr.Rnw}
+  %\VignetteDepends{}
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    number_sections: no
+    math_method: katex
+    includes:
+      in_header:
+      - auto-number-sec-js.html
+link-citations: yes
+bibliography: ~
+
+---
+
+::: article
+
+# Parameter Expansion
+
+As the covariance matrix approaches a singularity the mixing of the
+chain becomes notoriously slow. This problem is often encountered in
+single-response models when a variance component is small and the chain
+becomes stuck at values close to zero. Similar problems occur for the EM
+algorithm and @Liu.1998 introduced parameter expansion to speed up the
+rate of convergence. The idea was quickly applied to Gibbs sampling
+problems [@Liu.1999] and has now been extensively used to develop more
+efficient mixed-model samplers [e.g.
+@vanDyk.2001; @Gelman.2008b; @Browne.2009].\
+The columns of the design matrix (${\bf W}$) can be multiplied by the
+non-identified working parameters
+${\boldsymbol{\mathbf{\alpha}}} = \left[1,\ \alpha_{1},\ \alpha_{2},\ \dots \alpha_{k}\right]^{'}$:
+
+$${\bf W}_{\alpha} = \left[{\bf X}\ {\bf Z}_{1}\alpha_{1}\ {\bf Z}_{2}\alpha_{2}\ \dots\ {\bf Z}_{k}\alpha_{k}\right]
+\label{wstar}   (\#eq:wstar)$$
+
+where the indices denote submatrices of ${\bf Z}$ which pertain to
+effects associated with the same variance component. Replacing ${\bf W}$
+with ${\bf W}_{\alpha}$ we can sample the new location effects
+${\boldsymbol{\mathbf{\theta}}}_{\alpha}$ as described above, and
+rescale them to obtain ${\boldsymbol{\mathbf{\theta}}}$:
+
+$${\boldsymbol{\mathbf{\theta}}} = ({\bf I}_{\beta}\oplus_{i=1}^{k}{\bf I}_{u_{i}}\ \alpha_{i}){\boldsymbol{\mathbf{\theta}}}_{\alpha}$$
+
+where the identity matrices are of dimension equal to the length of the
+subscripted parameter vectors.\
+Likewise, the (co)variance matrices can be rescaled by the set of
+$\alpha$'s associated with the variances of a particular variance
+structure component (${\boldsymbol{\mathbf{\alpha}}}_{\mathcal{V}}$):
+
+$${\bf V} = Diag({\boldsymbol{\mathbf{\alpha}}}_{\mathcal{V}}){\bf V}_{\alpha}Diag({\boldsymbol{\mathbf{\alpha}}}_{\mathcal{V}})$$
+
+The working parameters are not identifiable in the likelihood, but do
+have a proper conditional distribution. Defining the $n\times(k+1)$
+design matrix ${\bf X}_{\alpha}$ with each column equal to the
+submatrices in Equation \@ref(eq:wstar) postmultiplied by the relevant
+subvectors of ${\boldsymbol{\mathbf{\theta}}}_{\alpha}$, we can see that
+${\boldsymbol{\mathbf{\alpha}}}$ is a vector of regression coefficients:
+
+$$\begin{array}{rl}
+\bf{l} =& {\bf X}_{\alpha}{\boldsymbol{\mathbf{\alpha}}}+\bf{e}\\
+\end{array}$$
+
+and so the methods described above can be used to update them.
+
+### Variances close to zero
+
+To use parameter exapnsion in `MCMCglmm` it is necessary to specify a
+prior covariance matrix for ${\boldsymbol{\mathbf{\alpha}}}$ which is
+non-null. In section [0.2](#secPX-p){reference-type="ref"
+reference="secPX-p"} I discuss what this prior means in the context of
+posterior inference but for now we will specify two models, one
+parameter expanded and the other not. To illustrate I will fit a model
+that estimates the between mother variation in offsping sex ratio using
+parameter expansions:
+
+``` {r echo=TRUE, source=TRUE, cache=TRUE}
+data(BTdata)
+BTdata$sex[which(BTdata$sex=="UNK")]<-NA
+BTdata$sex<-gdata::drop.levels(BTdata$sex)   # treat unknowns as missing data
+
+prior1b=list(R=list(V=1, fix=1), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000)))
+m7b.1<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior1b, verbose=FALSE)
+```
+
+and fit a model that does not use parameter expansion:
+
+``` {r echo=TRUE, cache=TRUE}
+prior2b=list(R=list(V=1, fix=1), G=list(G1=list(V=1e-10, nu=-1)))
+m7b.2<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior2b, verbose=FALSE)
+```
+
+The prior densities in the two models are very similar across the range
+of variances with reasonable posterior support, and running the models
+for long enough will verify that they are sampling from very similar
+posterior densities. However, the mixing properties of the two chains
+are very different, with the non-parameter expanded chain (in red)
+getting stuck at values close to zero (Figure
+[\[sexratio-fig\]](#sexratio-fig){reference-type="ref"
+reference="sexratio-fig"}).\
+``` {r label=sexratio, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Traces of the sampled posterior distribution for between female variance in sex ratio. The black trace is from a parameter expanded model, and the red trace from a non-parameter expanded model.", fig.width=7, fig.height=5>=
+plot(mcmc.list(m7b.1$VCV[,1], m7b.2$VCV[,1]))
+
+The parameter expanded model is 25\% slower per iteration but the effective sample size is \Sexpr{formatC( effectiveSize(m7b.1$VCV[,1])/effectiveSize(m7b.2$VCV[,1]), 3, format="f")} times greater:
+
+<<echo=TRUE}
+effectiveSize(m7b.1$VCV[,1])
+effectiveSize(m7b.2$VCV[,1])
+```
+
+### Parameter expanded priors {#secPX-p}
+
+The original aim of applying parameter expanded methods to Gibbs
+sampling was to speed up the convergence and mixing properties of the
+chain. They achieve this by introducing parameters that are not
+identified in the likelihood, and for which all information comes from
+the prior distribution. By placing priors on these parameters we can
+induce different prior distributions for the variance components. These
+priors are all from the non-central scaled F-distribution, which implies
+the prior for the standard deviation is a non-central folded scaled
+t-distribution [@Gelman.2006]. To use parameter expansion it is
+necessary to specify the prior means (`alpha.mu`) and prior covariance
+matrix (`alpha.V`) in the prior. Without loss of generality `V` can be
+set to one, so that the prior for the variance (`v`) has density
+function:
+
+``` {r echo=TRUE, eval=FALSE}
+df(v/alpha.V, df1=1, df2=nu, ncp=(alpha.mu^2)/alpha.V)
+```
+
+and the prior for the standard deviation:
+
+``` {r echo=TRUE, eval=FALSE}
+2*dt(sqrt(v)/sqrt(alpha.V),df=nu, ncp=alpha.mu/sqrt(alpha.V))
+```
+
+where `v`$>0$.\
+To illustrate I'll use the original Schools example from [@Gelman.2006]
+
+``` {r echo=TRUE}
+schools<-data.frame(school= letters[1:8], 
+                                  estimate= c(28.39, 7.94, -2.75 , 6.82, -0.64, 0.63, 18.01, 12.16),
+                                  sd = c(14.9, 10.2, 16.3, 11.0, 9.4, 11.4, 10.4, 17.6))
+head(schools)
+```
+
+The response variable `estimate` is the relative effect of Scholastic
+Aptitude Test coaching programs in 8 `schools`, and `sd` are the
+standard errors of the estimate. In the original example Gelman focused
+on the standard deviation of the between school effects and so we will
+place an improper flat prior on the standard deviation:
+
+``` {r echo=TRUE, cache=TRUE}
+prior1<-list(R=list(V=diag(schools$sd^2), fix=1), G=list(G1=list(V=1e-10, nu=-1)))
+m7a.1<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior1, verbose=FALSE)
+```
+
+In this example there is information on the between school variance
+although we only have a single estimate for each school. This is
+possible because the within school variance was available for each
+school and we were able to fix the residual variance for each school at
+this value (See Section [\[meta-sec\]](#meta-sec){reference-type="ref"
+reference="meta-sec"}). The posterior distribution of the between school
+standard deviation is shown in Figure
+[\[school1-fig\]](#school1-fig){reference-type="ref"
+reference="school1-fig"} with the flat prior shown as a solid line.\
+``` {r label=school1, echo=FALSE, include=TRUE, fig.cap="Between school standard deviation in educational test scores, with an improper uniform prior", fig.width=7, fig.height=5}
+hist(sqrt(m7a.1$VCV[,1]), main="", xlab="between school standard deviation", breaks=30, xlim=c(0,max(sqrt(m7a.1$VCV[,1]))))
+abline(h=50)
+```
+
+We can also use the inverse-gamma prior with scale and shape equal to
+0.001:
+
+``` {r echo=TRUE, cache=TRUE}
+prior2<-list(R=list(V=diag(schools$sd^2), fix=1), G=list(G1=list(V=1, nu=0.002)))
+m7a.2<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior2, verbose=FALSE)
+```
+
+but Figure [\[school2-fig\]](#school2-fig){reference-type="ref"
+reference="school2-fig"} indicates that such a prior in this context may
+put too much density and values close to zero.\
+``` {r label=school2, echo=FALSE, include=TRUE, fig.cap="Between school standard deviation in educational test scores, with an inverse-gamma prior with shape and scale set to 0.001", fig.width=7, fig.height=5}
+hist(sqrt(m7a.2$VCV[,1]), main="", xlab="between school standard deviation", breaks=30, xlim=c(0,max(sqrt(m7a.1$VCV[,1]))))
+x<-seq(0.01, max(sqrt(m7a.1$VCV[,1])), length=200)
+lines(100000*dgamma(1/(x^2), 0.001, 0.001)/(x^4)~x)
+```
+
+For the final prior we have `V=1`, `nu=1`, `alpha.mu=0` which is
+equivalent to a proper Cauchy prior for the standard deviation with
+scale equal to $\sqrt{\texttt{alpha.V}}$. Following `Gelman.2006` we use
+a scale of 25:
+
+``` {r echo=TRUE, cache=TRUE}
+prior3<-list(R=list(V=diag(schools$sd^2), fix=1), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=25^2)))
+m7a.3<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior3, verbose=FALSE)
+```
+
+and Figure [\[school3-fig\]](#school3-fig){reference-type="ref"
+reference="school3-fig"} shows that the prior may have better properties
+than the inverse-gamma, and that the posterior is less distorted.
+
+``` {r label=school3, echo=FALSE, include=TRUE, fig.cap="Between school standard deviation in educational test scores, with a Cauchy prior with a scale of 25.", fig.width=7, fig.height=5}
+hist(sqrt(m7a.3$VCV[,1]), main="", xlab="between school standard deviation", breaks=30, xlim=c(0,max(sqrt(m7a.1$VCV[,1]))))
+lines(100*2*dt(x/25,1,0)~x)
+```
+
+### Binary response models
+
+When analysing binary responses the residual variance is not identified
+in the likelihood and without a prior the posterior is improper. If a
+weak prior is placed on the residual variance then the chain appears to
+mix poorly and the MCMC output often looks terrible. However, this poor
+mixing is in some ways superficial. As discussed in section
+[\[cat-sec\]](#cat-sec){reference-type="ref" reference="cat-sec"} we can
+rescale the location effects and variances by the estimated residual
+variance to obtain the posterior distribution for some fixed value of
+the actual residual variance. For example, we can refit the sex ratio
+model using a residual variance fixed at ten rather than one:
+
+``` {r echo=TRUE, cache=TRUE}
+prior3b=list(R=list(V=10, fix=1), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000)))
+m7b.3<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b, verbose=FALSE)
+```
+
+The two models appear to give completely different posteriors (Figure
+[\[sexratio2\]](#sexratio2){reference-type="ref" reference="sexratio2"})
+
+``` {r label=sexratio2, echo=TRUE, include=TRUE, fig.cap="Between mother variation in sex ratio with the residual variance fixed at 1 (black trace) and 10 (red trace).", fig.width=7, fig.height=5}
+plot(mcmc.list(m7b.1$VCV[,1], m7b.3$VCV[,1]))
+```
+
+but rescaling indicates that they are very similar:
+
+``` {r label=sexratio3, echo=TRUE, include=TRUE, fig.cap="Between mother variation in sex ratio with the residual variance fixed at 1 (black trace) and 10 (red trace) but with both estimates rescaled to what would be observed under no residual variance.", fig.width=7, fig.height=5}
+c2<-(16*sqrt(3)/(15*pi))^2
+plot(mcmc.list(m7b.1$VCV[,1]/(1+c2*m7b.1$VCV[,"units"]), m7b.3$VCV[,1]/(1+c2*m7b.3$VCV[,"units"])))
+```
+
+The prior specification for the between mother variance is different in
+the two models but Figure
+[\[sexratio2\]](#sexratio2){reference-type="ref" reference="sexratio2"}
+suggests that the difference has little influence. However, the mixing
+properties of the second chain are much better [@vanDyk.2001]:
+
+``` {r echo=TRUE}
+effectiveSize(m7b.1$VCV[,1]/(1+c2*m7b.1$VCV[,"units"]))
+effectiveSize(m7b.3$VCV[,1]/(1+c2*m7b.3$VCV[,"units"]))
+```
+
+Although the chain mixes faster as the residual variance is set to be
+larger, numerical problem are often encountered because the latent
+variables can take on extreme values. For most models a variance of 1 is
+safe, but care needs to be taken so that the absolute value of the
+latent variable is less than 20 in the case of the logit link and less
+than 7 for the probit link. If the residual variance is not fixed but
+has an alternative proper prior placed on it then the
+Metropolis-Hastings proposal distribution for the latent variables may
+not be well suited to the local properties of the conditional
+distribution and the acceptance ratio may fluctuate widely around the
+optimal 0.44. This can be fixed by using the slice sampling methods
+outlined in @Damien.1999 by passing `slice=TRUE` to `MCMCglmm`. Slice
+sampling can also be more efficient even if the prior is fixed at some
+value:
+
+``` {r echo=TRUE, cache=TRUE}
+m7b.4<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b, verbose=FALSE, slice=TRUE)
+effectiveSize(m7b.4$VCV[,1]/(1+c2*m7b.3$VCV[,"units"]))
+```
+:::

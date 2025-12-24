@@ -159,15 +159,15 @@
        post.pred<-t(apply(object$Sol,1, function(x){(W%*%x)@x}))
     }
     if(type=="response"){
- 
-      if(any(object$family!="gaussian" & object$family!="cengaussian" & object$family!="ncst")){
-         post.var<-buildV(object, marginal=marginal, diag=TRUE, it=NULL, posterior="all", ...)
-      }
 
       ordering<-object$ZR@i+1
 
+      if(any(object$family!="gaussian" & object$family!="cengaussian" & object$family!="ncst")){
+         post.var<-buildV(object, marginal=marginal, diag=TRUE, it=NULL, posterior="all", ...)
+         post.var<-post.var[,ordering, drop=FALSE]
+      }
+
       post.pred<-post.pred[,ordering, drop=FALSE]         
-      post.var<-post.var[,ordering, drop=FALSE]
       object$family<-object$family[ordering]
       object$y.additional<-object$y.additional[ordering,]
       object$error.term<-object$error.term[ordering]

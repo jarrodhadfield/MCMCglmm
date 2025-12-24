@@ -14,11 +14,9 @@ vignettes/.*[.]toc$
 src/.*[.]o$
 src/.*[.]so$
 src/symbols[.]rds
-^_pkgdown\.yml$
 ^docs$
-^pkgdown$
 ^\.github$
 ^vignettes/articles$
 .github$
 .git$
-_pkgdown.yml$
+bookdown

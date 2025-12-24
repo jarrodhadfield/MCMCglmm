@@ -1,0 +1,14 @@
+book_filename: "MCMCglmm-course-notes"
+delete_merged_file: true
+
+rmd_files:
+  - index.Rmd
+  - Lecture1.Rmd
+  - Lecture2.Rmd
+  - Lecture3.Rmd
+  - Lecture4.Rmd
+  - Lecture5.Rmd
+  - Lecture6.Rmd  
+  - Lecture7.Rmd
+  - Lecture8.Rmd
+  - Lecture9.Rmd  

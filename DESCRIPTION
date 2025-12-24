@@ -4,7 +4,7 @@ Date: 2024-05-06
 Title: MCMC Generalised Linear Mixed Models
 Depends: Matrix, coda, ape
 Imports: corpcor, tensorA, cubature, methods
-Suggests: rgl, combinat, mvtnorm, orthopolynom, MCMCpack, bayesm, msm
+Suggests: rgl, combinat, mvtnorm, orthopolynom, bayesm, msm
 Author: Jarrod Hadfield
 Maintainer: Jarrod Hadfield <j.hadfield@ed.ac.uk>
 Description: Fits Multivariate Generalised Linear Mixed Models (and related models) using Markov chain Monte Carlo techniques (Hadfield 2010 J. Stat. Soft.). 

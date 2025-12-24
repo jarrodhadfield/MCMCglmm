@@ -20,3 +20,4 @@ doc/Figures
 src/.*\.o
 src/.*\.so
 src/symbols.rds
+bookdown

@@ -1,0 +1,41 @@
+---
+title: "MCMCglmm Course Notes"
+author: "Jarrod Hadfield"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+description: "Extended documentation and course notes for the MCMCglmm R package."
+output:
+  bookdown::gitbook: default
+---
+
+# Introduction
+
+These are (incomplete) course notes about generalised linear mixed models (GLMM). Special emphasis is placed on understanding the underlying structure of a GLMM in order to show that slight modifications of this structure can produce a wide range of models.  These include familiar models like regression and ANOVA, but also models with intimidating names: animal models, threshold models, meta-analysis, MANCOVA and random regression \dots The primary aim of the course is to show that these models are only daunting by name. The secondary aim is to show how these models can be fitted in a Bayesian framework using Markov chain Monte Carlo (MCMC) methods in the R package \texttt{MCMCglmm}. For those not comfortable using Bayesian methods, many of the models outlined in the course notes can be fitted in \texttt{asreml} or \texttt{lmer} with little extra work. If you do use \texttt{MCMCglmm}, please, cite \citet{Hadfield.2010c}.\\
+
+
+``` {r echo=FALSE, include=FALSE}
+library(MCMCglmm)
+library(MASS)
+library(lattice)
+library(knitr)
+library(kinship2)
+
+opts_chunk$set(tidy=TRUE)
+
+knitr::opts_chunk$set(
+  cache = TRUE,
+  cache.lazy = FALSE,
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+
+options(SweaveHooks=list(fig=function() par(bty="l")))
+options(useFancyQuotes=FALSE)
+
+set.seed(1)
+
+
+```
+
