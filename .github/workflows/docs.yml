@@ -37,6 +37,10 @@ jobs:
           extra-packages: |
             bookdown
             pkgdown
+            MASS
+            lattice
+            knitr
+            kinship2
           needs: website
 
       - name: Build bookdown (course notes)
