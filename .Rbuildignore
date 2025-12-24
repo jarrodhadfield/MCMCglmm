@@ -19,4 +19,7 @@ src/symbols[.]rds
 ^vignettes/articles$
 .github$
 .git$
-bookdown
+^_pkgdown\.yml$
+^bookdown$
+^inst$
+
