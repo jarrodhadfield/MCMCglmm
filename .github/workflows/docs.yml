@@ -1,0 +1,59 @@
+name: Build and deploy docs
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: {}
+
+jobs:
+  build-site:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "release"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            texlive-latex-base \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended \
+            texlive-science
+
+      - name: Install R dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            bookdown
+            pkgdown
+          needs: website
+
+      - name: Build bookdown (course notes)
+        run: |
+          Rscript -e 'bookdown::render_book("bookdown/index.Rmd", "bookdown::gitbook")'
+
+      - name: Build pkgdown (clean docs/)
+        run: |
+          Rscript -e 'pkgdown::clean_site(force = TRUE); pkgdown::build_site()'
+
+      - name: Copy book into docs/course-notes
+        run: |
+          mkdir -p docs/course-notes
+          rsync -av --delete bookdown/_book/ docs/course-notes/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs
