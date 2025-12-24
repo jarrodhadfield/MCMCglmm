@@ -20,6 +20,7 @@ library(MASS)
 library(lattice)
 library(knitr)
 library(kinship2)
+library(lme4)
 
 opts_chunk$set(tidy=TRUE)
 

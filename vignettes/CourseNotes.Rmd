@@ -1,13 +1,13 @@
 ---
-title: "MCMCglmm Course Notes (Overview)"
+title: "MCMCglmm Course Notes"
 output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{MCMCglmm Course Notes (Overview)}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+vignette:
+  \VignetteIndexEntry{CourseNotes}
+  \VignetteEngine{knitr::rmarkdown}
+  \VignetteEncoding{UTF-8}
 ---
 
-The original `CourseNotes.Rnw` has been replaced by a bookdown site:
+The original `CourseNotes` vignette has been replaced by a bookdown site:
 
 - Online book: <https://jarrodhadfield.github.io/MCMCglmm/course-notes/>
 
