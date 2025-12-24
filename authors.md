@@ -1,0 +1,25 @@
+# Authors and Citation
+
+## Authors
+
+- **Jarrod Hadfield**. Maintainer.
+
+## Citation
+
+Source:
+[`inst/CITATION`](https://github.com/jarrodhadfield/MCMCglmm/blob/master/inst/CITATION)
+
+Jarrod D Hadfield (2010). MCMC Methods for Multi-Response Generalized
+Linear Mixed Models: The MCMCglmm R Package. Journal of Statistical
+Software, 33(2), 1-22. URL https://www.jstatsoft.org/v33/i02/.
+
+    @Article{,
+      title = {MCMC Methods for Multi-Response Generalized Linear Mixed Models: The {MCMCglmm} {R} Package},
+      author = {Jarrod D. Hadfield},
+      journal = {Journal of Statistical Software},
+      year = {2010},
+      volume = {33},
+      number = {2},
+      pages = {1--22},
+      url = {https://www.jstatsoft.org/v33/i02/},
+    }
