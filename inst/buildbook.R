@@ -1,7 +1,3 @@
-library(MCMCglmm)
-library(MASS)
-library(lattice)
-set.seed(1)
 setwd("/Users/jhadfiel/Work/MCMCglmm/bookdown")
 
 bookdown::render_book("index.Rmd", "bookdown::gitbook")

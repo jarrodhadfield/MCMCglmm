@@ -29,7 +29,7 @@ Random effect specification is a common cause of confusion, especially
 when we want to form interactions in the random terms. To illustrate the
 possibilities we'll use data collected on Blue tits.
 
-``` {r echo=TRUE}
+``` {r echo=TRUE, cache=FALSE}
 data(BTdata)
 ```
 
