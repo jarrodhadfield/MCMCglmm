@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2 Bayesian Analysis and MCMC | MCMCglmm Course Notes</title>
+  <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2 Bayesian Analysis and MCMC | MCMCglmm Course Notes" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2 Bayesian Analysis and MCMC | MCMCglmm Course Notes" />
+  
+  <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+<meta name="author" content="Jarrod Hadfield" />
+
+
+<meta name="date" content="2025-12-25" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="glm.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.2</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="bayesian.html"><a href="bayesian.html"><i class="fa fa-check"></i><b>2</b> Bayesian Analysis and MCMC</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="bayesian.html"><a href="bayesian.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="bayesian.html"><a href="bayesian.html#likelihood"><i class="fa fa-check"></i><b>2.2</b> Likelihood</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="bayesian.html"><a href="bayesian.html#maximum-likelihood-ml"><i class="fa fa-check"></i><b>2.2.1</b> Maximum Likelihood (ML)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="bayesian.html"><a href="bayesian.html#restricted-maximum-likelihood-reml"><i class="fa fa-check"></i><b>2.2.2</b> Restricted Maximum Likelihood (REML)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="bayesian.html"><a href="bayesian.html#prior-distribution"><i class="fa fa-check"></i><b>2.3</b> Prior Distribution</a></li>
+<li class="chapter" data-level="2.4" data-path="bayesian.html"><a href="bayesian.html#posterior-distribution"><i class="fa fa-check"></i><b>2.4</b> Posterior Distribution</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="bayesian.html"><a href="bayesian.html#marginal-posterior-distribution"><i class="fa fa-check"></i><b>2.4.1</b> Marginal Posterior Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="bayesian.html"><a href="bayesian.html#mcmc"><i class="fa fa-check"></i><b>2.5</b> MCMC</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="bayesian.html"><a href="bayesian.html#starting-values"><i class="fa fa-check"></i><b>2.5.1</b> Starting values</a></li>
+<li class="chapter" data-level="2.5.2" data-path="bayesian.html"><a href="bayesian.html#metrpolis-hastings-updates"><i class="fa fa-check"></i><b>2.5.2</b> Metrpolis-Hastings updates</a></li>
+<li class="chapter" data-level="2.5.3" data-path="bayesian.html"><a href="bayesian.html#gibbs-sampling"><i class="fa fa-check"></i><b>2.5.3</b> Gibbs Sampling</a></li>
+<li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#slice-sampling"><i class="fa fa-check"></i><b>2.5.4</b> Slice Sampling</a></li>
+<li class="chapter" data-level="2.5.5" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.5</b> MCMC Diagnostics</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6</b> Improper Priors</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.6.1</b> Flat Improper Prior</a></li>
+<li class="chapter" data-level="2.6.2" data-path="bayesian.html"><a href="bayesian.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.6.2</b> Non-Informative Improper Prior</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#references-1"><i class="fa fa-check"></i><b>2.7</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="glm.html"><a href="glm.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#over-dispersion"><i class="fa fa-check"></i><b>3.3</b> Over-dispersion</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-over-dispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Over-dispersion</a></li>
+<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Over-dispersion</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#ranef-sec"><i class="fa fa-check"></i><b>3.4</b> Random effects</a></li>
+<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#pred-sec"><i class="fa fa-check"></i><b>3.5</b> Prediction with Random effects</a></li>
+<li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#categorical-data"><i class="fa fa-check"></i><b>3.6</b> Categorical Data</a></li>
+<li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#PriorContr-sec"><i class="fa fa-check"></i><b>3.7</b> A note on fixed effect priors and covariances</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>4</b> Categorical Random Interactions</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>4.1</b> <code>idh</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>4.2</b> <code>us</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>4.3</b> Compound Variance Structures</a></li>
+<li class="chapter" data-level="4.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>4.4</b> Heterogenous Residual Variance</a></li>
+<li class="chapter" data-level="4.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>4.5</b> Contrasts and Covariances</a></li>
+<li class="chapter" data-level="4.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Covariance Matrices</a>
+<ul>
+<li class="chapter" data-level="4.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>4.6.1</b> Priors for <code>us</code> structures</a></li>
+<li class="chapter" data-level="4.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>4.6.2</b> Priors for <code>idh</code> structures</a></li>
+<li class="chapter" data-level="4.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>4.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>5</b> Continuous Random Interactions</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>5.1</b> Random Regression</a></li>
+<li class="chapter" data-level="5.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>5.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="5.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>5.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="5.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>5.4</b> Meta-analysis</a></li>
+<li class="chapter" data-level="5.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>5.5</b> Splines</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>6</b> Multi-response models</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>6.1</b> Relaxing the univariate assumptions of causality</a></li>
+<li class="chapter" data-level="6.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>6.2</b> Multinomial Models</a></li>
+<li class="chapter" data-level="6.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>6.3</b> Zero-inflated Models</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>6.3.1</b> Posterior predictive checks</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>6.4</b> Hurdle Models</a></li>
+<li class="chapter" data-level="6.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>6.5</b> Zero-altered Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>7</b> Pedigrees and Phylogenies</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>7.1</b> Pedigree and phylogeny formats</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>7.1.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="7.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>7.1.2</b> Phylogenies</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>7.2</b> The animal model and the phylogenetic mixed model</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>8</b> Technical Details</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>8.1</b> Model Form</a></li>
+<li class="chapter" data-level="8.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>8.2</b> MCMC Sampling Schemes</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>8.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
+<li class="chapter" data-level="8.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymbolmathbftheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>8.2.2</b> Updating the location vector <span class="math inline">\({\boldsymbol{\mathbf{\theta}}} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
+<li class="chapter" data-level="8.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>8.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
+<li class="chapter" data-level="8.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>8.2.4</b> Ordinal Models</a></li>
+<li class="chapter" data-level="8.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>8.2.5</b> Path Analyses</a></li>
+<li class="chapter" data-level="8.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>8.2.6</b> Deviance and DIC</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="parameter-expansion.html"><a href="parameter-expansion.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
+<ul>
+<li class="chapter" data-level="9.0.1" data-path="parameter-expansion.html"><a href="parameter-expansion.html#variances-close-to-zero"><i class="fa fa-check"></i><b>9.0.1</b> Variances close to zero</a></li>
+<li class="chapter" data-level="9.0.2" data-path="parameter-expansion.html"><a href="parameter-expansion.html#binary-response-models"><i class="fa fa-check"></i><b>9.0.2</b> Binary response models</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#antedependence"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">MCMCglmm Course Notes</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="bayesian" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">2</span> Bayesian Analysis and MCMC<a href="bayesian.html#bayesian" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>In this Chapter I cover the basics of Bayesian analysis and Markov chain Monte Carlo (MCMC) techniques. Exposure to these ideas, and statistics in general, has increased dramatically since these notes were first written. Many readers may therefore wish to skip straight to later chapters that cover <code>MCMCglmm</code> more specifically.</p>
+<div id="introduction" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Introduction<a href="bayesian.html#introduction" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>There are fundamental differences between frequentist and Bayesian approaches, but for those of us interested in applied statistics the hope is that these differences do not translate into practical differences, and this is often the case. My advice would be <em>if</em> you can fit the same model using different packages and/or methods do so, and if they give very different answers worry. In some cases differences will exist, and it is important to know why, and which method is more appropriate for the data in hand.</p>
+<p>In the context of a generalised linear mixed model (GLMM), here are what I see as the pro’s and cons of using (restricted) maximum likelihood (REML) versus Bayesian MCMC methods. REML is fast and easy to use, whereas MCMC can be slow and technically more challenging. Particularly challenging is the specification of a sensible prior, something which is a non-issue in a REML analysis. However, analytical results for non-Gaussian GLMM are generally not available, and REML based procedures use approximate likelihood methods that may not work well. MCMC is also an approximation but the accuracy of the approximation increases the longer the analysis is run for, being exact at the limit. In addition, REML uses large-sample theory to derive approximate confidence intervals that may have very poor coverage, especially for variance components. Again, MCMC measures of confidence are exact, up to Monte Carlo error, and provide an easy and intuitive way of obtaining measures of confidence on derived statistics such as ratios of variances, correlations and predictions.</p>
+<p>To illustrate the differences between the approaches let’s imagine we’ve observed several draws (stored in the vector <span class="math inline">\({\bf y}\)</span>) from a standard normal (i.e. <span class="math inline">\(\mu=0\)</span> and <span class="math inline">\(\sigma^{2}=1\)</span>). The likelihood is the probability of the data given the parameters:</p>
+<p><span class="math display">\[Pr({\bf y} | \mu, \sigma^{2})\]</span></p>
+<p>This is a conditional distribution, where the conditioning is on the model parameters which are taken as fixed and known. In a way this is quite odd because we’ve already observed the data, and we don’t know what the parameter values are. In a Bayesian analysis we evaluate the conditional probability of the model parameters given the observed data:</p>
+<p><span class="math display" id="eq:post1-eq">\[Pr(\mu, \sigma^{2} | {\bf y})
+\label{post1-eq}   \tag{2.1}\]</span></p>
+<p>which seems more reasonable, until we realise that this probability is proportional to</p>
+<p><span class="math display">\[Pr({\bf y} | \mu, \sigma^{2})Pr(\mu, \sigma^{2})\]</span></p>
+<p>where the first term is the likelihood, and the second term represents our prior belief in the values that the model parameters could take. Because the choice of prior is rarely justified by an objective quantification of the state of knowledge it has come under criticism, and indeed we will see later that the choice of prior can make a difference.</p>
+</div>
+<div id="likelihood" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Likelihood<a href="bayesian.html#likelihood" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We can generate 5 observations from this distribution using <code>rnorm</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="bayesian.html#cb1-1" tabindex="-1"></a>Ndata <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y =</span> <span class="fu">rnorm</span>(<span class="dv">5</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">1</span>)))</span>
+<span id="cb1-2"><a href="bayesian.html#cb1-2" tabindex="-1"></a>Ndata<span class="sc">$</span>y</span></code></pre></div>
+<pre><code>## [1] -0.89691455  0.18484918  1.58784533 -1.13037567 -0.08025176</code></pre>
+<p>We can plot the probability density function for the standard normal using <code>dnorm</code> and we can then place the 5 data on it:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="bayesian.html#cb3-1" tabindex="-1"></a>possible.y<span class="ot">&lt;-</span><span class="fu">seq</span>(<span class="sc">-</span><span class="dv">3</span>,<span class="dv">3</span>,<span class="fl">0.1</span>)                          <span class="co"># possible values of y</span></span>
+<span id="cb3-2"><a href="bayesian.html#cb3-2" tabindex="-1"></a>Probability<span class="ot">&lt;-</span><span class="fu">dnorm</span>(possible.y, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">1</span>)) <span class="co"># density of possible values </span></span>
+<span id="cb3-3"><a href="bayesian.html#cb3-3" tabindex="-1"></a><span class="fu">plot</span>(Probability<span class="sc">~</span>possible.y, <span class="at">type=</span><span class="st">&quot;l&quot;</span>, <span class="at">ylab=</span><span class="st">&quot;Density&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;y&quot;</span>)</span>
+<span id="cb3-4"><a href="bayesian.html#cb3-4" tabindex="-1"></a>Probability.y<span class="ot">&lt;-</span><span class="fu">dnorm</span>(Ndata<span class="sc">$</span>y, <span class="at">mean=</span><span class="dv">0</span>, <span class="at">sd=</span><span class="fu">sqrt</span>(<span class="dv">1</span>))  <span class="co"># density of actual values</span></span>
+<span id="cb3-5"><a href="bayesian.html#cb3-5" tabindex="-1"></a><span class="fu">points</span>(Probability.y<span class="sc">~</span>Ndata<span class="sc">$</span>y)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:dnorm"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/dnorm-1.png" alt="Probability density function for the unit normal with the data points overlaid" width="672" />
+<p class="caption">
+Figure 2.1: Probability density function for the unit normal with the data points overlaid
+</p>
+</div>
+<p>The likelihood of these data, conditioning on <span class="math inline">\(\mu=0\)</span> and <span class="math inline">\(\sigma^2=1\)</span>, is proportional to the product of the densities (read off the y-axis on Figure <a href="bayesian.html#fig:dnorm">2.1</a>):</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="bayesian.html#cb4-1" tabindex="-1"></a><span class="fu">prod</span>(<span class="fu">dnorm</span>(Ndata<span class="sc">$</span>y, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="dv">1</span>)))</span></code></pre></div>
+<pre><code>## [1] 0.0009910691</code></pre>
+<p>Of course we don’t know the true mean and variance and so we may want to ask how probable the data would be if, say, <span class="math inline">\(\mu=0\)</span>, and <span class="math inline">\(\sigma^2=0.5\)</span>:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="bayesian.html#cb6-1" tabindex="-1"></a><span class="fu">prod</span>(<span class="fu">dnorm</span>(Ndata<span class="sc">$</span>y, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fu">sqrt</span>(<span class="fl">0.5</span>)))</span></code></pre></div>
+<pre><code>## [1] 0.0005498352</code></pre>
+<p>It would seem that the data are more likely under this set of parameters than the true parameters, which we must expect some of the time just from random sampling. To get some idea as to why this might be the case we can overlay the two densities (Figure <a href="bayesian.html#fig:dnorm1">2.2</a>), and we can see that although some data points (e.g. 1.588) are more likely with the true parameters, in aggregate the new parameters produce a higher likelihood.</p>
+<div class="figure"><span style="display:block;" id="fig:dnorm1"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/dnorm1-1.png" alt="Two probability density functions for normal distributions with means of zero, and a variance of one (black line) and a variance of 0.5 (red line).  The data points are overlaid." width="672" />
+<p class="caption">
+Figure 2.2: Two probability density functions for normal distributions with means of zero, and a variance of one (black line) and a variance of 0.5 (red line). The data points are overlaid.
+</p>
+</div>
+<p>The likelihood of the data can be calculated on a grid of possible parameter values to produce a likelihood surface, as in Figure <a href="bayesian.html#fig:Lsurface">2.3</a>. The densities on the contours have been scaled so they are relative to the density of the parameter values that have the highest density (the maximum likelihood estimate of the two parameters). Two things are apparent. First, although the surface is symmetric about the line <span class="math inline">\(\mu = \hat{\mu}\)</span> (where <span class="math inline">\(\hat{}\)</span> stands for maximum likelihood estimate) the surface is far from symmetric about the line <span class="math inline">\(\sigma^{2} = \hat{\sigma}^{2}\)</span>. Second, there are a large range of parameter values for which the data are only 10 times less likely than if the data were generated under the maximum likelihood estimates.</p>
+<div class="figure"><span style="display:block;" id="fig:Lsurface"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Lsurface-1.png" alt="Likelihood surface for the likelihood $Pr({\bf y}|\mu, \sigma^{2})$. The likelihood has been normalised so that the maximum likelihood has a value of one." width="672" />
+<p class="caption">
+Figure 2.3: Likelihood surface for the likelihood <span class="math inline">\(Pr({\bf y}|\mu, \sigma^{2})\)</span>. The likelihood has been normalised so that the maximum likelihood has a value of one.
+</p>
+</div>
+<div id="maximum-likelihood-ml" class="section level3 hasAnchor" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> Maximum Likelihood (ML)<a href="bayesian.html#maximum-likelihood-ml" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The ML estimator is the combination of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma^{2}\)</span> that make
+the data most likely. Although we could evaluate the density on a grid
+of parameter values (as we did to produce Figure <a href="bayesian.html#fig:Lsurface">2.3</a>) in
+order to locate the maximum, for such a simple problem the ML estimator
+can be derived analytically. However, so we don’t have to meet some
+nasty maths later, I’ll introduce and use one of R’s generic optimising
+routines that can be used to maximise the likelihood function (in
+practice, the log-likelihood is maximised to avoid numerical problems):</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="bayesian.html#cb8-1" tabindex="-1"></a>loglik <span class="ot">&lt;-</span> <span class="cf">function</span>(par, y) {</span>
+<span id="cb8-2"><a href="bayesian.html#cb8-2" tabindex="-1"></a>    <span class="fu">sum</span>(<span class="fu">dnorm</span>(y, par[<span class="dv">1</span>], <span class="fu">sqrt</span>(par[<span class="dv">2</span>]), <span class="at">log =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb8-3"><a href="bayesian.html#cb8-3" tabindex="-1"></a>}</span>
+<span id="cb8-4"><a href="bayesian.html#cb8-4" tabindex="-1"></a>MLest <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="fu">c</span>(<span class="at">mean =</span> <span class="dv">0</span>, <span class="at">var =</span> <span class="dv">1</span>), <span class="at">fn =</span> loglik, <span class="at">y =</span> Ndata<span class="sc">$</span>y, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>,</span>
+<span id="cb8-5"><a href="bayesian.html#cb8-5" tabindex="-1"></a>    <span class="at">reltol =</span> <span class="fl">1e-16</span>))<span class="sc">$</span>par</span></code></pre></div>
+<p>The first call to <code>optim</code> are starting values for the optimisation
+algorithm, and the second argument (<code>fn</code>) is the function to be
+maximised. By default <code>optim</code> will try to minimise the function hence
+multiplying by -1 (<code>fnscale = -1</code>). The algorithm has successfully found
+the mode:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="bayesian.html#cb9-1" tabindex="-1"></a>MLest</span></code></pre></div>
+<pre><code>##        mean         var 
+## -0.06696949  0.92432852</code></pre>
+<p>Alternatively we could also fit the model using <code>glm</code>, which by default assumes the response is normal:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="bayesian.html#cb11-1" tabindex="-1"></a>m1a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> Ndata)</span>
+<span id="cb11-2"><a href="bayesian.html#cb11-2" tabindex="-1"></a><span class="fu">summary</span>(m1a<span class="fl">.1</span>)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ 1, data = Ndata)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -0.06697    0.48071  -0.139    0.896
+## 
+## (Dispersion parameter for gaussian family taken to be 1.155411)
+## 
+##     Null deviance: 4.6216  on 4  degrees of freedom
+## Residual deviance: 4.6216  on 4  degrees of freedom
+## AIC: 17.796
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<p>Here we see that although the estimate of the mean (intercept) is the
+same, the estimate of the variance (the dispersion parameter:
+1.155) is higher when
+fitting the model using <code>glm</code>. In fact the ML estimate is a factor
+<span class="math inline">\(\frac{n}{n-1}\)</span> smaller.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="bayesian.html#cb13-1" tabindex="-1"></a>MLest[<span class="st">&quot;var&quot;</span>] <span class="sc">*</span> (<span class="dv">5</span><span class="sc">/</span><span class="dv">4</span>)</span></code></pre></div>
+<pre><code>##      var 
+## 1.155411</code></pre>
+</div>
+<div id="restricted-maximum-likelihood-reml" class="section level3 hasAnchor" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> Restricted Maximum Likelihood (REML)<a href="bayesian.html#restricted-maximum-likelihood-reml" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To see why this happens, imagine if we had only observed the first two values of <span class="math inline">\({\bf y}\)</span> (Figure <a href="bayesian.html#fig:muvar">2.4</a>). The variance is defined as the average squared distance between a random variable and the <em>true</em> mean. However, the ML estimator of the variance is the average squared distance between the random variable and the ML <em>estimate</em> of the mean. Since the ML estimator of the mean is the average of the two numbers (the dashed line) then the average squared distance will always be smaller than if the true mean was used, unless the ML estimate of the mean and the true mean coincide. This is why we divide by <span class="math inline">\(n-1\)</span> when estimating the variance from the sum of squares, and is the motivation behind REML.</p>
+<div class="figure"><span style="display:block;" id="fig:muvar"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/muvar-1.png" alt="Probability density function for the unit normal with 2 realisations overlaid. The solid vertical line is the true mean, whereas the vertical dashed line is the mean of the two realisations (the ML estimator of the mean). The variance is the expected squared distance between the true mean and the realisations. The ML estimator of the variance is the average squared distance between the ML mean and the realisations (horizontal dashed lines), which is always smaller than the average squared distance between the true mean and the realisations (horizontal solid lines)" width="672" />
+<p class="caption">
+Figure 2.4: Probability density function for the unit normal with 2 realisations overlaid. The solid vertical line is the true mean, whereas the vertical dashed line is the mean of the two realisations (the ML estimator of the mean). The variance is the expected squared distance between the true mean and the realisations. The ML estimator of the variance is the average squared distance between the ML mean and the realisations (horizontal dashed lines), which is always smaller than the average squared distance between the true mean and the realisations (horizontal solid lines)
+</p>
+</div>
+</div>
+</div>
+<div id="prior-distribution" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Prior Distribution<a href="bayesian.html#prior-distribution" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><code>MCMCglmm</code> uses a normal prior for the fixed effects and either an inverse Wishart or a scaled non-central F-distribution prior for (co)variance matrices. The F-prior is achieved through parameter expansion, and is strongly recommended (see Chapter <a href="parameter-expansion.html#parameter-expansion">9</a>). However, here we will focus on specifying a prior for the single fixed effect (<span class="math inline">\(\mu\)</span>) and the single variance (<span class="math inline">\(\sigma^2\)</span>) using the simpler inverse-Wishart. For a single variance component the inverse Wishart takes two scalar parameters. In <code>MCMCglmm</code> this is parameterised through the parameters <code>V</code> and <code>nu</code>. The distribution tends to a point mass on <code>V</code> as the degree of belief parameter, <code>nu</code> goes to infinity. The distribution tends to be right skewed when <code>nu</code> is not very large, with a mode of <span class="math inline">\(\texttt{V}\frac{\texttt{nu}}{\texttt{nu}+2}\)</span> but a mean of <span class="math inline">\(\texttt{V}\frac{\texttt{nu}}{\texttt{nu}-2}\)</span> (which is not defined for <span class="math inline">\(\texttt{nu}&lt;2\)</span>).<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<p>As before, we can evaluate and plot density functions in order to visualise what the distribution looks like. Figure <a href="bayesian.html#fig:dinvgamma">2.5</a> plots the probability density functions holding <code>V</code> equal to one but with <code>nu</code> varying.</p>
+<div class="figure"><span style="display:block;" id="fig:dinvgamma"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/dinvgamma-1.png" alt="Probability density function for a univariate inverse Wishart with the variance at the limit set to 1 (`V=1`) and varying degree of belief parameter (`nu`). With `V=1` these distributions are equivalent to inverse gamma distributions with shape and scale parameters set to `nu`/2." width="672" />
+<p class="caption">
+Figure 2.5: Probability density function for a univariate inverse Wishart with the variance at the limit set to 1 (<code>V=1</code>) and varying degree of belief parameter (<code>nu</code>). With <code>V=1</code> these distributions are equivalent to inverse gamma distributions with shape and scale parameters set to <code>nu</code>/2.
+</p>
+</div>
+<p>A probability distribution must integrate to one because a variable must have some value. It therefore seems reasonable that when specifying a prior, care must be taken that this condition is met. In the example here, where <code>V</code> is a single variance this condition is met if <code>V&gt;0</code> and <code>nu&gt;0</code>. If this condition is not met then the prior is said to be improper. Although great care has to be taken when using improper priors, <code>MCMCglmm</code> does allow them as they have some useful properties, and some common improper priors are discussed in Chapter <a href="parameter-expansion.html#parameter-expansion">9</a>. However, for now we will use the prior specification <code>V=1</code> and <code>nu=0.002</code> which used to be frequently used for variances. For the mean we will use a diffuse normal prior centred around zero but with very large variance (<span class="math inline">\(10^{8}\)</span>). If the variance is finite then the prior is always proper.</p>
+<p>As before we can write a function for calculating the (log) prior probability:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="bayesian.html#cb15-1" tabindex="-1"></a>logprior <span class="ot">&lt;-</span> <span class="cf">function</span>(par, priorR, priorB) {</span>
+<span id="cb15-2"><a href="bayesian.html#cb15-2" tabindex="-1"></a>    <span class="fu">dnorm</span>(par[<span class="dv">1</span>], <span class="at">mean =</span> priorB<span class="sc">$</span>mu, <span class="at">sd =</span> <span class="fu">sqrt</span>(priorB<span class="sc">$</span>V), <span class="at">log =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> <span class="fu">dgamma</span>(<span class="dv">1</span><span class="sc">/</span>par[<span class="dv">2</span>],</span>
+<span id="cb15-3"><a href="bayesian.html#cb15-3" tabindex="-1"></a>        <span class="at">shape =</span> priorR<span class="sc">$</span>nu<span class="sc">/</span><span class="dv">2</span>, <span class="at">rate =</span> (priorR<span class="sc">$</span>nu <span class="sc">*</span> priorR<span class="sc">$</span>V)<span class="sc">/</span><span class="dv">2</span>, <span class="at">log =</span> <span class="cn">TRUE</span>) <span class="sc">-</span> <span class="dv">2</span> <span class="sc">*</span> <span class="fu">log</span>(par[<span class="dv">2</span>])</span>
+<span id="cb15-4"><a href="bayesian.html#cb15-4" tabindex="-1"></a>}</span></code></pre></div>
+<p>where <code>priorR</code> is a list with elements <code>V</code> and <code>nu</code> specifying the prior for the variance, and <code>priorB</code> is a list with elements <code>mu</code> and <code>V</code> specifying the prior for the mean. <code>MCMCglmm</code> takes these prior specifications as a list:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="bayesian.html#cb16-1" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">0</span>, <span class="at">V =</span> <span class="fl">1e+08</span>))</span></code></pre></div>
+</div>
+<div id="posterior-distribution" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Posterior Distribution<a href="bayesian.html#posterior-distribution" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>To obtain a posterior density we need to multiply the likelihood by the prior probability for that set of parameters. We can write a function for doing this:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="bayesian.html#cb17-1" tabindex="-1"></a>loglikprior <span class="ot">&lt;-</span> <span class="cf">function</span>(par, y, priorR, priorB) {</span>
+<span id="cb17-2"><a href="bayesian.html#cb17-2" tabindex="-1"></a>    <span class="fu">loglik</span>(par, y) <span class="sc">+</span> <span class="fu">logprior</span>(par, priorR, priorB)</span>
+<span id="cb17-3"><a href="bayesian.html#cb17-3" tabindex="-1"></a>}</span></code></pre></div>
+<p>and we can overlay the posterior densities on the likelihood surface we calculated before (Figure <a href="bayesian.html#fig:Lsurface">2.3</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:Psurface"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Psurface-1.png" alt="Likelihood surface for the likelihood $Pr({\bf y}|\mu, \sigma^{2})$ in black, and the posterior distribution $Pr(\mu, \sigma^{2} | {\bf y})$ in red.  The likelihood has been normalised so that the maximum likelihood has a value of one, and the posterior distribution has been normalised so that the posterior mode has a value of one. The prior distributions  $Pr(\mu)\sim N(0, 10^8)$ and  $Pr(\sigma^{2})\sim IW(\texttt{V}=1, \texttt{nu}=0.002)$ were used." width="672" />
+<p class="caption">
+Figure 2.6: Likelihood surface for the likelihood <span class="math inline">\(Pr({\bf y}|\mu, \sigma^{2})\)</span> in black, and the posterior distribution <span class="math inline">\(Pr(\mu, \sigma^{2} | {\bf y})\)</span> in red. The likelihood has been normalised so that the maximum likelihood has a value of one, and the posterior distribution has been normalised so that the posterior mode has a value of one. The prior distributions <span class="math inline">\(Pr(\mu)\sim N(0, 10^8)\)</span> and <span class="math inline">\(Pr(\sigma^{2})\sim IW(\texttt{V}=1, \texttt{nu}=0.002)\)</span> were used.
+</p>
+</div>
+<p>The prior has some influence on the posterior mode of the variance, and we can use an optimisation algorithm again to locate the mode:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="bayesian.html#cb18-1" tabindex="-1"></a>Best <span class="ot">&lt;-</span> <span class="fu">optim</span>(<span class="fu">c</span>(<span class="at">mean =</span> <span class="dv">0</span>, <span class="at">var =</span> <span class="dv">1</span>), <span class="at">fn =</span> loglikprior, <span class="at">y =</span> Ndata<span class="sc">$</span>y, <span class="at">priorR =</span> prior<span class="sc">$</span>R,</span>
+<span id="cb18-2"><a href="bayesian.html#cb18-2" tabindex="-1"></a>    <span class="at">priorB =</span> prior<span class="sc">$</span>B, <span class="at">method =</span> <span class="st">&quot;L-BFGS-B&quot;</span>, <span class="at">lower =</span> <span class="fu">c</span>(<span class="sc">-</span><span class="fl">1e+05</span>, <span class="fl">1e-05</span>), <span class="at">upper =</span> <span class="fu">c</span>(<span class="fl">1e+05</span>,</span>
+<span id="cb18-3"><a href="bayesian.html#cb18-3" tabindex="-1"></a>        <span class="fl">1e+05</span>), <span class="at">control =</span> <span class="fu">list</span>(<span class="at">fnscale =</span> <span class="sc">-</span><span class="dv">1</span>, <span class="at">factr =</span> <span class="fl">1e-16</span>))<span class="sc">$</span>par</span>
+<span id="cb18-4"><a href="bayesian.html#cb18-4" tabindex="-1"></a>Best</span></code></pre></div>
+<pre><code>##        mean         var 
+## -0.06696949  0.66033272</code></pre>
+<p>The posterior mode for the mean is essentially identical to the ML estimate, but the posterior mode for the variance is even less than the ML estimate which is known to be downwardly biased. The reason that the ML estimate is downwardly biased is because it did not take into account the uncertainty in the mean, as we saw when discussing the motivation behind REML. In a Bayesian analysis we can do this by evaluating the marginal distribution of <span class="math inline">\(\sigma^{2}\)</span> by averaging over the uncertainty in the mean.</p>
+<div id="marginal-posterior-distribution" class="section level3 hasAnchor" number="2.4.1">
+<h3><span class="header-section-number">2.4.1</span> Marginal Posterior Distribution<a href="bayesian.html#marginal-posterior-distribution" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The marginal distribution is often of primary interest in statistical inference, because it represents our knowledge about a parameter given the data:</p>
+<p><span class="math display" id="eq:marg-eq">\[Pr(\sigma^{2} | {\bf y}) \propto \int Pr(\mu, \sigma^{2} | {\bf y})d\mu
+\label{marg-eq}   \tag{2.2}\]</span></p>
+<p>after averaging over any nuisance parameters, such as the mean in this
+case.</p>
+<p>Obtaining the marginal distribution analytically is usually impossible except for the very simplest of cases,
+and this is where MCMC approaches prove useful. We can fit this model in <code>MCMCglmm</code> pretty much in the same way as we did using <code>glm</code>:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="bayesian.html#cb20-1" tabindex="-1"></a>m1a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> Ndata, <span class="at">prior =</span> prior)</span></code></pre></div>
+<p>The Markov chain is drawing random (but often correlated) samples from the joint posterior distribution (depicted by the red contours in Figure <a href="bayesian.html#fig:Psurface">2.6</a>). The element of the output called <code>Sol</code> contains the distribution for the
+mean, and the element called <code>VCV</code> contains the distribution for the variance. We can produce a scatter plot:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="bayesian.html#cb21-1" tabindex="-1"></a><span class="fu">points</span>(<span class="fu">cbind</span>(m1a<span class="fl">.2</span><span class="sc">$</span>Sol, m1a<span class="fl">.2</span><span class="sc">$</span>VCV))</span></code></pre></div>
+<p>and we see that MCMCglmm is sampling the same distribution as the posterior distribution calculated on a grid of possible parameter values (Figure <a href="bayesian.html#fig:PsurfaceMCMC">2.7</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:PsurfaceMCMC"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/PsurfaceMCMC-1.png" alt="The posterior distribution $Pr(\mu, \sigma^{2} | {\bf y})$. The black dots are samples from the posterior using MCMC, and the red contours are calculated by evaluating the posterior density on a grid of parameter values. The contours are normalised so that the posterior mode has a value of one." width="672" />
+<p class="caption">
+Figure 2.7: The posterior distribution <span class="math inline">\(Pr(\mu, \sigma^{2} | {\bf y})\)</span>. The black dots are samples from the posterior using MCMC, and the red contours are calculated by evaluating the posterior density on a grid of parameter values. The contours are normalised so that the posterior mode has a value of one.
+</p>
+</div>
+<p>A very nice property of MCMC is that we can normalise the density so that it integrates to 1 (a true probability) rather than normalising it with respect to some other aspect of the distribution, such as the density at the ML estimator or the joint posterior mode as in Figures <a href="bayesian.html#fig:Lsurface">2.3</a> and <a href="bayesian.html#fig:Psurface">2.6</a>. To make this clearer, imagine we wanted to know how much more probable the unit normal (i.e. with <span class="math inline">\(\mu=0\)</span> and <span class="math inline">\(\sigma^{2}=1\)</span>) was than a normal distribution with the posterior modal parameters. We can calculate this by taking the ratio of the posterior densities at these two points:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="bayesian.html#cb22-1" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">loglikprior</span>(Best, Ndata<span class="sc">$</span>y, prior<span class="sc">$</span>R, prior<span class="sc">$</span>B) <span class="sc">-</span> <span class="fu">loglikprior</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), Ndata<span class="sc">$</span>y,</span>
+<span id="cb22-2"><a href="bayesian.html#cb22-2" tabindex="-1"></a>    prior<span class="sc">$</span>R, prior<span class="sc">$</span>B))</span></code></pre></div>
+<pre><code>## [1] 1.316523</code></pre>
+<p>Now, if we wanted to know the probability that the parameters lay in the region of parameter space we were plotting, i.e. lay in the square <span class="math inline">\(\mu = (-2,2)\)</span> and <span class="math inline">\(\sigma^{2} = (0,5)\)</span> then this would be more difficult. We would have to evaluate the density at a much larger range of parameter values than we had done, ensuring that we had covered all regions with positive probability. Because MCMC has sampled the distribution randomly, this probability will be equal to the expected probability that we have drawn an MCMC sample from the region. We can obtain an estimate of this by seeing what proportion of our actual samples lie in this square:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="bayesian.html#cb24-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(m1a<span class="fl">.2</span><span class="sc">$</span>Sol <span class="sc">&gt;</span> <span class="sc">-</span><span class="dv">2</span> <span class="sc">&amp;</span> m1a<span class="fl">.2</span><span class="sc">$</span>Sol <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> m1a<span class="fl">.2</span><span class="sc">$</span>VCV <span class="sc">&lt;</span> <span class="dv">5</span>))</span></code></pre></div>
+<pre><code>## 
+## FALSE  TRUE 
+## 0.089 0.911</code></pre>
+<p>There is Monte Carlo error in the answer (0.911) but if we collect a large number of samples then this can be minimised.</p>
+<p>Using a similar logic we can obtain the marginal distribution of the variance by simply evaluating the draws in <code>VCV</code> ignoring (averaging over) the draws in <code>Sol</code>:</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="bayesian.html#cb26-1" tabindex="-1"></a><span class="fu">hist</span>(m1a<span class="fl">.2</span><span class="sc">$</span>VCV[<span class="fu">which</span>(m1a<span class="fl">.2</span><span class="sc">$</span>VCV <span class="sc">&lt;</span> <span class="dv">5</span>)])</span>
+<span id="cb26-2"><a href="bayesian.html#cb26-2" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> Best[<span class="st">&quot;var&quot;</span>], <span class="at">col =</span> <span class="st">&quot;red&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:MsurfaceMCMC"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/MsurfaceMCMC-1.png" alt="Histogram of samples from the marginal distribution of the variance $Pr(\sigma^{2} | {\bf y})$ using MCMC. The vertical line is the joint posterior mode, which differs slightly from the marginal posterior mode (the peak of the marginal distribution)." width="672" />
+<p class="caption">
+Figure 2.8: Histogram of samples from the marginal distribution of the variance <span class="math inline">\(Pr(\sigma^{2} | {\bf y})\)</span> using MCMC. The vertical line is the joint posterior mode, which differs slightly from the marginal posterior mode (the peak of the marginal distribution).
+</p>
+</div>
+<p>In this example (see Figure <a href="bayesian.html#fig:MsurfaceMCMC">2.8</a>) the marginal mode and the joint mode are very similar, although this is not necessarily the case and can depend both on the data and the prior. Section <a href="bayesian.html#IP-sec" reference-type="ref" reference="IP-sec">5</a> introduces improper priors that are non-informative with regard to the marginal distribution of a variance.</p>
+</div>
+</div>
+<div id="mcmc" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> MCMC<a href="bayesian.html#mcmc" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In order to be confident that <code>MCMCglmm</code> has successfully sampled the posterior distribution it will be necessary to have a basic understanding of MCMC methods. MCMC methods are often used when the joint posterior distribution cannot be derived analytically, which is nearly always the case. MCMC relies on the fact that although we cannot derive the complete posterior, we can calculate the height of the posterior distribution at a particular set of parameter values, as we did to obtain the contour plot in Figure <a href="bayesian.html#fig:Psurface">2.6</a>. However, rather than going systematically through every likely combination of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> and calculate the height of the distribution at regular distances, MCMC moves stochastically through parameter space, hence the name ‘Monte Carlo’.<br />
+</p>
+<div id="starting-values" class="section level3 hasAnchor" number="2.5.1">
+<h3><span class="header-section-number">2.5.1</span> Starting values<a href="bayesian.html#starting-values" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>First we need to initialise the chain and specify a set of parameter values from which the chain can start moving through parameter space. Ideally we would like to pick a region of high probability, as we do not want to waste time wandering through regions of low probability: we are not so interested in determining the height of the distribution far outside of Figure <a href="bayesian.html#fig:Psurface">2.6</a> as it is virtually flat and close to zero (or at least we hope so!). Although starting configurations can be set by the user using the <code>start</code> argument, in general the heuristic techniques used by <code>MCMCglmm</code> seem to work quite well. We will denote the parameter values of the starting configuration (time <span class="math inline">\(t=0\)</span>) as <span class="math inline">\(\mu_{t=0}\)</span> and <span class="math inline">\({\sigma^{2}}_{t=0}\)</span>. There are several ways in which we can get the chain to move in parameter space, and <code>MCMCglmm</code> uses a combination of Gibbs sampling, slice sampling and Metropolis-Hastings updates. To illustrate, it will be easier to turn the contour plot of the posterior distribution into a perspective plot (Figure <a href="bayesian.html#fig:Psurface-persp">2.9</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:Psurface-persp"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Psurface-persp-1.png" alt="The posterior distribution $Pr(\mu, \sigma^{2} | {\bf y})$. This perspective plot is equivalent to the contour plot in Figure \ref{Psurface}}" width="672" />
+<p class="caption">
+Figure 2.9: The posterior distribution <span class="math inline">\(Pr(\mu, \sigma^{2} | {\bf y})\)</span>. This perspective plot is equivalent to the contour plot in Figure <span class="math inline">\(\ref{Psurface}\)</span>}
+</p>
+</div>
+</div>
+<div id="metrpolis-hastings-updates" class="section level3 hasAnchor" number="2.5.2">
+<h3><span class="header-section-number">2.5.2</span> Metrpolis-Hastings updates<a href="bayesian.html#metrpolis-hastings-updates" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>After initialising the chain we need to decide where to go next, and this decision is based on two rules. First we have to generate a candidate destination, and then we need to decide whether to go there or stay where we are. There are many ways in which we could generate candidate parameter values, and <code>MCMCglmm</code> uses a well tested and simple method. A random set of coordinates are picked from a multivariate normal distribution that is entered on the initial coordinates <span class="math inline">\(\mu_{t=0}\)</span> and <span class="math inline">\(\sigma^{2}_{t=0}\)</span>. We will denote this new set of parameter values as <span class="math inline">\(\mu_{new}\)</span> and <span class="math inline">\(\sigma^{2}_{new}\)</span>. The question then remains whether to move to this new set of parameter values or remain at our current parameter values now designated as old <span class="math inline">\(\mu_{old}=\mu_{t=0}\)</span> and <span class="math inline">\(\sigma^{2}_{old}=\sigma^{2}_{t=0}\)</span>. If the posterior probability for the new set of parameter values is greater, then the chain moves to this new set of parameters and the chain has successfully completed an iteration: (<span class="math inline">\(\mu_{t=1} = \mu_{new}\)</span> and <span class="math inline">\(\sigma^{2}_{t=1}=\sigma^{2}_{new}\)</span>). If the new set of parameter values has a lower posterior probability then the chain may move there, but not all the time. The probability that the chain moves to low lying areas, is determined by the relative difference between the old and new posterior probabilities. If the posterior probability for <span class="math inline">\(\mu_{new}\)</span> and <span class="math inline">\(\sigma^{2}_{new}\)</span> is 5 times less than the posterior probability for <span class="math inline">\(\mu_{old}\)</span> and <span class="math inline">\(\sigma^{2}_{old}\)</span>, then the chain would move to the new set of parameter values 1 in 5 times. If the move is successful then we set <span class="math inline">\(\mu_{t=1} = \mu_{new}\)</span> and <span class="math inline">\(\sigma^{2}_{t=1}=\sigma^{2}_{new}\)</span> as before, and if the move is unsuccessful then the chain stays where it is (<span class="math inline">\(\mu_{t=1} = \mu_{old}\)</span> and <span class="math inline">\(\sigma^{2}_{t=1}=\sigma^{2}_{old}\)</span>).
+Using these rules we can record where the chain has travelled and generate an approximation of the posterior distribution. Basically, a histogram of Figure <a href="bayesian.html#fig:Psurface-persp">2.9</a>.</p>
+</div>
+<div id="gibbs-sampling" class="section level3 hasAnchor" number="2.5.3">
+<h3><span class="header-section-number">2.5.3</span> Gibbs Sampling<a href="bayesian.html#gibbs-sampling" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Gibbs sampling is a special case of Metropolis-Hastings updating, and <code>MCMCglmm</code> uses Gibbs sampling to update most parameters. In the Metropolis-Hastings example above, the Markov Chain was allowed to move in both directions of parameter space simultaneously. An equally valid approach would have been to set up two Metropolis-Hastings schemes where the chain was first allowed to move along the <span class="math inline">\(\mu\)</span> axis, and then along the <span class="math inline">\(\sigma^{2}\)</span> axis. In Figure <a href="bayesian.html#fig:Psurface-persp2">2.10</a> I have cut the posterior distribution of Figure <a href="bayesian.html#fig:Psurface-persp">2.9</a> in half, and the edge of the surface facing left is the conditional distribution of <span class="math inline">\(\mu\)</span> given that <span class="math inline">\(\sigma^{2}=1\)</span>:</p>
+<p><span class="math display">\[Pr(\mu |\sigma^{2}=1, \boldsymbol{\mathbf{y}}).\]</span></p>
+<div class="figure"><span style="display:block;" id="fig:Psurface-persp2"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Psurface-persp2-1.png" alt="The posterior distribution $Pr(\mu, \sigma^{2} | {\bf y})$, but only for values of $\sigma^{2}$ between 1 and 5, rather than 0 to 5 (Figure \ref{Psurface-persp}). The edge of the surface facing left is the conditional distribution of the mean when $\sigma^{2}=1$ ($Pr(\mu | {\bf y}, \sigma^{2}=1)$). This conditional distribution follows a normal distribution." width="672" />
+<p class="caption">
+Figure 2.10: The posterior distribution <span class="math inline">\(Pr(\mu, \sigma^{2} | {\bf y})\)</span>, but only for values of <span class="math inline">\(\sigma^{2}\)</span> between 1 and 5, rather than 0 to 5 (Figure <span class="math inline">\(\ref{Psurface-persp}\)</span>). The edge of the surface facing left is the conditional distribution of the mean when <span class="math inline">\(\sigma^{2}=1\)</span> (<span class="math inline">\(Pr(\mu | {\bf y}, \sigma^{2}=1)\)</span>). This conditional distribution follows a normal distribution.
+</p>
+</div>
+<p>In some cases, the equation that describes this conditional distribution can be derived despite the equation for the complete joint distribution of Figure <a href="bayesian.html#fig:Psurface-persp">2.9</a> remaining unknown. When the conditional distribution of <span class="math inline">\(\mu\)</span> is known we can use Gibbs sampling. Lets say the chain at a particular iteration is located at <span class="math inline">\(\sigma^{2}=1\)</span>. If we updated <span class="math inline">\(\mu\)</span> using a Metropolis-Hastings algorithm we would generate a candidate value and evaluate its relative probability compared to the old value. This procedure would take place in the slice of posterior facing left in Figure <a href="bayesian.html#fig:Psurface-persp2">2.10</a>. However, because we know the actual equation for this slice we can just generate a new value of <span class="math inline">\(\mu\)</span> directly. This is Gibbs sampling. The slice of the posterior that we can see in Figure <a href="bayesian.html#fig:Psurface-persp2">2.10</a> actually has a normal distribution. Because of the weak prior this normal distribution has a mean close to the mean of <span class="math inline">\(\bf{y}\)</span> and a variance close to <span class="math inline">\(\frac{\sigma^{2}}{n} = \frac{1}{n}\)</span>. Gibbs sampling can be much more efficient than Metropolis-Hastings updates, especially when high dimensional conditional distributions are known, as is typical in GLMMs. A technical description of the sampling schemes used by <code>MCMCglmm</code> is given in the Chapter @ref(#technical-details), but is perhaps not important to know.</p>
+</div>
+<div id="slice-sampling" class="section level3 hasAnchor" number="2.5.4">
+<h3><span class="header-section-number">2.5.4</span> Slice Sampling<a href="bayesian.html#slice-sampling" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>If the distribution can be factored such that one factor is a distribution from which truncated random variables can be drawn, then the slice sampling methods of <span class="citation">Damien, Wakefield, and Walker (1999)</span> can be used. The latent variables in univariate binary models can be updated in this way if <code>slice=TRUE</code> is specified in the call to <code>MCMCglmm</code>. In these models, slice sampling is only marginally more efficient than adaptive Metropolis-Hastings updates when the residual variance is fixed. However, for parameter expanded binary models where the residual variance is not fixed, the slice sampler can be much more efficient.</p>
+</div>
+<div id="mcmc-diagnostics" class="section level3 hasAnchor" number="2.5.5">
+<h3><span class="header-section-number">2.5.5</span> MCMC Diagnostics<a href="bayesian.html#mcmc-diagnostics" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When fitting a model using <code>MCMCglmm</code> the parameter values through which the Markov chain has travelled are stored and returned. The length of the chain (the number of iterations) can be specified using the <code>nitt</code> argument<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> (the default is 13,000), and should be long enough so that the posterior approximation is valid. If we had known the joint posterior distribution in Figure <a href="bayesian.html#fig:Psurface-persp">2.9</a> we could have set up a Markov chain that sampled directly from the posterior. If this had been the case, each successive value in the Markov chain would be independent of the previous value after conditioning on the data, <span class="math inline">\({\bf y}\)</span>, and a thousand iterations of the chain would have produced a histogram that resembled Figure <a href="bayesian.html#fig:Psurface-persp">2.9</a> very closely. However, generally we do not know the joint posterior distribution of the parameters, and for this reason the parameter values of the Markov chain at successive iterations are usually not independent and care needs to be taken regarding the validity of the approximation. <code>MCMCglmm</code> returns the Markov chain as <code>mcmc</code> objects, which can be analysed using the <code>coda</code> package. The function <code>autocorr</code> estimates the level of non-independence between successive samples in the chain:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="bayesian.html#cb27-1" tabindex="-1"></a><span class="fu">autocorr</span>(m1a<span class="fl">.2</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<pre><code>## , , (Intercept)
+## 
+##         (Intercept)
+## Lag 0   1.000000000
+## Lag 1  -0.018713518
+## Lag 5  -0.013016600
+## Lag 10  0.013520421
+## Lag 50 -0.008461466</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="bayesian.html#cb29-1" tabindex="-1"></a><span class="fu">autocorr</span>(m1a<span class="fl">.2</span><span class="sc">$</span>VCV)</span></code></pre></div>
+<pre><code>## , , units
+## 
+##               units
+## Lag 0   1.000000000
+## Lag 1   0.238700161
+## Lag 5  -0.004692795
+## Lag 10  0.021773203
+## Lag 50 -0.001872056</code></pre>
+<p>The correlation between successive samples is low for the mean (-0.019) but a bit high for the variance (0.239). When auto-correlation is high the chain needs to be run for longer, and this can lead to storage problems for high dimensional problems. The argument <code>thin</code> can be passed to <code>MCMCglmm</code> specifying the intervals at which the Markov chain is stored. In model <code>m1a.2</code> we specified <code>thin=1</code> meaning we stored every iteration (the default is <code>thin=10</code>). I usually aim to store 1,000-2,000 iterations and have the autocorrelation between successive <em>stored</em> iterations less than 0.1.</p>
+<p>The approximation obtained from the Markov chain is conditional on the set of parameter values that were used to initialise the chain. In many cases the first iterations show a strong dependence on the starting parametrisation, but as the chain progresses this dependence may be lost. As the dependence on the starting parametrisation diminishes the chain is said to converge and the argument <code>burnin</code> can be passed to <code>MCMCped</code> specifying the number of iterations which must pass before samples are stored. The default burn-in period is 3,000 iterations. Assessing convergence of the chain is notoriously difficult, but visual inspection and diagnostic tools such as <code>gelman.diag</code> often suffice.</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="bayesian.html#cb31-1" tabindex="-1"></a><span class="fu">plot</span>(m1a<span class="fl">.2</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:time-series"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/time-series-1.png" alt="Summary plot of the Markov Chain for the intercept.  The left plot is a trace of the sampled posterior, and can be thought of as a time-series.  The right plot is a density estimate, and can be thought of a smoothed histogram approximating the posterior." width="672" />
+<p class="caption">
+Figure 2.11: Summary plot of the Markov Chain for the intercept. The left plot is a trace of the sampled posterior, and can be thought of as a time-series. The right plot is a density estimate, and can be thought of a smoothed histogram approximating the posterior.
+</p>
+</div>
+<p>On the left of Figure <a href="bayesian.html#fig:time-series">2.11</a> is a time-series of the parameter as the MCMC iterates, and on the right is a posterior density estimate of the parameter (a smoothed histogram of the output). If the model has converged there should be no trend in the time-series. The equivalent plot for the variance is a little hard to see on the original scale, but on the log scale the chain looks good (Figure <a href="bayesian.html#fig:time-series2">2.12</a>:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="bayesian.html#cb32-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">log</span>(m1a<span class="fl">.2</span><span class="sc">$</span>VCV))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:time-series2"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/time-series2-1.png" alt="Summary plot of the Markov Chain for the logged variance. The logged variance was plotted rather than the variance because it was easier to visualise. The left plot is a trace of the sampled posterior, and can be thought of as a time-series.  The right plot is a density estimate, and can be thought of a smoothed histogram approximating the posterior." width="672" />
+<p class="caption">
+Figure 2.12: Summary plot of the Markov Chain for the logged variance. The logged variance was plotted rather than the variance because it was easier to visualise. The left plot is a trace of the sampled posterior, and can be thought of as a time-series. The right plot is a density estimate, and can be thought of a smoothed histogram approximating the posterior.
+</p>
+</div>
+</div>
+</div>
+<div id="IP-sec" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> Improper Priors<a href="bayesian.html#IP-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>When improper priors are used their are two potential problems that may be encountered. The first is that if the data do not contain enough information the posterior distribution itself may be improper, and any results obtained from <code>MCMCglmm</code> will be meaningless. In addition, with proper priors there is a zero probability of a variance component being exactly zero but this is not necessarily the case with improper priors. This can produce numerical problems (trying to divide through by zero) and can also result in a reducible chain. A reducible chain is one which gets ‘stuck’ at some parameter value and cannot escape. This is usually obvious from the <code>mcmc</code> plots but <code>MCMCglmm</code> will often terminate before
+the analysis has finished with an error message of the form:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="bayesian.html#cb33-1" tabindex="-1"></a>ill<span class="sc">-</span>conditioned G<span class="sc">/</span>R structure<span class="sc">:</span> use proper priors ...</span></code></pre></div>
+<p>However, improper priors do have some useful properties.</p>
+<div id="flat-improper-prior" class="section level3 hasAnchor" number="2.6.1">
+<h3><span class="header-section-number">2.6.1</span> Flat Improper Prior<a href="bayesian.html#flat-improper-prior" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The simplest improper prior is one that is proportional to some constant for all possible parameter values. This is known as a flat prior and the posterior density in such cases is equal to the likelihood:</p>
+<p><span class="math display" id="eq:fprior-eq">\[Pr(\mu, \sigma^{2} | {\bf y}) \propto Pr({\bf y} | \mu, \sigma^{2})
+\label{fprior-eq}   \tag{2.3}\]</span></p>
+<p>It is known that although such a prior is non-informative for the mean it is informative for the variance. We can specify a flat prior on the variance component by having <code>nu=0</code> (the value of <code>V</code> is irrelevant) and the default prior for the mean is so diffuse as to be essentially flat across the range (<span class="math inline">\(-10^6, 10^6\)</span>).</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="bayesian.html#cb34-1" tabindex="-1"></a>prior.m1a<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">0</span>))</span>
+<span id="cb34-2"><a href="bayesian.html#cb34-2" tabindex="-1"></a>m1a<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> Ndata, <span class="at">thin =</span> <span class="dv">1</span>, <span class="at">prior =</span> prior.m1a<span class="fl">.3</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>We can overlay the joint posterior distribution on the likelihood surface (Figure <a href="bayesian.html#fig:Psurface-flat">2.13</a>) and see that the two things are in close agreement, up to Monte Carlo error.</p>
+<div class="figure"><span style="display:block;" id="fig:Psurface-flat"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Psurface-flat-1.png" alt="Likelihood surface for the likelihood $Pr({\bf y}|\mu, \sigma^{2})$ in black, and an MCMC approximation for the posterior distribution $Pr(\mu, \sigma^{2} | {\bf y})$ in red.  The likelihood has been normalised so that the maximum likelihood has a value of one, and the posterior distribution has been normalised so that the posterior mode has a value of one. Flat priors were used ($Pr(\mu)\sim N(0, 10^8)$ and  $Pr(\sigma^{2})\sim IW(\texttt{V}=0, \texttt{nu}=0)$) and so the posterior distribution is equivalent to the likelihood." width="672" />
+<p class="caption">
+Figure 2.13: Likelihood surface for the likelihood <span class="math inline">\(Pr({\bf y}|\mu, \sigma^{2})\)</span> in black, and an MCMC approximation for the posterior distribution <span class="math inline">\(Pr(\mu, \sigma^{2} | {\bf y})\)</span> in red. The likelihood has been normalised so that the maximum likelihood has a value of one, and the posterior distribution has been normalised so that the posterior mode has a value of one. Flat priors were used (<span class="math inline">\(Pr(\mu)\sim N(0, 10^8)\)</span> and <span class="math inline">\(Pr(\sigma^{2})\sim IW(\texttt{V}=0, \texttt{nu}=0)\)</span>) and so the posterior distribution is equivalent to the likelihood.
+</p>
+</div>
+</div>
+<div id="non-informative-improper-prior" class="section level3 hasAnchor" number="2.6.2">
+<h3><span class="header-section-number">2.6.2</span> Non-Informative Improper Prior<a href="bayesian.html#non-informative-improper-prior" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Although inverse-Wishart distributions with negative degree of belief parameters are not defined, the resulting posterior distribution can be defined if there is sufficient replication. Specifying <code>V=0</code> and <code>nu=-1</code> is equivalent to a uniform prior for the standard deviation on the the interval <span class="math inline">\((0,\infty]\)</span>, and specifying <code>V=0</code> and <code>nu=-2</code> is non-informative for a variance component.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="bayesian.html#cb35-1" tabindex="-1"></a>prior.m1a<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e-16</span>, <span class="at">nu =</span> <span class="sc">-</span><span class="dv">2</span>))</span>
+<span id="cb35-2"><a href="bayesian.html#cb35-2" tabindex="-1"></a>m1a<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> Ndata, <span class="at">thin =</span> <span class="dv">1</span>, <span class="at">prior =</span> prior.m1a<span class="fl">.4</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:Psurface-NI"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Psurface-NI-1.png" alt="Likelihood surface for the likelihood $Pr({\bf y}|\mu, \sigma^{2})$ in black, and an MCMC approximation for the posterior distribution $Pr(\mu, \sigma^{2} | {\bf y})$ in red.  The likelihood has been normalised so that the maximum likelihood has a value of one, and the posterior distribution has been normalised so that the posterior mode has a value of one. A non-informative prior was used ($Pr(\mu)\sim N(0, 10^8)$ and  $Pr(\sigma^{2})\sim IW(\texttt{V}=0, \texttt{nu}=-2)$)" width="672" />
+<p class="caption">
+Figure 2.14: Likelihood surface for the likelihood <span class="math inline">\(Pr({\bf y}|\mu, \sigma^{2})\)</span> in black, and an MCMC approximation for the posterior distribution <span class="math inline">\(Pr(\mu, \sigma^{2} | {\bf y})\)</span> in red. The likelihood has been normalised so that the maximum likelihood has a value of one, and the posterior distribution has been normalised so that the posterior mode has a value of one. A non-informative prior was used (<span class="math inline">\(Pr(\mu)\sim N(0, 10^8)\)</span> and <span class="math inline">\(Pr(\sigma^{2})\sim IW(\texttt{V}=0, \texttt{nu}=-2)\)</span>)
+</p>
+</div>
+<p>The joint posterior mode does not coincide with either the ML or REML estimator (Figure <a href="bayesian.html#fig:Psurface-NI">2.14</a>) but the marginal distribution of the variance component is equivalent to the REML estimator (See Figure <a href="bayesian.html#fig:Pmarg-NI">2.15</a>):</p>
+<div class="figure"><span style="display:block;" id="fig:Pmarg-NI"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Pmarg-NI-1.png" alt="An MCMC approximation for the marginal posterior distribution of the variance $Pr(\sigma^{2} | {\bf y})$.  A non-informative prior specification was used ($Pr(\mu)\sim N(0, 10^8)$ and  $Pr(\sigma^{2})\sim IW(\texttt{V}=0, \texttt{nu}=-2)$) and the REML estimator of the variance (red line) coincides with the marginal posterior mode." width="672" />
+<p class="caption">
+Figure 2.15: An MCMC approximation for the marginal posterior distribution of the variance <span class="math inline">\(Pr(\sigma^{2} | {\bf y})\)</span>. A non-informative prior specification was used (<span class="math inline">\(Pr(\mu)\sim N(0, 10^8)\)</span> and <span class="math inline">\(Pr(\sigma^{2})\sim IW(\texttt{V}=0, \texttt{nu}=-2)\)</span>) and the REML estimator of the variance (red line) coincides with the marginal posterior mode.
+</p>
+</div>
+</div>
+</div>
+<div id="references-1" class="section level2 hasAnchor" number="2.7">
+<h2><span class="header-section-number">2.7</span> References<a href="bayesian.html#references-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="1">
+<li id="fn1"><p>The inverse gamma is a special case of the inverse Wishart, although it is parametrised using <code>shape</code> and <code>scale</code>, where <span class="math inline">\(\texttt{nu}=2\ast\texttt{shape}\)</span> and <span class="math inline">\(\texttt{V} = \frac{\texttt{scale}}{\texttt{shape}}\)</span> (or <span class="math inline">\(\texttt{shape} = \frac{\texttt{nu}}{2}\)</span> and <span class="math inline">\(\texttt{scale} = \texttt{V}\frac{\texttt{nu}}{2}\)</span>). There is no density function for the inverse-gamma in base R. However, it can be obtained using the density function for the gamma. using <span class="math inline">\(\texttt{shape_g}\)</span> and <span class="math inline">\(\texttt{scale_g}\)</span> to designate the shape and scale parameters of a gamma distribution then the density of <span class="math inline">\(\texttt{x}\)</span> under the inverse-gamma is the density of <span class="math inline">\(1/\texttt{x}\)</span> under a gamma distribution with <span class="math inline">\(\texttt{shape_g}=\texttt{shape}\)</span> and <span class="math inline">\(\texttt{scale_g}=1/\texttt{scale}\)</span> multiplied by the Jacobian, <span class="math inline">\(1/\texttt{x}^2\)</span>. Consequently, we can implement the function <code>dinvgamma&lt;-function(x, shape, scale, ...){dgamma(1/x, shape=shape, rate=scale, ...)/(x^2)}</code>. Note <span class="math inline">\(\texttt{rate}=1/\texttt{scale}\)</span><a href="bayesian.html#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>The double <code>t</code> is because I cannot spell.<a href="bayesian.html#fnref2" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="glm.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["MCMCglmm-course-notes.pdf", "MCMCglmm-course-notes.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

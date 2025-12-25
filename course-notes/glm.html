@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 GLMs and GLMMs | MCMCglmm Course Notes</title>
+  <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 GLMs and GLMMs | MCMCglmm Course Notes" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 GLMs and GLMMs | MCMCglmm Course Notes" />
+  
+  <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+<meta name="author" content="Jarrod Hadfield" />
+
+
+<meta name="date" content="2025-12-25" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="bayesian.html"/>
+<link rel="next" href="cat-int.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.2</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="bayesian.html"><a href="bayesian.html"><i class="fa fa-check"></i><b>2</b> Bayesian Analysis and MCMC</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="bayesian.html"><a href="bayesian.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="bayesian.html"><a href="bayesian.html#likelihood"><i class="fa fa-check"></i><b>2.2</b> Likelihood</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="bayesian.html"><a href="bayesian.html#maximum-likelihood-ml"><i class="fa fa-check"></i><b>2.2.1</b> Maximum Likelihood (ML)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="bayesian.html"><a href="bayesian.html#restricted-maximum-likelihood-reml"><i class="fa fa-check"></i><b>2.2.2</b> Restricted Maximum Likelihood (REML)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="bayesian.html"><a href="bayesian.html#prior-distribution"><i class="fa fa-check"></i><b>2.3</b> Prior Distribution</a></li>
+<li class="chapter" data-level="2.4" data-path="bayesian.html"><a href="bayesian.html#posterior-distribution"><i class="fa fa-check"></i><b>2.4</b> Posterior Distribution</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="bayesian.html"><a href="bayesian.html#marginal-posterior-distribution"><i class="fa fa-check"></i><b>2.4.1</b> Marginal Posterior Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="bayesian.html"><a href="bayesian.html#mcmc"><i class="fa fa-check"></i><b>2.5</b> MCMC</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="bayesian.html"><a href="bayesian.html#starting-values"><i class="fa fa-check"></i><b>2.5.1</b> Starting values</a></li>
+<li class="chapter" data-level="2.5.2" data-path="bayesian.html"><a href="bayesian.html#metrpolis-hastings-updates"><i class="fa fa-check"></i><b>2.5.2</b> Metrpolis-Hastings updates</a></li>
+<li class="chapter" data-level="2.5.3" data-path="bayesian.html"><a href="bayesian.html#gibbs-sampling"><i class="fa fa-check"></i><b>2.5.3</b> Gibbs Sampling</a></li>
+<li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#slice-sampling"><i class="fa fa-check"></i><b>2.5.4</b> Slice Sampling</a></li>
+<li class="chapter" data-level="2.5.5" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.5</b> MCMC Diagnostics</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6</b> Improper Priors</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.6.1</b> Flat Improper Prior</a></li>
+<li class="chapter" data-level="2.6.2" data-path="bayesian.html"><a href="bayesian.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.6.2</b> Non-Informative Improper Prior</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#references-1"><i class="fa fa-check"></i><b>2.7</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="glm.html"><a href="glm.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#over-dispersion"><i class="fa fa-check"></i><b>3.3</b> Over-dispersion</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-over-dispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Over-dispersion</a></li>
+<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Over-dispersion</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#ranef-sec"><i class="fa fa-check"></i><b>3.4</b> Random effects</a></li>
+<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#pred-sec"><i class="fa fa-check"></i><b>3.5</b> Prediction with Random effects</a></li>
+<li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#categorical-data"><i class="fa fa-check"></i><b>3.6</b> Categorical Data</a></li>
+<li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#PriorContr-sec"><i class="fa fa-check"></i><b>3.7</b> A note on fixed effect priors and covariances</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>4</b> Categorical Random Interactions</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>4.1</b> <code>idh</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>4.2</b> <code>us</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>4.3</b> Compound Variance Structures</a></li>
+<li class="chapter" data-level="4.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>4.4</b> Heterogenous Residual Variance</a></li>
+<li class="chapter" data-level="4.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>4.5</b> Contrasts and Covariances</a></li>
+<li class="chapter" data-level="4.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Covariance Matrices</a>
+<ul>
+<li class="chapter" data-level="4.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>4.6.1</b> Priors for <code>us</code> structures</a></li>
+<li class="chapter" data-level="4.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>4.6.2</b> Priors for <code>idh</code> structures</a></li>
+<li class="chapter" data-level="4.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>4.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>5</b> Continuous Random Interactions</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>5.1</b> Random Regression</a></li>
+<li class="chapter" data-level="5.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>5.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="5.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>5.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="5.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>5.4</b> Meta-analysis</a></li>
+<li class="chapter" data-level="5.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>5.5</b> Splines</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>6</b> Multi-response models</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>6.1</b> Relaxing the univariate assumptions of causality</a></li>
+<li class="chapter" data-level="6.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>6.2</b> Multinomial Models</a></li>
+<li class="chapter" data-level="6.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>6.3</b> Zero-inflated Models</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>6.3.1</b> Posterior predictive checks</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>6.4</b> Hurdle Models</a></li>
+<li class="chapter" data-level="6.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>6.5</b> Zero-altered Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>7</b> Pedigrees and Phylogenies</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>7.1</b> Pedigree and phylogeny formats</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>7.1.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="7.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>7.1.2</b> Phylogenies</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>7.2</b> The animal model and the phylogenetic mixed model</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>8</b> Technical Details</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>8.1</b> Model Form</a></li>
+<li class="chapter" data-level="8.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>8.2</b> MCMC Sampling Schemes</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>8.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
+<li class="chapter" data-level="8.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymbolmathbftheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>8.2.2</b> Updating the location vector <span class="math inline">\({\boldsymbol{\mathbf{\theta}}} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
+<li class="chapter" data-level="8.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>8.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
+<li class="chapter" data-level="8.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>8.2.4</b> Ordinal Models</a></li>
+<li class="chapter" data-level="8.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>8.2.5</b> Path Analyses</a></li>
+<li class="chapter" data-level="8.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>8.2.6</b> Deviance and DIC</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="parameter-expansion.html"><a href="parameter-expansion.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
+<ul>
+<li class="chapter" data-level="9.0.1" data-path="parameter-expansion.html"><a href="parameter-expansion.html#variances-close-to-zero"><i class="fa fa-check"></i><b>9.0.1</b> Variances close to zero</a></li>
+<li class="chapter" data-level="9.0.2" data-path="parameter-expansion.html"><a href="parameter-expansion.html#binary-response-models"><i class="fa fa-check"></i><b>9.0.2</b> Binary response models</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#antedependence"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">MCMCglmm Course Notes</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="glm" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">3</span> GLMs and GLMMs<a href="glm.html#glm" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="linear-model-lm" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> Linear Model (LM)<a href="glm.html#linear-model-lm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A linear model is one in which unknown parameters are multiplied by
+observed variables and then added together to give a prediction for the
+response variable. As an example, lets take the results from a Swedish
+experiment from the sixties:</p>
+<p>The experiment involved enforcing speed limits on Swedish roads on some
+days, but on other days letting everyone drive as fast as they liked.
+The response variable (<code>y</code>) was how many of their citizens were injured
+in road accidents! The experiment was conducted in 1961 and 1962 for 92
+days in each year. As a first attempt we could specify the linear model:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="glm.html#cb36-1" tabindex="-1"></a>y <span class="sc">~</span> limit <span class="sc">+</span> year <span class="sc">+</span> day</span></code></pre></div>
+<p>but what does this mean?</p>
+<div id="lm-sec" class="section level3 hasAnchor" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Linear Predictors<a href="glm.html#lm-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The model formula defines a set of simultaneous (linear) equations</p>
+<p><span class="math display" id="eq:SE-eq">\[\begin{array}{cl}
+E[y\texttt{[1]}] &amp;=\beta_{1}+\beta_{2}(\texttt{limit[1]==&quot;yes&quot;})+\beta_{3}(\texttt{year[1]==&quot;1962&quot;})+\beta_{4}\texttt{day[1]}\\
+E[y\texttt{[2]}] &amp;= \beta_{1}+\beta_{2}(\texttt{limit[2]==&quot;yes&quot;})+\beta_{3}(\texttt{year[2]==&quot;1962&quot;})+\beta_{4}\texttt{day[2]}\\
+\vdots&amp;=\vdots\\
+E[y\texttt{[184]}] &amp;= \beta_{1}+\beta_{2}(\texttt{limit[184]==&quot;yes&quot;})+\beta_{3}(\texttt{year[184]==&quot;1962&quot;})+\beta_{4}\texttt{day[184]}\\
+\end{array}
+\label{SE-eq}   \tag{3.1}\]</span></p>
+<p>where the <span class="math inline">\(\beta\)</span>’s are the unknown coefficients to be estimated, and the variables in <span class="math inline">\(\texttt{this font}\)</span> are observed predictors. Continuous predictors such as <code>day</code> remain unchanged, but categorical predictors are expanded into a series of binary variables of the form ‘<em>do the data come from 1961, yes or no?</em>’, ‘<em>do the data come from 1962, yes or
+no?</em>’, and so on for as many years for which there are data.</p>
+<p>It is cumbersome to write out the equation for each data point in this way, and a more compact way of representing the system of equations is</p>
+<p><span class="math display" id="eq:lm-eq">\[E[{\bf y}] = {\bf X}{\boldsymbol{\mathbf{\beta}}}
+\label{lm-eq}   \tag{3.2}\]</span></p>
+<p>where <span class="math inline">\({\bf X}\)</span> is called a design matrix and contains the predictor information, and <span class="math inline">\({\boldsymbol{\mathbf{\beta}}} = [\beta_{1}\ \beta_{2}\ \beta_{3}\ \beta_{4}]^{&#39;}\)</span> is the vector of parameters.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="glm.html#cb37-1" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(y <span class="sc">~</span> limit <span class="sc">+</span> year <span class="sc">+</span> day, <span class="at">data =</span> Traffic)</span>
+<span id="cb37-2"><a href="glm.html#cb37-2" tabindex="-1"></a>X[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     (Intercept) limityes year1962 day
+## 1             1        0        0   1
+## 2             1        0        0   2
+## 184           1        1        1  92</code></pre>
+<p>The binary predictors <em>do the data come from 1961, yes or no?</em> and <em>there was no speed limit, yes or no?</em> do not appear. These are the first factor levels of <code>year</code> and <code>limit</code> respectively, and are absorbed
+into the global intercept (<span class="math inline">\(\beta_{1}\)</span>) which is fitted by default in R. Hence the expected number of injuries for the four combinations (on day zero) are <span class="math inline">\(\beta_{1}\)</span> for 1961 with no speed limit, <span class="math inline">\(\beta_{1}+\beta_{2}\)</span> for 1961 with a speed limit, <span class="math inline">\(\beta_{1}+\beta_{3}\)</span> for 1962 with no speed limit and <span class="math inline">\(\beta_{1}+\beta_{2}+\beta_{3}\)</span> for 1962 with a speed limit.</p>
+<p>The simultaneous equations defined by Equation (<a href="glm.html#eq:lm-eq">(3.2)</a>) cannot be solved directly because we do not know the left-hand side - expected values of <span class="math inline">\(y\)</span>. We only know the observed value, which we assume is distributed around the expected value with some error. In a normal linear model we assume that these errors are normally distributed so that the data are also normally distributed (after conditioning o the predictor variables):</p>
+<p><span class="math display">\[{\bf y} \sim N({\bf X}{\boldsymbol{\mathbf{\beta}}}, \sigma^{2}_{e}{\bf I})\]</span></p>
+<p><span class="math inline">\({\bf I}\)</span> is an identity matrix. It has ones along the diagonal, and zeros in the off-diagonals. The zero off-diagonals imply that the residuals are uncorrelated, and the ones along the diagonal imply that they have the same variance <span class="math inline">\(\sigma^{2}_{e}\)</span>. We could use <code>glm</code> to estimate <span class="math inline">\({\bf \beta}\)</span> and <span class="math inline">\(\sigma^{2}_{e}\)</span> assuming that <span class="math inline">\(y\)</span> folllows a conditional normal distribution:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="glm.html#cb39-1" tabindex="-1"></a>m2a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> limit <span class="sc">+</span> year <span class="sc">+</span> day, <span class="at">data =</span> Traffic)</span></code></pre></div>
+<p>but the injuries are count data and the residuals show the typical right skew:</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="glm.html#cb40-1" tabindex="-1"></a><span class="fu">hist</span>(m2a<span class="fl">.1</span><span class="sc">$</span>resid)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:hist-traffic"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/hist-traffic-1.png" alt="Histogram of residuals from model `m2a.1` which assumed they followed a Gaussian distribution." width="672" />
+<p class="caption">
+Figure 3.1: Histogram of residuals from model <code>m2a.1</code> which assumed they followed a Gaussian distribution.
+</p>
+</div>
+<p>It’s not extreme, and the conclusions probably won’t change, but we could assume that the data follow some other distribution.</p>
+</div>
+</div>
+<div id="generalised-linear-model-glm" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> Generalised Linear Model (GLM)<a href="glm.html#generalised-linear-model-glm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Generalised linear models extend the linear model to non-Gaussian data. They are essentially the same as the linear model described above, except they differ in two aspects. First, it is not necessarily the mean response that is predicted, but some function of the mean response. This function is called the link function. For example, with a log link we are trying to predict the logged expectation:</p>
+<p><span class="math display">\[\textrm{log}(E[{\bf y}]) = {\bf X}{\boldsymbol{\mathbf{\beta}}}\]</span></p>
+<p>or alternatively</p>
+<p><span class="math display">\[E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}})\]</span></p>
+<p>where <span class="math inline">\(\textrm{exp}\)</span> is the inverse of the log link function. The second difference is that many distributions are single parameter distributions for which a variance does not need to be estimated because it can be
+inferred from the mean. For example, we could assume that the number of injuries are Poisson distributed, in which case we also make the assumption that the variance is equal to the expected value. There are many different types of distribution and link functions and those supported by <code>MCMCglmm</code> can be found in Table <a href="technical-details.html#tab:dist">8.1</a>. For now we will concentrate on a Poisson GLM with log link (the default link function for the Poisson distribution):</p>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="glm.html#cb41-1" tabindex="-1"></a>m2a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> limit <span class="sc">+</span> year <span class="sc">+</span> day, <span class="at">family =</span> poisson, <span class="at">data =</span> Traffic)</span>
+<span id="cb41-2"><a href="glm.html#cb41-2" tabindex="-1"></a><span class="fu">summary</span>(m2a<span class="fl">.2</span>)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ limit + year + day, family = poisson, data = Traffic)
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  3.0467406  0.0372985  81.685  &lt; 2e-16 ***
+## limityes    -0.1749337  0.0355784  -4.917 8.79e-07 ***
+## year1962    -0.0605503  0.0334364  -1.811   0.0702 .  
+## day          0.0024164  0.0005964   4.052 5.09e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 625.25  on 183  degrees of freedom
+## Residual deviance: 569.25  on 180  degrees of freedom
+## AIC: 1467.2
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>The results look fairly straightforward, having a speed limit reduces the number of injuries significantly, there are fewer injuries in 1962 (although significance is marginal) and there is a significant increase in the number of injuries over the year. Are these big effects or small effects? The coefficients are on the log scale so to get back to the data scale we need to exponentiate. The exponent of the intercept is the predicted number of injuries on day zero in 1961 without a speed limit:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="glm.html#cb43-1" tabindex="-1"></a><span class="fu">exp</span>(m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;(Intercept)&quot;</span>])</span></code></pre></div>
+<pre><code>## (Intercept) 
+##    21.04663</code></pre>
+<p>To get the prediction for the same day with a speed limit we need to add the <code>limityes</code> coefficient</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="glm.html#cb45-1" tabindex="-1"></a><span class="fu">exp</span>(m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;limityes&quot;</span>])</span></code></pre></div>
+<pre><code>## (Intercept) 
+##    17.66892</code></pre>
+<p>With a speed limit there are expected to be 0.840 times less injuries than if there were no speed limits. This value can be more directly obtained:</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="glm.html#cb47-1" tabindex="-1"></a><span class="fu">exp</span>(m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;limityes&quot;</span>])</span></code></pre></div>
+<pre><code>##  limityes 
+## 0.8395127</code></pre>
+<p>and holds true for any given day in either year. For example, without a speed limit on the final day of the year (92) in 1961 we expect 24.742
+injuries:</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="glm.html#cb49-1" tabindex="-1"></a><span class="fu">exp</span>(m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;year1962&quot;</span>] <span class="sc">+</span> <span class="dv">92</span> <span class="sc">*</span> m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;day&quot;</span>])</span></code></pre></div>
+<pre><code>## (Intercept) 
+##    24.74191</code></pre>
+<p>and</p>
+<p>20.771</p>
+<p>injuries if a speed limit had been in place:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="glm.html#cb51-1" tabindex="-1"></a><span class="fu">exp</span>(m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;limityes&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;year1962&quot;</span>] <span class="sc">+</span></span>
+<span id="cb51-2"><a href="glm.html#cb51-2" tabindex="-1"></a>    <span class="dv">92</span> <span class="sc">*</span> m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;day&quot;</span>])</span></code></pre></div>
+<pre><code>## (Intercept) 
+##    20.77115</code></pre>
+<p>The proportional change is identical because the model is <em>linear</em> on the log scale.</p>
+</div>
+<div id="over-dispersion" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Over-dispersion<a href="glm.html#over-dispersion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Most count data do not conform to a Poisson distribution because the variance in the response exceeds the expectation. This is known as over-dispersion and it is easy to see how it arises, and why it is so common. In the summary to <code>m2a.2</code> note that the ratio of the residual deviance to the residual degrees of freedom is 3.162 which means, roughly speaking, there is 3.2 times as much variation in the residuals than what we expect.</p>
+<p>If the predictor data had not been available to us then the only model we could have fitted was one with just an intercept:</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="glm.html#cb53-1" tabindex="-1"></a>m2a<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> Traffic, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
+<span id="cb53-2"><a href="glm.html#cb53-2" tabindex="-1"></a><span class="fu">summary</span>(m2a<span class="fl">.3</span>)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ 1, family = &quot;poisson&quot;, data = Traffic)
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  3.07033    0.01588   193.3   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for poisson family taken to be 1)
+## 
+##     Null deviance: 625.25  on 183  degrees of freedom
+## Residual deviance: 625.25  on 183  degrees of freedom
+## AIC: 1517.2
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>for which the residual variance exceeds that expected by a factor of 3.5. Of course, the variability in the residuals must go up if there are factors that influence the number of injuries, but which we hadn’t measured. It’s likely that in most studies there are things that influence the response that haven’t been measured, and even if each thing has a small effect individually, in aggregate they can cause substantial over-dispersion.</p>
+<div id="multiplicative-over-dispersion" class="section level3 hasAnchor" number="3.3.1">
+<h3><span class="header-section-number">3.3.1</span> Multiplicative Over-dispersion<a href="glm.html#multiplicative-over-dispersion" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>There are two ways of dealing with over-dispersion. With <code>glm</code> the distribution name can be prefixed with <code>quasi</code> and a dispersion parameter estimated:</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="glm.html#cb55-1" tabindex="-1"></a>m2a<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> limit <span class="sc">+</span> year <span class="sc">+</span> day, <span class="at">family =</span> quasipoisson, <span class="at">data =</span> Traffic)</span>
+<span id="cb55-2"><a href="glm.html#cb55-2" tabindex="-1"></a><span class="fu">summary</span>(m2a<span class="fl">.4</span>)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ limit + year + day, family = quasipoisson, 
+##     data = Traffic)
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  3.046741   0.067843  44.909  &lt; 2e-16 ***
+## limityes    -0.174934   0.064714  -2.703  0.00753 ** 
+## year1962    -0.060550   0.060818  -0.996  0.32078    
+## day          0.002416   0.001085   2.227  0.02716 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for quasipoisson family taken to be 3.308492)
+## 
+##     Null deviance: 625.25  on 183  degrees of freedom
+## Residual deviance: 569.25  on 180  degrees of freedom
+## AIC: NA
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p><code>glm</code> uses a multiplicative model of over-dispersion and so the estimate of the dispersion parameter is roughly equivalent to how many times greater the variance is than expected, after taking into account the predictor variables. You will notice that although the parameter estimates have changed very little, the standard errors have gone up and the significance gone down. Over-dispersion, if not dealt with, can result in extreme anti-conservatism because the assumption of independence is contravened. For example, the second lowest number of accidents (8) occurred on the
+91<span class="math inline">\(^{st}\)</span> day of 1961 without a speed limit. This should have been the second worst day for injuries over the whole two years, and the probability of observing 9 or less accidents on this day, under the assumption of independence is almost 1 in a 100,000:</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="glm.html#cb57-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">9</span>, <span class="fu">exp</span>(m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> <span class="dv">91</span> <span class="sc">*</span> m2a<span class="fl">.2</span><span class="sc">$</span>coef[<span class="st">&quot;day&quot;</span>]))</span></code></pre></div>
+<pre><code>## [1] 9.80056e-05</code></pre>
+<p>However, perhaps it was Christmas day and everything was under 5 foot of snow. Although the accidents may have been independent in the sense that all 9 cars didn’t crash into each other, they are non-independent in the sense that they all happened on a day where the underlying probability may be different from that underlying any other day (data point).</p>
+</div>
+<div id="addod-sec" class="section level3 hasAnchor" number="3.3.2">
+<h3><span class="header-section-number">3.3.2</span> Additive Over-dispersion<a href="glm.html#addod-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>I believe that a model assuming all relevant variables have been measured or controlled for, should <strong>not</strong> be the default model, and so when you specify <code>family=poisson</code> in <code>MCMCglmm</code>, over-dispersion is always dealt with<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. However, <code>MCMCglmm</code> does not use a multiplicative model, but an additive model.</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="glm.html#cb59-1" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
+<span id="cb59-2"><a href="glm.html#cb59-2" tabindex="-1"></a>m2a<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> limit <span class="sc">+</span> year <span class="sc">+</span> day, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">data =</span> Traffic, <span class="at">prior =</span> prior,</span>
+<span id="cb59-3"><a href="glm.html#cb59-3" tabindex="-1"></a>    <span class="at">pl =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>The element <code>Sol</code> contains the posterior distribution of the coefficients of the linear model, and we can plot their marginal distributions:</p>
+<div class="figure">
+<img src="MCMCglmm-course-notes_files/figure-html/mcmc.traffic-1.png" alt="MCMC summary plot for the coefficients from a Poisson glm (model `m2a.5`)." width="672" />
+<p class="caption">
+(#fig:mcmc.traffic)MCMC summary plot for the coefficients from a Poisson glm (model <code>m2a.5</code>).
+</p>
+</div>
+<p>Notice that the <code>year1962</code> coefficient has a high posterior density around zero, in agreement with the over-dispersed <code>glm</code> model, and that in general the estimates for the two models are broadly similar. This agreement is superficial.</p>
+<p>With additive over-dispersion the linear predictor includes a ‘residual’, for which a residual variance is estimated (hence our prior specification).</p>
+<p><span class="math display">\[E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf e})\]</span></p>
+<p>At this point it will be handy to represent the linear model in a new
+way:</p>
+<p><span class="math display">\[{\bf l} = {\boldsymbol{\mathbf{\eta}}}+{\bf e}\]</span></p>
+<p>where <span class="math inline">\({\bf l}\)</span> is a vector of latent variables (<span class="math inline">\(\textrm{log}(E[{\bf y}])\)</span> in this case) and <span class="math inline">\({\boldsymbol{\mathbf{\eta}}}\)</span> is the usual symbol for the linear predictor (<span class="math inline">\({\bf X}{\boldsymbol{\mathbf{\beta}}}\)</span>). The data we observe
+are assumed to be Poisson variables with expectation equal to the exponentiated latent variables:</p>
+<p><span class="math display">\[{\bf y} \sim Pois(\textrm{exp}({\bf l}))\]</span></p>
+<p>Note that the latent variable does not exactly predict <span class="math inline">\(y\)</span>, as it would if the data were Gaussian, because there is additional variability in the Poisson process. In the call to <code>MCMCglmm</code> I specified <code>pl=TRUE</code> to indicate that I wanted to store the posterior distributions of latent variables. This is not usually necessary and can require a lot of memory
+(we have 1000 realisations for each of the 182 data points). However as an example we can obtain the posterior mean residual for data point 92 which is the data from day 92 in 1961 when there was no speed limit:</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="glm.html#cb60-1" tabindex="-1"></a>lat92 <span class="ot">&lt;-</span> m2a<span class="fl">.5</span><span class="sc">$</span>Liab[, <span class="dv">92</span>]</span>
+<span id="cb60-2"><a href="glm.html#cb60-2" tabindex="-1"></a>eta92 <span class="ot">&lt;-</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;day&quot;</span>] <span class="sc">*</span> Traffic<span class="sc">$</span>day[<span class="dv">92</span>]</span>
+<span id="cb60-3"><a href="glm.html#cb60-3" tabindex="-1"></a>resid92 <span class="ot">&lt;-</span> lat92 <span class="sc">-</span> eta92</span>
+<span id="cb60-4"><a href="glm.html#cb60-4" tabindex="-1"></a><span class="fu">mean</span>(resid92)</span></code></pre></div>
+<pre><code>## [1] -0.1360408</code></pre>
+<p>This particular day has a negative expected residual indicating that the probability of getting injured was less than expected for this <em>particular</em> realisation of that day in that year. If that <em>particular</em> day could be repeated it does not necessarily mean that the actual number of injuries would always be less than expected, because it would
+follow a Poisson distribution with rate parameter <span class="math inline">\(\lambda=\)</span>exp(<code>lat92</code>)=22.004. In
+fact there would be a 22.317%
+chance of having more injuries than if the residual had been zero:</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="glm.html#cb62-1" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span> <span class="fu">ppois</span>(<span class="fu">exp</span>(<span class="fu">mean</span>(eta92)), <span class="fu">exp</span>(<span class="fu">mean</span>(lat92)))</span></code></pre></div>
+<pre><code>## [1] 0.2231692</code></pre>
+<p>Like residuals in a Gaussian model, the residuals are assumed to be independently and normally distributed with an expectation of zero and an estimated variance. If the residual variance was zero then <span class="math inline">\({\bf e}\)</span> would be a vector of zeros and the model would conform to the standard Poisson GLM. However, the posterior distribution of the residual
+variance is located well away form zero:</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="glm.html#cb64-1" tabindex="-1"></a><span class="fu">plot</span>(m2a<span class="fl">.5</span><span class="sc">$</span>VCV)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:vcv-traffic"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/vcv-traffic-1.png" alt="MCMC summary plot for the residual (`units`) variance from a Poisson glm (model `m2a.5`). The residual variance models any over-dispersion, and a residual variance of zero implies that the response conforms to a standard Poisson." width="672" />
+<p class="caption">
+Figure 3.2: MCMC summary plot for the residual (<code>units</code>) variance from a Poisson glm (model <code>m2a.5</code>). The residual variance models any over-dispersion, and a residual variance of zero implies that the response conforms to a standard Poisson.
+</p>
+</div>
+<p>The forces that created this residual were only realised on day 92 in 1961, however we could ask hypothetically what if those forces were present on another day. Figure <a href="glm.html#fig:prediction1">3.3</a> plots the first 92 residuals as function of
+day (red lines) as scatter around the expectation on the log scale (solid black line). Each residual is only realised once, and the black dashed line is the hypothetical <code>resid92</code> which happened to be observed on day 92 (black circle).</p>
+<div class="figure"><span style="display:block;" id="fig:prediction1"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/prediction1-1.png" alt="The predicted number of injuries on the log scale (left) and data scale (right) as a function of the continuous covariate `day` for 1961 without a speed limit. In order to highlight a point, the slope of the plotted relationship is an order of magnitude steeper than the model `m2a.5` estimate.  The solid black line is the value of the linear predictor, and the red dashed lines represent noise around the linear predictor. Each dashed line is a residual from the model, which is only observed for a particular data point. The vertical distance between the black dot and the solid black line is the observed residual on day 92. The black dashed line is the predicted value of a data point observed on other days but with the same residual value.  All lines are parallel and linear on the log scale, but this is not the case on the data scale." width="672" />
+<p class="caption">
+Figure 3.3: The predicted number of injuries on the log scale (left) and data scale (right) as a function of the continuous covariate <code>day</code> for 1961 without a speed limit. In order to highlight a point, the slope of the plotted relationship is an order of magnitude steeper than the model <code>m2a.5</code> estimate. The solid black line is the value of the linear predictor, and the red dashed lines represent noise around the linear predictor. Each dashed line is a residual from the model, which is only observed for a particular data point. The vertical distance between the black dot and the solid black line is the observed residual on day 92. The black dashed line is the predicted value of a data point observed on other days but with the same residual value. All lines are parallel and linear on the log scale, but this is not the case on the data scale.
+</p>
+</div>
+<p>It is perhaps more interesting to know the expected number of injuries that would occur on this date if we had randomly sampled one of these other residuals. To indicate an expectation taken over residuals I have
+subscripted expectations with <span class="math inline">\(e\)</span>. In Figure <a href="glm.html#fig:prediction3">3.4</a> I have plotted the distribution of the latent variables on day 92. On the log scale the expectation is simply the solid black line <span class="math inline">\(\eta\)</span>. However, because the exponent function is non-linear this does not translate to the data scale and <span class="math inline">\(\eta\)</span> is
+actually equal to the median value on the data scale.</p>
+<div class="figure"><span style="display:block;" id="fig:prediction3"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/prediction3-1.png" alt="The hypothetical distribution for the number of injuries on the log scale (left) and data scale (right) for day 92 in 1961 without a speed limit. These can viewed as vertical slices from Figure \@ref(fig:prediction1) on day 92. On the log scale the distribution is assumed to be normal and so the residuals are symmetrically distributed around the linear predictor. As a consequence the linear predictor ($\eta$) is equal to the mean, median and mode of the distribution on the log scale. Because the exponential function is non-linear this symmetry is lost on the data scale, and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median.  $\sigma^{2}$ is the residual variance." width="672" />
+<p class="caption">
+Figure 3.4: The hypothetical distribution for the number of injuries on the log scale (left) and data scale (right) for day 92 in 1961 without a speed limit. These can viewed as vertical slices from Figure <a href="glm.html#fig:prediction1">3.3</a> on day 92. On the log scale the distribution is assumed to be normal and so the residuals are symmetrically distributed around the linear predictor. As a consequence the linear predictor (<span class="math inline">\(\eta\)</span>) is equal to the mean, median and mode of the distribution on the log scale. Because the exponential function is non-linear this symmetry is lost on the data scale, and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median. <span class="math inline">\(\sigma^{2}\)</span> is the residual variance.
+</p>
+</div>
+<p>In the <code>Traffic</code> example the non linearities are small so the differences in parameter estimates are not large using either multiplicative or additive models. However, multiplying the intercept in model <code>m2a.5</code> by half the residual variance is in closer agreement with the quasipoisson model than the raw intercept:</p>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="glm.html#cb65-1" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">mean</span>(m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m2a<span class="fl">.5</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]))</span></code></pre></div>
+<pre><code>## [1] 20.94784</code></pre>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="glm.html#cb67-1" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">mean</span>(m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>]))</span></code></pre></div>
+<pre><code>## [1] 19.92819</code></pre>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="glm.html#cb69-1" tabindex="-1"></a><span class="fu">exp</span>(m2a<span class="fl">.3</span><span class="sc">$</span>coef[<span class="st">&quot;(Intercept)&quot;</span>])</span></code></pre></div>
+<pre><code>## (Intercept) 
+##    21.54891</code></pre>
+<p>Analytical results for these transformations can be obtained for the Poisson log-normal, but for other distributions this is not always the case. Section <a href="glm.html#pred-sec" reference-type="ref" reference="pred-sec">5</a> gives prediction functions for other types of distribution. One could reasonably ask, why have this additional layer of complexity, why not just stick with the multiplicative model? This brings us to random
+effects.</p>
+</div>
+</div>
+<div id="ranef-sec" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Random effects<a href="glm.html#ranef-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In some cases we may have measured variables whose effects we would like to treat as random. Often the distinction between fixed and random is given by example; things like population, species, individual and vial are random, but sex, treatment and age are not. Or the distinction is made using rules of thumb; if there are few factor levels and they are
+interesting to other people they are fixed. However, this doesn’t really confer any understanding about what it means to treat something as fixed or random, and doesn’t really allow judgements to be made regarding ambiguous variables (for example year) or give any insight into the fact that in a Bayesian analysis all effects are technically random.</p>
+<p>When we treat an effect as fixed we believe that the only information regarding its value comes from data associated with that particular level. If we treat an effect as random we also use this information, but we weight it by what other data tell us about the likely values that the effects could take. In a Bayesian analysis this additional information could come from data not formally included in the analysis, in which case it would be called a prior. In hierarchical models this additional information comes from data associated with other factor levels of the
+same type.</p>
+<p>The degree to which this additional information is important depends on the variability of the effects, as measured by the estimated variance component, and the degree of replication within a particular level. If variability is high then most of the information must come from data associated with an individual effect, particularly if replication within
+that effect is high. However, if variability and replication are low then extreme mean values of the response for a given level are more likely to be due to sampling error alone, and so the estimates are shrunk towards zero.</p>
+<p>It is common to hear things like ‘year is a random effect’ as if you just have to estimate <em>a</em> single effect for all years. It is also common to hear things like ‘years is random’ as if years were sampled at random. Better to say year effects are random and understand that it is the effects that are random not the years, and that we’re trying to
+estimate as many effects as there are years. In this sense they’re the same as fixed effects, and we can easily treat the year effects as random to see what difference it makes.</p>
+<p>Random effect models are often expressed as:</p>
+<p><span class="math display">\[E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})\]</span></p>
+<p>where <span class="math inline">\({\bf Z}\)</span> is a design matrix like <span class="math inline">\({\bf X}\)</span>, and <span class="math inline">\({\bf u}\)</span> is a vector of parameters like <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span>. We can specify simple random effect models in the same way that we specified
+the fixed effects:</p>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="glm.html#cb71-1" tabindex="-1"></a>random <span class="ot">=</span>  <span class="er">~</span> year</span></code></pre></div>
+<p>although we don’t need anything to the left of the <span class="math inline">\(\sim\)</span> because the response is known from the fixed effect specification. In addition, the global intercept is suppressed by default, so in fact this specification produces the design matrix:</p>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="glm.html#cb72-1" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>year <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> Traffic)</span>
+<span id="cb72-2"><a href="glm.html#cb72-2" tabindex="-1"></a>Z[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     year1961 year1962
+## 1          1        0
+## 2          1        0
+## 184        0        1</code></pre>
+<p>Earlier I said that there was no distinction between fixed and random effects in a Bayesian analysis - all effects are random - so lets not make the distinction and combine the design matrices (<span class="math inline">\({\bf W} = [{\bf X}, {\bf Z}]\)</span>) and combine the vectors of parameters (<span class="math inline">\({\boldsymbol{\mathbf{\theta}}} = [{\boldsymbol{\mathbf{\beta}}}^{&#39;}, {\bf u}^{&#39;}]^{&#39;}\)</span>):</p>
+<p><span class="math display" id="eq:MM-eq">\[E[{\bf y}] = \textrm{exp}({\bf W}{\boldsymbol{\mathbf{\theta}}}+{\bf e})
+\label{MM-eq}   \tag{3.3}\]</span></p>
+<p>If we drop year from the fixed terms, the new fixed effect design matrix looks like:</p>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="glm.html#cb74-1" tabindex="-1"></a>X2 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(y <span class="sc">~</span> limit <span class="sc">+</span> day, <span class="at">data =</span> Traffic)</span>
+<span id="cb74-2"><a href="glm.html#cb74-2" tabindex="-1"></a>X2[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     (Intercept) limityes day
+## 1             1        0   1
+## 2             1        0   2
+## 184           1        1  92</code></pre>
+<p>and</p>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="glm.html#cb76-1" tabindex="-1"></a>W <span class="ot">&lt;-</span> <span class="fu">cbind</span>(X2, Z)</span>
+<span id="cb76-2"><a href="glm.html#cb76-2" tabindex="-1"></a>W[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     (Intercept) limityes day year1961 year1962
+## 1             1        0   1        1        0
+## 2             1        0   2        1        0
+## 184           1        1  92        0        1</code></pre>
+<p>You will notice that this new design matrix is exactly equivalent to the original design matrix <code>X</code> except we have one additional variable <code>year1961</code>. In our first model this variable was absorbed in to the global intercept because it could no be uniquely estimated from the data. What has changed that could make this additional parameter estimable? As is usual in a Bayesian analysis, if there is no information in the data it has to come from the prior. In model <code>m2a.5</code> we used the default normal prior for the fixed effects with means of zero, large variances of <span class="math inline">\(10^{8}\)</span>, and no covariances. Lets treat the year effects as random, but rather than estimate a variance component for them we’ll fix the variance at <span class="math inline">\(10^{8}\)</span> in the prior:</p>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="glm.html#cb78-1" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e+08</span>, <span class="at">fix =</span> <span class="dv">1</span>)))</span>
+<span id="cb78-2"><a href="glm.html#cb78-2" tabindex="-1"></a>m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> limit <span class="sc">+</span> day, <span class="at">random =</span> <span class="sc">~</span>year, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">data =</span> Traffic,</span>
+<span id="cb78-3"><a href="glm.html#cb78-3" tabindex="-1"></a>    <span class="at">prior =</span> prior, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb78-4"><a href="glm.html#cb78-4" tabindex="-1"></a><span class="fu">plot</span>(m2a<span class="fl">.6</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:yrandom"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/yrandom-1.png" alt="MCMC summary plots for the intercept, speed limit and day coefficients from model `m2a.6` where year effects were treated as random. Note the high posterior variance for the intercept." width="672" />
+<p class="caption">
+Figure 3.5: MCMC summary plots for the intercept, speed limit and day coefficients from model <code>m2a.6</code> where year effects were treated as random. Note the high posterior variance for the intercept.
+</p>
+</div>
+<p>The estimates for the intercept, day and the effect of a speed limit now appear completely different (Figure
+<a href="glm.html#fig:yrandom">3.5</a>. However, in the original model (<code>m2a.5</code>) the prediction for each year is obtained by:</p>
+<div class="sourceCode" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="glm.html#cb79-1" tabindex="-1"></a>y1961.m2a<span class="fl">.5</span> <span class="ot">&lt;-</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>]</span>
+<span id="cb79-2"><a href="glm.html#cb79-2" tabindex="-1"></a>y1962.m2a<span class="fl">.5</span> <span class="ot">&lt;-</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;year1962&quot;</span>]</span></code></pre></div>
+<p>However, for this model we have to add the intercept to both random effects to get the year predictions. <code>MCMCglmm</code> does not store the posterior distribution of the random effects by default, but because we specified <code>pr=TRUE</code>, the whole of <span class="math inline">\({\boldsymbol{\mathbf{\theta}}}\)</span> is stored rather than just <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span>:</p>
+<div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="glm.html#cb80-1" tabindex="-1"></a>y1961.m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1961&quot;</span>]</span>
+<span id="cb80-2"><a href="glm.html#cb80-2" tabindex="-1"></a>y1962.m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1962&quot;</span>]</span></code></pre></div>
+<p>We can merge the two posterior distributions to see how they compare:</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="glm.html#cb81-1" tabindex="-1"></a>y.m2a<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(<span class="fu">cbind</span>(<span class="at">y1961 =</span> y1961.m2a<span class="fl">.5</span>, <span class="at">y1962 =</span> y1962.m2a<span class="fl">.5</span>))</span>
+<span id="cb81-2"><a href="glm.html#cb81-2" tabindex="-1"></a>y.m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(<span class="fu">cbind</span>(<span class="at">y1961 =</span> y1961.m2a<span class="fl">.6</span>, <span class="at">y1962 =</span> y1962.m2a<span class="fl">.6</span>))</span>
+<span id="cb81-3"><a href="glm.html#cb81-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(y.m2a<span class="fl">.5</span>, y.m2a<span class="fl">.6</span>))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:ypred"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/ypred-1.png" alt="MCMC summary plots for the year effects from a model where year effects were treated as fixed (black) and where they were treated as random (red) but with the variance component set at a large value rather than being estimated. The posterior distributions are virtually identical." width="672" />
+<p class="caption">
+Figure 3.6: MCMC summary plots for the year effects from a model where year effects were treated as fixed (black) and where they were treated as random (red) but with the variance component set at a large value rather than being estimated. The posterior distributions are virtually identical.
+</p>
+</div>
+<p>The posterior distributions are very similar (Figure <a href="glm.html#fig:ypred">3.6</a> but see Section
+<a href="glm.html#PriorContr-sec" reference-type="ref" reference="PriorContr-sec">7</a> why they are not identical), highlighting the fact that effects that are fixed are those associated with a variance component which has been set <em>a priori</em> to something large (<span class="math inline">\(10^8\)</span> in this case), where effects that are random are associated with a variance component which is not set <em>a priori</em> but is estimated from the data. As the variance component tends to zero then no matter how many random effects there are, we are effectively only estimating a single parameter (the variance). This makes sense, if there were no differences between years we only need to estimate a global intercept and not separate effects for each year. Alternatively if the variance is infinite then we need to estimate separate effects for each year. In this case the intercept is confounded with the average value of the random effect, resulting in a wide marginal distribution for the intercept, and strong posterior correlations between the intercept and the mean of the random effects:</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="glm.html#cb82-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1961&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1962&quot;</span>])<span class="sc">/</span><span class="dv">2</span>, <span class="fu">c</span>(m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>]))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:yfixed-int"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/yfixed-int-1.png" alt="Joint posterior distribution of the intercept and the mean of the two random year effects. The variance component associated with year was fixed at a large value ($10^8$) and so the effects are almost completely confounded." width="672" />
+<p class="caption">
+Figure 3.7: Joint posterior distribution of the intercept and the mean of the two random year effects. The variance component associated with year was fixed at a large value (<span class="math inline">\(10^8\)</span>) and so the effects are almost completely confounded.
+</p>
+</div>
+<p>With only two levels, there is very little information to estimate the variance, and so we would often make the <em>a priori</em> decision to treat year effects as fixed, and fix the variance components to something
+large (or infinity in a frequentist analysis).</p>
+<p>At the moment we have day as a continuous covariate, but we could also have random day effects and ask whether the number of injuries on the same day but in different years are correlated. Rather than fixing the variance component at something large, we’ll use the same weaker prior that we used for the residual variance:</p>
+<div class="sourceCode" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="glm.html#cb83-1" tabindex="-1"></a>Traffic<span class="sc">$</span>day <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(Traffic<span class="sc">$</span>day)</span>
+<span id="cb83-2"><a href="glm.html#cb83-2" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
+<span id="cb83-3"><a href="glm.html#cb83-3" tabindex="-1"></a>m2a<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> year <span class="sc">+</span> limit <span class="sc">+</span> <span class="fu">as.numeric</span>(day), <span class="at">random =</span> <span class="sc">~</span>day, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>,</span>
+<span id="cb83-4"><a href="glm.html#cb83-4" tabindex="-1"></a>    <span class="at">data =</span> Traffic, <span class="at">prior =</span> prior, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p><code>day</code> has also gone in the fixed formula, but as a numeric variable, in order to capture any time trends in the number of injuries. Most of the over-dispersion seems to be captured by fitting day as a random term
+(Figure <a href="glm.html#fig:GLMM-VCV">3.8</a>):</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="glm.html#cb84-1" tabindex="-1"></a><span class="fu">plot</span>(m2a<span class="fl">.7</span><span class="sc">$</span>VCV)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:GLMM-VCV"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/GLMM-VCV-1.png" alt="MCMC summary plot of the variance component associated with day (top) and the residual variance component (below). The trace for the residual variance shows strong autocorrelation and needs to be ran for longer." width="672" />
+<p class="caption">
+Figure 3.8: MCMC summary plot of the variance component associated with day (top) and the residual variance component (below). The trace for the residual variance shows strong autocorrelation and needs to be ran for longer.
+</p>
+</div>
+<p>In fact it explains so much that the residual variance is close to zero and mixing seems to be a problem. The chain would have to be run for longer, and the perhaps an alternative prior specification used.</p>
+</div>
+<div id="pred-sec" class="section level2 hasAnchor" number="3.5">
+<h2><span class="header-section-number">3.5</span> Prediction with Random effects<a href="glm.html#pred-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In section <a href="glm.html#addod-sec" reference-type="ref" reference="addod-sec">3.2</a> we showed that for non-Gaussian data the expectation of the response variable <span class="math inline">\(y\)</span> is different from the linear predictor if we wish to average over the residuals. Often it is important to get the expectation after marginalising residuals, and indeed after marginalising other random effects. For example we may not be so interested in knowing the expected number of injuries on the average day, but knowing the expected number of injuries on any random day.</p>
+<p>For the Poisson mixed model:</p>
+<p><span class="math display">\[E[y] = \texttt{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})\]</span></p>
+<p>we can marginalise with respect to the random effects, including the over-dispersion residual:</p>
+<p><span class="math display">\[E_{{u,e}}[y] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+0.5\sigma^{2})\]</span></p>
+<p>where <span class="math inline">\(\sigma^{2}\)</span> is the sum of the variance components.</p>
+<p>For the Binomial mixed model with logit link</p>
+<p><span class="math display">\[E[y] = \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})\]</span></p>
+<p>it is not possible to marginilse with respect to the random effects analytically, but two approximations exist. The first</p>
+<p><span class="math display">\[E_{{u,e}}[y] \approx \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}-0.5\sigma^{2}\textrm{tanh}({\bf X}{\boldsymbol{\mathbf{\beta}}}(1+2\textrm{exp}(-0.5\sigma^{2}))/6)))\]</span></p>
+<p>can be found on p452 in <span class="citation">McCulloch and Searle (2001)</span> and the second (and possibly less accurate) approximation in <span class="citation">Diggle et al. (2004)</span>:</p>
+<p><span class="math display">\[E_{{u,e}}[y] \approx \textrm{logit}^{-1}\left(\frac{{\bf X}{\boldsymbol{\mathbf{\beta}}}}{\sqrt{1+(\frac{16\sqrt{3}}{15\pi})^{2}\sigma^{2}}}\right)\]</span></p>
+<p>The predict function for <code>MCMCglmm</code> object allows us to predict the laibality on the latent scale after marginalising the random effects in model <code>m2a.7</code>:</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="glm.html#cb85-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;terms&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<pre><code>## [1] 3.013806 3.016365 3.018923 3.021482 3.024040</code></pre>
+<p>or we can predict on the data scale:</p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="glm.html#cb87-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<pre><code>## [1] 21.44642 21.49968 21.55311 21.60671 21.66048</code></pre>
+<p>In addition, credible intervals can be obtained</p>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="glm.html#cb89-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="at">interval =</span> <span class="st">&quot;confidence&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb89-2"><a href="glm.html#cb89-2" tabindex="-1"></a>    ]</span></code></pre></div>
+<pre><code>##        fit      lwr      upr
+## 1 21.44642 18.76413 24.75821
+## 2 21.49968 18.78744 24.72825
+## 3 21.55311 18.83912 24.70460
+## 4 21.60671 18.95662 24.76272
+## 5 21.66048 19.13334 24.85522</code></pre>
+<p>as can prediction intervals through posterior predictive simulation:</p>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="glm.html#cb91-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb91-2"><a href="glm.html#cb91-2" tabindex="-1"></a>    ]</span></code></pre></div>
+<pre><code>##      fit lwr upr
+## 1 21.923   6  38
+## 2 21.304   7  37
+## 3 21.093   5  37
+## 4 21.256   6  37
+## 5 21.377   6  38</code></pre>
+</div>
+<div id="categorical-data" class="section level2 hasAnchor" number="3.6">
+<h2><span class="header-section-number">3.6</span> Categorical Data<a href="glm.html#categorical-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Response variables consisting of levels of some categorical factor are best analysed using <code>family="categorical"</code> if the levels have no natural ordering, or <code>family="ordinal"</code> if the levels do have a natural ordering, such as never <span class="math inline">\(&lt;\)</span> sometimes <span class="math inline">\(&lt;\)</span> always. The simplest variable of this type is binary data where the response variable is either a zero or a one, and can be analysed as <code>family="categorical"</code> (logit link) or <code>family="ordinal"</code> (probit link). A binary distribution is a special case of the binomial distribution where the number of trials (<code>size</code>) is equal to 1. One way of interpreting a binomial response is to expand it into a series of binary variables and treat the zero’s and ones as repeated measures. For example, we could generate two binomial variates each with 5 trials:</p>
+<div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="glm.html#cb93-1" tabindex="-1"></a>success <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">2</span>, <span class="at">size =</span> <span class="dv">5</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.4</span>, <span class="fl">0.6</span>))</span>
+<span id="cb93-2"><a href="glm.html#cb93-2" tabindex="-1"></a>failure <span class="ot">&lt;-</span> <span class="dv">5</span> <span class="sc">-</span> success</span>
+<span id="cb93-3"><a href="glm.html#cb93-3" tabindex="-1"></a>binom <span class="ot">&lt;-</span> <span class="fu">rbind</span>(success, failure)</span>
+<span id="cb93-4"><a href="glm.html#cb93-4" tabindex="-1"></a><span class="fu">colnames</span>(binom) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;u.1&quot;</span>, <span class="st">&quot;u.2&quot;</span>)</span>
+<span id="cb93-5"><a href="glm.html#cb93-5" tabindex="-1"></a>binom</span></code></pre></div>
+<pre><code>##         u.1 u.2
+## success   3   2
+## failure   2   3</code></pre>
+<p>and then expand them into success or failure:</p>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="glm.html#cb95-1" tabindex="-1"></a>binary <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>), binom), <span class="dv">1</span>, <span class="dv">10</span>)</span>
+<span id="cb95-2"><a href="glm.html#cb95-2" tabindex="-1"></a><span class="fu">colnames</span>(binary) <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;u.1&quot;</span>, <span class="st">&quot;u.2&quot;</span>), <span class="at">each =</span> <span class="dv">5</span>)</span>
+<span id="cb95-3"><a href="glm.html#cb95-3" tabindex="-1"></a>binary</span></code></pre></div>
+<pre><code>##      u.1 u.1 u.1 u.1 u.1 u.2 u.2 u.2 u.2 u.2
+## [1,]   1   1   1   0   0   1   1   0   0   0</code></pre>
+<p>We can then interpret the <code>units</code> variance in a binomial GLMM as accounting for any similarity between repeated measurements made within the same observational unit. If the binary variables within the binomial observation are correlated, this means that the underlying probability for each binomial response differs to a greater degree than can be predicted from the linear predictor. In this example the two probabilities were 0.4 and 0.6 which means that the repeated binary measures would be correlated if we only fitted the intercept (0.5).</p>
+<p>If the original data are already binary then there is no information to measure how repeatable trials are within a binomial unit because we only have a single trial per observation. This does not necessarily mean that heterogeneity in the underlying probabilities does not exist, only that we can’t estimate it. Imagine we are in a room of 100 people and we are told that 5% of the people will be dead the following day. If the people in the room were a random sample from the UK population I would worry - <em>I</em> probably have a 5% chance of dying. If on the other hand the room was a hospital ward and I was a visitor, I may not worry too much for <em>my</em> safety. The point is that in the absence of information, the binary data look the same if each person has a 5% chance of dying or if 5 people have a 100% chance of dying. Most programs set the residual variance to zero and assume the former, but it is important to understand that this is a convenient but arbitrary choice. Given this, it is desirable that any conclusions drawn from the model do not depend on this arbitrary choice. Worryingly, both the location effects (fixed and random) and variance components are completely dependent on the magnitude of the residual variance.</p>
+<p>To demonstrate we will use some data from a pilot study on the Indian meal moth (<em>Plodia interpunctella</em>) and its granulosis virus (PiGV) collected by Hannah Tidbury &amp; Mike Boots at the University of Sheffield.</p>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="glm.html#cb97-1" tabindex="-1"></a><span class="fu">data</span>(PlodiaRB)</span></code></pre></div>
+<p>The data are taken from 874 moth pupae for which the <code>Pupated</code> variable is zero if they failed to pupate (because they were infected with the virus) or one if they successfully pupated. The 874 individuals are spread across 49 full-sib families, with family sizes ranging from 6 to 38.</p>
+<p>To start we will fix the residual variance at 1:</p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="glm.html#cb98-1" tabindex="-1"></a>prior.m2b<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
+<span id="cb98-2"><a href="glm.html#cb98-2" tabindex="-1"></a>m2b<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(Pupated <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>FSfamily, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> PlodiaRB,</span>
+<span id="cb98-3"><a href="glm.html#cb98-3" tabindex="-1"></a>    <span class="at">prior =</span> prior.m2b<span class="fl">.1</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>and then fit a second model where the residual variance is fixed at 2:</p>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="glm.html#cb99-1" tabindex="-1"></a>prior.m2b<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">2</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
+<span id="cb99-2"><a href="glm.html#cb99-2" tabindex="-1"></a>m2b<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(Pupated <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>FSfamily, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> PlodiaRB,</span>
+<span id="cb99-3"><a href="glm.html#cb99-3" tabindex="-1"></a>    <span class="at">prior =</span> prior.m2b<span class="fl">.2</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>The posterior distribution for the intercept differs between the two models (see Figure <a href="glm.html#fig:Bin1">3.9</a>):</p>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="glm.html#cb100-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m2b<span class="fl">.1</span><span class="sc">$</span>Sol, m2b<span class="fl">.2</span><span class="sc">$</span>Sol))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:Bin1"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Bin1-1.png" alt="MCMC summary plots for the intercept of a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
+<p class="caption">
+Figure 3.9: MCMC summary plots for the intercept of a binary GLMM where the residual variance was fixed at one (black) and two (red).
+</p>
+</div>
+<p>as do the variance components (see Figure <a href="glm.html#fig:Bin2">3.10</a>):</p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="glm.html#cb101-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m2b<span class="fl">.1</span><span class="sc">$</span>VCV, m2b<span class="fl">.2</span><span class="sc">$</span>VCV))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:Bin2"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/Bin2-1.png" alt="MCMC summary plots for the between family variance component of a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
+<p class="caption">
+Figure 3.10: MCMC summary plots for the between family variance component of a binary GLMM where the residual variance was fixed at one (black) and two (red).
+</p>
+</div>
+<p>Should we worry? Not really. We just have to be careful about how we express the results. Stating that the family variance is 0.723 is meaningless without putting it in the context of the assumed residual variance. It is therefore more appropriate to report the intraclass correlation which in this context is the expected correlation between the state Pupated/Not Pupated, for members of the same family. It can be
+calculated as:</p>
+<p><span class="math display">\[\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+\pi^{2}/3}\]</span></p>
+<p>for the logit link, which is used when <code>family=categorical</code>, or</p>
+<p><span class="math display">\[\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+1}\]</span></p>
+<p>for the probit link, which is used if <code>family=ordinal</code> was specified.</p>
+<p>Obtaining the posterior distribution of the intra-class correlation for each model shows that they are sampling very similar posterior distributions (see Figure <a href="glm.html#fig:IC">3.11</a>)</p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="glm.html#cb102-1" tabindex="-1"></a>IC<span class="fl">.1</span> <span class="ot">&lt;-</span> m2b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="fu">rowSums</span>(m2b<span class="fl">.1</span><span class="sc">$</span>VCV) <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)</span>
+<span id="cb102-2"><a href="glm.html#cb102-2" tabindex="-1"></a>IC<span class="fl">.2</span> <span class="ot">&lt;-</span> m2b<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="fu">rowSums</span>(m2b<span class="fl">.2</span><span class="sc">$</span>VCV) <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)</span>
+<span id="cb102-3"><a href="glm.html#cb102-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(IC<span class="fl">.1</span>, IC<span class="fl">.2</span>))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:IC"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/IC-1.png" alt="MCMC summary plots for the intra-family correlation from  a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
+<p class="caption">
+Figure 3.11: MCMC summary plots for the intra-family correlation from a binary GLMM where the residual variance was fixed at one (black) and two (red).
+</p>
+</div>
+<p>Using the approximation due to <span class="citation">Diggle et al. (2004)</span> described earlier we can also rescale the estimates by the estimated residual variance (<span class="math inline">\(\sigma^{2}_{\texttt{units}}\)</span>) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance (<span class="math inline">\(\sigma^{2}_{e}\)</span>) is equal to some other value. For location effects the posterior distribution needs to be multiplied by <span class="math inline">\(\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}\)</span> and for the variance components the posterior distribution needs to be multiplied by <span class="math inline">\(\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}\)</span> where <span class="math inline">\(c\)</span> is some constant that depends on the link function. For the probit <span class="math inline">\(c=1\)</span> and for the logit <span class="math inline">\(c=16\sqrt{3}/15\pi\)</span>. We can obtain estimates
+under the assumption that <span class="math inline">\(\sigma^{2}_{e}=0\)</span>:</p>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="glm.html#cb103-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> ((<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>))<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb103-2"><a href="glm.html#cb103-2" tabindex="-1"></a>Int<span class="fl">.1</span> <span class="ot">&lt;-</span> m2b<span class="fl">.1</span><span class="sc">$</span>Sol<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m2b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">2</span>])</span>
+<span id="cb103-3"><a href="glm.html#cb103-3" tabindex="-1"></a>Int<span class="fl">.2</span> <span class="ot">&lt;-</span> m2b<span class="fl">.2</span><span class="sc">$</span>Sol<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m2b<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">2</span>])</span>
+<span id="cb103-4"><a href="glm.html#cb103-4" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(<span class="fu">as.mcmc</span>(Int<span class="fl">.1</span>), <span class="fu">as.mcmc</span>(Int<span class="fl">.2</span>)))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:ICI"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/ICI-1.png" alt="MCMC summary plots for the expected proportion of caterpillars pupating from  a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
+<p class="caption">
+Figure 3.12: MCMC summary plots for the expected proportion of caterpillars pupating from a binary GLMM where the residual variance was fixed at one (black) and two (red).
+</p>
+</div>
+<p>The posteriors should be virtually identical under a flat prior (See Figure <a href="glm.html#fig:ICI">3.12</a>) although with different priors this is not always the case. Remarkably, <span class="citation">Dyk and Meng (2001)</span> show that leaving a diffuse prior on
+<span class="math inline">\(\sigma^{2}_{\texttt{units}}\)</span> and rescaling the estimates each iteration, a Markov chain with superior mixing and convergence properties can be obtained (See section <a href="parameter-expansion.html#parameter-expansion">9</a>).</p>
+<p>It should also be noted that a diffuse prior on the logit scale is not necessarily weakly informative on the probability scale. For example, the default setting for the prior on the intercept is <span class="math inline">\(N(0, 10^{8})\)</span> on the logit scale, which although relatively flat across most of the probability scale, has a lot of density close to zero and one:</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="glm.html#cb104-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">plogis</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="fl">1e+08</span>))))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:invlogit"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/invlogit-1.png" alt="Histogram of 1000 random deviates from a normal distribution with a mean of zero and a large variance ($10^8$) after undergoing an inverse logit transformation." width="672" />
+<p class="caption">
+Figure 3.13: Histogram of 1000 random deviates from a normal distribution with a mean of zero and a large variance (<span class="math inline">\(10^8\)</span>) after undergoing an inverse logit transformation.
+</p>
+</div>
+<p>This diffuse prior can cause problems if there is complete (or near complete) separation. Generally this happens when the binary data associated with some level of a categorical predictor are all success or all failures. For example, imagine we had 50 binary observations from an experiment with two treatments, for the first treatment the probability of success is 0.5 but in the second it is only one in a thousand:</p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="glm.html#cb105-1" tabindex="-1"></a>treatment <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">2</span>, <span class="dv">25</span>)</span>
+<span id="cb105-2"><a href="glm.html#cb105-2" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">50</span>, <span class="dv">1</span>, <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.001</span>)[treatment])</span>
+<span id="cb105-3"><a href="glm.html#cb105-3" tabindex="-1"></a>data.bin <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">treatment =</span> treatment, <span class="at">y =</span> y)</span>
+<span id="cb105-4"><a href="glm.html#cb105-4" tabindex="-1"></a><span class="fu">table</span>(data.bin)</span></code></pre></div>
+<pre><code>##          y
+## treatment  0  1
+##         1 13 12
+##         2 25  0</code></pre>
+<p>if we analyse using <code>glm</code> we see some odd behaviour:</p>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="glm.html#cb107-1" tabindex="-1"></a>m2c<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> treatment, <span class="at">data =</span> data.bin, <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>)</span>
+<span id="cb107-2"><a href="glm.html#cb107-2" tabindex="-1"></a><span class="fu">summary</span>(m2c<span class="fl">.1</span>)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = y ~ treatment, family = &quot;binomial&quot;, data = data.bin)
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)   -0.08004    0.40032  -0.200    0.842
+## treatment2   -19.48603 2150.80263  -0.009    0.993
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 55.108  on 49  degrees of freedom
+## Residual deviance: 34.617  on 48  degrees of freedom
+## AIC: 38.617
+## 
+## Number of Fisher Scoring iterations: 18</code></pre>
+<p>the effect of treatment does not appear significant despite the large effect size. This is in direct contrast to an exact binomial test:</p>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="glm.html#cb109-1" tabindex="-1"></a>m2c<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(<span class="fu">table</span>(data.bin)[<span class="dv">2</span>, <span class="dv">2</span>], <span class="dv">25</span>)</span>
+<span id="cb109-2"><a href="glm.html#cb109-2" tabindex="-1"></a>m2c<span class="fl">.2</span></span></code></pre></div>
+<pre><code>## 
+##  Exact binomial test
+## 
+## data:  table(data.bin)[2, 2] and 25
+## number of successes = 0, number of trials = 25, p-value = 5.96e-08
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.0000000 0.1371852
+## sample estimates:
+## probability of success 
+##                      0</code></pre>
+<p>where the 95% confidence interval for the probability of success is 0.000 to
+0.137.</p>
+<p>The default <code>MCMCglmm</code> model also behaves oddly (see Figure <a href="glm.html#fig:separation1">3.14</a>):</p>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="glm.html#cb111-1" tabindex="-1"></a>prior.m2c<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>))</span>
+<span id="cb111-2"><a href="glm.html#cb111-2" tabindex="-1"></a>m2c<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> treatment, <span class="at">data =</span> data.bin, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior.m2c<span class="fl">.3</span>,</span>
+<span id="cb111-3"><a href="glm.html#cb111-3" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb111-4"><a href="glm.html#cb111-4" tabindex="-1"></a><span class="fu">plot</span>(m2c<span class="fl">.3</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:separation1"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/separation1-1.png" alt="MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and $-\infty$ on the logit scale. With a flat prior on the treatment effect the posterior distribution is improper, and with a diffuse prior (as used here) the posterior is dominated by the high prior densities at extreme values." width="672" />
+<p class="caption">
+Figure 3.14: MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and <span class="math inline">\(-\infty\)</span> on the logit scale. With a flat prior on the treatment effect the posterior distribution is improper, and with a diffuse prior (as used here) the posterior is dominated by the high prior densities at extreme values.
+</p>
+</div>
+<p>For these types of problems, I usually remove the global intercept (<code>-1</code>) and use the prior <span class="math inline">\(N(0, \sigma^{2}_{\texttt{units}}+\pi^2/3)\)</span> because this is reasonably flat on the probability scale when a logit link is used. For example,</p>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="glm.html#cb112-1" tabindex="-1"></a>prior.m2c<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)), <span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
+<span id="cb112-2"><a href="glm.html#cb112-2" tabindex="-1"></a>    <span class="at">fix =</span> <span class="dv">1</span>))</span>
+<span id="cb112-3"><a href="glm.html#cb112-3" tabindex="-1"></a>m2c<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> treatment <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> data.bin, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior.m2c<span class="fl">.4</span>,</span>
+<span id="cb112-4"><a href="glm.html#cb112-4" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb112-5"><a href="glm.html#cb112-5" tabindex="-1"></a><span class="fu">plot</span>(m2c<span class="fl">.4</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<p>looks a little better (see Figure <a href="glm.html#fig:separation1">3.14</a>), and the posterior distribution for the probability of success in treatment 2 is consistent with the exact binomial test for which the 95% CI were (0.000 -0.137). With such a simple model, the prediction for observation 26 is equal to the treatment 2 effect and so we can get the the credible interval (on the data scale) for treatment 2 using the predict function:</p>
+<div class="figure"><span style="display:block;" id="fig:separation2"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/separation2-1.png" alt="MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and $-\infty$ on the logit scale. A flat prior on the probability scale was used and the posterior distribution is better behaved than if a flat prior on the logit scale had been used (see Figure \ref{separation1-fig})." width="672" />
+<p class="caption">
+Figure 3.15: MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and <span class="math inline">\(-\infty\)</span> on the logit scale. A flat prior on the probability scale was used and the posterior distribution is better behaved than if a flat prior on the logit scale had been used (see Figure <span class="math inline">\(\ref{separation1-fig}\)</span>).
+</p>
+</div>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="glm.html#cb113-1" tabindex="-1"></a><span class="fu">predict</span>(m2c<span class="fl">.4</span>, <span class="at">interval =</span> <span class="st">&quot;confidence&quot;</span>)[<span class="dv">26</span>, ]</span></code></pre></div>
+<pre><code>##         fit         lwr         upr 
+## 0.040291298 0.002403809 0.104027928</code></pre>
+</div>
+<div id="PriorContr-sec" class="section level2 hasAnchor" number="3.7">
+<h2><span class="header-section-number">3.7</span> A note on fixed effect priors and covariances<a href="glm.html#PriorContr-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Fixed and random effects are essentially the same thing. The only difference is that the variance component for the fixed effects is usually fixed at some large value, whereas the variance component for the random effects is estimated. In section<a href="glm.html#ranef-sec" reference-type="ref" reference="ranef-sec">4</a> I demonstrated this by claiming that a model where year effects were fixed (<code>m2a.5</code>) was identical to one where they were treated as random, but with the variance component set to a large value (<code>m2a.6</code>). This was a white lie as I did not want to distract attention from the main point. The reason why they were not identical is as follows:</p>
+<p>In the fixed effect model (<code>m2a.5</code>) we had the prior:</p>
+<p><span class="math display">\[\begin{array}{rcl}
+\left[
+\begin{array}{c}
+\beta_{\texttt{(Intercept)}}\\
+\beta_{\texttt{year1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+10^8&amp;0\\
+0&amp;10^8\\
+\end{array}
+\right]\\
+\end{array}\]</span></p>
+<p>Where <span class="math inline">\(\beta_{\texttt{(Intercept)}}\)</span> and <span class="math inline">\(\beta_{\texttt{year1962}}\)</span> are the fixed effects to be estimated.</p>
+<p>Remembering the identity <span class="math inline">\(\sigma^{2}_{(a+b)} = \sigma^{2}_{a}+ \sigma^{2}_{b}+2\sigma_{a,b}\)</span>, this implies:</p>
+<p><span class="math display">\[\begin{array}{rccl}
+\left[
+\begin{array}{c}
+\beta_{1961}\\
+\beta_{1962}\\
+\end{array}
+\right]
+=
+&amp;
+\left[
+\begin{array}{c}
+\beta_{\texttt{(Intercept)}}\\
+\beta_{\texttt{(Intercept)}}+\beta_{\texttt{year1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+10^8&amp;10^8\\
+10^8&amp;10^8+10^8\\
+\end{array}
+\right]
+&amp;=
+\left[
+\begin{array}{cc}
+10^8&amp;10^8\\
+10^8&amp;20^8\\
+\end{array}
+\right]\\
+\end{array}\]</span></p>
+<p>where <span class="math inline">\(\beta_{1961}\)</span> and <span class="math inline">\(\beta_{1962}\)</span> are the actual year effects, rather than the global intercept and the contrast. In hindsight this is a bit odd, for one thing we expect the 1962 effect to be twice as variable as the 1961 effect. With such weak priors it makes little difference, but lets reparameterise the model anyway.</p>
+<p>Rather than having a global intercept and a year contrast, we will have separate intercepts for each year:</p>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="glm.html#cb115-1" tabindex="-1"></a>X3 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(y <span class="sc">~</span> year <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> Traffic)</span>
+<span id="cb115-2"><a href="glm.html#cb115-2" tabindex="-1"></a>X3[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     year1961 year1962
+## 1          1        0
+## 2          1        0
+## 184        0        1</code></pre>
+<p>and a prior that has a covariance between the two year effects:</p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="glm.html#cb117-1" tabindex="-1"></a>PBV.yfixed <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">*</span> <span class="fl">1e+08</span></span>
+<span id="cb117-2"><a href="glm.html#cb117-2" tabindex="-1"></a>PBV.yfixed[<span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> PBV.yfixed[<span class="dv">2</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">1e+08</span><span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb117-3"><a href="glm.html#cb117-3" tabindex="-1"></a>PBV.yfixed</span></code></pre></div>
+<pre><code>##       [,1]  [,2]
+## [1,] 1e+08 5e+07
+## [2,] 5e+07 1e+08</code></pre>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="glm.html#cb119-1" tabindex="-1"></a>prior.m2a.<span class="fl">5.1</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="at">V =</span> PBV.yfixed), <span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>))</span></code></pre></div>
+<p>This new model:</p>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="glm.html#cb120-1" tabindex="-1"></a>m2a.<span class="fl">5.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> year <span class="sc">-</span> <span class="dv">1</span>, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">data =</span> Traffic, <span class="at">prior =</span> prior.m2a.<span class="fl">5.1</span>,</span>
+<span id="cb120-2"><a href="glm.html#cb120-2" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>has the same form as a mixed effect model with a prior variance of <span class="math inline">\(\frac{10^{8}}{2}\)</span> for the intercept, and the variance component associated with the random year effects also fixed at <span class="math inline">\(\frac{10^{8}}{2}\)</span>:</p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="glm.html#cb121-1" tabindex="-1"></a>prior.m2a.<span class="fl">6.1</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">0</span>, <span class="at">V =</span> <span class="fl">1e+08</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>),</span>
+<span id="cb121-2"><a href="glm.html#cb121-2" tabindex="-1"></a>    <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e+08</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">fix =</span> <span class="dv">1</span>)))</span></code></pre></div>
+<p>This arises because the two random effects have the joint prior distribution:</p>
+<p><span class="math display">\[\begin{array}{rl}
+\left[
+\begin{array}{c}
+\beta_{\texttt{year.1961}}\\
+\beta_{\texttt{year.1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+\frac{10^{8}}{2}&amp;0\\
+0&amp;\frac{10^{8}}{2}\\
+\end{array}
+\right]\\
+\end{array}\]</span></p>
+<p>which when combined with the prior for the intercept, <span class="math inline">\(N(0, \frac{10^{8}}{2})\)</span>, gives:</p>
+<p><span class="math display">\[\begin{array}{rccl}
+\left[
+\begin{array}{c}
+\beta_{1961}\\
+\beta_{1962}\\
+\end{array}
+\right]
+=
+&amp;
+\left[
+\begin{array}{c}
+\beta_{\texttt{(Intercept)}}+\beta_{\texttt{year.1961}}\\
+\beta_{\texttt{(Intercept)}}+\beta_{\texttt{year.1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+\frac{10^{8}}{2}+\frac{10^{8}}{2}&amp;\frac{10^{8}}{2}\\
+\frac{10^{8}}{2}&amp;\frac{10^{8}}{2}+\frac{10^{8}}{2}\\
+\end{array}
+\right]
+&amp;=
+\left[
+\begin{array}{cc}
+10^8&amp;\frac{10^{8}}{2}\\
+\frac{10^{8}}{2}&amp;10^8\\
+\end{array}
+\right]
+\\
+\end{array}\]</span></p>
+<p>which is equivalent to the <code>PBV.yfixed</code> parameteristaion of for the two years.</p>
+<p>The model:</p>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="glm.html#cb122-1" tabindex="-1"></a>m2a.<span class="fl">6.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>year, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">data =</span> Traffic, <span class="at">prior =</span> prior.m2a.<span class="fl">6.1</span>,</span>
+<span id="cb122-2"><a href="glm.html#cb122-2" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>is therefore sampling from the same posterior distribution as model <code>m2a.5.1</code>.</p>
+
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="3">
+<li id="fn3"><p>Earlier versions of the CourseNotes had <code>nu=1.002</code>. In versions
+<span class="math inline">\(&lt;\)</span><!-- -->2.05 the marginal prior of a variance associated
+with an <code>idh</code> structure was inverse-Wishart with
+<span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}-1\)</span> where <span class="math inline">\(\texttt{nu}^{\ast}\)</span> is the
+marginal degree of belief. In versions <span class="math inline">\(&gt;=\)</span><!-- -->2.05 I
+changed this so that <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}\)</span> as it was
+leading to confusion.<a href="glm.html#fnref3" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="bayesian.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cat-int.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["MCMCglmm-course-notes.pdf", "MCMCglmm-course-notes.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

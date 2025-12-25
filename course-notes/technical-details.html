@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="pedigrees-and-phylogenies.html"/>
-<link rel="next" href="px.html"/>
+<link rel="prev" href="pedigree.html"/>
+<link rel="next" href="parameter-expansion.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -158,95 +158,97 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.1</b> References</a></li>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
+<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.2</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="2" data-path="mcmc.html"><a href="mcmc.html"><i class="fa fa-check"></i><b>2</b> MCMC</a>
+<li class="chapter" data-level="2" data-path="bayesian.html"><a href="bayesian.html"><i class="fa fa-check"></i><b>2</b> Bayesian Analysis and MCMC</a>
 <ul>
-<li class="chapter" data-level="2.1" data-path="mcmc.html"><a href="mcmc.html#likelihood"><i class="fa fa-check"></i><b>2.1</b> Likelihood</a>
+<li class="chapter" data-level="2.1" data-path="bayesian.html"><a href="bayesian.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="bayesian.html"><a href="bayesian.html#likelihood"><i class="fa fa-check"></i><b>2.2</b> Likelihood</a>
 <ul>
-<li class="chapter" data-level="2.1.1" data-path="mcmc.html"><a href="mcmc.html#maximum-likelihood-ml"><i class="fa fa-check"></i><b>2.1.1</b> Maximum Likelihood (ML)</a></li>
-<li class="chapter" data-level="2.1.2" data-path="mcmc.html"><a href="mcmc.html#restricted-maximum-likelihood-reml"><i class="fa fa-check"></i><b>2.1.2</b> Restricted Maximum Likelihood (REML)</a></li>
+<li class="chapter" data-level="2.2.1" data-path="bayesian.html"><a href="bayesian.html#maximum-likelihood-ml"><i class="fa fa-check"></i><b>2.2.1</b> Maximum Likelihood (ML)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="bayesian.html"><a href="bayesian.html#restricted-maximum-likelihood-reml"><i class="fa fa-check"></i><b>2.2.2</b> Restricted Maximum Likelihood (REML)</a></li>
 </ul></li>
-<li class="chapter" data-level="2.2" data-path="mcmc.html"><a href="mcmc.html#prior-distribution"><i class="fa fa-check"></i><b>2.2</b> Prior Distribution</a></li>
-<li class="chapter" data-level="2.3" data-path="mcmc.html"><a href="mcmc.html#posterior-distribution"><i class="fa fa-check"></i><b>2.3</b> Posterior Distribution</a>
+<li class="chapter" data-level="2.3" data-path="bayesian.html"><a href="bayesian.html#prior-distribution"><i class="fa fa-check"></i><b>2.3</b> Prior Distribution</a></li>
+<li class="chapter" data-level="2.4" data-path="bayesian.html"><a href="bayesian.html#posterior-distribution"><i class="fa fa-check"></i><b>2.4</b> Posterior Distribution</a>
 <ul>
-<li class="chapter" data-level="2.3.1" data-path="mcmc.html"><a href="mcmc.html#marginal-posterior-distribution"><i class="fa fa-check"></i><b>2.3.1</b> Marginal Posterior Distribution</a></li>
+<li class="chapter" data-level="2.4.1" data-path="bayesian.html"><a href="bayesian.html#marginal-posterior-distribution"><i class="fa fa-check"></i><b>2.4.1</b> Marginal Posterior Distribution</a></li>
 </ul></li>
-<li class="chapter" data-level="2.4" data-path="mcmc.html"><a href="mcmc.html#mcmc-1"><i class="fa fa-check"></i><b>2.4</b> MCMC</a>
+<li class="chapter" data-level="2.5" data-path="bayesian.html"><a href="bayesian.html#mcmc"><i class="fa fa-check"></i><b>2.5</b> MCMC</a>
 <ul>
-<li class="chapter" data-level="2.4.1" data-path="mcmc.html"><a href="mcmc.html#starting-values"><i class="fa fa-check"></i><b>2.4.1</b> Starting values</a></li>
-<li class="chapter" data-level="2.4.2" data-path="mcmc.html"><a href="mcmc.html#metrpolis-hastings-updates"><i class="fa fa-check"></i><b>2.4.2</b> Metrpolis-Hastings updates</a></li>
-<li class="chapter" data-level="2.4.3" data-path="mcmc.html"><a href="mcmc.html#gibbs-sampling"><i class="fa fa-check"></i><b>2.4.3</b> Gibbs Sampling</a></li>
-<li class="chapter" data-level="2.4.4" data-path="mcmc.html"><a href="mcmc.html#slice-sampling"><i class="fa fa-check"></i><b>2.4.4</b> Slice Sampling</a></li>
-<li class="chapter" data-level="2.4.5" data-path="mcmc.html"><a href="mcmc.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.4.5</b> MCMC Diagnostics</a></li>
+<li class="chapter" data-level="2.5.1" data-path="bayesian.html"><a href="bayesian.html#starting-values"><i class="fa fa-check"></i><b>2.5.1</b> Starting values</a></li>
+<li class="chapter" data-level="2.5.2" data-path="bayesian.html"><a href="bayesian.html#metrpolis-hastings-updates"><i class="fa fa-check"></i><b>2.5.2</b> Metrpolis-Hastings updates</a></li>
+<li class="chapter" data-level="2.5.3" data-path="bayesian.html"><a href="bayesian.html#gibbs-sampling"><i class="fa fa-check"></i><b>2.5.3</b> Gibbs Sampling</a></li>
+<li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#slice-sampling"><i class="fa fa-check"></i><b>2.5.4</b> Slice Sampling</a></li>
+<li class="chapter" data-level="2.5.5" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.5</b> MCMC Diagnostics</a></li>
 </ul></li>
-<li class="chapter" data-level="2.5" data-path="mcmc.html"><a href="mcmc.html#IP-sec"><i class="fa fa-check"></i><b>2.5</b> Improper Priors</a>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6</b> Improper Priors</a>
 <ul>
-<li class="chapter" data-level="2.5.1" data-path="mcmc.html"><a href="mcmc.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.5.1</b> Flat Improper Prior</a></li>
-<li class="chapter" data-level="2.5.2" data-path="mcmc.html"><a href="mcmc.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.5.2</b> Non-Informative Improper Prior</a></li>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.6.1</b> Flat Improper Prior</a></li>
+<li class="chapter" data-level="2.6.2" data-path="bayesian.html"><a href="bayesian.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.6.2</b> Non-Informative Improper Prior</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="mcmc.html"><a href="mcmc.html#references-1"><i class="fa fa-check"></i><b>2.6</b> References</a></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#references-1"><i class="fa fa-check"></i><b>2.7</b> References</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
+<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
+<li class="chapter" data-level="3.1" data-path="glm.html"><a href="glm.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
 <ul>
-<li class="chapter" data-level="3.1.1" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
+<li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
-<li class="chapter" data-level="3.3" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#over-dispersion"><i class="fa fa-check"></i><b>3.3</b> Over-dispersion</a>
+<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#over-dispersion"><i class="fa fa-check"></i><b>3.3</b> Over-dispersion</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#multiplicative-over-dispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Over-dispersion</a></li>
-<li class="chapter" data-level="3.3.2" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Over-dispersion</a></li>
+<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-over-dispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Over-dispersion</a></li>
+<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Over-dispersion</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#ranef-sec"><i class="fa fa-check"></i><b>3.4</b> Random effects</a></li>
-<li class="chapter" data-level="3.5" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#pred-sec"><i class="fa fa-check"></i><b>3.5</b> Prediction with Random effects</a></li>
-<li class="chapter" data-level="3.6" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#categorical-data"><i class="fa fa-check"></i><b>3.6</b> Categorical Data</a></li>
-<li class="chapter" data-level="3.7" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#PriorContr-sec"><i class="fa fa-check"></i><b>3.7</b> A note on fixed effect priors and covariances</a></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#ranef-sec"><i class="fa fa-check"></i><b>3.4</b> Random effects</a></li>
+<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#pred-sec"><i class="fa fa-check"></i><b>3.5</b> Prediction with Random effects</a></li>
+<li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#categorical-data"><i class="fa fa-check"></i><b>3.6</b> Categorical Data</a></li>
+<li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#PriorContr-sec"><i class="fa fa-check"></i><b>3.7</b> A note on fixed effect priors and covariances</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html"><i class="fa fa-check"></i><b>4</b> Categorical Random Interactions</a>
+<li class="chapter" data-level="4" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>4</b> Categorical Random Interactions</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#idh-variance-structure"><i class="fa fa-check"></i><b>4.1</b> <code>idh</code> Variance Structure</a></li>
-<li class="chapter" data-level="4.2" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#us-variance-structure"><i class="fa fa-check"></i><b>4.2</b> <code>us</code> Variance Structure</a></li>
-<li class="chapter" data-level="4.3" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#compound-variance-structures"><i class="fa fa-check"></i><b>4.3</b> Compound Variance Structures</a></li>
-<li class="chapter" data-level="4.4" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#heter-sec"><i class="fa fa-check"></i><b>4.4</b> Heterogenous Residual Variance</a></li>
-<li class="chapter" data-level="4.5" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>4.5</b> Contrasts and Covariances</a></li>
-<li class="chapter" data-level="4.6" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#VCVprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Covariance Matrices</a>
+<li class="chapter" data-level="4.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>4.1</b> <code>idh</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>4.2</b> <code>us</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>4.3</b> Compound Variance Structures</a></li>
+<li class="chapter" data-level="4.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>4.4</b> Heterogenous Residual Variance</a></li>
+<li class="chapter" data-level="4.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>4.5</b> Contrasts and Covariances</a></li>
+<li class="chapter" data-level="4.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Covariance Matrices</a>
 <ul>
-<li class="chapter" data-level="4.6.1" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#priors-for-us-structures"><i class="fa fa-check"></i><b>4.6.1</b> Priors for <code>us</code> structures</a></li>
-<li class="chapter" data-level="4.6.2" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>4.6.2</b> Priors for <code>idh</code> structures</a></li>
-<li class="chapter" data-level="4.6.3" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>4.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+<li class="chapter" data-level="4.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>4.6.1</b> Priors for <code>us</code> structures</a></li>
+<li class="chapter" data-level="4.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>4.6.2</b> Priors for <code>idh</code> structures</a></li>
+<li class="chapter" data-level="4.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>4.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html"><i class="fa fa-check"></i><b>5</b> Continuous Random Interactions</a>
+<li class="chapter" data-level="5" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>5</b> Continuous Random Interactions</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#random-regression"><i class="fa fa-check"></i><b>5.1</b> Random Regression</a></li>
-<li class="chapter" data-level="5.2" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>5.2</b> Expected Variances and Covariances</a></li>
-<li class="chapter" data-level="5.3" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#RRcentering"><i class="fa fa-check"></i><b>5.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
-<li class="chapter" data-level="5.4" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#meta-sec"><i class="fa fa-check"></i><b>5.4</b> Meta-analysis</a></li>
-<li class="chapter" data-level="5.5" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#splines"><i class="fa fa-check"></i><b>5.5</b> Splines</a></li>
+<li class="chapter" data-level="5.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>5.1</b> Random Regression</a></li>
+<li class="chapter" data-level="5.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>5.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="5.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>5.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="5.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>5.4</b> Meta-analysis</a></li>
+<li class="chapter" data-level="5.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>5.5</b> Splines</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="multi-response-models.html"><a href="multi-response-models.html"><i class="fa fa-check"></i><b>6</b> Multi-response models</a>
+<li class="chapter" data-level="6" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>6</b> Multi-response models</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="multi-response-models.html"><a href="multi-response-models.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>6.1</b> Relaxing the univariate assumptions of causality</a></li>
-<li class="chapter" data-level="6.2" data-path="multi-response-models.html"><a href="multi-response-models.html#multinomial-models"><i class="fa fa-check"></i><b>6.2</b> Multinomial Models</a></li>
-<li class="chapter" data-level="6.3" data-path="multi-response-models.html"><a href="multi-response-models.html#zero-inflated-models"><i class="fa fa-check"></i><b>6.3</b> Zero-inflated Models</a>
+<li class="chapter" data-level="6.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>6.1</b> Relaxing the univariate assumptions of causality</a></li>
+<li class="chapter" data-level="6.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>6.2</b> Multinomial Models</a></li>
+<li class="chapter" data-level="6.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>6.3</b> Zero-inflated Models</a>
 <ul>
-<li class="chapter" data-level="6.3.1" data-path="multi-response-models.html"><a href="multi-response-models.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>6.3.1</b> Posterior predictive checks</a></li>
+<li class="chapter" data-level="6.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>6.3.1</b> Posterior predictive checks</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="multi-response-models.html"><a href="multi-response-models.html#Hurdle"><i class="fa fa-check"></i><b>6.4</b> Hurdle Models</a></li>
-<li class="chapter" data-level="6.5" data-path="multi-response-models.html"><a href="multi-response-models.html#ZAP"><i class="fa fa-check"></i><b>6.5</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="6.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>6.4</b> Hurdle Models</a></li>
+<li class="chapter" data-level="6.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>6.5</b> Zero-altered Models</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html"><i class="fa fa-check"></i><b>7</b> Pedigrees and Phylogenies</a>
+<li class="chapter" data-level="7" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>7</b> Pedigrees and Phylogenies</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>7.1</b> Pedigree and phylogeny formats</a>
+<li class="chapter" data-level="7.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>7.1</b> Pedigree and phylogeny formats</a>
 <ul>
-<li class="chapter" data-level="7.1.1" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#pedigrees"><i class="fa fa-check"></i><b>7.1.1</b> Pedigrees</a></li>
-<li class="chapter" data-level="7.1.2" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#phylogenies"><i class="fa fa-check"></i><b>7.1.2</b> Phylogenies</a></li>
+<li class="chapter" data-level="7.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>7.1.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="7.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>7.1.2</b> Phylogenies</a></li>
 </ul></li>
-<li class="chapter" data-level="7.2" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>7.2</b> The animal model and the phylogenetic mixed model</a></li>
+<li class="chapter" data-level="7.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>7.2</b> The animal model and the phylogenetic mixed model</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>8</b> Technical Details</a>
 <ul>
@@ -261,10 +263,10 @@ div.csl-indent {
 <li class="chapter" data-level="8.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>8.2.6</b> Deviance and DIC</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="px.html"><a href="px.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
+<li class="chapter" data-level="9" data-path="parameter-expansion.html"><a href="parameter-expansion.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
 <ul>
-<li class="chapter" data-level="9.0.1" data-path="px.html"><a href="px.html#variances-close-to-zero"><i class="fa fa-check"></i><b>9.0.1</b> Variances close to zero</a></li>
-<li class="chapter" data-level="9.0.2" data-path="px.html"><a href="px.html#binary-response-models"><i class="fa fa-check"></i><b>9.0.2</b> Binary response models</a></li>
+<li class="chapter" data-level="9.0.1" data-path="parameter-expansion.html"><a href="parameter-expansion.html#variances-close-to-zero"><i class="fa fa-check"></i><b>9.0.1</b> Variances close to zero</a></li>
+<li class="chapter" data-level="9.0.2" data-path="parameter-expansion.html"><a href="parameter-expansion.html#binary-response-models"><i class="fa fa-check"></i><b>9.0.2</b> Binary response models</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
 <ul>
@@ -303,7 +305,7 @@ and we used the canonical log link function, then Equation
 <p><span class="math display" id="eq:pyl2-Eq">\[f_{P}\left(y_{i} | \lambda = \textrm{exp}(l_{i})\right)
 \label{pyl2-Eq}   \tag{8.2}\]</span></p>
 <p>where <span class="math inline">\(\lambda\)</span> is the canonical parameter of the Poisson denisty
-function <span class="math inline">\(f_{P}\)</span>. Table <a href="technical-details.html#tab:T1" reference-type="ref" reference="dist-tab">1</a> has a full list of supported distributions and
+function <span class="math inline">\(f_{P}\)</span>. Table <a href="technical-details.html#tab:dist">8.1</a> has a full list of supported distributions and
 link functions.<br />
 The vector of latent variables follow the linear model</p>
 <p><span class="math display" id="eq:l-Eq">\[{\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
@@ -354,7 +356,7 @@ they are unknown, and must be estimated from the data, usually by
 assuming they are structured in a way that they can be parameterised by
 few parameters. Below we will focus on the structure of <span class="math inline">\({\bf G}\)</span>, but
 the same logic can be applied to <span class="math inline">\({\bf R}\)</span>.<br />
-At its most general, <strong>MCMCglmm</strong> allows variance structures of the
+At its most general, <code>MCMCglmm</code> allows variance structures of the
 form:</p>
 <p><span class="math display" id="eq:G3-Eq">\[{\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
 \label{G3-Eq}   \tag{8.5}\]</span></p>
@@ -392,7 +394,7 @@ Three special cases exist for which we sample directly from Equation
 <span class="math inline">\(y_{i}=l_{i}\)</span> and zero otherwise so <span class="math inline">\(l_{i}=y_{i}\)</span> with out the need for
 updating, ii) when <span class="math inline">\(y_{i}\)</span> is discrete and modelled using
 <code>family="threshold"</code> then Equation <span id="pcl-Eq" label="pcl-Eq"></span> defines a
-truncated normal distribution and can be slice sampled <span class="citation">(<strong>Robert.1995?</strong>)</span>
+truncated normal distribution and can be slice sampled <span class="citation">(Robert 1995)</span>
 and iii) when <span class="math inline">\(y_{i}\)</span> is missing <span class="math inline">\(f_{i}(y_{i} | l_{i})\)</span> is not defined
 and samples can drawn directly from the normal.<br />
 In practice, the conditional distribution in Equation <a href="technical-details.html#eq:pcl-Eq">(8.6)</a>
@@ -411,11 +413,11 @@ normal proposal distribution centered at the previous value of
 <span class="math inline">\({\bf l}_{j}\)</span> with covariance matrix <span class="math inline">\(m{\bf M}\)</span>. For computational
 efficiency we use the same <span class="math inline">\({\bf M}\)</span> for each block <span class="math inline">\(j\)</span>, where <span class="math inline">\({\bf M}\)</span>
 is the average posterior (co)variance of <span class="math inline">\({\bf l}_{j}\)</span> within blocks and
-is updated each iteration of the burn-in period <span class="citation">(<strong>Haario.2001?</strong>)</span>. The scalar
-<span class="math inline">\(m\)</span> is chosen using the method of <span class="citation">(<strong>Ovaskainen.2008?</strong>)</span> so that the
+is updated each iteration of the burn-in period <span class="citation">Haario, Saksman, and Tamminen (2001)</span>. The scalar
+<span class="math inline">\(m\)</span> is chosen using the method of <span class="citation">Ovaskainen et al. (2008)</span> so that the
 proportion of successful jumps is optimal, with a rate of 0.44 when
 <span class="math inline">\({\bf l}_{j}\)</span> is a scalar declining to 0.23 when <span class="math inline">\({\bf l}_{j}\)</span> is high
-dimensional <span class="citation">(<strong>Gelman.2004?</strong>)</span>.<br />
+dimensional <span class="citation">(Gelman et al. 2004)</span>.<br />
 A special case arises for multi-parameter distributions in which each
 parameter is associated with a linear predictor. For example, in the
 zero-inflated Poisson two linear predictors are used to model the same
@@ -433,7 +435,7 @@ variables can be slice sampled for two-category <code>ordinal</code> and
 </div>
 <div id="updating-the-location-vector-boldsymbolmathbftheta-leftboldsymbolmathbfbeta-bf-uright" class="section level3 hasAnchor" number="8.2.2">
 <h3><span class="header-section-number">8.2.2</span> Updating the location vector <span class="math inline">\({\boldsymbol{\mathbf{\theta}}} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span><a href="technical-details.html#updating-the-location-vector-boldsymbolmathbftheta-leftboldsymbolmathbfbeta-bf-uright" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><span class="citation">(<strong>Garcia-Cortes.2001?</strong>)</span> provide a method for sampling
+<p><span class="citation">Garcia-Cortes and Sorensen (2001)</span> provide a method for sampling
 <span class="math inline">\({\boldsymbol{\mathbf{\theta}}}\)</span> as a complete block that involves
 solving the sparse linear system:</p>
 <p><span class="math display" id="eq:sMME-Eq">\[\tilde{\boldsymbol{\mathbf{\theta}}} = {\bf C}^{-1}{\bf W}^{&#39;}{\bf R}^{-1}({\bf l} - {\bf W}{\boldsymbol{\mathbf{\theta}}}_{\star}-{\bf e}_{\star})
@@ -474,23 +476,22 @@ gives a realisation from the required probability distribution:</p>
 Because <span class="math inline">\({\bf C}\)</span> is sparse and the pattern of non-zero elements fixed,
 an initial symbolic Cholesky factorisation of
 <span class="math inline">\({\bf P}{\bf C}{\bf P}^{&#39;}\)</span> is preformed where <span class="math inline">\({\bf P}\)</span> is a
-fill-reducing permutation matrix <span class="citation">(<strong>Davis.2006?</strong>)</span>. Numerical factorisation
+fill-reducing permutation matrix <span class="citation">(Davis 2006)</span>. Numerical factorisation
 must be performed each iteration but the fill-reducing permutation
 (found via a minimum degree ordering of <span class="math inline">\({\bf C}+{\bf C}^{&#39;}\)</span>) reduces
 the computational burden dramatically compared to a direct factorisation
-of <span class="math inline">\({\bf C}\)</span> <span class="citation">(<strong>Davis.2006?</strong>)</span>.<br />
+of <span class="math inline">\({\bf C}\)</span> <span class="citation">(Davis 2006)</span>.<br />
 Forming the inverse of the variance structures is usually simpler
 because they can be expressed as a series of direct sums and Kronecker
 products:</p>
-<p><span class="math display" id="eq:G3-Eq">\[{\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
-\label{G3-Eq}   \tag{8.5}\]</span></p>
+<p><span class="math display">\[{\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots\]</span></p>
 <p>and the inverse of such a structure has the form</p>
 <p><span class="math display">\[{\bf G}^{-1} = \left({\bf V}^{-1}_{1}\otimes{\bf A}^{-1}_{1}\right) \oplus \left({\bf V}^{-1}_{2}\otimes{\bf A}^{-1}_{2}\right) \oplus \ldots\\\]</span></p>
 <p>which involves inverting the parameter (co)variance matrices
 (<span class="math inline">\({\bf V}\)</span>), which are usually of low dimension, and inverting
 <span class="math inline">\({\bf A}\)</span>. For many problems <span class="math inline">\({\bf A}\)</span> is actually an identity matrix
 and so inversion is not required. When <span class="math inline">\({\bf A}\)</span> is a relationship
-matrix associated with a pedigree, <span class="citation">(<strong>Henderson.1976?</strong>; <strong>Meuwissen.1992?</strong>)</span>
+matrix associated with a pedigree, <span class="citation">Henderson (1976; Meuwissen and Luo 1992)</span>
 give efficient recursive algorithms for obtaining the inverse, and
 <span class="citation">Hadfield and Nakagawa (2010)</span> derive a similar procedure for phylogenies.</p>
 </div>
@@ -513,7 +514,7 @@ respectively.<br />
 In some models, some elements of a parameter (co)variance matrix cannot
 be estimated from the data and all the information comes from the prior.
 In these cases it can be advantageous to fix these elements at some
-value and <span class="citation">(<strong>Korsgaard.1999?</strong>)</span> provide a strategy for sampling from a
+value and <span class="citation">Korsgaard, Andersen, and Sorensen (1999)</span> provide a strategy for sampling from a
 conditional inverse-Wishart distribution which is appropriate when the
 rows/columns of the parameter matrix can be permuted so that the
 conditioning occurs on some diagonal sub-matrix. When this is not
@@ -524,13 +525,13 @@ possible Metropolis-Hastings updates can be made.</p>
 <p>For ordinal models it is necessary to update the cutpoints which define
 the bin boundaries for latent variables associated with each category of
 the outcome. To achieve good mixing we used the method developed by
-<span class="citation">(<strong>Cowles.1996?</strong>)</span> that allows the latent variables and cutpoints to be
+<span class="citation">(Cowles 1996)</span> that allows the latent variables and cutpoints to be
 updated simultaneously using a Hastings-with-Gibbs update.</p>
 </div>
 <div id="path-analyses" class="section level3 hasAnchor" number="8.2.5">
 <h3><span class="header-section-number">8.2.5</span> Path Analyses<a href="technical-details.html#path-analyses" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Elements of the response vector can be regressed on each other using the
-<code>sir</code> and <code>path</code> functions. Using the matrix notation of <span class="citation">(<strong>Gianola.2004?</strong>)</span>,
+<code>sir</code> and <code>path</code> functions. Using the matrix notation of <span class="citation">Gianola and Sorensen (2004)</span>,
 Equation <a href="technical-details.html#eq:l-Eq">(8.3)</a> can be rewritten as:</p>
 <p><span class="math display" id="eq:rs-Eq1">\[{\boldsymbol{\mathbf{\Lambda}}}{\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
 \label{rs-Eq1}   \tag{8.11}\]</span></p>
@@ -549,7 +550,7 @@ Conditional on the vector of regression coefficients
 <span class="math inline">\({\boldsymbol{\mathbf{\lambda}}}\)</span>, the location effects and variance
 structures can be updated as before by simply substituting <span class="math inline">\({\bf l}\)</span> for
 <span class="math inline">\({\boldsymbol{\mathbf{\Lambda}}}{\bf l}\)</span> in the necessary equations.
-<span class="citation">(<strong>Gianola.2004?</strong>)</span> provide a simple scheme for updating
+<span class="citation">Gianola and Sorensen (2004)</span> provide a simple scheme for updating
 <span class="math inline">\({\boldsymbol{\mathbf{\lambda}}}\)</span>. Note that Equation <a href="technical-details.html#eq:rs-Eq1">(8.11)</a>
 can be rewritten as:</p>
 <p><span class="math display">\[\begin{array}{rl}
@@ -561,7 +562,7 @@ can be rewritten as:</p>
 for the <span class="math inline">\(L\)</span> path coefficients. Conditional on
 <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span> and <span class="math inline">\({\boldsymbol{\mathbf{u}}}\)</span>,
 <span class="math inline">\({\boldsymbol{\mathbf{\lambda}}}\)</span> can then be sampled using the method
-of <span class="citation">(<strong>Garcia-Cortes.2001?</strong>)</span> with
+of <span class="citation">Garcia-Cortes and Sorensen (2001)</span> with
 <span class="math inline">\({\bf l} - {\bf X}{\boldsymbol{\mathbf{\beta}}} - {\bf Z}{\bf u}\)</span> as
 response and <span class="math inline">\({\bf L}\)</span> as predictor. However, only in a fully recursive
 system (there exists a row/column permutation by which all
@@ -593,8 +594,8 @@ latent variables remains relatively simple:</p>
 <p><span class="math display">\[D = -2\textrm{log}(\Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}))\]</span></p>
 <p>where <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}}\)</span> is some parameter set of the
 model. The deviance can be calculated in different ways depending on
-what is in ‘focus’, and MCMCglmm calculates this probability for the
-lowest level of the hierarchy <span class="citation">(<strong>Spiegelhalter.2002?</strong>)</span>. For fully-observed
+what is in ‘focus’, and <code>MCMCglmm</code> calculates this probability for the
+lowest level of the hierarchy <span class="citation">(Spiegelhalter et al. 2002)</span>. For fully-observed
 Gaussian response variables in the likelihood is the density:</p>
 <p><span class="math display">\[f_{N}({\bf y} | {\bf W}{\boldsymbol{\mathbf{\theta}}},\ {\bf R})\]</span></p>
 <p>where
@@ -652,9 +653,10 @@ deviance is calculated at the mean estimate of the parameters
 criterion calculated as:</p>
 <p><span class="math display">\[\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})\]</span></p>
 <div class="landscape">
-<div id="dist-tab">
+
+</div>
 <table style="width:99%;">
-<caption><span id="tab:T1">Table 4.1: </span> Distribution types that can fitted using <code>MCMCglmm</code>.
+<caption><span id="tab:dist">Table 8.1: </span> Distribution types that can fitted using <code>MCMCglmm</code>.
 The prefixes <code>"zi"</code>, <code>"zt"</code>, <code>"hu"</code> and <code>"za"</code> stand for
 zero-inflated, zero-truncated, hurdle and zero-altered respectively.
 The prefix <code>"cen"</code> standards for censored where <span class="math inline">\(y_{1}\)</span> and <span class="math inline">\(y_{2}\)</span>
@@ -666,7 +668,10 @@ datum in a univariate model with <span class="math inline">\({\bf w}\)</span> be
 <span class="math inline">\({\bf W}\)</span>. <span class="math inline">\(f\)</span> and <span class="math inline">\(F\)</span> are the density and distribution functions for
 the subscripted distribution (<span class="math inline">\(N\)</span>=Normal, <span class="math inline">\(P\)</span>=Poisson,
 <span class="math inline">\(E\)</span>=Exponential, <span class="math inline">\(G\)</span>=Geometric, <span class="math inline">\(B\)</span>=Binomial). The <span class="math inline">\(J-1\)</span> <span class="math inline">\(\gamma\)</span>’s in
-the ordinal models are the cutpoints, with <span class="math inline">\(\gamma_{1}\)</span> set to zero.</caption>
+the ordinal models are the cutpoints, with <span class="math inline">\(\gamma_{1}\)</span> set to zero.
+:::
+::::
+:::::</caption>
 <colgroup>
 <col width="8%" />
 <col width="4%" />
@@ -845,9 +850,6 @@ the ordinal models are the cutpoints, with <span class="math inline">\(\gamma_{1
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<p>:::::</p>
 
 </div>
 </div>
@@ -857,8 +859,8 @@ the ordinal models are the cutpoints, with <span class="math inline">\(\gamma_{1
           </div>
         </div>
       </div>
-<a href="pedigrees-and-phylogenies.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="px.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="pedigree.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="parameter-expansion.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
