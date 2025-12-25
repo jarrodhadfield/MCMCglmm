@@ -1,6 +1,7 @@
-# MCMCglmm Course Notes (Overview)
+# MCMCglmm Course Notes
 
-The original `CourseNotes.Rnw` has been replaced by a bookdown site:
+The original `CourseNotes` vignette has been replaced by a bookdown
+site:
 
 - Online book: <https://jarrodhadfield.github.io/MCMCglmm/course-notes/>
 

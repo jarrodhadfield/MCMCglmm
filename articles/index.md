@@ -2,5 +2,5 @@
 
 ### Vignettes
 
-- [MCMCglmm Course Notes
-  (Overview)](https://jarrodhadfield.github.io/MCMCglmm/articles/CourseNotes.md):
+- [MCMCglmm Course
+  Notes](https://jarrodhadfield.github.io/MCMCglmm/articles/CourseNotes.md):

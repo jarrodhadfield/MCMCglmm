@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>10 Path Analysis &amp; Antedependence Structures | MCMCglmm Course Notes</title>
+  <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="10 Path Analysis &amp; Antedependence Structures | MCMCglmm Course Notes" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="10 Path Analysis &amp; Antedependence Structures | MCMCglmm Course Notes" />
+  
+  <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+<meta name="author" content="Jarrod Hadfield" />
+
+
+<meta name="date" content="2025-12-25" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="px.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Introduction</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.1</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="mcmc.html"><a href="mcmc.html"><i class="fa fa-check"></i><b>2</b> MCMC</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="mcmc.html"><a href="mcmc.html#likelihood"><i class="fa fa-check"></i><b>2.1</b> Likelihood</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="mcmc.html"><a href="mcmc.html#maximum-likelihood-ml"><i class="fa fa-check"></i><b>2.1.1</b> Maximum Likelihood (ML)</a></li>
+<li class="chapter" data-level="2.1.2" data-path="mcmc.html"><a href="mcmc.html#restricted-maximum-likelihood-reml"><i class="fa fa-check"></i><b>2.1.2</b> Restricted Maximum Likelihood (REML)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="mcmc.html"><a href="mcmc.html#prior-distribution"><i class="fa fa-check"></i><b>2.2</b> Prior Distribution</a></li>
+<li class="chapter" data-level="2.3" data-path="mcmc.html"><a href="mcmc.html#posterior-distribution"><i class="fa fa-check"></i><b>2.3</b> Posterior Distribution</a>
+<ul>
+<li class="chapter" data-level="2.3.1" data-path="mcmc.html"><a href="mcmc.html#marginal-posterior-distribution"><i class="fa fa-check"></i><b>2.3.1</b> Marginal Posterior Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="mcmc.html"><a href="mcmc.html#mcmc-1"><i class="fa fa-check"></i><b>2.4</b> MCMC</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="mcmc.html"><a href="mcmc.html#starting-values"><i class="fa fa-check"></i><b>2.4.1</b> Starting values</a></li>
+<li class="chapter" data-level="2.4.2" data-path="mcmc.html"><a href="mcmc.html#metrpolis-hastings-updates"><i class="fa fa-check"></i><b>2.4.2</b> Metrpolis-Hastings updates</a></li>
+<li class="chapter" data-level="2.4.3" data-path="mcmc.html"><a href="mcmc.html#gibbs-sampling"><i class="fa fa-check"></i><b>2.4.3</b> Gibbs Sampling</a></li>
+<li class="chapter" data-level="2.4.4" data-path="mcmc.html"><a href="mcmc.html#slice-sampling"><i class="fa fa-check"></i><b>2.4.4</b> Slice Sampling</a></li>
+<li class="chapter" data-level="2.4.5" data-path="mcmc.html"><a href="mcmc.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.4.5</b> MCMC Diagnostics</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="mcmc.html"><a href="mcmc.html#IP-sec"><i class="fa fa-check"></i><b>2.5</b> Improper Priors</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="mcmc.html"><a href="mcmc.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.5.1</b> Flat Improper Prior</a></li>
+<li class="chapter" data-level="2.5.2" data-path="mcmc.html"><a href="mcmc.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.5.2</b> Non-Informative Improper Prior</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="mcmc.html"><a href="mcmc.html#references-1"><i class="fa fa-check"></i><b>2.6</b> References</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
+<li class="chapter" data-level="3.3" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#over-dispersion"><i class="fa fa-check"></i><b>3.3</b> Over-dispersion</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#multiplicative-over-dispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Over-dispersion</a></li>
+<li class="chapter" data-level="3.3.2" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Over-dispersion</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#ranef-sec"><i class="fa fa-check"></i><b>3.4</b> Random effects</a></li>
+<li class="chapter" data-level="3.5" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#pred-sec"><i class="fa fa-check"></i><b>3.5</b> Prediction with Random effects</a></li>
+<li class="chapter" data-level="3.6" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#categorical-data"><i class="fa fa-check"></i><b>3.6</b> Categorical Data</a></li>
+<li class="chapter" data-level="3.7" data-path="glms-and-glmms.html"><a href="glms-and-glmms.html#PriorContr-sec"><i class="fa fa-check"></i><b>3.7</b> A note on fixed effect priors and covariances</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html"><i class="fa fa-check"></i><b>4</b> Categorical Random Interactions</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#idh-variance-structure"><i class="fa fa-check"></i><b>4.1</b> <code>idh</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.2" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#us-variance-structure"><i class="fa fa-check"></i><b>4.2</b> <code>us</code> Variance Structure</a></li>
+<li class="chapter" data-level="4.3" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#compound-variance-structures"><i class="fa fa-check"></i><b>4.3</b> Compound Variance Structures</a></li>
+<li class="chapter" data-level="4.4" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#heter-sec"><i class="fa fa-check"></i><b>4.4</b> Heterogenous Residual Variance</a></li>
+<li class="chapter" data-level="4.5" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>4.5</b> Contrasts and Covariances</a></li>
+<li class="chapter" data-level="4.6" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#VCVprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Covariance Matrices</a>
+<ul>
+<li class="chapter" data-level="4.6.1" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#priors-for-us-structures"><i class="fa fa-check"></i><b>4.6.1</b> Priors for <code>us</code> structures</a></li>
+<li class="chapter" data-level="4.6.2" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>4.6.2</b> Priors for <code>idh</code> structures</a></li>
+<li class="chapter" data-level="4.6.3" data-path="categorical-random-interactions.html"><a href="categorical-random-interactions.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>4.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html"><i class="fa fa-check"></i><b>5</b> Continuous Random Interactions</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#random-regression"><i class="fa fa-check"></i><b>5.1</b> Random Regression</a></li>
+<li class="chapter" data-level="5.2" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>5.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="5.3" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#RRcentering"><i class="fa fa-check"></i><b>5.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="5.4" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#meta-sec"><i class="fa fa-check"></i><b>5.4</b> Meta-analysis</a></li>
+<li class="chapter" data-level="5.5" data-path="continuous-random-interactions.html"><a href="continuous-random-interactions.html#splines"><i class="fa fa-check"></i><b>5.5</b> Splines</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="multi-response-models.html"><a href="multi-response-models.html"><i class="fa fa-check"></i><b>6</b> Multi-response models</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="multi-response-models.html"><a href="multi-response-models.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>6.1</b> Relaxing the univariate assumptions of causality</a></li>
+<li class="chapter" data-level="6.2" data-path="multi-response-models.html"><a href="multi-response-models.html#multinomial-models"><i class="fa fa-check"></i><b>6.2</b> Multinomial Models</a></li>
+<li class="chapter" data-level="6.3" data-path="multi-response-models.html"><a href="multi-response-models.html#zero-inflated-models"><i class="fa fa-check"></i><b>6.3</b> Zero-inflated Models</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="multi-response-models.html"><a href="multi-response-models.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>6.3.1</b> Posterior predictive checks</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="multi-response-models.html"><a href="multi-response-models.html#Hurdle"><i class="fa fa-check"></i><b>6.4</b> Hurdle Models</a></li>
+<li class="chapter" data-level="6.5" data-path="multi-response-models.html"><a href="multi-response-models.html#ZAP"><i class="fa fa-check"></i><b>6.5</b> Zero-altered Models</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html"><i class="fa fa-check"></i><b>7</b> Pedigrees and Phylogenies</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>7.1</b> Pedigree and phylogeny formats</a>
+<ul>
+<li class="chapter" data-level="7.1.1" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#pedigrees"><i class="fa fa-check"></i><b>7.1.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="7.1.2" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#phylogenies"><i class="fa fa-check"></i><b>7.1.2</b> Phylogenies</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="pedigrees-and-phylogenies.html"><a href="pedigrees-and-phylogenies.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>7.2</b> The animal model and the phylogenetic mixed model</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>8</b> Technical Details</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>8.1</b> Model Form</a></li>
+<li class="chapter" data-level="8.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>8.2</b> MCMC Sampling Schemes</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>8.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
+<li class="chapter" data-level="8.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymbolmathbftheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>8.2.2</b> Updating the location vector <span class="math inline">\({\boldsymbol{\mathbf{\theta}}} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
+<li class="chapter" data-level="8.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>8.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
+<li class="chapter" data-level="8.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>8.2.4</b> Ordinal Models</a></li>
+<li class="chapter" data-level="8.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>8.2.5</b> Path Analyses</a></li>
+<li class="chapter" data-level="8.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>8.2.6</b> Deviance and DIC</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="px.html"><a href="px.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
+<ul>
+<li class="chapter" data-level="9.0.1" data-path="px.html"><a href="px.html#variances-close-to-zero"><i class="fa fa-check"></i><b>9.0.1</b> Variances close to zero</a></li>
+<li class="chapter" data-level="9.0.2" data-path="px.html"><a href="px.html#binary-response-models"><i class="fa fa-check"></i><b>9.0.2</b> Binary response models</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#antedependence"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">MCMCglmm Course Notes</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="path" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">10</span> Path Analysis &amp; Antedependence Structures<a href="path.html#path" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>There are many situations where it would seem reasonble to put some
+apsect of a response variable in as a predictor, and the only thing that
+stops us is some (often vague) notion that this is a bad thing to do
+from a statistical point of view. The approach appears to have a long
+history in economics but I came across the idea in a paper written by
+<span class="citation">(<strong>Gianola.2004?</strong>)</span>. The notation of this section, and indeed the sampling
+strategy employed in MCMCglmm is derived from this paper.<br />
+</p>
+<div id="path-anlaysis" class="section level2 hasAnchor" number="10.1">
+<h2><span class="header-section-number">10.1</span> Path Anlaysis<a href="path.html#path-anlaysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><span class="math inline">\({\bf \Psi}^{(l)}\)</span> is a square matrix of dimension <span class="math inline">\(N \times N\)</span> where
+<span class="math inline">\(\Psi_{i,j}^{(l)}=k\)</span> sets up the equation
+<span class="math inline">\(y_{i} = \lambda_{l}ky_{j} \dots\)</span>. In matrix terms:</p>
+<p><span class="math display">\[{\boldsymbol{\mathbf{\Lambda}}}{\bf y} = {\bf y} - \sum_{l}{\bf \Psi}^{(l)}{\bf y}{\lambda_{l}}\]</span></p>
+<p>Having
+<span class="math inline">\({\boldsymbol{\mathbf{\Psi}}} = \left[{\boldsymbol{\mathbf{\Psi}}}^{(1)}\ {\boldsymbol{\mathbf{\Psi}}}^{(2)}\ \dots {\boldsymbol{\mathbf{\Psi}}}^{(L-1)}\ {\boldsymbol{\mathbf{\Psi}}}^{(L)}\right]\)</span>
+we have</p>
+<p><span class="math display" id="eq:rs-Eq">\[\begin{array}{rl}
+{\boldsymbol{\mathbf{\Lambda}}}{\bf y} =&amp; {\bf y}-{\boldsymbol{\mathbf{\Psi}}}\left({\bf I}_{L} \otimes {\bf y} \right){\boldsymbol{\mathbf{\lambda}}}\\
+                     =&amp; {\bf y}-{\boldsymbol{\mathbf{\Psi}}}\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{N}\right) {\bf y}\\
+\end{array}
+\label{rs-Eq}   \tag{10.1}\]</span></p>
+<p>where
+<span class="math inline">\({\boldsymbol{\mathbf{\lambda}}} = \left[\lambda_{1}\ \lambda_{2} \dots \lambda_{L-1}\ \lambda_{L} \right]^{\top}\)</span>,
+and
+<span class="math inline">\({\boldsymbol{\mathbf{\Lambda}}}={\bf I}_{N}-{\boldsymbol{\mathbf{\Psi}}}\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{N}\right)\)</span><br />
+Each <span class="math inline">\({\bf \Psi}^{(l)}\)</span> can be formed using the function <code>sir</code> which
+takes two formulae. <span class="math inline">\({\bf \Psi} = {\bf X}_{1}{\bf X}_{2}^{\top}\)</span> where
+<span class="math inline">\({\bf X}_{1}\)</span> and <span class="math inline">\({\bf X}_{2}\)</span> are the model matrices defined by the
+formulae (with intercept removed). <span class="math inline">\({\bf X}_{1}\)</span> and
+<span class="math inline">\({\bf X}_{2}^{\top}\)</span> have to be conformable, and although this could be
+achieved in many ways, one way to ensure this is to have categorical
+predictors in each which have common factor levels. To give a concrete
+example, lets take a sample of individuals measured a variable number of
+times for 2 traits:</p>
+<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="path.html#cb286-1" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="dv">100</span>, <span class="at">replace =</span> T)</span>
+<span id="cb286-2"><a href="path.html#cb286-2" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb286-3"><a href="path.html#cb286-3" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb286-4"><a href="path.html#cb286-4" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(y1, y2)</span>
+<span id="cb286-5"><a href="path.html#cb286-5" tabindex="-1"></a>trait <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">2</span>, <span class="dv">100</span>)</span></code></pre></div>
+<p>Lets then imagine that each of these indiviuals interacts with another
+randomly chosen individual - indexed in the vector <code>id1</code></p>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="path.html#cb287-1" tabindex="-1"></a>id1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(id, <span class="dv">100</span>, <span class="at">replace =</span> T)</span>
+<span id="cb287-2"><a href="path.html#cb287-2" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">c</span>(id, id))</span>
+<span id="cb287-3"><a href="path.html#cb287-3" tabindex="-1"></a>id1 <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">c</span>(id1, id1), <span class="at">levels =</span> <span class="fu">levels</span>(id))</span></code></pre></div>
+<p>we will adopt a recursive model where by the phenotypes of indiviuals in
+the <code>id1</code> vector affect those in the <code>id</code> vector:</p>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="path.html#cb288-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id)</span></code></pre></div>
+<p>we can see that the first record for individual <code>id[1]=</code>90 is
+directly affected by individual <code>id1[1]=</code>17’s traits:</p>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="path.html#cb289-1" tabindex="-1"></a>Psi[<span class="dv">1</span>, <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
+<pre><code>##  84 184 
+##   1   1</code></pre>
+<p>i.e indiviual <code>id1[1]=</code>17 has 2 records.<br />
+We can build on this simple model by stating that only trait 2 affects
+trait 1:</p>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="path.html#cb291-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">1</span>), <span class="sc">~</span>id<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">2</span>))</span>
+<span id="cb291-2"><a href="path.html#cb291-2" tabindex="-1"></a>Psi[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">101</span>), <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
+<pre><code>##     84 184
+## 1    0   1
+## 101  0   0</code></pre>
+<p>or that trait 2 affect both trait 2 and trait 1:</p>
+<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="path.html#cb293-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">2</span>))</span>
+<span id="cb293-2"><a href="path.html#cb293-2" tabindex="-1"></a>Psi[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">101</span>), <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
+<pre><code>##     84 184
+## 1    0   1
+## 101  0   1</code></pre>
+<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="path.html#cb295-1" tabindex="-1"></a>my.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y1 =</span> y1, <span class="at">y2 =</span> y2, <span class="at">id =</span> id[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>], <span class="at">id1 =</span> id1[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>], <span class="at">x =</span> <span class="fu">rnorm</span>(<span class="dv">100</span>))</span>
+<span id="cb295-2"><a href="path.html#cb295-2" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y1 <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id) <span class="sc">+</span> y2, <span class="at">data =</span> my.data, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>One problem is that <span class="math inline">\({\bf e}^{\star}\)</span> the residual vector that appears
+in the likelihood for the latent variable does not have a simple (block)
+diagonal structure when (as in the case above) the elements of the
+response vector that are regressed on each other are not grouped in the
+R-structure:</p>
+<p><span class="math display">\[{\bf e}^{\star} \sim N\left({\boldsymbol{\mathbf{0}}}, {\boldsymbol{\mathbf{\Lambda}}}^{-1}{\bf R}{\boldsymbol{\mathbf{\Lambda}}}^{-\top}\right)\]</span></p>
+<p>Consequently, analyses that involve latent variables (i.e. non-Gaussian
+data, or analyses that have incomplete records for determining the
+R-structure) are currently not implemented in MCMCglmm.</p>
+<p>The <code>path</code> function is a way of specifying path models that are less
+general than those formed by <code>sir</code> but are simple enough to allow
+updating of the latent variables associated with non-Gaussian data.
+Imagine a residual structure is fitted where the <span class="math inline">\(N\)</span> observations are
+grouped into <span class="math inline">\(n\)</span> blocks of <span class="math inline">\(k\)</span>. For instance this might be <span class="math inline">\(k\)</span> different
+characteristics measured in <span class="math inline">\(n\)</span> individuals. A path model may be
+entertained whereby an individual’s characteristics only affect their
+own characteristics rather than anyone elses. In this case,
+<span class="math inline">\({\boldsymbol{\mathbf{\Psi}}}^{(l)}={\boldsymbol{\mathbf{\psi}}}^{(l)}\otimes{\bf I}_{n}\)</span>
+is block diagonal, and
+<span class="math inline">\({\boldsymbol{\mathbf{\Psi}}}={\boldsymbol{\mathbf{\psi}}}\otimes{\bf I}_{n}\)</span>
+where
+<span class="math inline">\({\boldsymbol{\mathbf{\psi}}} = \left[{\boldsymbol{\mathbf{\psi}}}^{(1)}, {\boldsymbol{\mathbf{\psi}}}^{(2)} \dots {\boldsymbol{\mathbf{\psi}}}^{(L)}\right]\)</span>.
+Consequently,</p>
+$$
+<span class="math display">\[\begin{array}{rl}
+{\boldsymbol{\mathbf{\Lambda}}}=&amp;{\bf I}_{N}-{\boldsymbol{\mathbf{\Psi}}}\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{N}\right)\\
+=&amp;{\bf I}_{N}-\left({\boldsymbol{\mathbf{\psi}}}\otimes{\bf I}_{n}\right)\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{N}\right)\\
+=&amp;\left({\bf I}_{k}\otimes{\bf I}_{n}\right)-\left({\boldsymbol{\mathbf{\psi}}}\otimes{\bf I}_{n}\right)\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{k}\otimes{\bf I}_{n}\right)\\
+=&amp;\left({\bf I}_{k}-{\boldsymbol{\mathbf{\psi}}}\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{k}\right)\right)\otimes{\bf I}_{n}\\
+
+\end{array}\]</span>
+<p>$$</p>
+<p>and so
+<span class="math inline">\({\boldsymbol{\mathbf{\Lambda}}}^{-1}=\left({\bf I}_{k}-{\boldsymbol{\mathbf{\psi}}}\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{k}\right)\right)^{-1}\otimes{\bf I}_{n}\)</span>
+and
+<span class="math inline">\(|{\boldsymbol{\mathbf{\Lambda}}}| = |{\bf I}_{k}-{\boldsymbol{\mathbf{\psi}}}\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{k}\right)|^{n}\)</span></p>
+<p>Mean centering responses can help mixing, because
+<span class="math inline">\({\boldsymbol{\mathbf{t}}heta}\)</span> and <span class="math inline">\({\boldsymbol{\mathbf{l}}ambda}\)</span> are
+not sampled in a block. (Jarrod - I guess when
+<span class="math inline">\(|{\boldsymbol{\mathbf{\Lambda}}}|=1\)</span> this could be detected and
+updating occur in a block?)</p>
+</div>
+<div id="antedependence" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> Antedependence<a href="path.html#antedependence" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>An <span class="math inline">\(n\times n\)</span> unstructured covariance matrix can be reparameterised in
+terms of regression coefficeints and residual variances from a set of
+<span class="math inline">\(n\)</span> nested multiple regressions. For example, for <span class="math inline">\(n=3\)</span> the following 3
+multiple regressions can be defined:</p>
+<p><span class="math display">\[\begin{array}{rl}
+u_{3} =&amp;  u_{2}\beta_{3|2}+u_{1}\beta_{3|1}+e_{u_{3}}\\
+u_{2} =&amp;  u_{1}\beta_{2|1}+e_{u_{2}}\\
+u_{1} =&amp;  e_{u_{1}}\\
+\end{array}\]</span></p>
+<p>Arranging the regression coefficients and residual (‘innovation’)
+variances into a lower triangular matrix and diagonal matrix
+respectively:</p>
+<p><span class="math display">\[{\bf L}_{u}=
+\left[
+\begin{array}{ccc}
+1&amp;0&amp;0\\
+-\beta_{2|1}&amp;1&amp;0\\
+-\beta_{3|1}&amp;-\beta_{3|2}&amp;1\\
+\end{array}
+\right]\]</span></p>
+<p>and</p>
+<p><span class="math display">\[{\bf D}_{u}=
+\left[
+\begin{array}{ccc}
+\sigma^{2}_{e_{u_{1}}}&amp;0&amp;0\\
+0&amp;\sigma^{2}_{e_{u_{2}}}&amp;0\\
+0&amp;0&amp;\sigma^{2}_{e_{u_{3}}}\\
+\end{array}
+\right]\]</span></p>
+<p>gives</p>
+<p><span class="math display">\[{\bf V}_{u} =  {\bf L}_{u}{\bf D}_{u}{\bf L}_{u}^{\top}\]</span></p>
+<p>Rather than fit the saturated model (in this case all 3 regression
+coefficients) <span class="math inline">\(k^{th}\)</span> order antedependence models seek to model
+<span class="math inline">\({\bf V}_{u}\)</span> whilst constraining the regression coefficients in
+<span class="math inline">\({\bf L}_{u}\)</span> to be zero if they are on sub-diagonals&gt;<span class="math inline">\(k\)</span>. For example,
+a first order antedependence model would set the regression coefficients
+in the second off-diagonal (i.e. <span class="math inline">\(\beta_{3|1}\)</span>) to zero, but estimate
+those in the first sub-diagonal (i.e. <span class="math inline">\(\beta_{2|1}\)</span> and <span class="math inline">\(\beta_{3|2}\)</span>).
+For a 3<span class="math inline">\(\times\)</span><!-- -->3 matrix, a second order antedependence
+model would fit a fully unstructured covariance matrix. In terms of
+Gibbs sampling this parameterisation is less efficient because
+<span class="math inline">\({\bf V}_{u}\)</span> is sampled in two blocks (the regression coefficients
+followed by the innovation variances) rather than in a single block from
+the inverse Wishart. However, more flexible conjugate prior
+specifications are possible by placing multivariate normal priors on the
+regression coefficients and independent inverse Wishart priors on the
+innovation variances. By constraining arbitrary regression coefficients
+to be zero in a fully unstructured model allows any fully recursive path
+model to be constructed for a set of random effects.</p>
+</div>
+<div id="scaling" class="section level2 hasAnchor" number="10.3">
+<h2><span class="header-section-number">10.3</span> Scaling<a href="path.html#scaling" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The path analyses described above essentially allow elements of the
+response vector to be regressed on each other. Regressing an observation
+on itself would seem like a peculiar thing to do, although with a little
+work we can show that by doing this we can allow two sets of
+observations to conform to the same model except for a difference in
+scale.</p>
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div class="csl-entry">
+Hadfield, J. D. 2010. <span>“<span>MCMC</span> Methods for Multi–Response Generalised Linear Mixed Models: The <span>MCMCglmm R</span> Package.”</span> <em>Journal of Statistical Software</em> 33 (2): 1–22.
+</div>
+<div class="csl-entry">
+Hadfield, J. D., and S. Nakagawa. 2010. <span>“General Quantitative Genetic Methods for Comparative Biology: Phylogenies, Taxonomies, Meta-Analysis and Multi-Trait Models for Continuous and Categorical Characters.”</span> <em>Journal of Evolutionary Biology</em> 23 (3): 494–508.
+</div>
+<div class="csl-entry">
+Hadfield, J. D. 2010. <span>“<span>MCMC</span> Methods for Multi–Response Generalised Linear Mixed Models: The <span>MCMCglmm R</span> Package.”</span> <em>Journal of Statistical Software</em> 33 (2): 1–22.
+</div>
+<div class="csl-entry">
+Hadfield, J. D., and S. Nakagawa. 2010. <span>“General Quantitative Genetic Methods for Comparative Biology: Phylogenies, Taxonomies, Meta-Analysis and Multi-Trait Models for Continuous and Categorical Characters.”</span> <em>Journal of Evolutionary Biology</em> 23 (3): 494–508.
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="px.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["MCMCglmm-course-notes.pdf", "MCMCglmm-course-notes.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

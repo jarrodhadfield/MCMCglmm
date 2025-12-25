@@ -65,7 +65,8 @@ Following the notation of Wikipedia
 (<https://en.wikipedia.org/wiki/Inverse-Wishart_distribution>) the
 inverse scale matrix \\{\bm \Psi}=(\texttt{V\*nu})\\. In earlier
 versions of MCMCglmm (\<1.11) \\{\bm \Psi} = \texttt{V}^{-1}\\. Although
-the old parameterisation is consistent with the `riwish` function in
+the old parameterisation is consistent with the
+[`riwish`](https://rdrr.io/pkg/MCMCpack/man/InvWishart.html) function in
 MCMCpack and the
 [`rwishart`](https://rdrr.io/pkg/bayesm/man/rwishart.html) function in
 bayesm it is inconsistent with the prior definition for
@@ -74,7 +75,7 @@ The following pieces of code are sampling from the same distributions:
 
 |                                                                                  |                       |
 |----------------------------------------------------------------------------------|-----------------------|
-| `riwish(nu, nu*V)`                                                               | from MCMCpack         |
+| [`riwish`](https://rdrr.io/pkg/MCMCpack/man/InvWishart.html)`(nu, nu*V)`         | from MCMCpack         |
 | [`rwishart`](https://rdrr.io/pkg/bayesm/man/rwishart.html)`(nu, solve(nu*V))$IW` | from bayesm           |
 | `rIW(nu, solve(nu*V))`                                                           | from MCMCglmm \<1.11  |
 | `rIW(V, nu)`                                                                     | from MCMCglmm \>=1.11 |
@@ -89,7 +90,8 @@ Korsgaard, I.R. et. al. 1999 Genetics Selection Evolution 31 (2) 177:181
 
 ## See also
 
-[`rwishart`](https://rdrr.io/pkg/bayesm/man/rwishart.html), `rwish`
+[`rwishart`](https://rdrr.io/pkg/bayesm/man/rwishart.html),
+[`rwish`](https://rdrr.io/pkg/MCMCpack/man/Wishart.html)
 
 ## Examples
 

@@ -86,8 +86,8 @@ matrix of dimension <code>n</code> x <code>length(V)</code></p>
     </div>
     <div class="section level2">
     <h2 id="note">Note<a class="anchor" aria-label="anchor" href="#note"></a></h2>
-    <p>In versions of MCMCglmm &gt;1.10 the arguments to <code>rIW</code> have changed so that they are more intuitive in the context of <code><a href="MCMCglmm.html">MCMCglmm</a></code>.  Following the notation of Wikipedia (<a href="https://en.wikipedia.org/wiki/Inverse-Wishart_distribution" class="external-link">https://en.wikipedia.org/wiki/Inverse-Wishart_distribution</a>) the inverse scale matrix \({\bm \Psi}=(\texttt{V*nu})\). In earlier versions of MCMCglmm (&lt;1.11) \({\bm \Psi} = \texttt{V}^{-1}\). Although the old parameterisation is consistent with the <code>riwish</code> function in MCMCpack and the <code><a href="https://rdrr.io/pkg/bayesm/man/rwishart.html" class="external-link">rwishart</a></code> function in bayesm it is inconsistent with the prior definition for <code><a href="MCMCglmm.html">MCMCglmm</a></code>.  The following pieces of code are sampling from the same distributions:</p>
-<table class="table table"><tr><td><code>riwish(nu, nu*V)</code></td><td>from MCMCpack</td></tr><tr><td><code><a href="https://rdrr.io/pkg/bayesm/man/rwishart.html" class="external-link">rwishart</a>(nu, solve(nu*V))$IW</code></td><td>from bayesm</td></tr><tr><td><code>rIW(nu, solve(nu*V))</code></td><td>from MCMCglmm &lt;1.11</td></tr><tr><td><code>rIW(V, nu)</code></td><td>from MCMCglmm &gt;=1.11</td></tr></table></div>
+    <p>In versions of MCMCglmm &gt;1.10 the arguments to <code>rIW</code> have changed so that they are more intuitive in the context of <code><a href="MCMCglmm.html">MCMCglmm</a></code>.  Following the notation of Wikipedia (<a href="https://en.wikipedia.org/wiki/Inverse-Wishart_distribution" class="external-link">https://en.wikipedia.org/wiki/Inverse-Wishart_distribution</a>) the inverse scale matrix \({\bm \Psi}=(\texttt{V*nu})\). In earlier versions of MCMCglmm (&lt;1.11) \({\bm \Psi} = \texttt{V}^{-1}\). Although the old parameterisation is consistent with the <code><a href="https://rdrr.io/pkg/MCMCpack/man/InvWishart.html" class="external-link">riwish</a></code> function in MCMCpack and the <code><a href="https://rdrr.io/pkg/bayesm/man/rwishart.html" class="external-link">rwishart</a></code> function in bayesm it is inconsistent with the prior definition for <code><a href="MCMCglmm.html">MCMCglmm</a></code>.  The following pieces of code are sampling from the same distributions:</p>
+<table class="table table"><tr><td><code><a href="https://rdrr.io/pkg/MCMCpack/man/InvWishart.html" class="external-link">riwish</a>(nu, nu*V)</code></td><td>from MCMCpack</td></tr><tr><td><code><a href="https://rdrr.io/pkg/bayesm/man/rwishart.html" class="external-link">rwishart</a>(nu, solve(nu*V))$IW</code></td><td>from bayesm</td></tr><tr><td><code>rIW(nu, solve(nu*V))</code></td><td>from MCMCglmm &lt;1.11</td></tr><tr><td><code>rIW(V, nu)</code></td><td>from MCMCglmm &gt;=1.11</td></tr></table></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Jarrod Hadfield <a href="mailto:j.hadfield@ed.ac.uk">j.hadfield@ed.ac.uk</a></p>
@@ -99,7 +99,7 @@ matrix of dimension <code>n</code> x <code>length(V)</code></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/bayesm/man/rwishart.html" class="external-link">rwishart</a></code>, <code>rwish</code></p></div>
+    <div class="dont-index"><p><code><a href="https://rdrr.io/pkg/bayesm/man/rwishart.html" class="external-link">rwishart</a></code>, <code><a href="https://rdrr.io/pkg/MCMCpack/man/Wishart.html" class="external-link">rwish</a></code></p></div>
     </div>
 
     <div class="section level2">
