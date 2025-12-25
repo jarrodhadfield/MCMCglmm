@@ -3,6 +3,10 @@ bookdown::gitbook:
     toc:
       collapse: subsection
     download: ["pdf", "epub"]
+  pandoc_args:
+    - --citeproc
+    - --metadata=reference-section=chapter
+
 bookdown::pdf_book:
   latex_engine: xelatex
   keep_tex: false

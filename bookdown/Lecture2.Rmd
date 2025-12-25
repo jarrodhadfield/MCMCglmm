@@ -1,28 +1,3 @@
----
-title: GLMs and GLMMs
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture2-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::: article
-
 # GLMs and GLMMs
 
 ## Linear Model (LM)
@@ -1127,7 +1102,6 @@ m2a.6.1<-MCMCglmm(y ~ 1, random=~year, family="poisson", data=Traffic, prior=pri
 
 is therefore sampling from the same posterior distribution as model
 `m2a.5.1`.
-:::
 
 [^1]: This is a bit disingenuous - it is no coincidence that the Markov
     chain without over-dispersion would be reducible

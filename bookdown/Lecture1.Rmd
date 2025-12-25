@@ -1,81 +1,23 @@
----
-title: MCMC
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture1-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::: article
-
 # MCMC
 
-There are fundamental differences between classical and Bayesian
-approaches, but for those of us interested in applied statistics the
-hope is that these differences do not translate into practical
-differences, and this is often the case. My advice would be *if* you can
-fit the same model using different packages and/or methods do so, and if
-they give very different answers worry. In some cases differences will
-exist, and it is important to know why, and which method is more
-appropriate for the data in hand.\
-In the context of a generalised linear mixed model (GLMM), here are what
-I see as the pro's and cons of using (restricted) maximum likelihood
-(REML) versus Bayesian Markov chain Monte Carlo (MCMC) Bayesian methods.
-REML is fast and easy to use, whereas MCMC can be slow and technically
-more challenging. Particularly challenging is the specification of a
-sensible prior, something which is a non-issue in a REML analysis.
-However, analytical results for non-Gaussian GLMM are generally not
-available, and REML based procedures use approximate likelihood methods
-that may not work well. MCMC is also an approximation but the accuracy
-of the approximation increases the longer the analysis is run for, being
-exact at the limit. In addition REML uses large-sample theory to derive
-approximate confidence intervals that may have very poor coverage,
-especially for variance components. Again, MCMC measures of confidence
-are exact, up to Monte Carlo error, and provide an easy and intuitive
-way of obtaining measures of confidence on derived statistics such as
-ratios of variances, correlations and predictions.\
-To illustrate the differences between the approaches lets imagine we've
-observed several random deviates (**y**) from a standard normal (i.e.
-$\mu=0$ and $\sigma^{2}=1$). The likelihood is the probability of the
-data given the parameters:
+There are fundamental differences between classical and Bayesian approaches, but for those of us interested in applied statistics the hope is that these differences do not translate into practical differences, and this is often the case. My advice would be *if* you can fit the same model using different packages and/or methods do so, and if they give very different answers worry. In some cases differences will exist, and it is important to know why, and which method is more appropriate for the data in hand.
+
+In the context of a generalised linear mixed model (GLMM), here are what I see as the pro's and cons of using (restricted) maximum likelihood (REML) versus Bayesian Markov chain Monte Carlo (MCMC) Bayesian methods. REML is fast and easy to use, whereas MCMC can be slow and technically more challenging. Particularly challenging is the specification of a sensible prior, something which is a non-issue in a REML analysis. However, analytical results for non-Gaussian GLMM are generally not available, and REML based procedures use approximate likelihood methods that may not work well. MCMC is also an approximation but the accuracy of the approximation increases the longer the analysis is run for, being exact at the limit. In addition REML uses large-sample theory to derive approximate confidence intervals that may have very poor coverage, especially for variance components. Again, MCMC measures of confidence are exact, up to Monte Carlo error, and provide an easy and intuitive way of obtaining measures of confidence on derived statistics such as ratios of variances, correlations and predictions.
+
+To illustrate the differences between the approaches lets imagine we've observed several draws (**y**) from a standard normal (i.e. $\mu=0$ and $\sigma^{2}=1$). The likelihood is the probability of the data given the parameters:
 
 $$Pr({\bf y} | \mu, \sigma^{2})$$
 
-This is a conditional distribution, where the conditioning is on the
-model parameters which are taken as fixed and known. In a way this is
-quite odd because we've already observed the data, and we don't know
-what the parameter values are. In a Bayesian analysis we evaluate the
-conditional probability of the model parameters given the observed data:
+This is a conditional distribution, where the conditioning is on the model parameters which are taken as fixed and known. In a way this is quite odd because we've already observed the data, and we don't know what the parameter values are. In a Bayesian analysis we evaluate the conditional probability of the model parameters given the observed data:
 
 $$Pr(\mu, \sigma^{2} | {\bf y})
 \label{post1-eq}   (\#eq:post1-eq)$$
 
-which seems more reasonable, until we realise that this probability is
-proportional to
+which seems more reasonable, until we realise that this probability is proportional to
 
 $$Pr({\bf y} | \mu, \sigma^{2})Pr(\mu, \sigma^{2})$$
 
-where the first term is the likelihood, and the second term represents
-our prior belief in the values that the model parameters could take.
-Because the choice of prior is rarely justified by an objective
-quantification of the state of knowledge it has come under criticism,
-and indeed we will see later that the choice of prior can make a
-difference.
+where the first term is the likelihood, and the second term represents our prior belief in the values that the model parameters could take. Because the choice of prior is rarely justified by an objective quantification of the state of knowledge it has come under criticism, and indeed we will see later that the choice of prior can make a difference.
 
 ## Likelihood
 
@@ -86,8 +28,7 @@ Ndata<-data.frame(y=rnorm(5, mean=0, sd=sqrt(1)))
 Ndata$y
 ```
 
-We can plot the probability density function for the standard normal
-using `dnorm` and we can then place the 5 data on it:
+We can plot the probability density function for the standard normal using `dnorm` and we can then place the 5 data on it:
 
 ``` {r label=dnorm, echo=TRUE, include=TRUE, fig.cap="Probability density function for the unit normal with the data points overlaid", tidy=FALSE}
 possible.y<-seq(-3,3,0.1)                          # possible values of y
@@ -97,16 +38,13 @@ Probability.y<-dnorm(Ndata$y, mean=0, sd=sqrt(1)) # density of actual values
 points(Probability.y~Ndata$y)
 ```
 
-The likelihood of these data, conditioning on $\mu=0$ and $\sigma^2=1$,
-is proportional to the product of the densities (read off the y axis on
-Figure [\[dnorm\]](#dnorm){reference-type="ref" reference="dnorm"}):
+The likelihood of these data, conditioning on $\mu=0$ and $\sigma^2=1$, is proportional to the product of the densities (read off the y axis on Figure \@ref(fig:dnorm)):
 
 ``` {r echo=TRUE}
 prod(dnorm(Ndata$y, mean=0, sd=sqrt(1)))
 ```
 
-Of course we don't know the true mean and variance and so we may want to
-ask how probable the data would be if, say, $\mu=0$, and $\sigma^2=0.5$:
+Of course we don't know the true mean and variance and so we may want to ask how probable the data would be if, say, $\mu=0$, and $\sigma^2=0.5$:
 
 ``` {r label=dnorm1, echo=FALSE, include=TRUE, fig.cap="Two probability density functions for normal distributions with means of zero, and a variance of one (black line) and a variance of 0.5 (red line).  The data points are overlaid."}
 pos.y<-seq(-3,3,0.1)
@@ -123,16 +61,15 @@ prod(dnorm(Ndata$y, mean=0, sd=sqrt(0.5)))
 It would seem that the data are more likely under this set of parameters
 than the true parameters, which we must expect some of the time just
 from random sampling. To get some idea as to why this might be the case
-we can overlay the two densities (Figure
-[\[dnorm1\]](#dnorm1){reference-type="ref" reference="dnorm1"}), and we
+we can overlay the two densities (Figure \@ref(fig:dnorm1)), and we
 can see that although some data points (e.g.
 `r round(Ndata$y[which(dnorm(Ndata$y, mean=0, sd=sqrt(0.5))<dnorm(Ndata$y, mean=0, sd=sqrt(1)))[1]],3)`)
 are more likely with the true parameters, in aggregate the new
-parameters produce a higher likelihood.\
+parameters produce a higher likelihood.
+
 The likelihood of the data can be calculated on a grid of possible
 parameter values to produce a likelihood surface, as in Figure
-[\[Lsurface\]](#Lsurface){reference-type="ref" reference="Lsurface"}.
-The densities on the contours have been scaled so they are relative to
+\@ref(fig:Lsurface). The densities on the contours have been scaled so they are relative to
 the density of the parameter values that have the highest density (the
 maximum likelihood estimate of the two parameters). Two things are
 apparent. First, although the surface is symmetric about the line
@@ -162,8 +99,7 @@ contour(mu,sigma2,exp(L-max(L)), xlab=expression(mu), ylab=expression(sigma^2), 
 
 The ML estimator is the combination of $\mu$ and $\sigma^{2}$ that make
 the data most likely. Although we could evaluate the density on a grid
-of parameter values (as we did to produce Figure
-[\[Lsurface\]](#Lsurface){reference-type="ref" reference="Lsurface"}) in
+of parameter values (as we did to produce Figure \@ref(fig:Lsurface) in
 order to locate the maximum, for such a simple problem the ML estimator
 can be derived analytically. However, so we don't have to meet some
 nasty maths later, I'll introduce and use one of R's generic optimising
@@ -205,8 +141,7 @@ MLest["var"]*(5/4)
 ### Restricted Maximum Likelihood (REML)
 
 To see why this happens, imagine if we had only observed the first two
-values of $y$ (Figure [\[muvar\]](#muvar){reference-type="ref"
-reference="muvar"}). The variance is defined as the average squared
+values of $y$ (Figure \@ref(fig:muvar)). The variance is defined as the average squared
 distance between a random variable and the *true* mean. However, the ML
 estimator of the variance is the average squared distance between a
 random variable and the ML *estimate* of the mean. Since the ML
@@ -236,29 +171,14 @@ text(y2[2], dnorm(y2[2])-0.02, label=bquote(.(round(y2[2]-mean(y2),3)) ^2 *"="* 
 
 ## Prior Distribution
 
-`MCMCglmm` uses an inverse Wishart prior for the (co)variances and a
-normal prior for the fixed effects. In versions $>1.13$ parameter
-expanded models can be used which enable prior specifications from the
-the scaled non-central F-distribution [@Gelman.2006]. Here, we will
-focus on specifying a prior for a single fixed effect ($\mu$) and a
-single variance component using the inverse-Wishart to highlight some of
-the issues. I strongly recommend reading the section
-[\[secPX-p\]](#secPX-p){reference-type="ref" reference="secPX-p"} on
-parameter expanded priors as these can be less informative than the
-inverse-Wishart under many situations.\
-For a single variance component the inverse Wishart takes two scalar
-parameters, `V` and `nu`. The distribution tends to a point mass on `V`
-as the degree of belief parameter, `nu` goes to infinity. The
-distribution tends to be right skewed when `nu` is not very large, with
-a mode of $\frac{\texttt{V}^{\ast}\texttt{nu}}{\texttt{nu}+2}$ but a
-mean of $\frac{\texttt{V}^{\ast}\texttt{nu}}{\texttt{nu}-2}$ (which is
-not defined for $\texttt{nu}<2$).[^1]\
-As before, we can evaluate and plot density functions in order to
-visualise what the distribution looks like. Figure
-[\[dinvgamma\]](#dinvgamma){reference-type="ref" reference="dinvgamma"}
-plots the probability density functions holding `V` equal to one but
-with `nu` varying.\
-``` {r label=dinvgamma-true, echo=FALSE, include=TRUE, fig.cap="Probability density function for a univariate inverse Wishart with the variance at the limit set to 1 (\\texttt{V=1}) and varying degree of belief parameter (\\texttt{nu}). With \\texttt{V=1} these distributions are equivalent to inverse gamma distributions with shape and scale parameters set to \\texttt{nu}/2."}
+`MCMCglmm` uses an inverse Wishart prior for the (co)variances and a normal prior for the fixed effects. In versions $>1.13$ parameter expanded models can be used which enable prior specifications from the scaled non-central F-distribution [@Gelman.2006]. Here, we will focus on specifying a prior for a single fixed effect ($\mu$) and a single variance component using the inverse-Wishart to highlight some of the issues. I strongly recommend reading Chapter \@ref(px) on parameter expanded priors as these can be less informative than the inverse-Wishart under many situations.
+
+For a single variance component the inverse Wishart takes two scalar parameters, `V` and `nu`. The distribution tends to a point mass on `V` as the degree of belief parameter, `nu` goes to infinity. The distribution tends to be right skewed when `nu` is not very large, with a mode of $\frac{\texttt{V}^{\ast}\texttt{nu}}{\texttt{nu}+2}$ but a mean of $\frac{\texttt{V}^{\ast}\texttt{nu}}{\texttt{nu}-2}$ (which is not defined for $\texttt{nu}<2$).[^1]
+
+As before, we can evaluate and plot density functions in order to visualise what the distribution looks like. Figure \@ref(fig:dinvgamma) plots the probability density functions holding `V` equal to one but with `nu` varying.
+
+
+``` {r label=dinvgamma, echo=FALSE, include=TRUE, fig.cap="Probability density function for a univariate inverse Wishart with the variance at the limit set to 1 (\\texttt{V=1}) and varying degree of belief parameter (\\texttt{nu}). With \\texttt{V=1} these distributions are equivalent to inverse gamma distributions with shape and scale parameters set to \\texttt{nu}/2."}
 xv<-seq(1e-16,5,length=1000)
 plot(0, type="n", ylim=c(0,0.45), xlim=c(0,5), xlab="", ylab="Probability", cex.lab=1.5)
 title(xlab=expression(sigma^2), col.lab="red", cex.lab=1.75)
@@ -272,22 +192,10 @@ text(xv[which.min(abs(log(dv)-log(0.1*xv))[-1])+1],dv[which.min(abs(log(dv)-log(
 text(4,0.4, "V=1", cex=1.5)
 ```
 
-A probability distribution must integrate to one because a variable must
-have some value. It therefore seems reasonable that when specifying a
-prior, care must be taken that this condition is met. In the example
-here where `V` is a single variance this condition is met if `V>0` and
-`nu>0`. If this condition is not met then the prior is said to be
-improper, and in WinBUGS (and possibly other software) improper priors
-cannot be specified. Although great care has to be taken when using
-improper priors, `MCMCglmm` does allow them as they have some useful
-properties, and some common improper priors are discussed in section
-[5](#IP-sec){reference-type="ref" reference="IP-sec"}. However, for now
-we will use the prior specification `V=1` and `nu=0.002` which is
-frequently used for variance components. For the mean we will use a
-diffuse normal prior centred around zero but with very large variance
-($10^{8}$). If the variance is finite then the prior is always proper.\
-As before we can write a function for calculating the (log) prior
-probability:
+A probability distribution must integrate to one because a variable must have some value. It therefore seems reasonable that when specifying a prior, care must be taken that this condition is met. In the example here where `V` is a single variance this condition is met if `V>0` and
+`nu>0`. If this condition is not met then the prior is said to be improper, and in WinBUGS (and possibly other software) improper priors cannot be specified. Although great care has to be taken when using improper priors, `MCMCglmm` does allow them as they have some useful properties, and some common improper priors are discussed in Chapter \@ref(px). However, for now we will use the prior specification `V=1` and `nu=0.002` which is frequently used for variance components. For the mean we will use a diffuse normal prior centred around zero but with very large variance ($10^{8}$). If the variance is finite then the prior is always proper.
+
+As before we can write a function for calculating the (log) prior probability:
 
 ``` {r echo=TRUE}
 logprior<-function(par, priorR, priorB){
@@ -295,10 +203,7 @@ logprior<-function(par, priorR, priorB){
 }
 ```
 
-where `priorR` is a list with elements `V` and `nu` specifying the prior
-for the variance, and `priorB` is a list with elements `mu` and `V`
-specifying the prior for the mean. `MCMCglmm` takes these prior
-specifications as a list:
+where `priorR` is a list with elements `V` and `nu` specifying the prior for the variance, and `priorB` is a list with elements `mu` and `V` specifying the prior for the mean. `MCMCglmm` takes these prior specifications as a list:
 
 ``` {r echo=TRUE}
 prior<-list(R=list(V=1, nu=0.002), B=list(mu=0, V=1e+8))
@@ -317,8 +222,7 @@ loglik(par,y)+logprior(par,priorR,priorB)
 ```
 
 and we can overlay the posterior densities on the likelihood surface we
-calculated before (Figure [\[Lsurface\]](#Lsurface){reference-type="ref"
-reference="Lsurface"}).\
+calculated before (Figure \@ref(fig:Lsurface)).\
 ``` {r echo=FALSE}
 P<-L
 for(i in 1:100){
@@ -369,8 +273,7 @@ m1a.2<-MCMCglmm(y~1, data=Ndata, prior=prior, thin=1, verbose=FALSE)
 
 The Markov chain is drawing random (but often correlated) samples from
 the joint posterior distribution (depicted by the red contours in Figure
-[\[Psurface\]](#Psurface){reference-type="ref" reference="Psurface"}).
-The element of the output called `Sol` contains the distribution for the
+\@ref(fig:Psurface). The element of the output called `Sol` contains the distribution for the
 mean, and the element called `VCV` contains the distribution for the
 variance. We can produce a scatter plot:
 
@@ -380,8 +283,8 @@ points(cbind(m1a.2$Sol, m1a.2$VCV))
 
 and we see that MCMCglmm is sampling the same distribution as the
 posterior distribution calculated on a grid of possible parameter values
-(Figure [\[PsurfaceMCMC\]](#PsurfaceMCMC){reference-type="ref"
-reference="PsurfaceMCMC"}).\
+(Figure \@ref(fig:PsurfaceMCMC)).
+
 ``` {r label=PsurfaceMCMC, echo=FALSE, include=TRUE, fig.cap="The posterior distribution $Pr(\\mu, \\sigma^{2} | {\\bf y})$. The black dots are samples from the posterior using MCMC, and the red contours are calculated by evaluating the posterior density on a grid of parameter values. The contours are normalised so that the posterior mode has a value of one."}
 contour(mu,sigma2,exp(P-max(P)), nlevels=15, col="red", drawlabels = FALSE)
 points(cbind(m1a.2$Sol, m1a.2$VCV), cex=0.2)
@@ -392,8 +295,7 @@ A very nice property of MCMC is that we can normalise the density so
 that it integrates to 1 (a true probability) rather than normalising it
 with respect to some other aspect of the distribution, such as the
 density at the ML estimator or the joint posterior mode as in Figures
-[\[Lsurface\]](#Lsurface){reference-type="ref" reference="Lsurface"} and
-[\[Psurface\]](#Psurface){reference-type="ref" reference="Psurface"}. To
+\@ref(fig:Lsurface) and \@ref(fig:Psurface). To
 make this clearer, imagine we wanted to know how much more probable the
 unit normal (i.e. with $\mu=0$ and $\sigma^{2}=1$) was than a normal
 distribution with the posterior modal parameters. We can calculate this
@@ -443,9 +345,7 @@ hist(m1a.2$VCV[which(m1a.2$VCV<5)], breaks=50, main=expression(paste("Posterior 
 abline(v=Best["var"], col="red")
 ```
 
-In this example (see Figure
-[\[PsurfaceMCMC\]](#PsurfaceMCMC){reference-type="ref"
-reference="PsurfaceMCMC"}) the marginal mode and the joint mode are very
+In this example (see Figure \@ref(fig:PsurfaceMCMC)) the marginal mode and the joint mode are very
 similar, although this is not necessarily the case and can depend both
 on the data and the prior. Section [5](#IP-sec){reference-type="ref"
 reference="IP-sec"} introduces improper priors that are non-informative
@@ -460,8 +360,7 @@ joint posterior distribution cannot be derived analytically, which is
 nearly always the case. MCMC relies on the fact that although we cannot
 derive the complete posterior, we can calculate the height of the
 posterior distribution at a particular set of parameter values, as we
-did to obtain the contour plot in Figure
-[\[Psurface\]](#Psurface){reference-type="ref" reference="Psurface"}.
+did to obtain the contour plot in Figure \@ref(fig:Psurface).
 However, rather than going systematically through every likely
 combination of $\mu$ and $\sigma$ and calculate the height of the
 distribution at regular distances, MCMC moves stochastically through
@@ -474,8 +373,7 @@ values from which the chain can start moving through parameter space.
 Ideally we would like to pick a region of high probability, as we do not
 want to waste time wandering through regions of low probability: we are
 not so interested in determining the height of the distribution far
-outside of Figure [\[Psurface\]](#Psurface){reference-type="ref"
-reference="Psurface"} as it is virtually flat and close to zero (or at
+outside of Figure \@ref(fig:Psurface) as it is virtually flat and close to zero (or at
 least we hope so!). Although starting configurations can be set by the
 user using the `start` argument, in general the heuristic techniques
 used by `MCMCglmm` seem to work quite well. We will denote the parameter
@@ -484,9 +382,7 @@ ${\sigma^{2}}_{t=0}$. There are several ways in which we can get the
 chain to move in parameter space, and `MCMCglmm` uses a combination of
 Gibbs sampling, slice sampling and Metropolis-Hastings updates. To
 illustrate, it will be easier to turn the contour plot of the posterior
-distribution into a perspective plot (Figure
-[\[Psurface.persp\]](#Psurface.persp){reference-type="ref"
-reference="Psurface.persp"}).
+distribution into a perspective plot (Figure \@ref(fig:Psurface.persp)).
 
 ``` {r echo=FALSE}
 P.new<-L
@@ -536,9 +432,7 @@ as before, and if the move is unsuccessful then the chain stays where it
 is ($\mu_{t=1} = \mu_{old}$ and $\sigma^{2}_{t=1}=\sigma^{2}_{old}$).
 Using these rules we can record where the chain has travelled and
 generate an approximation of the posterior distribution. Basically, a
-histogram of Figure
-[\[Psurface.persp\]](#Psurface.persp){reference-type="ref"
-reference="Psurface.persp"}.\
+histogram of Figure \@ref(fig:Psurface.persp).
 
 ### Gibbs Sampling
 
@@ -549,10 +443,8 @@ in both directions of parameter space simultaneously. An equally valid
 approach would have been to set up two Metropolis-Hastings schemes where
 the chain was first allowed to move along the $\mu$ axis, and then along
 the $\sigma^{2}$ axis. In Figure
-[\[Psurface.persp2\]](#Psurface.persp2){reference-type="ref"
-reference="Psurface.persp2"} I have cut the posterior distribution of
-Figure [\[Psurface.persp\]](#Psurface.persp){reference-type="ref"
-reference="Psurface.persp"} in half, and the edge of the surface facing
+\@ref(fig:Psurface.persp2) I have cut the posterior distribution of
+Figure \@ref(fig:Psurface.persp) in half, and the edge of the surface facing
 left is the conditional distribution of $\mu$ given that $\sigma^{2}=1$:
 
 $$Pr(\mu |\sigma^{2}=1, \boldsymbol{\mathbf{y}}).$$
@@ -577,21 +469,16 @@ text(0.2,-0.3,expression(sigma^2))
 
 In some cases, the equation that describes this conditional distribution
 can be derived despite the equation for the complete joint distribution
-of Figure [\[Psurface.persp\]](#Psurface.persp){reference-type="ref"
-reference="Psurface.persp"} remaining unknown. When the conditional
+of Figure \@ref(fig:Psurface.persp) remaining unknown. When the conditional
 distribution of $\mu$ is known we can use Gibbs sampling. Lets say the
 chain at a particular iteration is located at $\sigma^{2}=1$. If we
 updated $\mu$ using a Metropolis-Hastings algorithm we would generate a
 candidate value and evaluate its relative probability compared to the
 old value. This procedure would take place in the slice of posterior
-facing left in Figure
-[\[Psurface.persp2\]](#Psurface.persp2){reference-type="ref"
-reference="Psurface.persp2"}. However, because we know the actual
+facing left in Figure \@ref(fig:Psurface.persp2). However, because we know the actual
 equation for this slice we can just generate a new value of $\mu$
 directly. This is Gibbs sampling. The slice of the posterior that we can
-see in Figure
-[\[Psurface.persp2\]](#Psurface.persp2){reference-type="ref"
-reference="Psurface.persp2"} actually has a normal distribution. Because
+see in Figure \@ref(fig:Psurface.persp2) actually has a normal distribution. Because
 of the weak prior this normal distribution has a mean close to the mean
 of $\bf{y}$ and a variance close to
 $\frac{\sigma^{2}}{n} = \frac{1}{n}$. Gibbs sampling can be much more
@@ -620,15 +507,12 @@ the Markov chain has travelled are stored and returned. The length of
 the chain (the number of iterations) can be specified using the `nitt`
 argument[^2] (the default is 13,000), and should be long enough so that
 the posterior approximation is valid. If we had known the joint
-posterior distribution in Figure
-[\[Psurface.persp\]](#Psurface.persp){reference-type="ref"
-reference="Psurface.persp"} we could have set up a Markov chain that
+posterior distribution in Figure \@ref(fig:Psurface.persp) we could have set up a Markov chain that
 sampled directly from the posterior. If this had been the case, each
 successive value in the Markov chain would be independent of the
 previous value after conditioning on the data, ${\bf y}$, and a thousand
 iterations of the chain would have produced a histogram that resembled
-Figure [\[Psurface.persp\]](#Psurface.persp){reference-type="ref"
-reference="Psurface.persp"} very closely. However, generally we do not
+Figure \@ref(fig:Psurface.persp) very closely. However, generally we do not
 know the joint posterior distribution of the parameters, and for this
 reason the parameter values of the Markov chain at successive iterations
 are usually not independent and care needs to be taken regarding the
@@ -667,16 +551,12 @@ inspection and diagnostic tools such as `gelman.diag` often suffice.
 plot(m1a.2$Sol)
 ```
 
-On the left of Figure
-[\[time.series\]](#time.series){reference-type="ref"
-reference="time.series"} is a time series of the parameter as the MCMC
+On the left of Figure \@ref(fig:time.series) is a time series of the parameter as the MCMC
 iterates, and on the right is a posterior density estimate of the
 parameter (a smoothed histogram of the output). If the model has
 converged there should be no trend in the time series. The equivalent
 plot for the variance is a little hard to see on the original scale, but
-on the log scale the chain looks good (Figure
-[\[time.series2\]](#time.series2){reference-type="ref"
-reference="time.series2"}):
+on the log scale the chain looks good (Figure \@ref(fig:time.series2):
 
 ``` {r label=time.series2, include=TRUE, fig.cap="Summary plot of the Markov Chain for the logged variance. The logged variance was plotted rather than the variance because it was easier to visualise. The left plot is a trace of the sampled posterior, and can be thought of as a time series.  The right plot is a density estimate, and can be thought of a smoothed histogram approximating the posterior."}
 plot(log(m1a.2$VCV))
@@ -723,8 +603,7 @@ m1a.3<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.3, verbose=FALSE)
 ```
 
 We can overlay the joint posterior distribution on the likelihood
-surface ([\[Psurface.flat\]](#Psurface.flat){reference-type="ref"
-reference="Psurface.flat"}) and see that the two things are in close
+surface (Figure \@ref(fig:Psurface.flat)) and see that the two things are in close
 agreement, up to Monte Carlo error.
 
 ``` {r echo=FALSE, cache=TRUE}
@@ -766,22 +645,22 @@ contour(kda.4, add=TRUE, col="red", drawlabels = FALSE)
 ```
 
 The joint posterior mode does not coincide with either the ML or REML
-estimator (Figure [\[Psurfaceb\]](#Psurfaceb){reference-type="ref"
-reference="Psurfaceb"}).
+estimator (Figure \@ref(fig:Pmarg.NI)).
 
 ``` {r label=Pmarg.NI, echo=FALSE, include=FALSE}
 hist(m1a.4$VCV[which(m1a.4$VCV<5)])
 ```
 
 but the marginal distribution of the variance component is equivalent to
-the REML estimator (See Figure
-[\[Pmarg.NI\]](#Pmarg.NI){reference-type="ref" reference="Pmarg.NI"}):
+the REML estimator (See Figure \@ref(fig:Pmarg.NI)):
 
 ``` {r label=Pmarg.NI2, echo=FALSE, include=TRUE, fig.cap="An MCMC approximation for the marginal posterior distribution of the variance $Pr(\\sigma^{2} | {\\bf y})$.  A non-informative prior specification was used ($Pr(\\mu)\\sim N(0, 10^8)$ and  $Pr(\\sigma^{2})\\sim IW(\\texttt{V}=0, \\texttt{nu}=-2)$) and the REML estimator of the variance (red line) coincides with the marginal posterior mode."}
 hist(m1a.4$VCV[which(m1a.4$VCV<5)], breaks=30)
 abline(v=summary(m1a.1)$dispersion, col="red")
 ```
-:::
+
+## References
+
 
 [^1]: The inverse gamma is a special case of the inverse Wishart,
     although it is parametrised using `shape` and `scale`, where
@@ -793,3 +672,5 @@ abline(v=summary(m1a.1)$dispersion, col="red")
     distribution.
 
 [^2]: The double `t` is because I cannot spell.
+
+

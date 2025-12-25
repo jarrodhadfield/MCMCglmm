@@ -1,28 +1,3 @@
----
-title: Categorical Random Interactions
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture3-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::::: article
-
 # Categorical Random Interactions
 
 Random effect specification is a common cause of confusion, especially

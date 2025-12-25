@@ -43,6 +43,7 @@ jobs:
             kinship2
             lme4
             pscl
+            gdata
           needs: website
 
       - name: Cache bookdown and knitr cache

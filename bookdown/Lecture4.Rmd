@@ -1,28 +1,3 @@
----
-title: Continuous Random Interactions
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture4-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::: article
-
 # Continuous Random Interactions
 
 In Lecture [\[chap3\]](#chap3){reference-type="ref" reference="chap3"}
@@ -438,4 +413,4 @@ stored in the `Sol` element of the model output and the single variance
 component (the penalising bit) is in the `VCV` element. Its usually a
 good idea to scale the covariate to lie in the interval \[0,1\] or some
 such thing.
-:::
+

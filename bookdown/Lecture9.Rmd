@@ -1,30 +1,4 @@
----
-title: Path Analysis & Antedependence Structures
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture9-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::: article
-
-# Path Analysis & Antedependence Structures
-
+# Path Analysis & Antedependence Structures {#path}
 
 There are many situations where it would seem reasonble to put some
 apsect of a response variable in as a predictor, and the only thing that
@@ -232,4 +206,4 @@ on itself would seem like a peculiar thing to do, although with a little
 work we can show that by doing this we can allow two sets of
 observations to conform to the same model except for a difference in
 scale.
-:::
+

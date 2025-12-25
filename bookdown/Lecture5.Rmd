@@ -1,28 +1,3 @@
----
-title: Multi-response models
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture5-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::: article
-
 # Multi-response models
 
 So far we have only fitted models to a single response variable.
@@ -714,7 +689,6 @@ summary(m5d.5)
 we can see from this that the more papers a mentor produces, the more
 zero-deflation (or conversely the less papers a mentor produces, the
 more zero-inflation).
-:::
 
 [^1]: Earlier versions of the CourseNotes had `nu=1.002`. In versions
     $<$`<!-- -->`{=html}2.05 the marginal prior of a variance associated

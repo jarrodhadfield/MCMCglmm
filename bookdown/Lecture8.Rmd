@@ -1,29 +1,4 @@
----
-title: Parameter Expansion
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture8-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::: article
-
-# Parameter Expansion
+# Parameter Expansion {#px}
 
 As the covariance matrix approaches a singularity the mixing of the
 chain becomes notoriously slow. This problem is often encountered in
@@ -274,4 +249,3 @@ value:
 m7b.4<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b, verbose=FALSE, slice=TRUE)
 effectiveSize(m7b.4$VCV[,1]/(1+c2*m7b.3$VCV[,"units"]))
 ```
-:::

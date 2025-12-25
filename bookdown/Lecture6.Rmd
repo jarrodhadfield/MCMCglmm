@@ -1,28 +1,3 @@
----
-title: Pedigrees and Phylogenies
-abstract: ~
-author: Jarrod Hadfield (`j.hadfield@ed.ac.uk`)
-date: '2025-12-24'
-vignette: |-
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  %\VignetteIndexEntry{Lecture6-knitr.Rnw}
-  %\VignetteDepends{}
-output:
-  bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
-    number_sections: no
-    math_method: katex
-    includes:
-      in_header:
-      - auto-number-sec-js.html
-link-citations: yes
-bibliography: ~
-
----
-
-::: article
-
 # Pedigrees and Phylogenies
 
 Pedigrees and phylogenies are similar things: they are both ways of
@@ -244,4 +219,3 @@ Although not strictly true we can assume that individuals that shared
 the same dam also shared the same sire, and so share around 50% of their
 genes.\
 to be completed \...\
-:::
