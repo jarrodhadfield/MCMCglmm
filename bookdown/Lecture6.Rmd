@@ -1,4 +1,4 @@
-# Pedigrees and Phylogenies
+# Pedigrees and Phylogenies {#pedigree}
 
 Pedigrees and phylogenies are similar things: they are both ways of
 representing shared ancestry. Under a quantitative genetic model of

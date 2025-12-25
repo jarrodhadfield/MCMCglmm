@@ -1,4 +1,4 @@
-# Multi-response models
+# Multi-response models {#multi}
 
 So far we have only fitted models to a single response variable.
 Multi-response models are not that widely used, except perhaps in

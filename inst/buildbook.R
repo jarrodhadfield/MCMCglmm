@@ -1,8 +1,18 @@
+rm(list=ls())
+#source("/Users/jhadfiel/Work/MCMCglmm/inst/buildbook.R")
+build_site<-FALSE
+rm.cache<-TRUE
+
 setwd("/Users/jhadfiel/Work/MCMCglmm/bookdown")
+
+if(rm.cache){
+ system("rm -r /Users/jhadfiel/Work/MCMCglmm/bookdown/MCMCglmm-course-notes_cache/html/*")
+}
 
 bookdown::render_book("index.Rmd", "bookdown::gitbook")
 # generates book
 
+if(build_site){
 setwd("/Users/jhadfiel/Work/MCMCglmm")
 pkgdown::build_site()
 # builds package documentation
@@ -10,7 +20,7 @@ pkgdown::build_site()
 dir.create("docs/course-notes", recursive = TRUE, showWarnings = FALSE)
 fs::dir_copy("bookdown/_book", "docs/course-notes", overwrite = TRUE)
 # moves book to doc
-
+}
 
 
 

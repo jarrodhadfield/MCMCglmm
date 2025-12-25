@@ -1,4 +1,4 @@
-# Categorical Random Interactions
+# Categorical Random Interactions {#cat-int}
 
 Random effect specification is a common cause of confusion, especially
 when we want to form interactions in the random terms. To illustrate the

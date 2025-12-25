@@ -1,4 +1,4 @@
-# Parameter Expansion {#px}
+# Parameter Expansion {#parameter-expansion}
 
 As the covariance matrix approaches a singularity the mixing of the
 chain becomes notoriously slow. This problem is often encountered in
@@ -49,8 +49,7 @@ and so the methods described above can be used to update them.
 
 To use parameter exapnsion in `MCMCglmm` it is necessary to specify a
 prior covariance matrix for ${\boldsymbol{\mathbf{\alpha}}}$ which is
-non-null. In section [0.2](#secPX-p){reference-type="ref"
-reference="secPX-p"} I discuss what this prior means in the context of
+non-null. In section I discuss what this prior means in the context of
 posterior inference but for now we will specify two models, one
 parameter expanded and the other not. To illustrate I will fit a model
 that estimates the between mother variation in offsping sex ratio using

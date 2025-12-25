@@ -1,4 +1,4 @@
-# Continuous Random Interactions
+# Continuous Random Interactions {#cont-int}
 
 In Lecture [\[chap3\]](#chap3){reference-type="ref" reference="chap3"}
 we saw how we could define a linear model within a variance function and

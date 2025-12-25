@@ -1,4 +1,4 @@
-# Technical Details
+# Technical Details {#technical-details}
 
 ## Model Form
 
@@ -16,8 +16,7 @@ $$f_{P}\left(y_{i} | \lambda = \textrm{exp}(l_{i})\right)
 \label{pyl2-Eq}   (\#eq:pyl2-Eq)$$
 
 where $\lambda$ is the canonical parameter of the Poisson denisty
-function $f_{P}$. Table [1](#tab:T1){reference-type="ref"
-reference="dist-tab"} has a full list of supported distributions and
+function $f_{P}$. Table \@ref(tab:dist) has a full list of supported distributions and
 link functions.\
 The vector of latent variables follow the linear model
 
@@ -72,7 +71,7 @@ they are unknown, and must be estimated from the data, usually by
 assuming they are structured in a way that they can be parameterised by
 few parameters. Below we will focus on the structure of ${\bf G}$, but
 the same logic can be applied to ${\bf R}$.\
-At its most general, **MCMCglmm** allows variance structures of the
+At its most general, `MCMCglmm` allows variance structures of the
 form:
 
 $${\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
@@ -222,8 +221,7 @@ Forming the inverse of the variance structures is usually simpler
 because they can be expressed as a series of direct sums and Kronecker
 products:
 
-$${\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
-\label{G3-Eq}   (\#eq:G3-Eq)$$
+$${\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots$$
 
 and the inverse of such a structure has the form
 
@@ -351,7 +349,7 @@ $$D = -2\textrm{log}(\Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}))$$
 
 where ${\boldsymbol{\mathbf{\Omega}}}$ is some parameter set of the
 model. The deviance can be calculated in different ways depending on
-what is in 'focus', and MCMCglmm calculates this probability for the
+what is in 'focus', and `MCMCglmm` calculates this probability for the
 lowest level of the hierarchy [@Spiegelhalter.2002]. For fully-observed
 Gaussian response variables in the likelihood is the density:
 
@@ -424,7 +422,7 @@ criterion calculated as:
 $$\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})$$
 
 :::: landscape
-::: {#dist-tab}
+:::
   ---------------------- ---------- ------------ ------------------------------ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
        Distribution       No. Data   No. latent                         Density function
 
@@ -513,7 +511,7 @@ $$\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})$$
                                                                                 
   ---------------------- ---------- ------------ ------------------------------ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  : (#tab:T1) Distribution types that can fitted using `MCMCglmm`.
+  : (#tab:dist) Distribution types that can fitted using `MCMCglmm`.
   The prefixes `"zi"`, `"zt"`, `"hu"` and `"za"` stand for
   zero-inflated, zero-truncated, hurdle and zero-altered respectively.
   The prefix `"cen"` standards for censored where $y_{1}$ and $y_{2}$
