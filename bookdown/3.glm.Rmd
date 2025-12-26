@@ -42,8 +42,10 @@ no?*', and so on for as many years for which there are data.
 
 It is cumbersome to write out the equation for each data point in this way, and a more compact way of representing the system of equations is
 
-$$E[{\bf y}] = {\bf X}{\boldsymbol{\mathbf{\beta}}}
-\label{lm-eq}   (\#eq:lm-eq)$$
+$$
+E[{\bf y}] = {\bf X}{\boldsymbol{\mathbf{\beta}}}
+(\#eq:lm)
+$$
 
 where ${\bf X}$ is called a design matrix and contains the predictor information, and ${\boldsymbol{\mathbf{\beta}}} = [\beta_{1}\ \beta_{2}\ \beta_{3}\ \beta_{4}]^{'}$ is the vector of parameters.
 
@@ -54,7 +56,7 @@ X[c(1,2,184),]
 
 The binary predictors *do the data come from 1961, yes or no?* and *there was no speed limit, yes or no?* do not appear. These are the first factor levels of `year` and `limit` respectively, and are absorbed into the global intercept ($\beta_{1}$) which is fitted by default in R. Hence the expected number of injuries for the four combinations (on day zero) are $\beta_{1}$ for 1961 with no speed limit, $\beta_{1}+\beta_{2}$ for 1961 with a speed limit, $\beta_{1}+\beta_{3}$ for 1962 with no speed limit and $\beta_{1}+\beta_{2}+\beta_{3}$ for 1962 with a speed limit.
 
-The simultaneous equations defined by Equation (\@ref(eq:lm-eq)) cannot be solved directly because we do not know the left-hand side - expected values of $y$. We only know the observed value, which we assume is distributed around the expected value with some error. In a normal linear model we assume that these errors are normally distributed so that the data are also normally distributed (after conditioning o the predictor variables):
+The simultaneous equations defined by Equation \@ref(eq:lm) cannot be solved directly because we do not know the left-hand side - expected values of $y$. We only know the observed value, which we assume is distributed around the expected value with some error. In a normal linear model we assume that these errors are normally distributed so that the data are also normally distributed (after conditioning o the predictor variables):
 
 $${\bf y} \sim N({\bf X}{\boldsymbol{\mathbf{\beta}}}, \sigma^{2}_{e}{\bf I})$$
 

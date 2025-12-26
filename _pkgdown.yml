@@ -23,7 +23,7 @@ navbar:
 
     course-notes:
       text: "Course notes"
-      href: course-notes/1.intro.html
+      href: course-notes/index.html
 
     github:
       icon: fa-github
