@@ -55,7 +55,7 @@ With `id` added as a random term to deal with the the repeated measures,
 a similar conclusion is reached although the estimate is more negative:
 
 ``` {r echo=TRUE, eval=TRUE, cache=TRUE}
-m5a.1<-MCMCglmm(y.car~y.hol, random=~id, data=Spending, verbose=FALSE)
+m5a.1<-MCMCglmm(y.car~y.hol, random=~id, data=Spending)
 summary(m5a.1$Sol[,"y.hol"])
 ```
 
@@ -95,7 +95,7 @@ extension to how we fitted models with categorical random interactions
 (Chapter [\[chap3\]](#chap3){reference-type="ref" reference="chap3"}):
 
 ``` {r echo=TRUE, eval=FALSE}
-m5a.2<-MCMCglmm(cbind(y.hol, y.car)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"), verbose=FALSE)
+m5a.2<-MCMCglmm(cbind(y.hol, y.car)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"))
 ```
 
 We have fitted the fixed effect `trait` so that the two types of
@@ -175,7 +175,7 @@ disposable income in a particular year on a holiday, must have less to
 spend that year on a car (hence negative residual (within year)
 covariation).\
 ``` {r echo=FALSE, eval=TRUE, cache=TRUE}
-m5a.2<-MCMCglmm(cbind(y.hol, y.car)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"), verbose=FALSE)
+m5a.2<-MCMCglmm(cbind(y.hol, y.car)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"))
 id.regression<-m5a.2$VCV[,2]/m5a.2$VCV[,1]
 units.regression<-m5a.2$VCV[,6]/m5a.2$VCV[,5]
 ```
@@ -219,8 +219,8 @@ assumptions have allowed us to pool information across the two levels to
 get a more precise answer.
 
 ``` {r echo=FALSE, eval=TRUE, cache=TRUE}
-m5a.3<-MCMCglmm(y.car2~y.hol2, random=~id, data=Spending, verbose=FALSE)
-m5a.4<-MCMCglmm(cbind(y.hol2, y.car2)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"), verbose=FALSE)
+m5a.3<-MCMCglmm(y.car2~y.hol2, random=~id, data=Spending)
+m5a.4<-MCMCglmm(cbind(y.hol2, y.car2)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"))
 ```
 
 ``` {r label=MVvUV2, echo=FALSE, include=TRUE, fig.cap="MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). In this model the relationship between the two types of spending is causal and the regression coefficients have the same expectation. However, the posterior standard deviation from the simple regression is smaller because information from the two different levels is pooled.", fig.width=7, fig.height=5}
@@ -329,7 +329,7 @@ To start we will try a simple model with an intercept:\
 ``` {r echo=TRUE, eval=TRUE, cache=TRUE}
 IJ<-(1/3)*(diag(2)+matrix(1,2,2))
 prior=list(R=list(V=IJ, fix=1))
-m5c.1<-MCMCglmm(horn~trait-1, rcov=~us(trait):units, prior=prior, data=SShorns, family="categorical", verbose=FALSE)
+m5c.1<-MCMCglmm(horn~trait-1, rcov=~us(trait):units, prior=prior, data=SShorns, family="categorical")
 ```
 
 The posterior distribution for the intercepts is shown in Figure
@@ -387,7 +387,7 @@ To test for the effects of sex specific expression we can also fit a
 model with a sex effect:
 
 ``` {r echo=TRUE, cache=TRUE}
-m5c.2<-MCMCglmm(horn~trait+sex-1, rcov=~us(trait):units, data=SShorns, family="categorical", prior=prior, verbose=FALSE)
+m5c.2<-MCMCglmm(horn~trait+sex-1, rcov=~us(trait):units, data=SShorns, family="categorical", prior=prior)
 ```
 
 In this case we have not interacted sex with trait, and so we are
@@ -410,7 +410,7 @@ to being flat for the two-way (i.e. polled vs scurred, normal vs.scurred
 
 ``` {r echo=TRUE, cache=TRUE}
 prior$B=list(mu=rep(0,4), V=kronecker(IJ,diag(2))*(1.7+pi^2/3))
-m5c.3<-MCMCglmm(horn~at.level(sex,1):trait+at.level(sex,2):trait-1, rcov=~us(trait):units, data=SShorns, family="categorical", prior=prior, verbose=FALSE)
+m5c.3<-MCMCglmm(horn~at.level(sex,1):trait+at.level(sex,2):trait-1, rcov=~us(trait):units, data=SShorns, family="categorical", prior=prior)
 ```
 
 The female specific probabilities appear reasonable:
@@ -490,7 +490,7 @@ which captures over-dispersion:
 
 ``` {r echo=TRUE, cache=TRUE}
 prior.m5d.1=list(R=list(V=diag(2), nu=0.002, fix=2))
-m5d.1<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="zipoisson", verbose=FALSE)
+m5d.1<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="zipoisson")
 ```
 
 As is often the case the parameters of the zero-inflation model mixes
@@ -519,7 +519,7 @@ under the simple model:
 
 ``` {r echo=TRUE, cache=TRUE}
 prior.m5d.2=list(R=list(V=diag(1), nu=0.002))
-m5d.2<-MCMCglmm(art~fem + mar + kid5 + phd + ment, data=bioChemists, prior=prior.m5d.2, family="poisson", saveX=TRUE, verbose=FALSE)
+m5d.2<-MCMCglmm(art~fem + mar + kid5 + phd + ment, data=bioChemists, prior=prior.m5d.2, family="poisson", saveX=TRUE)
 
 nz<-1:1000
 oz<-sum(bioChemists$art==0)
@@ -566,7 +566,7 @@ To illustrate, we will refit the ZIP model (`m5d.1`) as a hurdle-Poisson
 model.
 
 ``` {r echo=TRUE, cache=TRUE}
-m5d.3<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="hupoisson", verbose=FALSE)
+m5d.3<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="hupoisson")
 ```
 
 Plotting the Markov chain for the equivalent parameters that were
@@ -617,7 +617,7 @@ this assumption by fitting a separate term for the proportion of zeros
 for men:
 
 ``` {r echo=TRUE, cache=TRUE}
-m5d.4<-MCMCglmm(art~trait-1+at.level(trait,1:2):fem+at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="hupoisson", verbose=FALSE)
+m5d.4<-MCMCglmm(art~trait-1+at.level(trait,1:2):fem+at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="hupoisson")
 ```
 
 which reveals that although this proportion is expected to be (slightly)
@@ -682,7 +682,7 @@ variable causes no zero-flation, when it is negative it causes
 zero-inflation and when it is positive it causes zero-deflation:
 
 ``` {r echo=TRUE, cache=TRUE}
-m5d.5<-MCMCglmm(art~trait*(fem +mar + kid5 + phd + ment), rcov=~trait:units, data=bioChemists, family="zapoisson", verbose=FALSE)
+m5d.5<-MCMCglmm(art~trait*(fem +mar + kid5 + phd + ment), rcov=~trait:units, data=bioChemists, family="zapoisson")
 summary(m5d.5)
 ```
 

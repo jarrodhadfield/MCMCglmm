@@ -1,65 +1,48 @@
 # Categorical Random Interactions {#cat-int}
 
-Random effect specification is a common cause of confusion, especially
-when we want to form interactions in the random terms. To illustrate the
-possibilities we'll use data collected on Blue tits.
+Random effect specification is a common cause of confusion, especially when we want to form interactions in the random terms. To illustrate the possibilities we'll use data collected on Blue tits.
 
 ``` {r echo=TRUE, cache=FALSE}
 data(BTdata)
 ```
 
-The data are morphological measurements (`tarsus` length and `back`
-colour) made on 828 blue tit chicks from 106 mothers (`dam`). Half the
-offspring from each mother were swapped with half the offspring from
-another mother soon after hatching. The nest they were reared in is
-recorded as `fosternest`.
+The data are morphological measurements (`tarsus` length and `back` colour) made on 828 blue tit chicks from 106 mothers (`dam`). Half the offspring from each mother were swapped with half the offspring from another mother soon after hatching. The nest they were reared in is recorded as `fosternest`.
 
 ``` {r echo=TRUE, cache=TRUE}
 prior=list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=0.002),G2=list(V=1, nu=0.002)))
 m3a.1<-MCMCglmm(tarsus~sex, random=~dam+fosternest, data=BTdata, prior=prior)
 ```
 
-fits `sex` as a fixed effect, and `dam` and `fosternest` as random
-effects.
+fits `sex` as a fixed effect, and `dam` and `fosternest` as random effects.
 
 ``` {r label=mBTVCV, echo=TRUE, include=TRUE, fig.cap="MCMC summary plot for the variance components from model \\texttt{m3a.1}.", fig.width=7, fig.height=5}
 diag(autocorr(m3a.1$VCV)[2,,])
 plot(m3a.1$VCV)
 ```
 
-Perhaps the autocorrelation for the `fosternest` variance is a little
-higher than we would like, and so we may like to run it for longer.
+Perhaps the autocorrelation for the `fosternest` variance is a little higher than we would like, and so we may like to run it for longer.
 
 ``` {r echo=TRUE}
 effectiveSize(m3a.1$VCV)
 ```
 
-Indeed, we've only sampled the fosternest variance about half as well as
-the other two variance components.\
+Indeed, we've only sampled the fosternest variance about half as well as the other two variance components.
+
 The posterior correlation between the parameters is low
 
 ``` {r echo=TRUE}
 cor(m3a.1$VCV)
 ```
 
-which is not that surprising give the data come from an experiment which
-was designed in order to estimate these variance components. In general,
-variance components will show negative posterior correlations because
-the the total variance is being divided up. Imagine cutting a piece of
-string; making one bit longer has to reduce the size of the other bits,
-by necessity. If we hadn't experimentally manipulated the birds then all
-chicks with the same mother, would be raised in the same nest, and there
-would be no information in the data to separate these terms. In this
-case the posterior correlation between these parameters would approach
--1 as the prior information goes to zero.\
+which is not that surprising give the data come from an experiment which was designed in order to estimate these variance components. In general, variance components will show negative posterior correlations because the the total variance is being divided up. Imagine cutting a piece of string; making one bit longer has to reduce the size of the other bits, by necessity. If we hadn't experimentally manipulated the birds then all chicks with the same mother, would be raised in the same nest, and there would be no information in the data to separate these terms. In this case the posterior correlation between these parameters would approach -1 as the prior information goes to zero.
+
 The lower 95% credible interval for the `fosternest` variance is low
 
 ``` {r echo=TRUE}
 HPDinterval(m3a.1$VCV)
 ```
 
-and perhaps a model without it would be better supported, although the
-DIC suggest not:
+and perhaps a model without it would be better supported, although the DIC suggest not:
 
 ``` {r echo=TRUE, cache=TRUE}
 priorb<-prior
@@ -69,132 +52,68 @@ m3a.2$DIC
 m3a.1$DIC
 ```
 
-The tarsus lengths were standardised prior to analysis - this is not
-recommended, but was done in the original analyses of these data
-[@Hadfield.2007] so that comparisons would be scale invariant. The
-original analyses were done in REML where it is hard to get accurate
-confidence intervals for functions of variance components. With MCMC
-procedures this is simple. For example if we want to know what
-proportion of the total variance is explained by dams
+The tarsus lengths were standardised prior to analysis - this is not recommended, but was done in the original analyses of these data [@Hadfield.2007] so that comparisons would be scale invariant. The original analyses were done in REML where it is hard to get accurate confidence intervals for functions of variance components. With MCMC procedures this is simple. For example if we want to know what proportion of the total variance is explained by dams
 
 ``` {r echo=TRUE}
 HPDinterval(m3a.1$VCV[,1]/rowSums(m3a.1$VCV))
 ```
 
-One nice thing though about standardised data is that effect sizes are
-immediately apparent. For example, fixed effects are in standard
-deviation units and the sex effects are non-trivial:
+One nice thing though about standardised data is that effect sizes are immediately apparent. For example, fixed effects are in standard deviation units and the sex effects are non-trivial:
 
 ``` {r echo=TRUE}
 summary(m3a.1)
 ```
 
-Given that the sexes differ in their mean phenotype it may be worth
-exploring whether they vary in other ways. For example, perhaps there
-are sex-limited genes that mean that related brothers resemble each
-other more than they do their sisters. Perhaps females are less
-sensitive to environmental variation? To fit these models it will be
-necessary to understand how the variance functions, such as `us()` and
-`idh()`, work. We could refit the model `m3a.1` using the random effect
-specifications:
+Given that the sexes differ in their mean phenotype it may be worth exploring whether they vary in other ways. For example, perhaps there are sex-limited genes that mean that related brothers resemble each other more than they do their sisters. Perhaps females are less sensitive to environmental variation? To fit these models it will be necessary to understand how the variance functions, such as `us()` and `idh()`, work. We could refit the model `m3a.1` using the random effect specifications:
 
 ``` {r echo=TRUE}
 random=~us(1):dam+us(1):fosternest
 ```
 
+or 
+
 ``` {r echo=TRUE}
 random=~idh(1):dam+idh(1):fosternest
 ```
 
-and these would give exactly the same answer as the model specified as
-$^{\sim}$`dam+fosternest`. The term inside the brackets is a model
-formula and is interpreted exactly how you would interpret any R formula
-expect the intercept is not fitted by default. These formula are
-therefore fitting an intercept which is interacted with the random
-effects. For the dam terms we can get a representation of the
-interaction for the first few levels of `dam`:
-
-``` {r echo=TRUE}
-levels(BTdata$dam)[1:5]
-```
-Try this:
-
-$$
-{\color{red} \texttt{Fem2}}
-$$
-
-$$
-\color{red}\texttt{Fem2}
-$$
-
-$$
-{\textcolor{red} \texttt{Fem2}}
-$$
-
-
-$$
-{\textcolor{red} \texttt{Fem2}}
-$$
-
+and these would give exactly the same answer as the model specified as `~dam+fosternest`. The term inside the brackets is a model formula and is interpreted exactly how you would interpret any R formula expect the intercept is not fitted by default. These formula are therefore fitting an intercept which is interacted with the random effects. For the dam terms we can get a representation of the interaction for the first few levels of `dam` (`r levels(BTdata$dam)[1:5]`):
 
 $$
 \begin{array}{c|rrrrrc}
-&{\color{red} \texttt{Fem2}}&{\color{red} \texttt{Fem20}}&{\color{red} \texttt{Fem3}}&{\color{red} \texttt{Fem5}}&{\color{red} \texttt{K983388}}&\dots\\
-\hline\\
-{\color{blue} \texttt{(1)}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem2}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem20}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem3}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem5}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{K983388}}&\dots\\
+&{\color{red}{\texttt{Fem2}}}&{\color{red}{\texttt{Fem20}}}&{\color{red}{\texttt{Fem3}}}&{\color{red}{\texttt{Fem5}}}&{\color{red}{\texttt{K983388}}}&\dots\\
+\hline
+{\color{blue}{\texttt{(1)}}}&{\color{blue}{\texttt{(1)}}}.{\color{red}{\texttt{Fem2}}}&{\color{blue}{\texttt{(1)}}}.{\color{red}{\texttt{Fem20}}}&{\color{blue}{\texttt{(1)}}}.{\color{red}{\texttt{Fem3}}}&{\color{blue}{\texttt{(1)}}}.{\color{red}{\texttt{Fem5}}}&{\color{blue}{\texttt{(1)}}}.{\color{red}{\texttt{K983388}}}&\dots\\
 \end{array}
 $$
 
-Across the top, we have the original dam effects in red, and along the
-side we have the term defined by the variance structure formula (just
-the intercept in this case). The interaction forms a new set of factors.
-Although they have different names from the original `dam` levels, it is
-clear that there is a one to one mapping between the original and the
-new factor levels and the models are therefore equivalent. For more
-complex interactions this is not the case.
+Across the top, we have the original dam effects in red, and along the side we have the term defined by the variance structure formula (just the intercept in this case). The interaction forms a new set of factors. Although they have different names from the original `dam` levels, it is clear that there is a one to one mapping between the original and the new factor levels and the models are therefore equivalent. For more complex interactions this is not the case.
 
-We could also fit `sex` in the variance structure model, (i.e. `us(``sex``):``dam` or `idh(``sex``):``dam`)[^4.1]:
+We could also fit `sex` in the variance structure model, (i.e. `us(sex):dam` or `idh(sex):dam`)[^4.1]:
 
 $$\begin{array}{c|rrrrrc}
-&{\color{red} \texttt{Fem2}}&{\color{red} \texttt{Fem20}}&{\color{red} \texttt{Fem3}}&{\color{red} \texttt{Fem5}}&{\color{red} \texttt{K983388}}&\dots\\
-\hline\\
-{\color{blue} \texttt{Fem}}&{\color{blue} \texttt{Fem}}.{\color{red} \texttt{Fem2}}&{\color{blue} \texttt{Fem}}.{\color{red} \texttt{Fem20}}&{\color{blue} \texttt{Fem}}.{\color{red} \texttt{Fem3}}&{\color{blue} \texttt{Fem}}.{\color{red} \texttt{Fem5}}&{\color{blue} \texttt{Fem}}.{\color{red} \texttt{K983388}}&\dots\\
-{\color{blue} \texttt{Male}}&{\color{blue} \texttt{Male}}.{\color{red} \texttt{Fem2}}&{\color{blue} \texttt{Male}}.{\color{red} \texttt{Fem20}}&{\color{blue} \texttt{Male}}.{\color{red} \texttt{Fem3}}&{\color{blue} \texttt{Male}}.{\color{red} \texttt{Fem5}}&{\color{blue} \texttt{Male}}.{\color{red} \texttt{K983388}}&\dots\\
-{\color{blue} \texttt{UNK}}&{\color{blue} \texttt{UNK}}.{\color{red} \texttt{Fem2}}&{\color{blue} \texttt{UNK}}.{\color{red} \texttt{Fem20}}&{\color{blue} \texttt{UNK}}.{\color{red} \texttt{Fem3}}&{\color{blue} \texttt{UNK}}.{\color{red} \texttt{Fem5}}&{\color{blue} \texttt{UNK}}.{\color{red} \texttt{K983388}}&\dots\\
+&{\color{red}{\texttt{Fem2}}}&{\color{red}{\texttt{Fem20}}}&{\color{red}{\texttt{Fem3}}}&{\color{red}{\texttt{Fem5}}}&{\color{red}{\texttt{K983388}}}&\dots\\
+\hline
+{\color{blue}{\texttt{Fem}}}&{\color{blue}{\texttt{Fem}}}.{\color{red}{\texttt{Fem2}}}&{\color{blue}{\texttt{Fem}}}.{\color{red}{\texttt{Fem20}}}&{\color{blue}{\texttt{Fem}}}.{\color{red}{\texttt{Fem3}}}&{\color{blue}{\texttt{Fem}}}.{\color{red}{\texttt{Fem5}}}&{\color{blue}{\texttt{Fem}}}.{\color{red}{\texttt{K983388}}}&\dots\\
+{\color{blue}{\texttt{Male}}}&{\color{blue}{\texttt{Male}}}.{\color{red}{\texttt{Fem2}}}&{\color{blue}{\texttt{Male}}}.{\color{red}{\texttt{Fem20}}}&{\color{blue}{\texttt{Male}}}.{\color{red}{\texttt{Fem3}}}&{\color{blue}{\texttt{Male}}}.{\color{red}{\texttt{Fem5}}}&{\color{blue}{\texttt{Male}}}.{\color{red}{\texttt{K983388}}}&\dots\\
+{\color{blue}{\texttt{UNK}}}&{\color{blue}{\texttt{UNK}}}.{\color{red}{\texttt{Fem2}}}&{\color{blue}{\texttt{UNK}}}.{\color{red}{\texttt{Fem20}}}&{\color{blue}{\texttt{UNK}}}.{\color{red}{\texttt{Fem3}}}&{\color{blue}{\texttt{UNK}}}.{\color{red}{\texttt{Fem5}}}&{\color{blue}{\texttt{UNK}}}.{\color{red}{\texttt{K983388}}}&\dots\\
 \end{array}$$
 
-which creates three times as many random factors, one associated with
-offspring of each sex for each each dam.
+which creates three times as many random factors, one associated with offspring of each sex for each each dam.
 
 ## `idh` Variance Structure
 
-The different variance functions make different assumptions about how
-the effects associated with these different factors are distributed.
-First, we may want to allow the variance in the effects to be different
-for each row of factors; i.e. does the identity of a chicks mother
-explain different amounts of variation depending on the sex of the
-chick. We can fit this model using the `idh` function and represent our
-belief in how the effects are distributed as a $3\times3$ covariance
-matrix ${\bf V}$:
+The different variance functions make different assumptions about how the effects associated with these different factors are distributed. First, we may want to allow the variance in the effects to be different for each row of factors; i.e. does the identity of a chicks mother explain different amounts of variation depending on the sex of the chick. We can fit this model using the `idh` function and represent our belief in how the effects are distributed as a $3\times3$ covariance matrix ${\bf V}$:
 
-$${\bf V}_{{\color{red} \texttt{dam}}}=
+$${\bf V}_{{\color{red}{\texttt{dam}}}}=
 \left[
 \begin{array}{ccc}
-\sigma^{2}_{\color{blue}\texttt{Female}}&0&0\\
-0&\sigma^{2}_{\color{blue}\texttt{Male}}&0\\
-0&0&\sigma^{2}_{\color{blue}\texttt{UNK}}\\
+\sigma^{2}_{\color{blue}{\texttt{Female}}}&0&0\\
+0&\sigma^{2}_{\color{blue}{\texttt{Male}}}&0\\
+0&0&\sigma^{2}_{\color{blue}{\texttt{UNK}}}\\
 \end{array}
 \right]$$
 
-In the simpler models we had fitted in Chapters
-[\[chap1\]](#chap1){reference-type="ref" reference="chap1"} and
-[\[chap2\]](#chap2){reference-type="ref" reference="chap2"} ${\bf V}$
-was a scalar (${\bf V} = \sigma^{2}$) rather than a matrix, and the
-prior specification was relatively simple. We will come back to prior
-specifications for covariance matrices in Section
-[6](#VCVprior-sec){reference-type="ref" reference="VCVprior-sec"}, but
-for now note that the prior for the dam component has `V` as a
-$3\times3$ identity matrix:
+In the simpler models we had fitted in Chapters \@ref(bayesian) and \@ref(glm) ${\bf V}$ was a scalar (${\bf V} = \sigma^{2}$) rather than a matrix, and the prior specification was relatively simple. We will come back to prior specifications for covariance matrices in Section \@ref(VCVprior-sec), but for now note that the prior for the dam component has `V` as a $3\times3$ identity matrix:
 
 ``` {r echo=FALSE, eval=TRUE, cache=TRUE}
 priorb=list(R=list(V=diag(1), nu=0.002), G=list(G1=list(V=diag(3), nu=0.002),G2=list(V=1, nu=0.002)))
@@ -206,20 +125,13 @@ priorb=list(R=list(V=diag(1), nu=0.002), G=list(G1=list(V=diag(3), nu=0.002),G2=
 m3a.3<-MCMCglmm(tarsus~sex, random=~idh(sex):dam+fosternest, data=BTdata, prior=priorb)
 ```
 
-``` {r label=BTidh, echo=FALSE, include=TRUE, fig.cap="MCMC summary plot for the sex-specific dam variance components from model \\texttt{m3a.3}. The number of chicks with unknown (\\texttt{UNK}) sex is low, with very little replication within dams. The posterior distribution for the \\texttt{UNK} variance component is dominated by the prior which has a marginal distribution of \\texttt{V=1} and \\texttt{nu=0.002}.", fig.width=7, fig.height=5}
+``` {r label=BTidh, echo=FALSE, include=TRUE, fig.cap="MCMC summary plot for the sex-specific dam variance components from model `m3a.3`. The number of chicks with unknown ($\\texttt{UNK}$) sex is low, with very little replication within dams. The posterior distribution for the $\\texttt{UNK}$ variance component is dominated by the prior which has a marginal distribution of $\\texttt{V}=1$ and $\\texttt{nu}=0.002$.", fig.width=7, fig.height=5}
 plot(m3a.3$VCV[,1:3])
 ```
 
-The sex specific variances for males and females look pretty similar,
-but the sex-specific variance for birds with unknown sex is not behaving
-well. This is not that surprising given that there are only
-`r sum(BTdata$sex=="UNK")` birds with unknown sex and these tend to be
-thinly spread across dams. This variance component is likely to be
-dominated by the prior, but for now we'll leave the model as it is and
-come back to some possible alternative solutions later.
+The sex specific variances for males and females look pretty similar, but the sex-specific variance for birds with unknown sex is not behaving well. This is not that surprising given that there are only `r sum(BTdata$sex=="UNK")` birds with unknown sex and these tend to be thinly spread across dams. This variance component is likely to be dominated by the prior, but for now we'll leave the model as it is and come back to some possible alternative solutions later.
 
-We can extract the marginal means for each variance and place them into
-a matrix:
+We can extract the marginal means for each variance and place them into a matrix:
 
 ``` {r echo=TRUE, eval=TRUE}
 Vdam.3<-diag(colMeans(m3a.3$VCV)[1:3])
@@ -227,88 +139,59 @@ colnames(Vdam.3)<-colnames(m3a.3$VCV)[1:3]
 Vdam.3
 ```
 
-Note, that they are in general less than the marginal mean of the dam
-variance in model `m3a.1`
-(`r formatC(mean(m3a.1$VCV[,1]),format="f", 3)`) where a sex interaction
-was not fitted. Because the dam effects are assumed to be multivariate
-normal we can plot an ellipsoid that completely represents their
-distribution (you can rotate the figure in R):
+Note, that they are in general less than the marginal mean of the dam variance in model `m3a.1` (`r formatC(mean(m3a.1$VCV[,1]),format="f", 3)`) where a sex interaction was not fitted. Because the dam effects are assumed to be multivariate normal we can plot an ellipsoid that completely represents their distribution:
 
-``` {r label=rgl, echo=TRUE, eval=FALSE, fig.cap="Ellipsoid that circumscribes 95\\% of the expected dam effects as estimated in model \\texttt{m3a.3}. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  Because the covariances of the dam effects between the sexes were set to zero the axes of the ellipsoids are all parallel to the figure axes."}
+``` {r label=rgl, fig=TRUE, echo=TRUE, include=TRUE, webgl=TRUE, cache=FALSE, fig.cap="Ellipsoid that circumscribes 95\\% of the expected dam effects as estimated in model \\texttt{m3a.3}. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  Because the covariances of the dam effects between the sexes were set to zero the axes of the ellipsoids are all parallel to the figure axes."}
 plotsubspace(Vdam.3, axes.lab=TRUE)
 ```
+Figure: Ellipsoid that circumscribes 95\% of the expected dam effects as estimated in model `m3a.3`. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  Because the covariances of the dam effects between the sexes were set to zero the axes of the ellipsoids are all parallel to the figure axes.
 
-If we had measured the offspring of a lot of dams, and for each dam we
-had measured a very large number of offspring of each sex, then we could
-calculate the average tarsus lengths within a nest for males, females
-and unknowns separately. If we produced a scatter plot of these means
-the data would have the same shape as this ellipsoid and 95% of the data
-would lie inside.
+
+If we had measured the offspring of a lot of dams, and for each dam we had measured a very large number of offspring of each sex, then we could calculate the average tarsus lengths within a nest for males, females and unknowns separately. If we produced a scatter plot of these means the data would have the same shape as this ellipsoid and 95% of the data would lie inside.
 
 ## `us` Variance Structure
 
-The oddity of the model, and the meaning of the off-diagonal zeros,
-should become apparent. We have assumed that the different sexes with in
-a nest are independent. If we plotted the average tarsus lengths for
-males against the average tarsus lengths for females for each dam this
-model implies we should see no relationship. We can relax this
-assumption using the `us` function which estimates the matrix:
+The oddity of the model, and the meaning of the off-diagonal zeros, should become apparent. We have assumed that the different sexes with in a nest are independent. If we plotted the average tarsus lengths for males against the average tarsus lengths for females for each dam this model implies we should see no relationship. We can relax this assumption using the `us` function which estimates the matrix:
 
-$${\bf V}_{{\color{red} \texttt{dam}}}=
+$${\bf V}_{{\color{red}{\texttt{dam}}}}=
 \left[
 \begin{array}{ccc}
-\sigma^{2}_{\color{blue}\texttt{Female}}&\sigma_{\color{blue}\texttt{Female}, \texttt{Male}}&\sigma_{\color{blue}\texttt{Female}, \texttt{UNK}}\\
-\sigma_{\color{blue}\texttt{Female}, \texttt{Male}}&\sigma^{2}_{\color{blue}\texttt{Male}}&\sigma_{\color{blue}\texttt{Male}, \texttt{UNK}}\\
-\sigma_{\color{blue}\texttt{Female}, \texttt{UNK}}&\sigma_{\color{blue}\texttt{Male}, \texttt{UNK}}&\sigma^{2}_{\color{blue}\texttt{UNK}}\\
+\sigma^{2}_{\color{blue}{\texttt{Female}}}&\sigma_{\color{blue}{\texttt{Female}, \texttt{Male}}}&\sigma_{\color{blue}{\texttt{Female}, \texttt{UNK}}}\\
+\sigma_{\color{blue}{\texttt{Female}, \texttt{Male}}}&\sigma^{2}_{\color{blue}{\texttt{Male}}}&\sigma_{\color{blue}{\texttt{Male}, \texttt{UNK}}}\\
+\sigma_{\color{blue}{\texttt{Female}, \texttt{UNK}}}&\sigma_{\color{blue}{\texttt{Male}, \texttt{UNK}}}&\sigma^{2}_{\color{blue}{\texttt{UNK}}}\\
 \end{array}
 \right]$$
 
-We will now use a prior for the covariance matrix where nu=4 (1 more
-than the dimension of **V**) and the prior covariance matrix is an
-diagonal matrix with small variances. This may seem surprising but the
-motivation is laid out in Section
-[6](#VCVprior-sec){reference-type="ref" reference="VCVprior-sec"}:
+We will now use a prior for the covariance matrix where $\texttt{nu}=4$ (1 more than the dimension of $\texttt{V}$) and the prior covariance matrix is an diagonal matrix with small variances. This may seem surprising but the motivation is laid out in Section \@ref(VCVprior-sec):
 
-``` {r echo=TRUE, cache=TRUE}
+```{r echo=TRUE}
 prior.m3a.4=list(R=list(V=diag(1), nu=0.002), G=list(G1=list(V=diag(3)*0.02, nu=4),G2=list(V=1, nu=0.002)))
 m3a.4<-MCMCglmm(tarsus~sex, random=~us(sex):dam+fosternest, data=BTdata, prior=prior.m3a.4)
 ```
 
-The posterior mean (co)variances for this model show that the
-covariances are almost the same magnitude as the variances suggesting
-strong correlations:
+The posterior mean (co)variances for this model show that the covariances are almost the same magnitude as the variances suggesting strong correlations:
 
-``` {r echo=TRUE}
+```{r echo=TRUE}
 Vdam.4<-matrix(colMeans(m3a.4$VCV)[1:9],3,3)
 colnames(Vdam.4)<-colnames(m3a.4$VCV)[1:3]
 Vdam.4
 ```
 
-The distribution of dam effects in this model looks substantially
-different (Figure [\[rgl2-fig\]](#rgl2-fig){reference-type="ref"
-reference="rgl2-fig"}):
+The distribution of dam effects in this model look substantially different from those when using an `idh` structure:
 
-``` {r echo=TRUE, eval=FALSE, fig.cap="Ellipsoid that circumscribes 95\\% of the expected dam effects as estimated in model \\texttt{m3a.4}. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  The correlations of the dam effects between the sexes were estimated and found to be close to one, and the sex-specific variances were all roughly equal in magnitude.  Consequently the major axis of the ellipsoid lies at $45^{o}$ to the figure axes."}
+```{r label=rgl2, fig=-TRUE, echo=TRUE, eval=TRUE, webgl=TRUE, cache=FALSE, fig.cap="Ellipsoid that circumscribes 95\\% of the expected dam effects as estimated in model \\texttt{m3a.4}. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  The correlations of the dam effects between the sexes were estimated and found to be close to one, and the sex-specific variances were all roughly equal in magnitude.  Consequently the major axis of the ellipsoid lies at $45^{o}$ to the figure axes."}
+
 plotsubspace(Vdam.4, axes.lab=TRUE, wire.frame=T)
 ```
+Figure: Ellipsoid that circumscribes 95\% of the expected dam effects as estimated in model `m3a.4`. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  The correlations of the dam effects between the sexes were estimated and found to be close to one, and the sex-specific variances were all roughly equal in magnitude.  Consequently the major axis of the ellipsoid lies at $45^{o}$ to the figure axes.
 
-Covariances can be hard to interpret, and I usually find correlations
-easier to think about. They can also be useful for detecting problems in
-the chain. In model `m3a.1` the dam variance for chicks with unknown sex
-was behaving badly and was getting 'trapped' at zero. When fitting a
-$2\times2$ covariance matrix similar things can happen when correlations
-are close to -1 and 1, and this may not be obvious from the marginal
-distribution of the covariances:
+Covariances can be hard to interpret, and I usually find correlations easier to think about. They can also be useful for detecting problems in the chain. In model `m3a.1` the dam variance for chicks with unknown sex was behaving badly and was getting 'trapped' at zero. When fitting a $2\times2$ covariance matrix similar things can happen when correlations are close to -1 and 1, and this may not be obvious from the marginal distribution of the covariances:
 
 ``` {r label=BTcor, echo=TRUE, include=TRUE, fig.cap="MCMC summary plot for the between sex correlations in dam effects from model \\texttt{m3a.4}.", fig.width=7, fig.height=5}
 plot(posterior.cor(m3a.4$VCV[,1:9])[,c(2,3,7)])
 ```
 
-All the correlations are very close to one, and the variances all pretty
-equal so we'd probably consider the simpler model. We could try using
-DIC to compare models, although given the different prior specifications
-for the two models it is unclear whether this would be meaningful.
-However, the simpler model does seem to have better support as intuition
+All the correlations are very close to one, and the variances all pretty equal so we'd probably consider the simpler model. We could try using DIC to compare models, although given the different prior specifications for the two models it is unclear whether this would be meaningful. However, the simpler model does seem to have better support as intuition
 suggests:
 
 ``` {r echo=TRUE}
@@ -318,123 +201,53 @@ m3a.1$DIC
 
 ## Compound Variance Structures
 
-There are also ways of specifying models that lie somewhere between the
-simple model (`mBT`), where dam effects are assumed to be equivalent
-across the sexes, and the most complex model (`mBT2`), where dam effects
-are allowed to vary across the sexes and covary between the sexes to
-different degrees. Some alternatives are listed in Table \@ref(tab:vfunction).
+There are also ways of specifying models that lie somewhere between the simple model (`mBT`), where dam effects are assumed to be equivalent across the sexes, and the most complex model (`mBT2`), where dam effects are allowed to vary across the sexes and covary between the sexes to different degrees. Some alternatives are listed in Table \@ref(tab:vfunction).
 
-:::: landscape
-::: 
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-           `lmer`            `MCMCglmm`/`asreml`   No. Parameters                                                     Variance                                                                         Correlation
-  ------------------------- --------------------- ---------------- --------------------------------------------------------------------------------------------------------------- ---------------------------------------------------
-                                                                                                                                                                                   
+``` {r echo=FALSE, results='asis'}
+df <- data.frame(
+  MCMCglmm = c("`dam`", "`us(sex):dam`", "`sex:dam`", "`dam+sex:dam`", "`idh(sex):dam`", "`corg(sex):dam`", "`corgh(sex):dam`", "`cors(sex):dam`"),
+  lmer = c("`(1|dam)`", "`(sex|dam)`", "`(1|sex:dam)`", "`(1|dam)+(1|sex:dam)`", "", "", "", ""),
+  nparameters = c(1,6,1,2,3,3,3, 5),
+  Variance      = c("$\\left[\\begin{array}{ccc}V&V&V\\\\V&V&V\\\\V&V&V\\\\ \\end{array}\\right]$",
+                    "$\\left[\\begin{array}{ccc}V_{1,1}&C_{1,2}&C_{1,3}\\\\C_{2,1}&V_{2,2}&C_{2,3}\\\\C_{3,1}&C_{3,2}&V_{3,3}\\\\ \\end{array}\\right]$",
+                    "$\\left[\\begin{array}{ccc}V&{\\color{red}{0}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&V&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{0}}&V\\\\ \\end{array}\\right]$",
+                    "$\\left[\\begin{array}{ccc}V_1+V_2&V_1&V_1\\\\V_1&V_1+V_2&V_1\\\\V_1&V_1&V_1+V_2\\\\ \\end{array}\\right]$",
+                    "$\\left[\\begin{array}{ccc}V_{1,1}&{\\color{red}{0}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&V_{2,2}&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{0}}&V_{3,3}\\\\ \\end{array}\\right]$",
+                    "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
+                    "$\\left[\\begin{array}{ccc}{\\color{red}{V_{1,1}}}&r_{1,2}{\\color{red}{\\sqrt{V_{1,1}V_{2,2}}}}&r_{1,3}{\\color{red}{\\sqrt{V_{1,1}V_{3,3}}}}\\\\r_{2,1}{\\color{red}{\\sqrt{V_{2,2}V_{1,1}}}}&{\\color{red}{V_{2,2}}}&r_{2,3}{\\color{red}{\\sqrt{V_{2,2}V_{3,3}}}}\\\\r_{3,1}{\\color{red}{\\sqrt{V_{3,3}V_{1,1}}}}&r_{3,2}{\\color{red}{\\sqrt{V_{3,3}V_{2,2}}}}&{\\color{red}{V_{3,3}}}\\\\ \\end{array}\\right]$",
+                    "$\\left[\\begin{array}{ccc}V_{1,1}&C_{1,2}&r_{1,3}\\\\C_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$"
+                    ),
+  Correlation      = c("$\\left[\\begin{array}{ccc}{\\color{red}{1}}&{\\color{red}{1}}&{\\color{red}{1}}\\\\{\\color{red}{1}}&{\\color{red}{1}}&{\\color{red}{1}}\\\\{\\color{red}{1}}&{\\color{red}{1}}&{\\color{red}{1}}\\\\ \\end{array}\\right]$", 
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&{\\color{red}{0}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{1}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{0}}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r&r\\\\r&{\\color{red}{1}}&r\\\\r&r&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&{\\color{red}{0}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{1}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{0}}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$"
+                      ),
+  stringsAsFactors = FALSE
+)
 
-          `(1|dam)`                 `dam`                1                                                             $\left[                                                                           $\left[
-                                                                                                                 \begin{array}{ccc}                                                                \begin{array}{ccc}
-                                                                                                                       V&V&V\\                                                      {\color{red} 1}&{\color{red} 1}&{\color{red} 1}\\
-                                                                                                                       V&V&V\\                                                      {\color{red} 1}&{\color{red} 1}&{\color{red} 1}\\
-                                                                                                                       V&V&V\\                                                      {\color{red} 1}&{\color{red} 1}&{\color{red} 1}\\
-                                                                                                                     \end{array}                                                                       \end{array}
-                                                                                                                      \right]$                                                                          \right]$
-
-                                                                                                                                                                                   
-
-        `(sex-1|dam)`           `us(sex):dam`            6                                                             $\left[                                                                           $\left[
-                                                                                                                 \begin{array}{ccc}                                                                \begin{array}{ccc}
-                                                                                                              V_{1,1}&C_{1,2}&C_{1,3}\\                                                     {\color{red} 1}&r_{1,2}&r_{1,3}\\
-                                                                                                              C_{1,2}&V_{2,2}&C_{2,3}\\                                                     r_{1,2}&{\color{red} 1}&r_{2,3}\\
-                                                                                                              C_{1,3}&C_{2,3}&V_{3,3}\\                                                     r_{1,3}&r_{2,3}&{\color{red} 1}\\
-                                                                                                                     \end{array}                                                                       \end{array}
-                                                                                                                      \right]$                                                                          \right]$
-
-                                                                                                                                                                                   
-
-        `(1|sex:dam)`             `sex:dam`              1                                                             $\left[                                                                           $\left[
-                                                                                                                 \begin{array}{ccc}                                                                \begin{array}{ccc}
-                                                                                                         V&{\color{red} 0}&{\color{red} 0}\\                                        {\color{red} 1}&{\color{red} 0}&{\color{red} 0}\\
-                                                                                                         {\color{red} 0}&V&{\color{red} 0}\\                                        {\color{red} 0}&{\color{red} 1}&{\color{red} 0}\\
-                                                                                                         {\color{red} 0}&{\color{red} 0}&V\\                                        {\color{red} 0}&{\color{red} 0}&{\color{red} 1}\\
-                                                                                                                     \end{array}                                                                       \end{array}
-                                                                                                                      \right]$                                                                          \right]$
-
-                                                                                                                                                                                   
-
-   `(1|dam)`+`(1|sex:dam)`     `dam`+`sex:dam`           2                                                             $\left[                                                                           $\left[
-                                                                                                                 \begin{array}{ccc}                                                                \begin{array}{ccc}
-                                                                                                              V_{1}+V_{2}&V_{1}&V_{1}\\                                                           {\color{red} 1}&r&r\\
-                                                                                                              V_{1}&V_{1}+V_{2}&V_{1}\\                                                           r&{\color{red} 1}&r\\
-                                                                                                              V_{1}&V_{1}&V_{1}+V_{2}\\                                                           r&r&{\color{red} 1}\\
-                                                                                                                     \end{array}                                                                       \end{array}
-                                                                                                                      \right]$                                                                          \right]$
-
-                                                                                                                                                                                   
-
-             \-                `idh(sex):dam`            3                                                             $\left[                                                                           $\left[
-                                                                                                                 \begin{array}{ccc}                                                                \begin{array}{ccc}
-                                                                                                      V_{1,1}&{\color{red} 0}&{\color{red} 0}\\                                     {\color{red} 1}&{\color{red} 0}&{\color{red} 0}\\
-                                                                                                      {\color{red} 0}&V_{2,2}&{\color{red} 0}\\                                     {\color{red} 0}&{\color{red} 1}&{\color{red} 0}\\
-                                                                                                      {\color{red} 0}&{\color{red} 0}&V_{3,3}\\                                     {\color{red} 0}&{\color{red} 0}&{\color{red} 1}\\
-                                                                                                                     \end{array}                                                                       \end{array}
-                                                                                                                      \right]$                                                                          \right]$
-
-                                                                                                                                                                                   
-
-             \-                `corg(sex):dam`           3                                                             $\left[                                                                           $\left[
-                                                                                                                 \begin{array}{ccc}                                                                \begin{array}{ccc}
-                                                                                                          {\color{red} 1}&r_{1,2}&r_{1,3}\\                                                 {\color{red} 1}&r_{1,2}&r_{1,3}\\
-                                                                                                          r_{1,2}&{\color{red} 1}&r_{2,3}\\                                                 r_{1,2}&{\color{red} 1}&r_{2,3}\\
-                                                                                                          r_{1,3}&r_{2,3}&{\color{red} 1}\\                                                 r_{1,3}&r_{2,3}&{\color{red} 1}\\
-                                                                                                                     \end{array}                                                                       \end{array}
-                                                                                                                      \right]$                                                                          \right]$
-
-                                                                                                                                                                                   
-
-             \-               `corgh(sex):dam`           3                                                             $\left[                                                                           $\left[
-                                                                                                                 \begin{array}{ccc}                                                                \begin{array}{ccc}
-                                                                    {\color{red} V_{1,1}}&r_{1,2}\sqrt{{\color{red} V_{1,1}V_{2,2}}}&r_{1,3}\sqrt{{\color{red} V_{1,1}V_{2,2}}}\\           {\color{red} 1}&r_{1,2}&r_{1,3}\\
-                                                                    r_{1,2}\sqrt{{\color{red} V_{1,1}V_{2,2}}}&{\color{red} V_{2,2}}&r_{2,3}\sqrt{{\color{red} V_{2,2}V_{2,3}}}\\           r_{1,2}&{\color{red} 1}&r_{2,3}\\
-                                                                    r_{1,3}\sqrt{{\color{red} V_{1,1}V_{3,3}}}&r_{2,3}\sqrt{{\color{red} V_{2,2}V_{3,3}}}&{\color{red} V_{3,3}}\\           r_{1,3}&r_{2,3}&{\color{red} 1}\\
-                                                                                                                     \end{array}                                                                       \end{array}
-                                                                                                                      \right]$                                                                          \right]$
-
-                                                                                                                                                                                   
-  ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  : (#tab:vfunction) Different random effect specifications in `lmer`,
-  `MCMCglmm` and `asreml`. `sex` is a factor with three levels so the
-  resulting matrix is $3\times3$. Continuous variables can also go on
-  the LHS of the pipe, or within the variance structure functions (e.g.
-  `us`,`idh`). In this case the associated parameters are regression
-  coefficients for which a variance is estimated. For example, if the
-  chicks were of different ages (or we'd measured the same chicks at
-  different ages) we may want to see if the growth rate is more similar
-  for chicks raised by the same mother. `(1+age|dam)` or `us(1+age):dam`
-  estimates a $2\times2$ matrix which includes the variance in
-  intercepts (when `age`=0), the variance in slopes, and the covariance
-  that exists between them. Fixed parameters are in red.
-:::
-::::
+kable(df, "html", escape = FALSE, caption = "Different random effect specifications in `MCMCglmm` (with equivalent `lmer` syntax when possible). `sex` is a factor with three levels so the resulting covariance and correlation matrices are $3\\times3$. For the `cors(sex):dam` structure, the prior specification had `fix=2` which forces the last diagonal block (starting from position 2,2) to be a correlation matrix rather than a covariance matrix. `fix` can also be specified for other structures but then it fixes last diagonal block to what ever is specified in the `V` element of the prior.  `ante` structures are not covered here but in Section \\@ref(ante-sec)", label="vfunction") |>
+  kable_styling(full_width = FALSE)%>%
+  scroll_box(width = "100%", box_css = "border: 0px;")
+```
 
 ## Heterogenous Residual Variance {#heter-sec}
 
-To be started\... In short - if you've fitted a sex by dam interaction I
-would always allow the sexes to have different residual variances. Use
-`rcov=`$\sim$`idh(sex):units`.
+To be started\... In short - if you've fitted a sex by dam interaction I would always allow the sexes to have different residual variances. Use `rcov=`$\sim$`idh(sex):units`.
 
 ## Contrasts and Covariances
 
-A general method for seeing what a particular random specification means
-in terms of the original variables is to realise that
+A general method for seeing what a particular random specification means in terms of the original variables is to realise that
 
-$${\boldsymbol{\mathbf{\Sigma}}} = {\bf Z}{\bf V}{\bf Z}^{'}
-\label{conv-eq}   (\#eq:conv-eq)$$
+$$
+{\boldsymbol{\mathbf{\Sigma}}} = {\bf Z}{\bf V}{\bf Z}^{'}
+(\#eq:conv-eq)
+$$
 
-where ${\boldsymbol{\mathbf{\Sigma}}}$ is the covariance matrix for the
-original set of variables and ${\bf V}$ the variances associated with
-the variance structure model. ${\bf Z}$ is the random effect design
-matrix. Equation \@ref(eq:conv-eq) implies:
+where ${\boldsymbol{\mathbf{\Sigma}}}$ is the covariance matrix for the original set of variables and ${\bf V}$ the variances associated with the variance structure model. ${\bf Z}$ is the random effect design matrix. Equation \@ref(eq:conv-eq) implies:
 
 $${\bf V} = {\bf Z}^{-1}{\boldsymbol{\mathbf{\Sigma}}}({\bf Z}^{'})^{-1}$$
 
@@ -442,109 +255,61 @@ or alternatively:
 
 $${\bf V} = ({\bf Z}{\bf Z}^{'})^{-}{\bf Z}^{'}{\boldsymbol{\mathbf{\Sigma}}}{\bf Z}({\bf Z}^{'}{\bf Z})^{-}$$
 
-if ${\bf Z}$ is non-square and/or singular, where $^{-}$ is a
-generalised inverse.\
+if ${\bf Z}$ is non-square and/or singular, where $^{-}$ is a generalised inverse.
 
 ## Priors for Covariance Matrices {#VCVprior-sec}
 
-Priors for covariance matrices are tricky. What maybe non-informative
-for a covariance may be informative for a correlation and *vice versa*.
+Priors for covariance matrices are tricky. What maybe non-informative for a covariance may be informative for a correlation and *vice versa*.
 
 ### Priors for `us` structures
 
-A useful result is that the marginal distribution of a variance is also
-inverse - Wishart distributed:
+A useful result is that the marginal distribution of a variance is also inverse-Wishart distributed:
 
 $$\sigma^{2}_{1} \sim IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{V[1,1]}\right)$$
 
-using the first variance as an example, and indicating the new
-parameters with an asterisk.\
-An uninformative prior for the correlations is an improper prior with
-`V=diag(dim(V))`$\ast$`0` and `nu=dim(V)+1`. For the $3\times3$ sex by
-dam covariance matrix in model `m3a.4` we used a proper prior with
-`V=diag(3)`$\ast$`0.02` and `nu=4` in the hope that this would be
-relatively uninformative for the correlations. We can plot the marginal
-density of the variances for this distribution as we did in Chapter
-[\[chap1\]](#chap1){reference-type="ref" reference="chap1"}:
+using the first variance as an example, and indicating the new parameters with an asterisk.
+
+An uninformative prior for the correlations is an improper prior with `V=diag(dim(V))`$\ast$`0` and `nu=dim(V)+1`. For the $3\times3$ sex by dam covariance matrix in model `m3a.4` we used a proper prior with `V=diag(3)`$\ast$`0.02` and `nu=4` in the hope that this would be relatively uninformative for the correlations. We can plot the marginal density of the variances for this distribution as we did in Chapter \@ref(bayesian):
 
 ``` {r label=NIc, echo=TRUE, include=TRUE, fig.cap="Marginal prior distribution of a variance using an inverse Wishart prior for the covariance matrix with \\texttt{V=diag(3)*0.02} and \\texttt{nu=4}.", fig.width=7, fig.height=5}
 nu.ast<-prior.m3a.4$G$G1$nu-dim(prior.m3a.4$G$G1$V)[1]+1
 V.ast<-prior.m3a.4$G$G1$V[1,1]*(prior.m3a.4$G$G1$nu/nu.ast)
 xv<-seq(1e-16,1,length=100)
-dv<-dgamma(1/xv, shape=nu.ast/2, scale=(nu.ast*V.ast)/2)/(xv^2)
+dv<-dgamma(1/xv, shape=nu.ast/2, rate=(nu.ast*V.ast)/2)/(xv^2)
 plot(dv~xv, type="l")
 ```
 
-In Chapter [\[chap2\]](#chap2){reference-type="ref" reference="chap2"}
-we saw that a non-informative prior for a variance component was `V=0`
-and `nu=-2`. This result generalises to covariance matrices where the
-improper prior `V=diag(dim(V))`$\ast$`0` and `nu=dim(V)-3` is
-non-informative for the variances and covariances. This can be verified
-for the variances using the results derived above for the marginal
-distribution:
+In Chapter \@ref(bayesian) we saw that a non-informative prior for a variance component was `V=0` and `nu=-2`. This result generalises to covariance matrices where the improper prior `V=diag(dim(V))`$\ast$`0` and `nu=dim(V)-3` is non-informative for the variances and covariances. This can be verified for the variances using the results derived above for the marginal distribution:
 
-$$\begin{array}{rl}
+$$
+\begin{array}{rl}
 \sigma^{2}_{1} \sim& IW\left(\texttt{nu}^{\ast}\texttt{=dim(V)-3-dim(V)+1},\ \texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{0}\right)\\
                \sim& IW\left(\texttt{nu}^{\ast}\texttt{=-2},\ \texttt{V}^{\ast}=\texttt{0}\right)\\
 
-\end{array}$$
+\end{array}
+$$
 
 ### Priors for `idh` structures
 
-For `idh` the diagonal elements of the matrix are independent and each
-variance is distributed as[^4.2]:
+For `idh` the diagonal elements of the matrix are independent and each variance is distributed as[^4.2]:
 
 $$\sigma^{2}_{1} \sim IW\left(\texttt{nu}^{\ast}\texttt{=nu},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$$
 
 ### Priors for `corg` and `corgh` structures
 
-For `corg` and `corgh` structures[^4.3] the diagonals of `V` define the
-fixed variances (`corgh`) or are ignored and the variances set to one
-(`corg`). I use the prior specification in @Barnard.2000 where `nu`
-controls how much the correlation matrix approaches an identity matrix.
-The marginal distribution of individual correlations ($r$) is given by
+For `corg` and `corgh` structures[^4.3] the diagonals of `V` define the fixed variances (`corgh`) or are ignored and the variances set to one (`corg`). I use the prior specification in @Barnard.2000 where `nu` controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations ($r$) is given by
 @Barnard.2000 [and @Box.1973]:
 
 $$\begin{array}{lr}
 Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, & |r|<1\\
 \end{array}$$
 
-and as shown above setting `nu` =`dim(V)+1` results in marginal
-correlations that are uniform on the interval \[-1,1\].\
-In most cases correlation matrices do not have known form and so cannot
-be directly Gibbs sampled. `MCMCglmm` uses a method proposed by
-@Liu.2006 with the target prior as in @Barnard.2000. Generally this
-algorithm is very efficient as the Metropolis-Hastings acceptance
-probability only depends on the degree to which the candidate prior and
-the target prior (the prior you specify) conflict. The candidate prior
-is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a
-diffuse prior is set, mixing is generally not a problem. If `nu=0` is
-set (the default) then the Metropolis-Hastings steps are always accepted
-resulting in Gibbs sampling. However, a prior of this form puts high
-density on extreme correlations which can cause problems if the data
-give support to correlations in this region.\
-[]{#VCVprior-sec label="VCVprior-sec"}
-:::::
+and as shown above setting `nu` =`dim(V)+1` results in marginal correlations that are uniform on the interval \[-1,1\].
 
-[^4.1]: Remember that a global intercept is not fitted by default for
-    variance structure models, and the model formula is essentially
-    $^{\sim}$`sex-1`. To add the global intercept, `us(``1+sex``):``dam`
-    could be fitted but this can be harder to interpret because the
-    effects are then `Fem`, `Male-Fem` and `UNK-Fem`. If a `us`
-    structure is fitted, the two models are equivalent
-    reparameterisations of each other although the priors have to be
-    modified accordingly. This is not the case if the variance function
-    is `idh`. In this case the sex-specific variances are allowed to
-    vary as before, but a constant covariance equal to
-    $\sigma^{2}_{\color{blue} \texttt{Fem}}$ is also assumed
+In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. `MCMCglmm` uses a method proposed by @Liu.2006 with the target prior as in @Barnard.2000. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a diffuse prior is set, mixing is generally not a problem. If `nu=0` is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.
 
-[^4.2]: IMPORTANT: In versions $<$ 2.05 priors on each variance of an
-    `idh` structure were distributed as
-    $IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$
-    but this was a source of confusion and was changed.
+[^4.1]: Remember that a global intercept is not fitted by default for variance structure models, and the model formula is essentially `~sex-1`. To add the global intercept, `us(1+sex):dam` could be fitted but this can be harder to interpret because the effects are then `Fem`, `Male-Fem` and `UNK-Fem`. If a `us` structure is fitted, the two models are equivalent reparameterisations of each other although the priors have to be modified accordingly. This is not the case if the variance function is `idh`. In this case the sex-specific variances are allowed to vary as before, but a constant covariance equal to $\sigma^{2}_{\color{blue}{\texttt{Fem}}}$ is also assumed
 
-[^4.3]: In versions $<2.18$ `cor` fitted what is now a `corg` structure.
-    The reason for the change is to keep the `asreml` and `MCMCglmm`
-    syntax equivalent. However, the `corgh` structure in asreml is a
-    reparameterised `us` structure whereas in `MCMCglmm` the variances
-    are fixed in the prior.
+[^4.2]: IMPORTANT: In versions $<$ 2.05 priors on each variance of an`idh` structure were distributed as $IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$ but this was a source of confusion and was changed.
+
+[^4.3]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and `MCMCglmm` syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in `MCMCglmm` the variances are fixed in the prior.

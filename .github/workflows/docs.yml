@@ -44,6 +44,8 @@ jobs:
             lme4
             pscl
             gdata
+            kableExtra
+            rgl
           needs: website
 
       - name: Cache bookdown and knitr cache

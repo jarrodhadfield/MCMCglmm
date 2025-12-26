@@ -89,7 +89,7 @@ Psi[c(1,101),which(id==id1[1])]
 
 ``` {r echo=TRUE, cache=TRUE}
 my.data<-data.frame(y1=y1, y2=y2, id=id[1:100], id1=id1[1:100], x=rnorm(100))
-m1<-MCMCglmm(y1~x+sir(~id1, ~id)+y2, data=my.data, verbose=FALSE)
+m1<-MCMCglmm(y1~x+sir(~id1, ~id)+y2, data=my.data)
 ```
 
 One problem is that ${\bf e}^{\star}$ the residual vector that appears
@@ -132,18 +132,11 @@ ${\boldsymbol{\mathbf{\Lambda}}}^{-1}=\left({\bf I}_{k}-{\boldsymbol{\mathbf{\ps
 and
 $|{\boldsymbol{\mathbf{\Lambda}}}| = |{\bf I}_{k}-{\boldsymbol{\mathbf{\psi}}}\left({\boldsymbol{\mathbf{\lambda}}}\otimes {\bf I}_{k}\right)|^{n}$
 
-Mean centering responses can help mixing, because
-${\boldsymbol{\mathbf{t}}heta}$ and ${\boldsymbol{\mathbf{l}}ambda}$ are
-not sampled in a block. (Jarrod - I guess when
-$|{\boldsymbol{\mathbf{\Lambda}}}|=1$ this could be detected and
-updating occur in a block?)
+Mean centering responses can help mixing, because $\boldsymbol{\theta}$ and $\boldsymbol{\lambda}}$ are not sampled in a block. (Jarrod - I guess when $|\boldsymbol{\Lambda}|=1$ this could be detected and updating occur in a block?)
 
-## Antedependence
+## Antedependence {#ante-sec}
 
-An $n\times n$ unstructured covariance matrix can be reparameterised in
-terms of regression coefficeints and residual variances from a set of
-$n$ nested multiple regressions. For example, for $n=3$ the following 3
-multiple regressions can be defined:
+An $n\times n$ unstructured covariance matrix can be reparameterised in terms of regression coefficients and residual variances from a set of $n$ nested multiple regressions. For example, for $n=3$ the following 3 multiple regressions can be defined:
 
 $$\begin{array}{rl}
 u_{3} =&  u_{2}\beta_{3|2}+u_{1}\beta_{3|1}+e_{u_{3}}\\ 
@@ -151,9 +144,7 @@ u_{2} =&  u_{1}\beta_{2|1}+e_{u_{2}}\\
 u_{1} =&  e_{u_{1}}\\ 
 \end{array}$$
 
-Arranging the regression coefficients and residual ('innovation')
-variances into a lower triangular matrix and diagonal matrix
-respectively:
+Arranging the regression coefficients and residual ('innovation') variances into a lower triangular matrix and diagonal matrix respectively:
 
 $${\bf L}_{u}=
 \left[
