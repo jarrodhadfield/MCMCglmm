@@ -52,6 +52,32 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="libs/rglWebGL-binding-1.3.31/rglWebGL.js"></script>
+<link href="libs/rglwidgetClass-1.3.31/rgl.css" rel="stylesheet" />
+<script src="libs/rglwidgetClass-1.3.31/rglClass.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/utils.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/buffer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/subscenes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shaders.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shadersrc.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/textures.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/projection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/mouse.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/init.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pieces.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/draw.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/controls.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/selection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/rglTimer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pretty.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/axes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/animation.src.js"></script>
+<script src="libs/CanvasMatrix4-1.3.31/CanvasMatrix.src.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 
 
 <style type="text/css">
@@ -271,7 +297,7 @@ div.csl-indent {
 <li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
 <ul>
 <li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
-<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#antedependence"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
 <li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
 </ul></li>
 </ul>
@@ -317,24 +343,24 @@ individuals across the four years. Likewise, people vary in what
 proportion of their disposable income they are willing to spend on a
 holiday versus a car, but this also changes from year to year. We can
 simulate some toy data to get a feel for the issues:</p>
-<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="multi.html#cb197-1" tabindex="-1"></a>id<span class="ot">&lt;-</span><span class="fu">gl</span>(<span class="dv">200</span>,<span class="dv">4</span>)                  <span class="co"># 200 people recorded four times                      </span></span>
-<span id="cb197-2"><a href="multi.html#cb197-2" tabindex="-1"></a></span>
-<span id="cb197-3"><a href="multi.html#cb197-3" tabindex="-1"></a>av_wealth<span class="ot">&lt;-</span><span class="fu">rlnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="dv">1</span>)               </span>
-<span id="cb197-4"><a href="multi.html#cb197-4" tabindex="-1"></a>ac_wealth<span class="ot">&lt;-</span>av_wealth[id]<span class="sc">+</span><span class="fu">rlnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="dv">1</span>) </span>
-<span id="cb197-5"><a href="multi.html#cb197-5" tabindex="-1"></a><span class="co"># expected disposable incomes + some year to year variation</span></span>
-<span id="cb197-6"><a href="multi.html#cb197-6" tabindex="-1"></a></span>
-<span id="cb197-7"><a href="multi.html#cb197-7" tabindex="-1"></a>av_ratio<span class="ot">&lt;-</span><span class="fu">rbeta</span>(<span class="dv">200</span>,<span class="dv">10</span>,<span class="dv">10</span>)                 </span>
-<span id="cb197-8"><a href="multi.html#cb197-8" tabindex="-1"></a>ac_ratio<span class="ot">&lt;-</span><span class="fu">rbeta</span>(<span class="dv">800</span>, <span class="dv">2</span><span class="sc">*</span>(av_ratio[id]), <span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>av_ratio[id])) </span>
-<span id="cb197-9"><a href="multi.html#cb197-9" tabindex="-1"></a><span class="co"># expected proportion spent on car + some year to year variation</span></span>
-<span id="cb197-10"><a href="multi.html#cb197-10" tabindex="-1"></a></span>
-<span id="cb197-11"><a href="multi.html#cb197-11" tabindex="-1"></a>y.car<span class="ot">&lt;-</span>(ac_wealth<span class="sc">*</span>ac_ratio)<span class="sc">^</span><span class="fl">0.25</span>     <span class="co"># disposable income * proportion spent on car</span></span>
-<span id="cb197-12"><a href="multi.html#cb197-12" tabindex="-1"></a>y.hol<span class="ot">&lt;-</span>(ac_wealth<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>ac_ratio))<span class="sc">^</span><span class="fl">0.25</span> <span class="co"># disposable income * proportion spent on holiday                              </span></span>
-<span id="cb197-13"><a href="multi.html#cb197-13" tabindex="-1"></a></span>
-<span id="cb197-14"><a href="multi.html#cb197-14" tabindex="-1"></a>Spending<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">y.hol=</span>y.hol, <span class="at">y.car=</span>y.car, <span class="at">id=</span>id)</span></code></pre></div>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="multi.html#cb192-1" tabindex="-1"></a>id<span class="ot">&lt;-</span><span class="fu">gl</span>(<span class="dv">200</span>,<span class="dv">4</span>)                  <span class="co"># 200 people recorded four times                      </span></span>
+<span id="cb192-2"><a href="multi.html#cb192-2" tabindex="-1"></a></span>
+<span id="cb192-3"><a href="multi.html#cb192-3" tabindex="-1"></a>av_wealth<span class="ot">&lt;-</span><span class="fu">rlnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="dv">1</span>)               </span>
+<span id="cb192-4"><a href="multi.html#cb192-4" tabindex="-1"></a>ac_wealth<span class="ot">&lt;-</span>av_wealth[id]<span class="sc">+</span><span class="fu">rlnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="dv">1</span>) </span>
+<span id="cb192-5"><a href="multi.html#cb192-5" tabindex="-1"></a><span class="co"># expected disposable incomes + some year to year variation</span></span>
+<span id="cb192-6"><a href="multi.html#cb192-6" tabindex="-1"></a></span>
+<span id="cb192-7"><a href="multi.html#cb192-7" tabindex="-1"></a>av_ratio<span class="ot">&lt;-</span><span class="fu">rbeta</span>(<span class="dv">200</span>,<span class="dv">10</span>,<span class="dv">10</span>)                 </span>
+<span id="cb192-8"><a href="multi.html#cb192-8" tabindex="-1"></a>ac_ratio<span class="ot">&lt;-</span><span class="fu">rbeta</span>(<span class="dv">800</span>, <span class="dv">2</span><span class="sc">*</span>(av_ratio[id]), <span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>av_ratio[id])) </span>
+<span id="cb192-9"><a href="multi.html#cb192-9" tabindex="-1"></a><span class="co"># expected proportion spent on car + some year to year variation</span></span>
+<span id="cb192-10"><a href="multi.html#cb192-10" tabindex="-1"></a></span>
+<span id="cb192-11"><a href="multi.html#cb192-11" tabindex="-1"></a>y.car<span class="ot">&lt;-</span>(ac_wealth<span class="sc">*</span>ac_ratio)<span class="sc">^</span><span class="fl">0.25</span>     <span class="co"># disposable income * proportion spent on car</span></span>
+<span id="cb192-12"><a href="multi.html#cb192-12" tabindex="-1"></a>y.hol<span class="ot">&lt;-</span>(ac_wealth<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>ac_ratio))<span class="sc">^</span><span class="fl">0.25</span> <span class="co"># disposable income * proportion spent on holiday                              </span></span>
+<span id="cb192-13"><a href="multi.html#cb192-13" tabindex="-1"></a></span>
+<span id="cb192-14"><a href="multi.html#cb192-14" tabindex="-1"></a>Spending<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">y.hol=</span>y.hol, <span class="at">y.car=</span>y.car, <span class="at">id=</span>id)</span></code></pre></div>
 <p>A simple regression suggests the two types of spending are negatively
 related but the association is weak with the <span class="math inline">\(R^{2}=\)</span>
 0.002.</p>
-<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="multi.html#cb198-1" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">data =</span> Spending))</span></code></pre></div>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="multi.html#cb193-1" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">data =</span> Spending))</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = y.car ~ y.hol, data = Spending)
@@ -355,8 +381,8 @@ related but the association is weak with the <span class="math inline">\(R^{2}=\
 ## F-statistic: 1.966 on 1 and 798 DF,  p-value: 0.1613</code></pre>
 <p>With <code>id</code> added as a random term to deal with the the repeated measures,
 a similar conclusion is reached although the estimate is more negative:</p>
-<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="multi.html#cb200-1" tabindex="-1"></a>m5a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">random =</span> <span class="sc">~</span>id, <span class="at">data =</span> Spending, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb200-2"><a href="multi.html#cb200-2" tabindex="-1"></a><span class="fu">summary</span>(m5a<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="st">&quot;y.hol&quot;</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="multi.html#cb195-1" tabindex="-1"></a>m5a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">random =</span> <span class="sc">~</span>id, <span class="at">data =</span> Spending)</span>
+<span id="cb195-2"><a href="multi.html#cb195-2" tabindex="-1"></a><span class="fu">summary</span>(m5a<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="st">&quot;y.hol&quot;</span>])</span></code></pre></div>
 <pre><code>## 
 ## Iterations = 3001:12991
 ## Thinning interval = 10 
@@ -406,8 +432,8 @@ and the stacked data frame on the right:<br />
 <p>From this we can see that fitting a multi-response model is a direct
 extension to how we fitted models with categorical random interactions
 (Chapter <a href="#chap3" reference-type="ref" reference="chap3"><span class="math display">\[chap3\]</span></a>):</p>
-<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="multi.html#cb202-1" tabindex="-1"></a>m5a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb202-2"><a href="multi.html#cb202-2" tabindex="-1"></a>    <span class="at">data =</span> Spending, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;gaussian&quot;</span>), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="multi.html#cb197-1" tabindex="-1"></a>m5a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb197-2"><a href="multi.html#cb197-2" tabindex="-1"></a>    <span class="at">data =</span> Spending, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;gaussian&quot;</span>))</span></code></pre></div>
 <p>We have fitted the fixed effect <code>trait</code> so that the two types of
 spending can have different intercepts. I usually suppress the intercept
 (<code>-1</code>) for these types of models so the second coefficient is not the
@@ -462,9 +488,9 @@ response and the predictor divided by the variance in the predictor. We
 can therefore estimate a regression coefficient for these two levels of
 random variation, and compare them with the regression coefficient we
 obtained in the simpler model:</p>
-<div class="sourceCode" id="cb203"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb203-1"><a href="multi.html#cb203-1" tabindex="-1"></a>id.regression <span class="ot">&lt;-</span> m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">2</span>]<span class="sc">/</span>m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]</span>
-<span id="cb203-2"><a href="multi.html#cb203-2" tabindex="-1"></a>units.regression <span class="ot">&lt;-</span> m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">6</span>]<span class="sc">/</span>m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">5</span>]</span>
-<span id="cb203-3"><a href="multi.html#cb203-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m5a<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="st">&quot;y.hol&quot;</span>], id.regression, units.regression), <span class="at">density =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb198-1"><a href="multi.html#cb198-1" tabindex="-1"></a>id.regression <span class="ot">&lt;-</span> m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">2</span>]<span class="sc">/</span>m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]</span>
+<span id="cb198-2"><a href="multi.html#cb198-2" tabindex="-1"></a>units.regression <span class="ot">&lt;-</span> m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">6</span>]<span class="sc">/</span>m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">5</span>]</span>
+<span id="cb198-3"><a href="multi.html#cb198-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m5a<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="st">&quot;y.hol&quot;</span>], id.regression, units.regression), <span class="at">density =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>The regression coefficients (see Figure
 <a href="#asUV-fig" reference-type="ref" reference="asUV-fig"><span class="math display">\[asUV-fig\]</span></a>)
 differ substantially at the within individual (green) and between
@@ -497,9 +523,9 @@ individual will spend on their car (using a regression coefficient of
 -0.3). The variation in car expenditure not caused by holiday
 expenditure is also due to individual differences, but in this case they
 only explain a third of the variance.</p>
-<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="multi.html#cb204-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.hol2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">1</span>))</span>
-<span id="cb204-2"><a href="multi.html#cb204-2" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2 <span class="ot">&lt;-</span> Spending<span class="sc">$</span>y.hol2 <span class="sc">*</span> <span class="sc">-</span><span class="fl">0.3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">1</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span></span>
-<span id="cb204-3"><a href="multi.html#cb204-3" tabindex="-1"></a>    <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="multi.html#cb199-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.hol2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">1</span>))</span>
+<span id="cb199-2"><a href="multi.html#cb199-2" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2 <span class="ot">&lt;-</span> Spending<span class="sc">$</span>y.hol2 <span class="sc">*</span> <span class="sc">-</span><span class="fl">0.3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">1</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span></span>
+<span id="cb199-3"><a href="multi.html#cb199-3" tabindex="-1"></a>    <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
 <p>We can fit the univariate and multivariate models to these data, and
 compare the regression coefficients as we did before. Figure
 <a href="#MVvUV2-fig" reference-type="ref" reference="MVvUV2-fig"><span class="math display">\[MVvUV2-fig\]</span></a> shows that the regression coefficients are all
@@ -524,8 +550,8 @@ expressed as a single vector of factors, and the family argument can be
 specified as <code>categorical</code>. To illustrate, using a very simple example,
 we’ll use data collected on 666 Soay sheep from the island of Hirta in
 the St. Kilda archipelago <span class="citation">(Clutton-Brock and Pemberton 2004 Table A2.5)</span>.</p>
-<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="multi.html#cb205-1" tabindex="-1"></a><span class="fu">data</span>(SShorns)</span>
-<span id="cb205-2"><a href="multi.html#cb205-2" tabindex="-1"></a><span class="fu">head</span>(SShorns)</span></code></pre></div>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb200-1"><a href="multi.html#cb200-1" tabindex="-1"></a><span class="fu">data</span>(SShorns)</span>
+<span id="cb200-2"><a href="multi.html#cb200-2" tabindex="-1"></a><span class="fu">head</span>(SShorns)</span></code></pre></div>
 <pre><code>##   id    horn    sex
 ## 1  1 scurred female
 ## 2  2 scurred female
@@ -535,8 +561,8 @@ the St. Kilda archipelago <span class="citation">(Clutton-Brock and Pemberton 2
 ## 6  6  polled female</code></pre>
 <p>The sex and horn morph were recorded for each individual, giving the
 contingency table:</p>
-<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="multi.html#cb207-1" tabindex="-1"></a>Ctable <span class="ot">&lt;-</span> <span class="fu">table</span>(SShorns<span class="sc">$</span>horn, SShorns<span class="sc">$</span>sex)</span>
-<span id="cb207-2"><a href="multi.html#cb207-2" tabindex="-1"></a>Ctable</span></code></pre></div>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="multi.html#cb202-1" tabindex="-1"></a>Ctable <span class="ot">&lt;-</span> <span class="fu">table</span>(SShorns<span class="sc">$</span>horn, SShorns<span class="sc">$</span>sex)</span>
+<span id="cb202-2"><a href="multi.html#cb202-2" tabindex="-1"></a>Ctable</span></code></pre></div>
 <pre><code>##          
 ##           female male
 ##   normal      83  352
@@ -546,7 +572,7 @@ contingency table:</p>
 if the trait is sex dependent. The usual way to do this would be to use
 a Chi square test, and to address the first question we could add the
 counts of the two sexes:</p>
-<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="multi.html#cb209-1" tabindex="-1"></a><span class="fu">chisq.test</span>(<span class="fu">rowSums</span>(Ctable))</span></code></pre></div>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="multi.html#cb204-1" tabindex="-1"></a><span class="fu">chisq.test</span>(<span class="fu">rowSums</span>(Ctable))</span></code></pre></div>
 <pre><code>## 
 ##  Chi-squared test for given probabilities
 ## 
@@ -554,7 +580,7 @@ counts of the two sexes:</p>
 ## X-squared = 329.52, df = 2, p-value &lt; 2.2e-16</code></pre>
 <p>which strongly suggests the three morphs differ in frequency. We could
 then ask whether the frequencies differ by sex:</p>
-<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="multi.html#cb211-1" tabindex="-1"></a><span class="fu">chisq.test</span>(Ctable)</span></code></pre></div>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="multi.html#cb206-1" tabindex="-1"></a><span class="fu">chisq.test</span>(Ctable)</span></code></pre></div>
 <pre><code>## 
 ##  Pearson&#39;s Chi-squared test
 ## 
@@ -597,10 +623,10 @@ to work with the residual covariance matrix
 dimensional identity and unit matrices, respectively.<br />
 To start we will try a simple model with an intercept:<br />
 </p>
-<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="multi.html#cb213-1" tabindex="-1"></a>IJ <span class="ot">&lt;-</span> (<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">*</span> (<span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb213-2"><a href="multi.html#cb213-2" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> IJ, <span class="at">fix =</span> <span class="dv">1</span>))</span>
-<span id="cb213-3"><a href="multi.html#cb213-3" tabindex="-1"></a>m5c<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">prior =</span> prior, <span class="at">data =</span> SShorns,</span>
-<span id="cb213-4"><a href="multi.html#cb213-4" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="multi.html#cb208-1" tabindex="-1"></a>IJ <span class="ot">&lt;-</span> (<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">*</span> (<span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
+<span id="cb208-2"><a href="multi.html#cb208-2" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> IJ, <span class="at">fix =</span> <span class="dv">1</span>))</span>
+<span id="cb208-3"><a href="multi.html#cb208-3" tabindex="-1"></a>m5c<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">prior =</span> prior, <span class="at">data =</span> SShorns,</span>
+<span id="cb208-4"><a href="multi.html#cb208-4" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>)</span></code></pre></div>
 The posterior distribution for the intercepts is shown in Figure
 <a href="#MN1" reference-type="ref" reference="MN1"><span class="math display">\[MN1\]</span></a>, and the model
 clearly needs to be run for longer (Figure
@@ -636,13 +662,13 @@ where <span class="math inline">\(\tilde{\bf V}\)</span> is the covariance matri
 space. To illustrate, we will rescale the intercepts as if the residual
 covariance matrix was zero (see Sections and <span id="pred-sec" label="pred-sec"></span> <span id="cat-sec" label="cat-sec"></span>) and predict the expected
 probability for each horn type:</p>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="multi.html#cb214-1" tabindex="-1"></a>Delta <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb214-2"><a href="multi.html#cb214-2" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb214-3"><a href="multi.html#cb214-3" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">ginv</span>(Delta <span class="sc">%*%</span> <span class="fu">t</span>(Delta)) <span class="sc">%*%</span> Delta</span>
-<span id="cb214-4"><a href="multi.html#cb214-4" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(m5c<span class="fl">.1</span><span class="sc">$</span>Sol, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb214-5"><a href="multi.html#cb214-5" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
-<span id="cb214-6"><a href="multi.html#cb214-6" tabindex="-1"></a>}))</span>
-<span id="cb214-7"><a href="multi.html#cb214-7" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
+<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="multi.html#cb209-1" tabindex="-1"></a>Delta <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb209-2"><a href="multi.html#cb209-2" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb209-3"><a href="multi.html#cb209-3" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">ginv</span>(Delta <span class="sc">%*%</span> <span class="fu">t</span>(Delta)) <span class="sc">%*%</span> Delta</span>
+<span id="cb209-4"><a href="multi.html#cb209-4" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(m5c<span class="fl">.1</span><span class="sc">$</span>Sol, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb209-5"><a href="multi.html#cb209-5" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
+<span id="cb209-6"><a href="multi.html#cb209-6" tabindex="-1"></a>}))</span>
+<span id="cb209-7"><a href="multi.html#cb209-7" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
 <pre><code>## 
 ## Iterations = 1:1000
 ## Thinning interval = 1 
@@ -664,13 +690,13 @@ probability for each horn type:</p>
 ## var2 0.0806 0.09125 0.09838 0.1057 0.1229
 ## var3 0.2147 0.23429 0.24550 0.2561 0.2802</code></pre>
 <p>which agrees well with those observed:</p>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="multi.html#cb216-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">rowSums</span>(Ctable))</span></code></pre></div>
+<div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="multi.html#cb211-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">rowSums</span>(Ctable))</span></code></pre></div>
 <pre><code>##    normal    polled   scurred 
 ## 0.6531532 0.0975976 0.2492492</code></pre>
 <p>To test for the effects of sex specific expression we can also fit a
 model with a sex effect:</p>
-<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="multi.html#cb218-1" tabindex="-1"></a>m5c<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">+</span> sex <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> SShorns,</span>
-<span id="cb218-2"><a href="multi.html#cb218-2" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb213-1"><a href="multi.html#cb213-1" tabindex="-1"></a>m5c<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">+</span> sex <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> SShorns,</span>
+<span id="cb213-2"><a href="multi.html#cb213-2" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior)</span></code></pre></div>
 <p>In this case we have not interacted sex with trait, and so we are
 estimating the difference between the sexes in their expression of
 normal and polled+scurred jointly. The posterior distribution is plotted
@@ -689,14 +715,14 @@ males) has zero counts which will cause extreme separation problems. We
 could choose to have a better prior for the fixed effects, that is close
 to being flat for the two-way (i.e. polled vs scurred, normal vs.scurred
 &amp; polled vs. normal) marginal probabilities within each sex:</p>
-<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="multi.html#cb219-1" tabindex="-1"></a>prior<span class="sc">$</span>B <span class="ot">=</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="at">V =</span> <span class="fu">kronecker</span>(IJ, <span class="fu">diag</span>(<span class="dv">2</span>)) <span class="sc">*</span> (<span class="fl">1.7</span> <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
-<span id="cb219-2"><a href="multi.html#cb219-2" tabindex="-1"></a>m5c<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> <span class="fu">at.level</span>(sex, <span class="dv">1</span>)<span class="sc">:</span>trait <span class="sc">+</span> <span class="fu">at.level</span>(sex, <span class="dv">2</span>)<span class="sc">:</span>trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb219-3"><a href="multi.html#cb219-3" tabindex="-1"></a>    <span class="at">data =</span> SShorns, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="multi.html#cb214-1" tabindex="-1"></a>prior<span class="sc">$</span>B <span class="ot">=</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="at">V =</span> <span class="fu">kronecker</span>(IJ, <span class="fu">diag</span>(<span class="dv">2</span>)) <span class="sc">*</span> (<span class="fl">1.7</span> <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
+<span id="cb214-2"><a href="multi.html#cb214-2" tabindex="-1"></a>m5c<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> <span class="fu">at.level</span>(sex, <span class="dv">1</span>)<span class="sc">:</span>trait <span class="sc">+</span> <span class="fu">at.level</span>(sex, <span class="dv">2</span>)<span class="sc">:</span>trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb214-3"><a href="multi.html#cb214-3" tabindex="-1"></a>    <span class="at">data =</span> SShorns, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior)</span></code></pre></div>
 <p>The female specific probabilities appear reasonable:</p>
-<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="multi.html#cb220-1" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(m5c<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb220-2"><a href="multi.html#cb220-2" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
-<span id="cb220-3"><a href="multi.html#cb220-3" tabindex="-1"></a>}))</span>
-<span id="cb220-4"><a href="multi.html#cb220-4" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="multi.html#cb215-1" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(m5c<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb215-2"><a href="multi.html#cb215-2" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
+<span id="cb215-3"><a href="multi.html#cb215-3" tabindex="-1"></a>}))</span>
+<span id="cb215-4"><a href="multi.html#cb215-4" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
 <pre><code>## 
 ## Iterations = 1:1000
 ## Thinning interval = 1 
@@ -718,14 +744,14 @@ to being flat for the two-way (i.e. polled vs scurred, normal vs.scurred
 ## var2 0.2105 0.2458 0.2649 0.2834 0.3251
 ## var3 0.3289 0.3721 0.3927 0.4110 0.4527</code></pre>
 <p>compared to the observed frequencies:</p>
-<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="multi.html#cb222-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">1</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="multi.html#cb217-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">1</span>])</span></code></pre></div>
 <pre><code>##    normal    polled   scurred 
 ## 0.3401639 0.2663934 0.3934426</code></pre>
 <p>as do the male probabilities:</p>
-<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="multi.html#cb224-1" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">cbind</span>(m5c<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]), <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb224-2"><a href="multi.html#cb224-2" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
-<span id="cb224-3"><a href="multi.html#cb224-3" tabindex="-1"></a>}))</span>
-<span id="cb224-4"><a href="multi.html#cb224-4" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="multi.html#cb219-1" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">cbind</span>(m5c<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]), <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb219-2"><a href="multi.html#cb219-2" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
+<span id="cb219-3"><a href="multi.html#cb219-3" tabindex="-1"></a>}))</span>
+<span id="cb219-4"><a href="multi.html#cb219-4" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
 <pre><code>## 
 ## Iterations = 1:1000
 ## Thinning interval = 1 
@@ -747,7 +773,7 @@ to being flat for the two-way (i.e. polled vs scurred, normal vs.scurred
 ## var2 0.001294 0.005643 0.007625 0.01066 0.01718
 ## var3 0.132136 0.149882 0.160211 0.17244 0.20248</code></pre>
 <p>compared to the observed frequencies:</p>
-<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="multi.html#cb226-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">2</span>])</span></code></pre></div>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="multi.html#cb221-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">2</span>])</span></code></pre></div>
 <pre><code>##    normal    polled   scurred 
 ## 0.8341232 0.0000000 0.1658768</code></pre>
 </div>
@@ -771,8 +797,8 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 function, and I strongly recommend using it if you do not want to fit
 random effects. To illustrate the syntax for fitting ZIP models in
 MCMCglmm I will take one of their examples:</p>
-<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb228-1"><a href="multi.html#cb228-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bioChemists&quot;</span>, <span class="at">package =</span> <span class="st">&quot;pscl&quot;</span>)</span>
-<span id="cb228-2"><a href="multi.html#cb228-2" tabindex="-1"></a><span class="fu">head</span>(bioChemists)</span></code></pre></div>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="multi.html#cb223-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bioChemists&quot;</span>, <span class="at">package =</span> <span class="st">&quot;pscl&quot;</span>)</span>
+<span id="cb223-2"><a href="multi.html#cb223-2" tabindex="-1"></a><span class="fu">head</span>(bioChemists)</span></code></pre></div>
 <pre><code>##   art   fem     mar kid5  phd ment
 ## 1   0   Men Married    0 2.52    7
 ## 2   0 Women  Single    0 2.05    6
@@ -785,11 +811,11 @@ Ph.D student - and the remaining variables are to be fitted as fixed
 effects. Naively, we may expect zero-inflation to be a problem given 30%
 of the data are zeros, and based on the global mean we only expect
 around 18%.</p>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="multi.html#cb230-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="multi.html#cb225-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span></code></pre></div>
 <pre><code>## 
 ## FALSE  TRUE 
 ##   640   275</code></pre>
-<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="multi.html#cb232-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
+<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="multi.html#cb227-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
 <pre><code>## [1] 0.1839859</code></pre>
 <p>As with binary models we do not observe any residual variance for the
 zero-inflated process, and in addition the residual covariance between
@@ -800,10 +826,10 @@ the covariance is set to zero using the idh structure. Setting
 <code>V=diag(2)</code> and <code>nu=0.002</code><a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> we have the inverse-gamma prior with
 <code>shape=scale=0.001</code> for the residual component of the Poisson process
 which captures over-dispersion:</p>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="multi.html#cb234-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
-<span id="cb234-2"><a href="multi.html#cb234-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb234-3"><a href="multi.html#cb234-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb234-4"><a href="multi.html#cb234-4" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="multi.html#cb229-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
+<span id="cb229-2"><a href="multi.html#cb229-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
+<span id="cb229-3"><a href="multi.html#cb229-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb229-4"><a href="multi.html#cb229-4" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>)</span></code></pre></div>
 As is often the case the parameters of the zero-inflation model mixes
 poorly (See Figure <a href="#ZIP" reference-type="ref" reference="ZIP"><span class="math display">\[ZIP\]</span></a>) especially when compared to equivalent hurdle models
 (See Section <a href="multi.html#Hurdle" reference-type="ref" reference="Hurdle">4</a>).
@@ -819,7 +845,7 @@ Figure 6.5: Posterior distribution of fixed effects from model in which trait 1 
 <p>The model would have to be run for (much) longer to say something
 concrete about the level of zero-inflation but my guess would be it’s
 not a big issue, given the probability is probably quite small:</p>
-<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb235-1"><a href="multi.html#cb235-1" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">plogis</span>(m5d<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="multi.html#cb230-1" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">plogis</span>(m5d<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##           0%          25%          50%          75%         100% 
 ## 0.0005808592 0.0012644008 0.0024571298 0.0172839780 0.0491606026</code></pre>
 <div id="posterior-predictive-checks" class="section level3 hasAnchor" number="6.3.1">
@@ -827,17 +853,17 @@ not a big issue, given the probability is probably quite small:</p>
 <p>Another useful check is to fit the standard Poisson model and use
 posterior predictive checks to see how many zero’s you would expect
 under the simple model:</p>
-<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="multi.html#cb237-1" tabindex="-1"></a>prior.m5d<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
-<span id="cb237-2"><a href="multi.html#cb237-2" tabindex="-1"></a>m5d<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.2</span>,</span>
-<span id="cb237-3"><a href="multi.html#cb237-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">saveX =</span> <span class="cn">TRUE</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb237-4"><a href="multi.html#cb237-4" tabindex="-1"></a></span>
-<span id="cb237-5"><a href="multi.html#cb237-5" tabindex="-1"></a>nz <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span></span>
-<span id="cb237-6"><a href="multi.html#cb237-6" tabindex="-1"></a>oz <span class="ot">&lt;-</span> <span class="fu">sum</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb237-7"><a href="multi.html#cb237-7" tabindex="-1"></a></span>
-<span id="cb237-8"><a href="multi.html#cb237-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>) {</span>
-<span id="cb237-9"><a href="multi.html#cb237-9" tabindex="-1"></a>    pred.l <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">915</span>, (m5d<span class="fl">.2</span><span class="sc">$</span>X <span class="sc">%*%</span> m5d<span class="fl">.2</span><span class="sc">$</span>Sol[i, ])<span class="sc">@</span>x, <span class="fu">sqrt</span>(m5d<span class="fl">.2</span><span class="sc">$</span>VCV[i]))</span>
-<span id="cb237-10"><a href="multi.html#cb237-10" tabindex="-1"></a>    nz[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rpois</span>(<span class="dv">915</span>, <span class="fu">exp</span>(pred.l)) <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb237-11"><a href="multi.html#cb237-11" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="multi.html#cb232-1" tabindex="-1"></a>prior.m5d<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
+<span id="cb232-2"><a href="multi.html#cb232-2" tabindex="-1"></a>m5d<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.2</span>,</span>
+<span id="cb232-3"><a href="multi.html#cb232-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">saveX =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb232-4"><a href="multi.html#cb232-4" tabindex="-1"></a></span>
+<span id="cb232-5"><a href="multi.html#cb232-5" tabindex="-1"></a>nz <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span></span>
+<span id="cb232-6"><a href="multi.html#cb232-6" tabindex="-1"></a>oz <span class="ot">&lt;-</span> <span class="fu">sum</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb232-7"><a href="multi.html#cb232-7" tabindex="-1"></a></span>
+<span id="cb232-8"><a href="multi.html#cb232-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>) {</span>
+<span id="cb232-9"><a href="multi.html#cb232-9" tabindex="-1"></a>    pred.l <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">915</span>, (m5d<span class="fl">.2</span><span class="sc">$</span>X <span class="sc">%*%</span> m5d<span class="fl">.2</span><span class="sc">$</span>Sol[i, ])<span class="sc">@</span>x, <span class="fu">sqrt</span>(m5d<span class="fl">.2</span><span class="sc">$</span>VCV[i]))</span>
+<span id="cb232-10"><a href="multi.html#cb232-10" tabindex="-1"></a>    nz[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rpois</span>(<span class="dv">915</span>, <span class="fu">exp</span>(pred.l)) <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb232-11"><a href="multi.html#cb232-11" tabindex="-1"></a>}</span></code></pre></div>
 <p>Figure <a href="#PPZIP" reference-type="ref" reference="PPZIP"><span class="math display">\[PPZIP\]</span></a> shows
 a histogram of the posterior predictive distribution of zero’s (<code>nz</code>)
 from the model compared to the observed number of zeros (<code>oz</code>). The
@@ -872,9 +898,9 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 \end{array}\]</span></p>
 <p>To illustrate, we will refit the ZIP model (<code>m5d.1</code>) as a hurdle-Poisson
 model.</p>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="multi.html#cb238-1" tabindex="-1"></a>m5d<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb238-2"><a href="multi.html#cb238-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb238-3"><a href="multi.html#cb238-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="multi.html#cb233-1" tabindex="-1"></a>m5d<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
+<span id="cb233-2"><a href="multi.html#cb233-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb233-3"><a href="multi.html#cb233-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
 Plotting the Markov chain for the equivalent parameters that were
 plotted for the ZIP model shows that the mixing properties are much
 better (compare Figure <a href="#ZIP" reference-type="ref" reference="ZIP"><span class="math display">\[ZIP\]</span></a> with Figure <a href="#HU" reference-type="ref" reference="HU"><span class="math display">\[HU\]</span></a>).<br />
@@ -891,15 +917,15 @@ observed across different combinations of those fixed effects fitted for
 the Poisson process is constant. Our 95% credible intervals for this
 proportion is (See section
 <a href="glm.html#pred-sec" reference-type="ref" reference="pred-sec"><span class="math display">\[pred-sec\]</span></a>):</p>
-<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="multi.html#cb239-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb239-2"><a href="multi.html#cb239-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="multi.html#cb234-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb234-2"><a href="multi.html#cb234-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##          lower     upper
 ## var1 0.2619553 0.3229821
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>and we can compare this to the predicted number of zero’s from the
 Poisson process if it had not been zero-truncated:</p>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="multi.html#cb241-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="multi.html#cb236-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##          lower     upper
 ## var1 0.1543881 0.3611977
 ## attr(,&quot;Probability&quot;)
@@ -912,7 +938,7 @@ number of articles published by single women with no young children who
 obtained their Ph.D’s from departments scoring zero for prestige (<code>phd</code>)
 and whose mentors had published nothing in the previous 3 years. Our
 equivalent prediction for men is a little lower</p>
-<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="multi.html#cb243-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="multi.html#cb238-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##           lower    upper
 ## var1 0.09016178 0.290933
 ## attr(,&quot;Probability&quot;)
@@ -922,12 +948,12 @@ for this group. However, this may just be a consequence of us fixing the
 proportion of zero’s to be constant across these groups. We can relax
 this assumption by fitting a separate term for the proportion of zeros
 for men:</p>
-<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="multi.html#cb245-1" tabindex="-1"></a>m5d<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb245-2"><a href="multi.html#cb245-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb245-3"><a href="multi.html#cb245-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="multi.html#cb240-1" tabindex="-1"></a>m5d<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
+<span id="cb240-2"><a href="multi.html#cb240-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb240-3"><a href="multi.html#cb240-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
 <p>which reveals that although this proportion is expected to be (slightly)
 smaller:</p>
-<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="multi.html#cb246-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>((m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">2</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">4</span>])<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="multi.html#cb241-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>((m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">2</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">4</span>])<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##         lower     upper
 ## var1 0.231598 0.3088967
 ## attr(,&quot;Probability&quot;)
@@ -935,7 +961,7 @@ smaller:</p>
 <p>the proportion of zeros expected for men is probably still less than
 what we expect from a non-truncated Poisson process for which the
 estimates have changed very little:</p>
-<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="multi.html#cb248-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="multi.html#cb243-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##           lower     upper
 ## var1 0.07728822 0.2430297
 ## attr(,&quot;Probability&quot;)
@@ -981,9 +1007,9 @@ zero-altered regression coefficients are expressed as differences from
 the Poisson regression coefficients. When this difference is zero the
 variable causes no zero-flation, when it is negative it causes
 zero-inflation and when it is positive it causes zero-deflation:</p>
-<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="multi.html#cb250-1" tabindex="-1"></a>m5d<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
-<span id="cb250-2"><a href="multi.html#cb250-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb250-3"><a href="multi.html#cb250-3" tabindex="-1"></a><span class="fu">summary</span>(m5d<span class="fl">.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="multi.html#cb245-1" tabindex="-1"></a>m5d<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
+<span id="cb245-2"><a href="multi.html#cb245-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>)</span>
+<span id="cb245-3"><a href="multi.html#cb245-3" tabindex="-1"></a><span class="fu">summary</span>(m5d<span class="fl">.5</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10

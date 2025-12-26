@@ -52,6 +52,32 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="libs/rglWebGL-binding-1.3.31/rglWebGL.js"></script>
+<link href="libs/rglwidgetClass-1.3.31/rgl.css" rel="stylesheet" />
+<script src="libs/rglwidgetClass-1.3.31/rglClass.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/utils.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/buffer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/subscenes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shaders.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shadersrc.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/textures.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/projection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/mouse.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/init.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pieces.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/draw.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/controls.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/selection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/rglTimer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pretty.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/axes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/animation.src.js"></script>
+<script src="libs/CanvasMatrix4-1.3.31/CanvasMatrix.src.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 
 
 <style type="text/css">
@@ -271,7 +297,7 @@ div.csl-indent {
 <li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
 <ul>
 <li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
-<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#antedependence"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
 <li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
 </ul></li>
 </ul>
@@ -337,18 +363,18 @@ posterior inference but for now we will specify two models, one
 parameter expanded and the other not. To illustrate I will fit a model
 that estimates the between mother variation in offsping sex ratio using
 parameter expansions:</p>
-<div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="parameter-expansion.html#cb267-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
-<span id="cb267-2"><a href="parameter-expansion.html#cb267-2" tabindex="-1"></a>BTdata<span class="sc">$</span>sex[<span class="fu">which</span>(BTdata<span class="sc">$</span>sex <span class="sc">==</span> <span class="st">&quot;UNK&quot;</span>)] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb267-3"><a href="parameter-expansion.html#cb267-3" tabindex="-1"></a>BTdata<span class="sc">$</span>sex <span class="ot">&lt;-</span> gdata<span class="sc">::</span><span class="fu">drop.levels</span>(BTdata<span class="sc">$</span>sex)  <span class="co"># treat unknowns as missing data</span></span>
-<span id="cb267-4"><a href="parameter-expansion.html#cb267-4" tabindex="-1"></a></span>
-<span id="cb267-5"><a href="parameter-expansion.html#cb267-5" tabindex="-1"></a>prior1b <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>,</span>
-<span id="cb267-6"><a href="parameter-expansion.html#cb267-6" tabindex="-1"></a>    <span class="at">alpha.V =</span> <span class="dv">1000</span>)))</span>
-<span id="cb267-7"><a href="parameter-expansion.html#cb267-7" tabindex="-1"></a>m7b<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
-<span id="cb267-8"><a href="parameter-expansion.html#cb267-8" tabindex="-1"></a>    <span class="at">prior =</span> prior1b)</span></code></pre></div>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="parameter-expansion.html#cb262-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
+<span id="cb262-2"><a href="parameter-expansion.html#cb262-2" tabindex="-1"></a>BTdata<span class="sc">$</span>sex[<span class="fu">which</span>(BTdata<span class="sc">$</span>sex <span class="sc">==</span> <span class="st">&quot;UNK&quot;</span>)] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb262-3"><a href="parameter-expansion.html#cb262-3" tabindex="-1"></a>BTdata<span class="sc">$</span>sex <span class="ot">&lt;-</span> gdata<span class="sc">::</span><span class="fu">drop.levels</span>(BTdata<span class="sc">$</span>sex)  <span class="co"># treat unknowns as missing data</span></span>
+<span id="cb262-4"><a href="parameter-expansion.html#cb262-4" tabindex="-1"></a></span>
+<span id="cb262-5"><a href="parameter-expansion.html#cb262-5" tabindex="-1"></a>prior1b <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>,</span>
+<span id="cb262-6"><a href="parameter-expansion.html#cb262-6" tabindex="-1"></a>    <span class="at">alpha.V =</span> <span class="dv">1000</span>)))</span>
+<span id="cb262-7"><a href="parameter-expansion.html#cb262-7" tabindex="-1"></a>m7b<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
+<span id="cb262-8"><a href="parameter-expansion.html#cb262-8" tabindex="-1"></a>    <span class="at">prior =</span> prior1b)</span></code></pre></div>
 <p>and fit a model that does not use parameter expansion:</p>
-<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="parameter-expansion.html#cb268-1" tabindex="-1"></a>prior2b <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e-10</span>, <span class="at">nu =</span> <span class="sc">-</span><span class="dv">1</span>)))</span>
-<span id="cb268-2"><a href="parameter-expansion.html#cb268-2" tabindex="-1"></a>m7b<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
-<span id="cb268-3"><a href="parameter-expansion.html#cb268-3" tabindex="-1"></a>    <span class="at">prior =</span> prior2b)</span></code></pre></div>
+<div class="sourceCode" id="cb263"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb263-1"><a href="parameter-expansion.html#cb263-1" tabindex="-1"></a>prior2b <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e-10</span>, <span class="at">nu =</span> <span class="sc">-</span><span class="dv">1</span>)))</span>
+<span id="cb263-2"><a href="parameter-expansion.html#cb263-2" tabindex="-1"></a>m7b<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
+<span id="cb263-3"><a href="parameter-expansion.html#cb263-3" tabindex="-1"></a>    <span class="at">prior =</span> prior2b)</span></code></pre></div>
 <p>The prior densities in the two models are very similar across the range
 of variances with reasonable posterior support, and running the models
 for long enough will verify that they are sampling from very similar
@@ -382,12 +408,12 @@ function:
 ``` r
 df(v/alpha.V, df1 = 1, df2 = nu, ncp = (alpha.mu^2)/alpha.V)</code></pre>
 <p>and the prior for the standard deviation:</p>
-<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="parameter-expansion.html#cb270-1" tabindex="-1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="fu">dt</span>(<span class="fu">sqrt</span>(v)<span class="sc">/</span><span class="fu">sqrt</span>(alpha.V), <span class="at">df =</span> nu, <span class="at">ncp =</span> alpha.mu<span class="sc">/</span><span class="fu">sqrt</span>(alpha.V))</span></code></pre></div>
+<div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="parameter-expansion.html#cb265-1" tabindex="-1"></a><span class="dv">2</span> <span class="sc">*</span> <span class="fu">dt</span>(<span class="fu">sqrt</span>(v)<span class="sc">/</span><span class="fu">sqrt</span>(alpha.V), <span class="at">df =</span> nu, <span class="at">ncp =</span> alpha.mu<span class="sc">/</span><span class="fu">sqrt</span>(alpha.V))</span></code></pre></div>
 <p>where <code>v</code><span class="math inline">\(&gt;0\)</span>.<br />
 To illustrate I’ll use the original Schools example from <span class="citation">(Gelman 2006)</span></p>
-<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="parameter-expansion.html#cb271-1" tabindex="-1"></a>schools <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">school =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">estimate =</span> <span class="fu">c</span>(<span class="fl">28.39</span>, <span class="fl">7.94</span>, <span class="sc">-</span><span class="fl">2.75</span>, <span class="fl">6.82</span>,</span>
-<span id="cb271-2"><a href="parameter-expansion.html#cb271-2" tabindex="-1"></a>    <span class="sc">-</span><span class="fl">0.64</span>, <span class="fl">0.63</span>, <span class="fl">18.01</span>, <span class="fl">12.16</span>), <span class="at">sd =</span> <span class="fu">c</span>(<span class="fl">14.9</span>, <span class="fl">10.2</span>, <span class="fl">16.3</span>, <span class="dv">11</span>, <span class="fl">9.4</span>, <span class="fl">11.4</span>, <span class="fl">10.4</span>, <span class="fl">17.6</span>))</span>
-<span id="cb271-3"><a href="parameter-expansion.html#cb271-3" tabindex="-1"></a><span class="fu">head</span>(schools)</span></code></pre></div>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="parameter-expansion.html#cb266-1" tabindex="-1"></a>schools <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">school =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>], <span class="at">estimate =</span> <span class="fu">c</span>(<span class="fl">28.39</span>, <span class="fl">7.94</span>, <span class="sc">-</span><span class="fl">2.75</span>, <span class="fl">6.82</span>,</span>
+<span id="cb266-2"><a href="parameter-expansion.html#cb266-2" tabindex="-1"></a>    <span class="sc">-</span><span class="fl">0.64</span>, <span class="fl">0.63</span>, <span class="fl">18.01</span>, <span class="fl">12.16</span>), <span class="at">sd =</span> <span class="fu">c</span>(<span class="fl">14.9</span>, <span class="fl">10.2</span>, <span class="fl">16.3</span>, <span class="dv">11</span>, <span class="fl">9.4</span>, <span class="fl">11.4</span>, <span class="fl">10.4</span>, <span class="fl">17.6</span>))</span>
+<span id="cb266-3"><a href="parameter-expansion.html#cb266-3" tabindex="-1"></a><span class="fu">head</span>(schools)</span></code></pre></div>
 <pre><code>##   school estimate   sd
 ## 1      a    28.39 14.9
 ## 2      b     7.94 10.2
@@ -400,10 +426,10 @@ Aptitude Test coaching programs in 8 <code>schools</code>, and <code>sd</code> a
 standard errors of the estimate. In the original example Gelman focused
 on the standard deviation of the between school effects and so we will
 place an improper flat prior on the standard deviation:</p>
-<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="parameter-expansion.html#cb273-1" tabindex="-1"></a>prior1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(schools<span class="sc">$</span>sd<span class="sc">^</span><span class="dv">2</span>), <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e-10</span>,</span>
-<span id="cb273-2"><a href="parameter-expansion.html#cb273-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="sc">-</span><span class="dv">1</span>)))</span>
-<span id="cb273-3"><a href="parameter-expansion.html#cb273-3" tabindex="-1"></a>m7a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(estimate <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>school, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(school)<span class="sc">:</span>units, <span class="at">data =</span> schools,</span>
-<span id="cb273-4"><a href="parameter-expansion.html#cb273-4" tabindex="-1"></a>    <span class="at">prior =</span> prior1)</span></code></pre></div>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="parameter-expansion.html#cb268-1" tabindex="-1"></a>prior1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(schools<span class="sc">$</span>sd<span class="sc">^</span><span class="dv">2</span>), <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e-10</span>,</span>
+<span id="cb268-2"><a href="parameter-expansion.html#cb268-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="sc">-</span><span class="dv">1</span>)))</span>
+<span id="cb268-3"><a href="parameter-expansion.html#cb268-3" tabindex="-1"></a>m7a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(estimate <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>school, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(school)<span class="sc">:</span>units, <span class="at">data =</span> schools,</span>
+<span id="cb268-4"><a href="parameter-expansion.html#cb268-4" tabindex="-1"></a>    <span class="at">prior =</span> prior1)</span></code></pre></div>
 In this example there is information on the between school variance
 although we only have a single estimate for each school. This is
 possible because the within school variance was available for each
@@ -420,10 +446,10 @@ Figure 9.1: Between school standard deviation in educational test scores, with a
 </div>
 <p>We can also use the inverse-gamma prior with scale and shape equal to
 0.001:</p>
-<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="parameter-expansion.html#cb274-1" tabindex="-1"></a>prior2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(schools<span class="sc">$</span>sd<span class="sc">^</span><span class="dv">2</span>), <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
-<span id="cb274-2"><a href="parameter-expansion.html#cb274-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
-<span id="cb274-3"><a href="parameter-expansion.html#cb274-3" tabindex="-1"></a>m7a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(estimate <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>school, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(school)<span class="sc">:</span>units, <span class="at">data =</span> schools,</span>
-<span id="cb274-4"><a href="parameter-expansion.html#cb274-4" tabindex="-1"></a>    <span class="at">prior =</span> prior2)</span></code></pre></div>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="parameter-expansion.html#cb269-1" tabindex="-1"></a>prior2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(schools<span class="sc">$</span>sd<span class="sc">^</span><span class="dv">2</span>), <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
+<span id="cb269-2"><a href="parameter-expansion.html#cb269-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
+<span id="cb269-3"><a href="parameter-expansion.html#cb269-3" tabindex="-1"></a>m7a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(estimate <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>school, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(school)<span class="sc">:</span>units, <span class="at">data =</span> schools,</span>
+<span id="cb269-4"><a href="parameter-expansion.html#cb269-4" tabindex="-1"></a>    <span class="at">prior =</span> prior2)</span></code></pre></div>
 but Figure <a href="#school2-fig" reference-type="ref" reference="school2-fig"><span class="math display">\[school2-fig\]</span></a> indicates that such a prior in this context may
 put too much density and values close to zero.<br />
 
@@ -437,10 +463,10 @@ Figure 9.2: Between school standard deviation in educational test scores, with a
 equivalent to a proper Cauchy prior for the standard deviation with
 scale equal to <span class="math inline">\(\sqrt{\texttt{alpha.V}}\)</span>. Following <code>Gelman.2006</code> we use
 a scale of 25:</p>
-<div class="sourceCode" id="cb275"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb275-1"><a href="parameter-expansion.html#cb275-1" tabindex="-1"></a>prior3 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(schools<span class="sc">$</span>sd<span class="sc">^</span><span class="dv">2</span>), <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
-<span id="cb275-2"><a href="parameter-expansion.html#cb275-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>, <span class="at">alpha.V =</span> <span class="dv">25</span><span class="sc">^</span><span class="dv">2</span>)))</span>
-<span id="cb275-3"><a href="parameter-expansion.html#cb275-3" tabindex="-1"></a>m7a<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(estimate <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>school, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(school)<span class="sc">:</span>units, <span class="at">data =</span> schools,</span>
-<span id="cb275-4"><a href="parameter-expansion.html#cb275-4" tabindex="-1"></a>    <span class="at">prior =</span> prior3)</span></code></pre></div>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="parameter-expansion.html#cb270-1" tabindex="-1"></a>prior3 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(schools<span class="sc">$</span>sd<span class="sc">^</span><span class="dv">2</span>), <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
+<span id="cb270-2"><a href="parameter-expansion.html#cb270-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>, <span class="at">alpha.V =</span> <span class="dv">25</span><span class="sc">^</span><span class="dv">2</span>)))</span>
+<span id="cb270-3"><a href="parameter-expansion.html#cb270-3" tabindex="-1"></a>m7a<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(estimate <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>school, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(school)<span class="sc">:</span>units, <span class="at">data =</span> schools,</span>
+<span id="cb270-4"><a href="parameter-expansion.html#cb270-4" tabindex="-1"></a>    <span class="at">prior =</span> prior3)</span></code></pre></div>
 <p>and Figure <a href="#school3-fig" reference-type="ref" reference="school3-fig"><span class="math display">\[school3-fig\]</span></a> shows that the prior may have better properties
 than the inverse-gamma, and that the posterior is less distorted.</p>
 <div class="figure"><span style="display:block;" id="fig:school3"></span>
@@ -462,13 +488,13 @@ rescale the location effects and variances by the estimated residual
 variance to obtain the posterior distribution for some fixed value of
 the actual residual variance. For example, we can refit the sex ratio
 model using a residual variance fixed at ten rather than one:</p>
-<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="parameter-expansion.html#cb276-1" tabindex="-1"></a>prior3b <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">10</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>,</span>
-<span id="cb276-2"><a href="parameter-expansion.html#cb276-2" tabindex="-1"></a>    <span class="at">alpha.V =</span> <span class="dv">1000</span>)))</span>
-<span id="cb276-3"><a href="parameter-expansion.html#cb276-3" tabindex="-1"></a>m7b<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
-<span id="cb276-4"><a href="parameter-expansion.html#cb276-4" tabindex="-1"></a>    <span class="at">prior =</span> prior3b)</span></code></pre></div>
+<div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="parameter-expansion.html#cb271-1" tabindex="-1"></a>prior3b <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">10</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>,</span>
+<span id="cb271-2"><a href="parameter-expansion.html#cb271-2" tabindex="-1"></a>    <span class="at">alpha.V =</span> <span class="dv">1000</span>)))</span>
+<span id="cb271-3"><a href="parameter-expansion.html#cb271-3" tabindex="-1"></a>m7b<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
+<span id="cb271-4"><a href="parameter-expansion.html#cb271-4" tabindex="-1"></a>    <span class="at">prior =</span> prior3b)</span></code></pre></div>
 <p>The two models appear to give completely different posteriors (Figure
 <a href="#sexratio2" reference-type="ref" reference="sexratio2"><span class="math display">\[sexratio2\]</span></a>)</p>
-<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="parameter-expansion.html#cb277-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>], m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="parameter-expansion.html#cb272-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>], m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]))</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:sexratio2"></span>
 <img src="MCMCglmm-course-notes_files/figure-html/sexratio2-1.png" alt="Between mother variation in sex ratio with the residual variance fixed at 1 (black trace) and 10 (red trace)." width="672" />
 <p class="caption">
@@ -476,9 +502,9 @@ Figure 9.4: Between mother variation in sex ratio with the residual variance fix
 </p>
 </div>
 <p>but rescaling indicates that they are very similar:</p>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="parameter-expansion.html#cb278-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb278-2"><a href="parameter-expansion.html#cb278-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]), m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span></span>
-<span id="cb278-3"><a href="parameter-expansion.html#cb278-3" tabindex="-1"></a>    c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="parameter-expansion.html#cb273-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb273-2"><a href="parameter-expansion.html#cb273-2" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]), m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span></span>
+<span id="cb273-3"><a href="parameter-expansion.html#cb273-3" tabindex="-1"></a>    c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>])))</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:sexratio3"></span>
 <img src="MCMCglmm-course-notes_files/figure-html/sexratio3-1.png" alt="Between mother variation in sex ratio with the residual variance fixed at 1 (black trace) and 10 (red trace) but with both estimates rescaled to what would be observed under no residual variance." width="672" />
 <p class="caption">
@@ -490,10 +516,10 @@ the two models but Figure
 <a href="#sexratio2" reference-type="ref" reference="sexratio2"><span class="math display">\[sexratio2\]</span></a>
 suggests that the difference has little influence. However, the mixing
 properties of the second chain are much better <span class="citation">(Dyk and Meng 2001)</span>:</p>
-<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="parameter-expansion.html#cb279-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="parameter-expansion.html#cb274-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
 <pre><code>##     var1 
 ## 201.7535</code></pre>
-<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="parameter-expansion.html#cb281-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="parameter-expansion.html#cb276-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
 <pre><code>##    var1 
 ## 782.793</code></pre>
 <p>Although the chain mixes faster as the residual variance is set to be
@@ -510,9 +536,9 @@ optimal 0.44. This can be fixed by using the slice sampling methods
 outlined in <span class="citation">Damien, Wakefield, and Walker (1999)</span> by passing <code>slice=TRUE</code> to <code>MCMCglmm</code>. Slice
 sampling can also be more efficient even if the prior is fixed at some
 value:</p>
-<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="parameter-expansion.html#cb283-1" tabindex="-1"></a>m7b<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
-<span id="cb283-2"><a href="parameter-expansion.html#cb283-2" tabindex="-1"></a>    <span class="at">prior =</span> prior3b, <span class="at">slice =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb283-3"><a href="parameter-expansion.html#cb283-3" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="parameter-expansion.html#cb278-1" tabindex="-1"></a>m7b<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
+<span id="cb278-2"><a href="parameter-expansion.html#cb278-2" tabindex="-1"></a>    <span class="at">prior =</span> prior3b, <span class="at">slice =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb278-3"><a href="parameter-expansion.html#cb278-3" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
 <pre><code>##     var1 
 ## 813.9908</code></pre>
 

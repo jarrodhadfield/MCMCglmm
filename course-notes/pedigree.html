@@ -52,6 +52,32 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="libs/rglWebGL-binding-1.3.31/rglWebGL.js"></script>
+<link href="libs/rglwidgetClass-1.3.31/rgl.css" rel="stylesheet" />
+<script src="libs/rglwidgetClass-1.3.31/rglClass.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/utils.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/buffer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/subscenes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shaders.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shadersrc.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/textures.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/projection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/mouse.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/init.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pieces.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/draw.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/controls.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/selection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/rglTimer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pretty.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/axes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/animation.src.js"></script>
+<script src="libs/CanvasMatrix4-1.3.31/CanvasMatrix.src.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 
 
 <style type="text/css">
@@ -271,7 +297,7 @@ div.csl-indent {
 <li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
 <ul>
 <li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
-<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#antedependence"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
 <li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
 </ul></li>
 </ul>
@@ -333,11 +359,11 @@ the pedigree.<br />
 To illustrate, we can load a pedigree for a population of blue tits and
 display the pedigree for the nuclear family that has individuals
 <code>"R187920"</code> and <code>"R187921"</code> as parents:</p>
-<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="pedigree.html#cb252-1" tabindex="-1"></a><span class="fu">data</span>(BTped)</span>
-<span id="cb252-2"><a href="pedigree.html#cb252-2" tabindex="-1"></a>Nped <span class="ot">&lt;-</span> BTped[<span class="fu">which</span>(<span class="fu">apply</span>(BTped, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb252-3"><a href="pedigree.html#cb252-3" tabindex="-1"></a>    <span class="fu">any</span>(x <span class="sc">==</span> <span class="st">&quot;R187920&quot;</span> <span class="sc">|</span> x <span class="sc">==</span> <span class="st">&quot;R187921&quot;</span>)</span>
-<span id="cb252-4"><a href="pedigree.html#cb252-4" tabindex="-1"></a>})), ]</span>
-<span id="cb252-5"><a href="pedigree.html#cb252-5" tabindex="-1"></a>Nped</span></code></pre></div>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="pedigree.html#cb247-1" tabindex="-1"></a><span class="fu">data</span>(BTped)</span>
+<span id="cb247-2"><a href="pedigree.html#cb247-2" tabindex="-1"></a>Nped <span class="ot">&lt;-</span> BTped[<span class="fu">which</span>(<span class="fu">apply</span>(BTped, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb247-3"><a href="pedigree.html#cb247-3" tabindex="-1"></a>    <span class="fu">any</span>(x <span class="sc">==</span> <span class="st">&quot;R187920&quot;</span> <span class="sc">|</span> x <span class="sc">==</span> <span class="st">&quot;R187921&quot;</span>)</span>
+<span id="cb247-4"><a href="pedigree.html#cb247-4" tabindex="-1"></a>})), ]</span>
+<span id="cb247-5"><a href="pedigree.html#cb247-5" tabindex="-1"></a>Nped</span></code></pre></div>
 <pre><code>##       animal     dam    sire
 ## 66   R187920    &lt;NA&gt;    &lt;NA&gt;
 ## 172  R187921    &lt;NA&gt;    &lt;NA&gt;
@@ -390,12 +416,12 @@ To illustrate, lets take the phylogeny of bird families included in the
 <code>ape</code> package, and extract the phylogeny in tabular form for the Paridae
 (Tits), Certhiidae (Treecreepers), Gruidae (Cranes) and the
 Struthionidae (Ostriches):</p>
-<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="pedigree.html#cb254-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bird.families&quot;</span>)</span>
-<span id="cb254-2"><a href="pedigree.html#cb254-2" tabindex="-1"></a>bird.families <span class="ot">&lt;-</span> <span class="fu">makeNodeLabel</span>(bird.families)</span>
-<span id="cb254-3"><a href="pedigree.html#cb254-3" tabindex="-1"></a>some.families <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Certhiidae&quot;</span>, <span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Gruidae&quot;</span>, <span class="st">&quot;Struthionidae&quot;</span>)</span>
-<span id="cb254-4"><a href="pedigree.html#cb254-4" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.families, <span class="fu">setdiff</span>(bird.families<span class="sc">$</span>tip.label, some.families))</span>
-<span id="cb254-5"><a href="pedigree.html#cb254-5" tabindex="-1"></a>INphylo <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(Nphylo)</span>
-<span id="cb254-6"><a href="pedigree.html#cb254-6" tabindex="-1"></a>INphylo<span class="sc">$</span>pedigree</span></code></pre></div>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="pedigree.html#cb249-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bird.families&quot;</span>)</span>
+<span id="cb249-2"><a href="pedigree.html#cb249-2" tabindex="-1"></a>bird.families <span class="ot">&lt;-</span> <span class="fu">makeNodeLabel</span>(bird.families)</span>
+<span id="cb249-3"><a href="pedigree.html#cb249-3" tabindex="-1"></a>some.families <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Certhiidae&quot;</span>, <span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Gruidae&quot;</span>, <span class="st">&quot;Struthionidae&quot;</span>)</span>
+<span id="cb249-4"><a href="pedigree.html#cb249-4" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.families, <span class="fu">setdiff</span>(bird.families<span class="sc">$</span>tip.label, some.families))</span>
+<span id="cb249-5"><a href="pedigree.html#cb249-5" tabindex="-1"></a>INphylo <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(Nphylo)</span>
+<span id="cb249-6"><a href="pedigree.html#cb249-6" tabindex="-1"></a>INphylo<span class="sc">$</span>pedigree</span></code></pre></div>
 <pre><code>##      node.names                  
 ## [1,] &quot;Node58&quot;        NA        NA
 ## [2,] &quot;Node122&quot;       &quot;Node58&quot;  NA
@@ -419,18 +445,18 @@ that seems to be lacking in the tabular form is the branch length
 information. Branch lengths are equivalent to inbreeding coefficients in
 a pedigree. As with pedigrees the inbreeding coefficients are calculated
 by <code>inverseA</code>:</p>
-<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="pedigree.html#cb256-1" tabindex="-1"></a>INphylo<span class="sc">$</span>inbreeding</span></code></pre></div>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="pedigree.html#cb251-1" tabindex="-1"></a>INphylo<span class="sc">$</span>inbreeding</span></code></pre></div>
 <pre><code>## [1] 0.2285714 0.3857143 1.0000000 0.7714286 0.3857143 0.3857143</code></pre>
 <p>You will notice that the Struthionidae have an inbreeding coefficient of
 1 because we used the default <code>scale=TRUE</code> in the call to <code>inverseA</code>.
 Only ultrametric trees can be scaled in <code>MCMCglmm</code> and in this case the
 sum of the inbreeding coefficients connecting the root to a terminal
 node is one. To take the Paridae as an example:</p>
-<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="pedigree.html#cb258-1" tabindex="-1"></a><span class="fu">sum</span>(INphylo<span class="sc">$</span>inbreeding[<span class="fu">which</span>(INphylo<span class="sc">$</span>pedigree[, <span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Node122&quot;</span>, <span class="st">&quot;Node58&quot;</span>))])</span></code></pre></div>
+<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="pedigree.html#cb253-1" tabindex="-1"></a><span class="fu">sum</span>(INphylo<span class="sc">$</span>inbreeding[<span class="fu">which</span>(INphylo<span class="sc">$</span>pedigree[, <span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Node122&quot;</span>, <span class="st">&quot;Node58&quot;</span>))])</span></code></pre></div>
 <pre><code>## [1] 1</code></pre>
 <p>The inbreeding coefficients for the members of the blue tit nuclear
 family are of course all zero:</p>
-<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="pedigree.html#cb260-1" tabindex="-1"></a><span class="fu">inverseA</span>(Nped)<span class="sc">$</span>inbreeding</span></code></pre></div>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="pedigree.html#cb255-1" tabindex="-1"></a><span class="fu">inverseA</span>(Nped)<span class="sc">$</span>inbreeding</span></code></pre></div>
 <pre><code>## [1] 0 0 0 0 0 0 0 0</code></pre>
 </div>
 </div>
@@ -446,8 +472,8 @@ element <span class="math inline">\(A_{i,j}\)</span> is the amount of time that 
 ancestor of all sampled taxa) before the speciation event that resulted
 in taxa <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. Simple, but perhaps slow, recursive methods exist
 for calculating <span class="math inline">\({\bf A}\)</span> in both cases:</p>
-<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="pedigree.html#cb262-1" tabindex="-1"></a>Aped <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> kinship2<span class="sc">::</span><span class="fu">kinship</span>(Nped[, <span class="dv">1</span>], Nped[, <span class="dv">2</span>], Nped[, <span class="dv">3</span>])</span>
-<span id="cb262-2"><a href="pedigree.html#cb262-2" tabindex="-1"></a>Aped</span></code></pre></div>
+<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="pedigree.html#cb257-1" tabindex="-1"></a>Aped <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> kinship2<span class="sc">::</span><span class="fu">kinship</span>(Nped[, <span class="dv">1</span>], Nped[, <span class="dv">2</span>], Nped[, <span class="dv">3</span>])</span>
+<span id="cb257-2"><a href="pedigree.html#cb257-2" tabindex="-1"></a>Aped</span></code></pre></div>
 <pre><code>##         R187920 R187921 R187726 R187724 R187723 R187613 R187612 R187609
 ## R187920     1.0     0.0     0.5     0.5     0.5     0.5     0.5     0.5
 ## R187921     0.0     1.0     0.5     0.5     0.5     0.5     0.5     0.5
@@ -457,8 +483,8 @@ for calculating <span class="math inline">\({\bf A}\)</span> in both cases:</p>
 ## R187613     0.5     0.5     0.5     0.5     0.5     1.0     0.5     0.5
 ## R187612     0.5     0.5     0.5     0.5     0.5     0.5     1.0     0.5
 ## R187609     0.5     0.5     0.5     0.5     0.5     0.5     0.5     1.0</code></pre>
-<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="pedigree.html#cb264-1" tabindex="-1"></a>Aphylo <span class="ot">&lt;-</span> <span class="fu">vcv.phylo</span>(Nphylo, <span class="at">cor =</span> T)</span>
-<span id="cb264-2"><a href="pedigree.html#cb264-2" tabindex="-1"></a>Aphylo</span></code></pre></div>
+<div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="pedigree.html#cb259-1" tabindex="-1"></a>Aphylo <span class="ot">&lt;-</span> <span class="fu">vcv.phylo</span>(Nphylo, <span class="at">cor =</span> T)</span>
+<span id="cb259-2"><a href="pedigree.html#cb259-2" tabindex="-1"></a>Aphylo</span></code></pre></div>
 <pre><code>##               Struthionidae   Gruidae Certhiidae   Paridae
 ## Struthionidae             1 0.0000000  0.0000000 0.0000000
 ## Gruidae                   0 1.0000000  0.2285714 0.2285714
@@ -474,8 +500,8 @@ Let’s reconsider the Blue tit model <code>m3a.1</code> from Section
 were interested in estimating <code>sex</code> effects for <code>tarsus</code> length together
 with the amount of variance explained by genetic mother (<code>dam</code>) and
 foster mother (<code>fosternest</code>):</p>
-<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="pedigree.html#cb266-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
-<span id="cb266-2"><a href="pedigree.html#cb266-2" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb261"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb261-1"><a href="pedigree.html#cb261-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
+<span id="cb261-2"><a href="pedigree.html#cb261-2" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>All individuals that contributed to that analysis are from a single
 generation and appear in <code>BTped</code> together with their parents. However,
 individuals in the parental generation do not have tarsus length

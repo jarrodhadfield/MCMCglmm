@@ -42,7 +42,10 @@ eq:conv-eq
 fig:NIc
 fig:ChickWeight
 fig:parallel
+fig:CWpred-1
 fig:RR2VCV
+fig:CWpred-2
+fig:CWpred-3
 fig:RRtoy
 eq:RRvar-eq
 fig:asUV
@@ -149,5 +152,5 @@ variances-close-to-zero
 binary-response-models
 path
 path-anlaysis
-antedependence
+ante-sec
 scaling
