@@ -304,8 +304,7 @@ another mother soon after hatching. The nest they were reared in is
 recorded as <code>fosternest</code>.</p>
 <div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="cat-int.html#cb123-1" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>),</span>
 <span id="cb123-2"><a href="cat-int.html#cb123-2" tabindex="-1"></a>    <span class="at">G2 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
-<span id="cb123-3"><a href="cat-int.html#cb123-3" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb123-4"><a href="cat-int.html#cb123-4" tabindex="-1"></a>    <span class="at">prior =</span> prior)</span></code></pre></div>
+<span id="cb123-3"><a href="cat-int.html#cb123-3" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">prior =</span> prior)</span></code></pre></div>
 <p>fits <code>sex</code> as a fixed effect, and <code>dam</code> and <code>fosternest</code> as random
 effects.</p>
 <div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="cat-int.html#cb124-1" tabindex="-1"></a><span class="fu">diag</span>(<span class="fu">autocorr</span>(m3a<span class="fl">.1</span><span class="sc">$</span>VCV)[<span class="dv">2</span>, , ])</span></code></pre></div>
@@ -353,7 +352,7 @@ The lower 95% credible interval for the <code>fosternest</code> variance is low<
 DIC suggest not:</p>
 <div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="cat-int.html#cb133-1" tabindex="-1"></a>priorb <span class="ot">&lt;-</span> prior</span>
 <span id="cb133-2"><a href="cat-int.html#cb133-2" tabindex="-1"></a>priorb[[<span class="dv">2</span>]] <span class="ot">&lt;-</span> priorb[[<span class="dv">2</span>]][<span class="sc">-</span><span class="dv">2</span>]</span>
-<span id="cb133-3"><a href="cat-int.html#cb133-3" tabindex="-1"></a>m3a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">prior =</span> priorb)</span>
+<span id="cb133-3"><a href="cat-int.html#cb133-3" tabindex="-1"></a>m3a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">prior =</span> priorb)</span>
 <span id="cb133-4"><a href="cat-int.html#cb133-4" tabindex="-1"></a>m3a<span class="fl">.2</span><span class="sc">$</span>DIC</span></code></pre></div>
 <pre><code>## [1] 2014.197</code></pre>
 <div class="sourceCode" id="cb135"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb135-1"><a href="cat-int.html#cb135-1" tabindex="-1"></a>m3a<span class="fl">.1</span><span class="sc">$</span>DIC</span></code></pre></div>
@@ -449,9 +448,8 @@ the intercept in this case). The interaction forms a new set of factors.
 Although they have different names from the original <code>dam</code> levels, it is
 clear that there is a one to one mapping between the original and the
 new factor levels and the models are therefore equivalent. For more
-complex interactions this is not the case.<br />
-We could also fit <code>sex</code> in the variance structure model, (i.e.
-<code>us(``sex``):``dam</code> or <code>idh(``sex``):``dam</code>)<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>:</p>
+complex interactions this is not the case.</p>
+<p>We could also fit <code>sex</code> in the variance structure model, (i.e. <code>us(``sex``):``dam</code> or <code>idh(``sex``):``dam</code>)<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>:</p>
 <p><span class="math display">\[\begin{array}{c|rrrrrc}
 &amp;{\color{red} \texttt{Fem2}}&amp;{\color{red} \texttt{Fem20}}&amp;{\color{red} \texttt{Fem3}}&amp;{\color{red} \texttt{Fem5}}&amp;{\color{red} \texttt{K983388}}&amp;\dots\\
 \hline\\
@@ -491,7 +489,7 @@ for now note that the prior for the dam component has <code>V</code> as a
 <div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="cat-int.html#cb145-1" tabindex="-1"></a>priorb <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">3</span>),</span>
 <span id="cb145-2"><a href="cat-int.html#cb145-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G2 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
 <span id="cb145-3"><a href="cat-int.html#cb145-3" tabindex="-1"></a>m3a<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(sex)<span class="sc">:</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata,</span>
-<span id="cb145-4"><a href="cat-int.html#cb145-4" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">prior =</span> priorb)</span></code></pre></div>
+<span id="cb145-4"><a href="cat-int.html#cb145-4" tabindex="-1"></a>    <span class="at">prior =</span> priorb)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:BTidh"></span>
 <img src="MCMCglmm-course-notes_files/figure-html/BTidh-1.png" alt="MCMC summary plot for the sex-specific dam variance components from model \texttt{m3a.3}. The number of chicks with unknown (\texttt{UNK}) sex is low, with very little replication within dams. The posterior distribution for the \texttt{UNK} variance component is dominated by the prior which has a marginal distribution of \texttt{V=1} and \texttt{nu=0.002}." width="672" />
 <p class="caption">
@@ -504,8 +502,8 @@ well. This is not that surprising given that there are only
 47 birds with unknown sex and these tend to be
 thinly spread across dams. This variance component is likely to be
 dominated by the prior, but for now we’ll leave the model as it is and
-come back to some possible alternative solutions later.<br />
-We can extract the marginal means for each variance and place them into
+come back to some possible alternative solutions later.</p>
+<p>We can extract the marginal means for each variance and place them into
 a matrix:</p>
 <div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="cat-int.html#cb146-1" tabindex="-1"></a>Vdam<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">colMeans</span>(m3a<span class="fl">.3</span><span class="sc">$</span>VCV)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>])</span>
 <span id="cb146-2"><a href="cat-int.html#cb146-2" tabindex="-1"></a><span class="fu">colnames</span>(Vdam<span class="fl">.3</span>) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(m3a<span class="fl">.3</span><span class="sc">$</span>VCV)[<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>]</span>
@@ -552,7 +550,7 @@ motivation is laid out in Section
 <div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="cat-int.html#cb149-1" tabindex="-1"></a>prior.m3a<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">3</span>) <span class="sc">*</span></span>
 <span id="cb149-2"><a href="cat-int.html#cb149-2" tabindex="-1"></a>    <span class="fl">0.02</span>, <span class="at">nu =</span> <span class="dv">4</span>), <span class="at">G2 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
 <span id="cb149-3"><a href="cat-int.html#cb149-3" tabindex="-1"></a>m3a<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(sex)<span class="sc">:</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata,</span>
-<span id="cb149-4"><a href="cat-int.html#cb149-4" tabindex="-1"></a>    <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">prior =</span> prior.m3a<span class="fl">.4</span>)</span></code></pre></div>
+<span id="cb149-4"><a href="cat-int.html#cb149-4" tabindex="-1"></a>    <span class="at">prior =</span> prior.m3a<span class="fl">.4</span>)</span></code></pre></div>
 <p>The posterior mean (co)variances for this model show that the
 covariances are almost the same magnitude as the variances suggesting
 strong correlations:</p>
@@ -597,12 +595,10 @@ suggests:</p>
 simple model (<code>mBT</code>), where dam effects are assumed to be equivalent
 across the sexes, and the most complex model (<code>mBT2</code>), where dam effects
 are allowed to vary across the sexes and covary between the sexes to
-different degrees. Some alternatives are listed in Table
-<a href="#tab:T1" reference-type="ref" reference="rspec">1</a>.<br />
-To be completed .…<br />
-</p>
+different degrees. Some alternatives are listed in Table <a href="#tab:vfunction">4.1</a>.</p>
 <div class="landscape">
-<div id="rspec">
+
+</div>
 <table>
 <tbody>
 <tr class="odd">
@@ -666,7 +662,7 @@ To be completed .…<br />
                                                                                                                  \end{array}                                                                       \end{array}
                                                                                                                   \right]$                                                                          \right]$</code></pre>
 <hr />
-<p>: (#tab:T1) Different random effect specifications in <code>lmer</code>,
+<p>: (#tab:vfunction) Different random effect specifications in <code>lmer</code>,
 <code>MCMCglmm</code> and <code>asreml</code>. <code>sex</code> is a factor with three levels so the
 resulting matrix is <span class="math inline">\(3\times3\)</span>. Continuous variables can also go on
 the LHS of the pipe, or within the variance structure functions (e.g.
@@ -677,9 +673,9 @@ different ages) we may want to see if the growth rate is more similar
 for chicks raised by the same mother. <code>(1+age|dam)</code> or <code>us(1+age):dam</code>
 estimates a <span class="math inline">\(2\times2\)</span> matrix which includes the variance in
 intercepts (when <code>age</code>=0), the variance in slopes, and the covariance
-that exists between them. Fixed parameters are in red.</p>
-</div>
-</div>
+that exists between them. Fixed parameters are in red.
+:::
+::::</p>
 </div>
 <div id="heter-sec" class="section level2 hasAnchor" number="4.4">
 <h2><span class="header-section-number">4.4</span> Heterogenous Residual Variance<a href="cat-int.html#heter-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -788,13 +784,17 @@ give support to correlations in this region.<br />
 <div class="footnotes">
 <hr />
 <ol start="4">
-<li id="fn4"><p>Earlier versions of the CourseNotes had <code>nu=1.002</code>. In versions
-<span class="math inline">\(&lt;\)</span><!-- -->2.05 the marginal prior of a variance associated
-with an <code>idh</code> structure was inverse-Wishart with
-<span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}-1\)</span> where <span class="math inline">\(\texttt{nu}^{\ast}\)</span> is the
-marginal degree of belief. In versions <span class="math inline">\(&gt;=\)</span><!-- -->2.05 I
-changed this so that <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}\)</span> as it was
-leading to confusion.<a href="cat-int.html#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>Remember that a global intercept is not fitted by default for
+variance structure models, and the model formula is essentially
+<span class="math inline">\(^{\sim}\)</span><code>sex-1</code>. To add the global intercept, <code>us(``1+sex``):``dam</code>
+could be fitted but this can be harder to interpret because the
+effects are then <code>Fem</code>, <code>Male-Fem</code> and <code>UNK-Fem</code>. If a <code>us</code>
+structure is fitted, the two models are equivalent
+reparameterisations of each other although the priors have to be
+modified accordingly. This is not the case if the variance function
+is <code>idh</code>. In this case the sex-specific variances are allowed to
+vary as before, but a constant covariance equal to
+<span class="math inline">\(\sigma^{2}_{\color{blue} \texttt{Fem}}\)</span> is also assumed<a href="cat-int.html#fnref4" class="footnote-back">↩︎</a></p></li>
 <li id="fn5"><p>IMPORTANT: In versions <span class="math inline">\(&lt;\)</span> 2.05 priors on each variance of an
 <code>idh</code> structure were distributed as
 <span class="math inline">\(IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)\)</span>

@@ -37,7 +37,7 @@ fig:separation2
 fig:mBTVCV
 fig:BTidh
 fig:BTcor
-tab:T1
+tab:vfunction
 eq:conv-eq
 fig:NIc
 fig:ChickWeight
