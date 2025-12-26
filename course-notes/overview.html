@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-25" />
+<meta name="date" content="2025-12-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -158,10 +158,10 @@ div.csl-indent {
       <nav role="navigation">
 
 <ul class="summary">
-<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Overview</a>
+<li class="chapter" data-level="1" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>1</b> Overview</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
-<li class="chapter" data-level="1.2" data-path="index.html"><a href="index.html#references"><i class="fa fa-check"></i><b>1.2</b> References</a></li>
+<li class="chapter" data-level="1.1" data-path="overview.html"><a href="overview.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
+<li class="chapter" data-level="1.2" data-path="overview.html"><a href="overview.html#references"><i class="fa fa-check"></i><b>1.2</b> References</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="bayesian.html"><a href="bayesian.html"><i class="fa fa-check"></i><b>2</b> Bayesian Analysis and MCMC</a>
 <ul>
@@ -294,17 +294,17 @@ div.csl-indent {
 <div id="header">
 <h1 class="title">MCMCglmm Course Notes</h1>
 <p class="author"><em>Jarrod Hadfield</em></p>
-<p class="date"><em>2025-12-25</em></p>
+<p class="date"><em>2025-12-26</em></p>
 </div>
 <div id="overview" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">1</span> Overview<a href="index.html#overview" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<h1><span class="header-section-number">1</span> Overview<a href="overview.html#overview" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>These are (incomplete) course notes about generalised linear mixed models (GLMM). Special emphasis is placed on understanding the underlying structure of a GLMM in order to show that slight modifications of this structure can produce a wide range of models. These include familiar models like regression and ANOVA, but also models with intimidating names: animal models, threshold models, meta-analysis, random regression The primary aim of the course is to show that these models are only daunting by name. The secondary aim is to show how these models can be fitted in a Bayesian framework using Markov chain Monte Carlo (MCMC) methods in the R package <code>MCMCglmm</code>. For those not comfortable using Bayesian methods, many of the models outlined in the course notes can be fitted in <code>asreml</code>, <code>lmer</code> or <code>glmmTMB</code> with little extra work. If you do use <code>MCMCglmm</code>, please, cite <span class="citation">Hadfield (2010)</span>.</p>
 <div id="outline" class="section level2 hasAnchor" number="1.1">
-<h2><span class="header-section-number">1.1</span> Outline<a href="index.html#outline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">1.1</span> Outline<a href="overview.html#outline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Chapter <a href="bayesian.html#bayesian">2</a> covers the very basics of Bayesian analysis and Markov chain Monte Carlo (MCMC) techniques. Chapter <a href="glm.html#glm">3</a> covers simple generalised linear mixed models (GLMM). The response is assumed to be (conditionally) normal or from a single-parameter family such as the Poisson, and the distribution of the random effects can be parameterised through scalar variances. Chapters <a href="cat-int.html#cat-int">4</a> and <a href="cont-int.html#cont-int">5</a> cover situations where the distribution of the random effects are parameterised through a (co)variance matrix either because the random terms are interacted with categorical predictors (Chapter <a href="cat-int.html#cat-int">4</a>) or continuos predictors (random-regression - Chapter <a href="cont-int.html#cont-int">5</a>). Chapter <a href="multi.html#multi">6</a> covers multi-response models in which multiple response variables, possibly from different distributions, are simultaneously analysed. This chapter also covers distributions that are multi-parameter such as multinomial and zero-inflated distributions. Chapter <a href="pedigree.html#pedigree">7</a> discusses models where a set of random-effects are correlated through a known structure such as a pedigree or phylogeny. Much of the technical details regarding the implementation are in Chapter <a href="technical-details.html#technical-details">8</a>. Chapter <a href="parameter-expansion.html#parameter-expansion">9</a> covers parameter-expansion, an algorithm designed to improve the mixing properties of MCMC but which also induces new, and useful, prior distributions. Chapter <a href="path.html#path">10</a> covers path analysis and related antedependence models. Much of the material is currently taken from the old CourseNotes (<em>c</em>2009) but the hope is that over time these new notes will be better structured and include better/some documentation for more recent functionality.</p>
 </div>
 <div id="references" class="section level2 hasAnchor" number="1.2">
-<h2><span class="header-section-number">1.2</span> References<a href="index.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">1.2</span> References<a href="overview.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 
 </div>
 </div>
