@@ -6,8 +6,7 @@ site: bookdown::bookdown_site
 documentclass: book
 description: "Extended documentation and course notes for the MCMCglmm R package."
 output:
-  bookdown::gitbook:
-    default: true
+  bookdown::gitbook
 bibliography: CourseNotes.bib
 ---
 
@@ -42,8 +41,14 @@ knitr::opts_chunk$set(
 
 par(bty="l")
 
-#options(SweaveHooks=list(fig=function() par(bty="l")))
-#options(useFancyQuotes=FALSE)
+# make verbose=FALSE the default
+new_MCMCglmm <- MCMCglmm:::MCMCglmm
+
+fmls <- formals(new_MCMCglmm)
+fmls$verbose <- FALSE
+formals(new_MCMCglmm) <- fmls
+
+MCMCglmm <- new_MCMCglmm
 
 set.seed(2)
 ```

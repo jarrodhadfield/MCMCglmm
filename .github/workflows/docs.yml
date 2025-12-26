@@ -58,7 +58,7 @@ jobs:
 
       - name: Build bookdown (course notes)
         run: |
-          Rscript -e 'setwd("bookdown"); bookdown::render_book("index.Rmd", "bookdown::gitbook")'
+          Rscript -e 'setwd("bookdown"); bookdown::render_book("1.intro.Rmd", "bookdown::gitbook")'
 
       - name: Build pkgdown (clean docs/)
         run: |

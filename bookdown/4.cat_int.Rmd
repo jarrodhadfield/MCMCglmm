@@ -117,12 +117,33 @@ interaction for the first few levels of `dam`:
 ``` {r echo=TRUE}
 levels(BTdata$dam)[1:5]
 ```
+Try this:
 
-$$\begin{array}{c|rrrrrc}
+$$
+{\color{red} \texttt{Fem2}}
+$$
+
+$$
+\color{red}\texttt{Fem2}
+$$
+
+$$
+{\textcolor{red} \texttt{Fem2}}
+$$
+
+
+$$
+{\textcolor{red} \texttt{Fem2}}
+$$
+
+
+$$
+\begin{array}{c|rrrrrc}
 &{\color{red} \texttt{Fem2}}&{\color{red} \texttt{Fem20}}&{\color{red} \texttt{Fem3}}&{\color{red} \texttt{Fem5}}&{\color{red} \texttt{K983388}}&\dots\\
 \hline\\
 {\color{blue} \texttt{(1)}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem2}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem20}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem3}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{Fem5}}&{\color{blue} \texttt{(1)}}.{\color{red} \texttt{K983388}}&\dots\\
-\end{array}$$
+\end{array}
+$$
 
 Across the top, we have the original dam effects in red, and along the
 side we have the term defined by the variance structure formula (just

@@ -52,14 +52,13 @@ X<-model.matrix(y~limit+year+day, data=Traffic)
 X[c(1,2,184),]
 ```
 
-The binary predictors *do the data come from 1961, yes or no?* and *there was no speed limit, yes or no?* do not appear. These are the first factor levels of `year` and `limit` respectively, and are absorbed
-into the global intercept ($\beta_{1}$) which is fitted by default in R. Hence the expected number of injuries for the four combinations (on day zero) are $\beta_{1}$ for 1961 with no speed limit, $\beta_{1}+\beta_{2}$ for 1961 with a speed limit, $\beta_{1}+\beta_{3}$ for 1962 with no speed limit and $\beta_{1}+\beta_{2}+\beta_{3}$ for 1962 with a speed limit.
+The binary predictors *do the data come from 1961, yes or no?* and *there was no speed limit, yes or no?* do not appear. These are the first factor levels of `year` and `limit` respectively, and are absorbed into the global intercept ($\beta_{1}$) which is fitted by default in R. Hence the expected number of injuries for the four combinations (on day zero) are $\beta_{1}$ for 1961 with no speed limit, $\beta_{1}+\beta_{2}$ for 1961 with a speed limit, $\beta_{1}+\beta_{3}$ for 1962 with no speed limit and $\beta_{1}+\beta_{2}+\beta_{3}$ for 1962 with a speed limit.
 
 The simultaneous equations defined by Equation (\@ref(eq:lm-eq)) cannot be solved directly because we do not know the left-hand side - expected values of $y$. We only know the observed value, which we assume is distributed around the expected value with some error. In a normal linear model we assume that these errors are normally distributed so that the data are also normally distributed (after conditioning o the predictor variables):
 
 $${\bf y} \sim N({\bf X}{\boldsymbol{\mathbf{\beta}}}, \sigma^{2}_{e}{\bf I})$$
 
-${\bf I}$ is an identity matrix. It has ones along the diagonal, and zeros in the off-diagonals. The zero off-diagonals imply that the residuals are uncorrelated, and the ones along the diagonal imply that they have the same variance $\sigma^{2}_{e}$. We could use `glm` to estimate ${\bf \beta}$ and $\sigma^{2}_{e}$ assuming that $y$ folllows a conditional normal distribution:
+${\bf I}$ is an identity matrix. It has ones along the diagonal, and zeros in the off-diagonals. The zero off-diagonals imply that the residuals are uncorrelated, and the ones along the diagonal imply that they have the same variance $\sigma^{2}_{e}$. We could use `glm` to estimate ${\bf \beta}$ and $\sigma^{2}_{e}$ assuming that $y$ follows a conditional normal distribution:
 
 ``` {r echo=TRUE}
 m2a.1<-glm(y ~ limit + year + day, data=Traffic)
@@ -265,24 +264,24 @@ d.ly<-dnorm(pos.ly,intercept.coef+day.coef*92, sqrt(resid.var))
 d.y<-dlnorm(exp(pos.ly),intercept.coef+day.coef*92, sqrt(resid.var))
 ```
 
-``` {r label=prediction3, echo=FALSE, include=TRUE, fig.width=7, fig.height=5,  fig.cap="The hypothetical distribution for the number of injuries on the log scale (left) and data scale (right) for day 92 in 1961 without a speed limit. These can viewed as vertical slices from Figure \\@ref(fig:prediction1) on day 92. On the log scale the distribution is assumed to be normal and so the residuals are symmetrically distributed around the linear predictor. As a consequence the linear predictor ($\\eta$) is equal to the mean, median and mode of the distribution on the log scale. Because the exponential function is non-linear this symmetry is lost on the data scale, and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median.  $\\sigma^{2}$ is the residual variance."}
+``` {r label=prediction3, echo=FALSE, include=TRUE, fig.width=7, fig.height=8,  fig.cap="The hypothetical distribution for the number of injuries on the log scale (left) and data scale (right) for day 92 in 1961 without a speed limit. These can viewed as vertical slices from Figure \\@ref(fig:prediction1) on day 92. On the log scale the distribution is assumed to be normal and so the residuals are symmetrically distributed around the linear predictor. As a consequence the linear predictor ($\\eta$) is equal to the mean, median and mode of the distribution on the log scale. Because the exponential function is non-linear this symmetry is lost on the data scale, and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median.  $\\sigma^{2}$ is the residual variance."}
 
 par(mfrow=c(2,1))
 
-plot(d.ly~pos.ly,type="l", col="red",, xlab="log(y)", ylab="Density")
+plot(d.ly~pos.ly,type="l", col="red",, xlab="log(y)", ylab="Density", ylim=c(min(d.ly), max(d.ly)*1.1))
 abline(v=intercept.coef+day.coef*92, col="black", lwd=2)
-text(intercept.coef+day.coef*92, max(d.ly)+0.005,expression(paste(E[e], paste("[log(y)]=",eta))), pos=4)
+text(intercept.coef+day.coef*92, max(d.ly)*1.05,expression(paste(E[e], paste("[log(y)]=",eta))), pos=4)
 
-plot(d.y~exp(pos.ly),type="l", col="red", xlab="y", ylab="Density")
+plot(d.y~exp(pos.ly),type="l", col="red", xlab="y", ylab="Density", ylim=c(min(d.y), max(d.y)*1.1))
 med<-exp(intercept.coef+day.coef*92)
 mu<-exp(intercept.coef+day.coef*92+0.5*resid.var)
 mod<-exp(intercept.coef+day.coef*92-resid.var)
 abline(v=med, col="black", lwd=2)
-text(med, max(d.y)-0.0008,pos=2, expression(paste(MED[e], paste("[y]=",eta))))
+text(med, max(d.y)*0.8,pos=2, expression(paste(MED[e], paste("[y]=",eta))))
 abline(v=mu, lwd=1, lty=1)
-text(mu, max(d.y)-0.0016,expression(paste(E[e], paste("[y]=",eta+scriptstyle(frac(1,2))*sigma[e]^2))), pos=4)
+text(mu, max(d.y)*0.6,expression(paste(E[e], paste("[y]=",eta+scriptstyle(frac(1,2))*sigma[e]^2))), pos=4)
 abline(v=mod, lwd=1, lty=1)
-text(mod+2, max(d.y)+0.00003,expression(paste(MODE[e], paste("[y]=",eta-sigma[e]^2))), pos=2)
+text(mod, max(d.y)*1.05,expression(paste(MODE[e], paste("[y]=",eta-sigma[e]^2))), pos=2)
 ```
 
 In the `Traffic` example the non linearities are small so the differences in parameter estimates are not large using either multiplicative or additive models. However, multiplying the intercept in model `m2a.5` by half the residual variance is in closer agreement with the quasipoisson model than the raw intercept:

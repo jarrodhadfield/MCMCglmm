@@ -230,12 +230,9 @@ case.
 Obtaining the marginal distribution analytically is usually impossible except for the very simplest of cases,
 and this is where MCMC approaches prove useful. We can fit this model in `MCMCglmm` pretty much in the same way as we did using `glm`:
 
-``` {r echo=TRUE, eval=FALSE}
-m1a.2<-MCMCglmm(y~1, data=Ndata, prior=prior)
-```
 
 ``` {r echo=FALSE}
-m1a.2<-MCMCglmm(y~1, data=Ndata, prior=prior, thin=1, verbose=FALSE)
+m1a.2<-MCMCglmm(y~1, data=Ndata, prior=prior, thin=1)
 ```
 
 The Markov chain is drawing random (but often correlated) samples from the joint posterior distribution (depicted by the red contours in Figure \@ref(fig:Psurface)). The element of the output called `Sol` contains the distribution for the
@@ -338,7 +335,7 @@ P.new2[i,j]<-loglikprior(c(mu.new[i], sigma2.new2[j]), Ndata$y, prior$R, prior$B
 }}
 ```
 
-``` {r label=Psurface-persp2, echo=FALSE, include=TRUE, fig.cap="The posterior distribution $Pr(\\mu, \\sigma^{2} | {\\bf y})$, but only for values of $\\sigma^{2}$ between 1 and 5, rather than 0 to 5 (Figure \\ref{Psurface-persp}). The edge of the surface facing left is the conditional distribution of the mean when $\\sigma^{2}=1$ ($Pr(\\mu | {\\bf y}, \\sigma^{2}=1)$). This conditional distribution follows a normal distribution."}
+``` {r label=Psurface-persp2, echo=FALSE, include=TRUE, fig.cap="The posterior distribution $Pr(\\mu, \\sigma^{2} | {\\bf y})$, but only for values of $\\sigma^{2}$ between 1 and 5, rather than 0 to 5 (Figure \\@ref(fig:Psurface-persp). The edge of the surface facing left is the conditional distribution of the mean when $\\sigma^{2}=1$ ($Pr(\\mu | {\\bf y}, \\sigma^{2}=1)$). This conditional distribution follows a normal distribution."}
 par(bg="white")
 persp(mu.new,sigma2.new2,exp(P.new2-max(P.new2)), theta = 50, ltheta=90, phi = 20, lphi=80, expand = 0.5, col ="lightblue", shade=0.1, xlab="", ylab="", zlab="")
 text(-0.402,0,"Pr")
@@ -397,14 +394,14 @@ It is known that although such a prior is non-informative for the mean it is inf
 
 ``` {r echo=TRUE, eval=FALSE}
 prior.m1a.3<-list(R=list(V=1, nu=0))
-m1a.3<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.3, verbose=FALSE)
+m1a.3<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.3)
 ```
 
 We can overlay the joint posterior distribution on the likelihood surface (Figure \@ref(fig:Psurface-flat)) and see that the two things are in close agreement, up to Monte Carlo error.
 
 ``` {r echo=FALSE, cache=TRUE}
 prior.m1a.3<-list(R=list(V=1, nu=0))
-m1a.3<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.3, verbose=FALSE)
+m1a.3<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.3)
 kda.3<-kde2d(m1a.3$Sol, log(m1a.3$VCV), lims=c(-2,2,log(0.1),log(5)), n=50)
 kda.3$y<-exp(kda.3$y)
 ```
@@ -418,14 +415,12 @@ contour(kda.3, add=TRUE, col="red", drawlabels = FALSE)
 
 Although inverse-Wishart distributions with negative degree of belief parameters are not defined, the resulting posterior distribution can be defined if there is sufficient replication. Specifying `V=0` and `nu=-1` is equivalent to a uniform prior for the standard deviation on the the interval $(0,\infty]$, and specifying `V=0` and `nu=-2` is non-informative for a variance component.
 
-``` {r echo=TRUE, eval=FALSE}
+``` {r echo=TRUE}
 prior.m1a.4<-list(R=list(V=1e-16, nu=-2))
-m1a.4<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.4, verbose=FALSE)
+m1a.4<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.4)
 ```
 
-``` {r echo=FALSE, cache=TRUE}
-prior.m1a.4<-list(R=list(V=1e-16, nu=-2))
-m1a.4<-MCMCglmm(y~1, data=Ndata, thin=1, prior=prior.m1a.4, verbose=FALSE)
+``` {r echo=FALSE}
 kda.4<-kde2d(m1a.4$Sol, log(m1a.4$VCV), lims=c(-2,2,log(0.1),log(5)), n=50)
 kda.4$y<-exp(kda.4$y)
 ```
