@@ -17,7 +17,7 @@ fig:Psurface-flat
 fig:Psurface-NI
 fig:Pmarg-NI
 eq:SE-eq
-eq:lm-eq
+eq:lm
 fig:hist-traffic
 fig:vcv-traffic
 fig:prediction1
