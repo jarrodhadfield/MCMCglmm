@@ -3,7 +3,7 @@ delete_merged_file: true
 
 rmd_files:
   - 1.intro.Rmd
-  - 2.Bayesian.Rmd
+  - 2.bayesian.Rmd
   - 3.glm.Rmd
   - 4.cat_int.Rmd
   - 5.cont_int.Rmd
