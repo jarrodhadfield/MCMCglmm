@@ -484,7 +484,7 @@ the zero-inflation and the Poisson process cannot be estimated because
 both processes cannot be observed in a single data point. To deal with
 this I've fixed the residual variance for the zero-inflation at 1, and
 the covariance is set to zero using the idh structure. Setting
-`V=diag(2)` and `nu=0.002`[^1] we have the inverse-gamma prior with
+`V=diag(2)` and `nu=0.002`[^6.1] we have the inverse-gamma prior with
 `shape=scale=0.001` for the residual component of the Poisson process
 which captures over-dispersion:
 
@@ -690,10 +690,4 @@ we can see from this that the more papers a mentor produces, the more
 zero-deflation (or conversely the less papers a mentor produces, the
 more zero-inflation).
 
-[^1]: Earlier versions of the CourseNotes had `nu=1.002`. In versions
-    $<$`<!-- -->`{=html}2.05 the marginal prior of a variance associated
-    with an `idh` structure was inverse-Wishart with
-    $\texttt{nu}^{\ast}=\texttt{nu}-1$ where $\texttt{nu}^{\ast}$ is the
-    marginal degree of belief. In versions $>=$`<!-- -->`{=html}2.05 I
-    changed this so that $\texttt{nu}^{\ast}=\texttt{nu}$ as it was
-    leading to confusion.
+[^6.1]: Earlier versions of the CourseNotes had `nu=1.002`. In versions $<$`<!-- -->`{=html}2.05 the marginal prior of a variance associated with an `idh` structure was inverse-Wishart with $\texttt{nu}^{\ast}=\texttt{nu}-1$ where $\texttt{nu}^{\ast}$ is the marginal degree of belief. In versions $>=$`<!-- -->`{=html}2.05 I changed this so that $\texttt{nu}^{\ast}=\texttt{nu}$ as it was leading to confusion.

@@ -16,7 +16,7 @@ recorded as `fosternest`.
 
 ``` {r echo=TRUE, cache=TRUE}
 prior=list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=0.002),G2=list(V=1, nu=0.002)))
-m3a.1<-MCMCglmm(tarsus~sex, random=~dam+fosternest, data=BTdata, verbose=FALSE, prior=prior)
+m3a.1<-MCMCglmm(tarsus~sex, random=~dam+fosternest, data=BTdata, prior=prior)
 ```
 
 fits `sex` as a fixed effect, and `dam` and `fosternest` as random
@@ -64,7 +64,7 @@ DIC suggest not:
 ``` {r echo=TRUE, cache=TRUE}
 priorb<-prior
 priorb[[2]]<-priorb[[2]][-2]
-m3a.2<-MCMCglmm(tarsus~sex, random=~dam, data=BTdata, verbose=FALSE, prior=priorb)
+m3a.2<-MCMCglmm(tarsus~sex, random=~dam, data=BTdata, prior=priorb)
 m3a.2$DIC
 m3a.1$DIC
 ```
@@ -151,9 +151,9 @@ the intercept in this case). The interaction forms a new set of factors.
 Although they have different names from the original `dam` levels, it is
 clear that there is a one to one mapping between the original and the
 new factor levels and the models are therefore equivalent. For more
-complex interactions this is not the case.\
-We could also fit `sex` in the variance structure model, (i.e.
-`us(``sex``):``dam` or `idh(``sex``):``dam`)[^1]:
+complex interactions this is not the case.
+
+We could also fit `sex` in the variance structure model, (i.e. `us(``sex``):``dam` or `idh(``sex``):``dam`)[^4.1]:
 
 $$\begin{array}{c|rrrrrc}
 &{\color{red} \texttt{Fem2}}&{\color{red} \texttt{Fem20}}&{\color{red} \texttt{Fem3}}&{\color{red} \texttt{Fem5}}&{\color{red} \texttt{K983388}}&\dots\\
@@ -198,12 +198,12 @@ $3\times3$ identity matrix:
 
 ``` {r echo=FALSE, eval=TRUE, cache=TRUE}
 priorb=list(R=list(V=diag(1), nu=0.002), G=list(G1=list(V=diag(3), nu=0.002),G2=list(V=1, nu=0.002)))
-m3a.3<-MCMCglmm(tarsus~sex, random=~idh(sex):dam+fosternest, data=BTdata, verbose=FALSE, prior=priorb)
+m3a.3<-MCMCglmm(tarsus~sex, random=~idh(sex):dam+fosternest, data=BTdata, prior=priorb)
 ```
 
 ``` {r echo=TRUE, eval=FALSE}
 priorb=list(R=list(V=diag(1), nu=0.002), G=list(G1=list(V=diag(3), nu=0.002),G2=list(V=1, nu=0.002)))
-m3a.3<-MCMCglmm(tarsus~sex, random=~idh(sex):dam+fosternest, data=BTdata, verbose=FALSE, prior=priorb)
+m3a.3<-MCMCglmm(tarsus~sex, random=~idh(sex):dam+fosternest, data=BTdata, prior=priorb)
 ```
 
 ``` {r label=BTidh, echo=FALSE, include=TRUE, fig.cap="MCMC summary plot for the sex-specific dam variance components from model \\texttt{m3a.3}. The number of chicks with unknown (\\texttt{UNK}) sex is low, with very little replication within dams. The posterior distribution for the \\texttt{UNK} variance component is dominated by the prior which has a marginal distribution of \\texttt{V=1} and \\texttt{nu=0.002}.", fig.width=7, fig.height=5}
@@ -216,7 +216,8 @@ well. This is not that surprising given that there are only
 `r sum(BTdata$sex=="UNK")` birds with unknown sex and these tend to be
 thinly spread across dams. This variance component is likely to be
 dominated by the prior, but for now we'll leave the model as it is and
-come back to some possible alternative solutions later.\
+come back to some possible alternative solutions later.
+
 We can extract the marginal means for each variance and place them into
 a matrix:
 
@@ -270,7 +271,7 @@ motivation is laid out in Section
 
 ``` {r echo=TRUE, cache=TRUE}
 prior.m3a.4=list(R=list(V=diag(1), nu=0.002), G=list(G1=list(V=diag(3)*0.02, nu=4),G2=list(V=1, nu=0.002)))
-m3a.4<-MCMCglmm(tarsus~sex, random=~us(sex):dam+fosternest, data=BTdata, verbose=FALSE, prior=prior.m3a.4)
+m3a.4<-MCMCglmm(tarsus~sex, random=~us(sex):dam+fosternest, data=BTdata, prior=prior.m3a.4)
 ```
 
 The posterior mean (co)variances for this model show that the
@@ -321,12 +322,10 @@ There are also ways of specifying models that lie somewhere between the
 simple model (`mBT`), where dam effects are assumed to be equivalent
 across the sexes, and the most complex model (`mBT2`), where dam effects
 are allowed to vary across the sexes and covary between the sexes to
-different degrees. Some alternatives are listed in Table
-[1](#tab:T1){reference-type="ref" reference="rspec"}.\
-To be completed \....\
+different degrees. Some alternatives are listed in Table \@ref(tab:vfunction).
 
 :::: landscape
-::: {#rspec}
+::: 
   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
            `lmer`            `MCMCglmm`/`asreml`   No. Parameters                                                     Variance                                                                         Correlation
   ------------------------- --------------------- ---------------- --------------------------------------------------------------------------------------------------------------- ---------------------------------------------------
@@ -403,7 +402,7 @@ To be completed \....\
                                                                                                                                                                                    
   ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-  : (#tab:T1) Different random effect specifications in `lmer`,
+  : (#tab:vfunction) Different random effect specifications in `lmer`,
   `MCMCglmm` and `asreml`. `sex` is a factor with three levels so the
   resulting matrix is $3\times3$. Continuous variables can also go on
   the LHS of the pipe, or within the variance structure functions (e.g.
@@ -493,13 +492,13 @@ $$\begin{array}{rl}
 ### Priors for `idh` structures
 
 For `idh` the diagonal elements of the matrix are independent and each
-variance is distributed as[^2]:
+variance is distributed as[^4.2]:
 
 $$\sigma^{2}_{1} \sim IW\left(\texttt{nu}^{\ast}\texttt{=nu},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$$
 
 ### Priors for `corg` and `corgh` structures
 
-For `corg` and `corgh` structures[^3] the diagonals of `V` define the
+For `corg` and `corgh` structures[^4.3] the diagonals of `V` define the
 fixed variances (`corgh`) or are ignored and the variances set to one
 (`corg`). I use the prior specification in @Barnard.2000 where `nu`
 controls how much the correlation matrix approaches an identity matrix.
@@ -527,7 +526,7 @@ give support to correlations in this region.\
 []{#VCVprior-sec label="VCVprior-sec"}
 :::::
 
-[^1]: Remember that a global intercept is not fitted by default for
+[^4.1]: Remember that a global intercept is not fitted by default for
     variance structure models, and the model formula is essentially
     $^{\sim}$`sex-1`. To add the global intercept, `us(``1+sex``):``dam`
     could be fitted but this can be harder to interpret because the
@@ -539,12 +538,12 @@ give support to correlations in this region.\
     vary as before, but a constant covariance equal to
     $\sigma^{2}_{\color{blue} \texttt{Fem}}$ is also assumed
 
-[^2]: IMPORTANT: In versions $<$ 2.05 priors on each variance of an
+[^4.2]: IMPORTANT: In versions $<$ 2.05 priors on each variance of an
     `idh` structure were distributed as
     $IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$
     but this was a source of confusion and was changed.
 
-[^3]: In versions $<2.18$ `cor` fitted what is now a `corg` structure.
+[^4.3]: In versions $<2.18$ `cor` fitted what is now a `corg` structure.
     The reason for the change is to keep the `asreml` and `MCMCglmm`
     syntax equivalent. However, the `corgh` structure in asreml is a
     reparameterised `us` structure whereas in `MCMCglmm` the variances

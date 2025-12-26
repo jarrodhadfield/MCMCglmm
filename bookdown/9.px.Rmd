@@ -61,14 +61,14 @@ BTdata$sex[which(BTdata$sex=="UNK")]<-NA
 BTdata$sex<-gdata::drop.levels(BTdata$sex)   # treat unknowns as missing data
 
 prior1b=list(R=list(V=1, fix=1), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000)))
-m7b.1<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior1b, verbose=FALSE)
+m7b.1<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior1b)
 ```
 
 and fit a model that does not use parameter expansion:
 
 ``` {r echo=TRUE, cache=TRUE}
 prior2b=list(R=list(V=1, fix=1), G=list(G1=list(V=1e-10, nu=-1)))
-m7b.2<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior2b, verbose=FALSE)
+m7b.2<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior2b)
 ```
 
 The prior densities in the two models are very similar across the range
@@ -133,7 +133,7 @@ place an improper flat prior on the standard deviation:
 
 ``` {r echo=TRUE, cache=TRUE}
 prior1<-list(R=list(V=diag(schools$sd^2), fix=1), G=list(G1=list(V=1e-10, nu=-1)))
-m7a.1<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior1, verbose=FALSE)
+m7a.1<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior1)
 ```
 
 In this example there is information on the between school variance
@@ -155,7 +155,7 @@ We can also use the inverse-gamma prior with scale and shape equal to
 
 ``` {r echo=TRUE, cache=TRUE}
 prior2<-list(R=list(V=diag(schools$sd^2), fix=1), G=list(G1=list(V=1, nu=0.002)))
-m7a.2<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior2, verbose=FALSE)
+m7a.2<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior2)
 ```
 
 but Figure [\[school2-fig\]](#school2-fig){reference-type="ref"
@@ -174,7 +174,7 @@ a scale of 25:
 
 ``` {r echo=TRUE, cache=TRUE}
 prior3<-list(R=list(V=diag(schools$sd^2), fix=1), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=25^2)))
-m7a.3<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior3, verbose=FALSE)
+m7a.3<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior3)
 ```
 
 and Figure [\[school3-fig\]](#school3-fig){reference-type="ref"
@@ -201,7 +201,7 @@ model using a residual variance fixed at ten rather than one:
 
 ``` {r echo=TRUE, cache=TRUE}
 prior3b=list(R=list(V=10, fix=1), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000)))
-m7b.3<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b, verbose=FALSE)
+m7b.3<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b)
 ```
 
 The two models appear to give completely different posteriors (Figure
@@ -245,6 +245,6 @@ sampling can also be more efficient even if the prior is fixed at some
 value:
 
 ``` {r echo=TRUE, cache=TRUE}
-m7b.4<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b, verbose=FALSE, slice=TRUE)
+m7b.4<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b, slice=TRUE)
 effectiveSize(m7b.4$VCV[,1]/(1+c2*m7b.3$VCV[,"units"]))
 ```
