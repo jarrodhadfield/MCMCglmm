@@ -7,32 +7,21 @@ The probability of the $i^{th}$ data point is represented by:
 $$f_{i}(y_{i} | l_{i})
 \label{pyl-Eq}   (\#eq:pyl-Eq)$$
 
-where $f_{i}$ is the probability density function associated with
-$y_{i}$. For example, if $y_{i}$ was assumed to be Poisson distributed
-and we used the canonical log link function, then Equation
-\@ref(eq:pyl-Eq) would have the form:
+where $f_{i}$ is the probability density function associated with $y_{i}$. For example, if $y_{i}$ was assumed to be Poisson distributed and we used the canonical log link function, then Equation \@ref(eq:pyl-Eq) would have the form:
 
 $$f_{P}\left(y_{i} | \lambda = \textrm{exp}(l_{i})\right)
 \label{pyl2-Eq}   (\#eq:pyl2-Eq)$$
 
-where $\lambda$ is the canonical parameter of the Poisson denisty
-function $f_{P}$. Table \@ref(tab:dist) has a full list of supported distributions and
-link functions.\
+where $\lambda$ is the canonical parameter of the Poisson density function $f_{P}$. Table \@ref(tab:dist) has a full list of supported distributions and link functions.
+
 The vector of latent variables follow the linear model
 
 $${\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
 \label{l-Eq}   (\#eq:l-Eq)$$
 
-where ${\bf X}$ is a design matrix relating fixed predictors to the
-data, and ${\bf Z}$ is a design matrix relating random predictors to the
-data. These predictors have associated parameter vectors
-${\boldsymbol{\mathbf{\beta}}}$ and ${\bf u}$, and ${\bf e}$ is a vector
-of residuals. In the Poisson case these residuals deal with any
-over-dispersion in the data after accounting for fixed and random
-sources of variation.\
-The location effects (${\boldsymbol{\mathbf{\beta}}}$ and ${\bf u}$),
-and the residuals (${\bf e}$) are assumed to come from a multivariate
-normal distribution:
+where ${\bf X}$ is a design matrix relating fixed predictors to the data, and ${\bf Z}$ is a design matrix relating random predictors to the data. These predictors have associated parameter vectors ${\boldsymbol{\mathbf{\beta}}}$ and ${\bf u}$, and ${\bf e}$ is a vector of residuals. In the Poisson case these residuals deal with any over-dispersion in the data after accounting for fixed and random sources of variation.
+
+The location effects (${\boldsymbol{\mathbf{\beta}}}$ and ${\bf u}$), and the residuals (${\bf e}$) are assumed to come from a multivariate normal distribution:
 
 $$\left[
 \begin{array}{c}
@@ -60,31 +49,16 @@ $$\left[
 \right)
 \label{V-Eq}   (\#eq:V-Eq)$$
 
-where ${\boldsymbol{\mathbf{\beta}}}_{0}$ is a vector of prior means for
-the fixed effects with prior (co)variance ${\bf B}$, and ${\bf G}$ and
-${\bf R}$ are the expected (co)variances of the random effects and
-residuals respectively. The zero off-diagonal matrices imply *a priori*
-independence between fixed effects, random effects, and residuals.
-Generally, ${\bf G}$ and ${\bf R}$ are large square matrices with
-dimensions equal to the number of random effects or residuals. Typically
-they are unknown, and must be estimated from the data, usually by
-assuming they are structured in a way that they can be parameterised by
-few parameters. Below we will focus on the structure of ${\bf G}$, but
-the same logic can be applied to ${\bf R}$.\
-At its most general, `MCMCglmm` allows variance structures of the
-form:
+where ${\boldsymbol{\mathbf{\beta}}}_{0}$ is a vector of prior means for the fixed effects with prior (co)variance ${\bf B}$, and ${\bf G}$ and ${\bf R}$ are the expected (co)variances of the random effects and residuals respectively. The zero off-diagonal matrices imply *a priori* independence between fixed effects, random effects, and residuals. Generally, ${\bf G}$ and ${\bf R}$ are large square matrices with dimensions equal to the number of random effects or residuals. Typically they are unknown, and must be estimated from the data, usually by assuming they are structured in a way that they can be parameterised by few parameters. Below we will focus on the structure of ${\bf G}$, but the same logic can be applied to ${\bf R}$.
+
+At its most general, `MCMCglmm` allows variance structures of the form:
 
 $${\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
 \label{G3-Eq}   (\#eq:G3-Eq)$$
 
-where the parameter (co)variance matrices (${\bf V}$) are usually
-low-dimensional and are to be estimated, and the structured matrices
-(${\bf A}$) are usually high dimensional and treated as known.\
-In the case of ordinal probit models with $>2$ categories (i.e.
-`"threshold"` or `"ordinal"` models), $f_{T}/f_{O}$ depends on an extra
-set of parameters in addition to the latent variable: the
-$\textrm{max}(y)+1$ cutpoints ${\boldsymbol{\mathbf{\gamma}}}$. The
-probability of $y_{i}$ is then:
+where the parameter (co)variance matrices (${\bf V}$) are usually low-dimensional and are to be estimated, and the structured matrices (${\bf A}$) are usually high dimensional and treated as known.
+
+In the case of ordinal probit models with $>2$ categories (i.e. `"threshold"` or `"ordinal"` models), $f_{T}/f_{O}$ depends on an extra set of parameters in addition to the latent variable: the $\textrm{max}(y)+1$ cutpoints ${\boldsymbol{\mathbf{\gamma}}}$. The probability of $y_{i}$ is then:
 
 $$f_{T}(y_{i} | l_{i}, {\boldsymbol{\mathbf{\gamma}}}) = 1\ \textrm{if}\ \gamma_{y_{i}+1} <  l_{i} < \gamma_{y_{i}}$$
 
@@ -92,8 +66,7 @@ and
 
 $$f_{O}(y_{i} | l_{i}, {\boldsymbol{\mathbf{\gamma}}}) = F_{N}(\gamma_{y_{i}} | l_{i}, 1)-F_{N}(\gamma_{y_{i}+1} | l_{i},1)$$
 
-where $F_{N}$ is the cumulative density function for the normal. Note
-that the two models can be made equivalent.
+where $F_{N}$ is the cumulative density function for the normal. Note that the two models can be made equivalent.
 
 ## MCMC Sampling Schemes {#MCMC-app}
 
@@ -101,71 +74,33 @@ that the two models can be made equivalent.
 
 The conditional density of $l$ is given by:
 
-$$Pr(l_{i}| {\bf y}, {\boldsymbol{\mathbf{\theta}}}, {\bf R}, {\bf G}) \propto  f_{i}(y_{i} | l_{i})f_{N}(e_{i}|{\bf r}_{i}{\bf R}_{/i}^{-1}{\bf e}_{/i}, r_{i}-{\bf r}_{i}{\bf R}_{/i}^{-1}{\bf r}^{'}_{i})
+$$Pr(l_{i}| {\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto  f_{i}(y_{i} | l_{i})f_{N}(e_{i}|{\bf r}_{i}{\bf R}_{/i}^{-1}{\bf e}_{/i}, r_{i}-{\bf r}_{i}{\bf R}_{/i}^{-1}{\bf r}^{'}_{i})
 \label{pcl-Eq}   (\#eq:pcl-Eq)$$
 
-where $f_{N}$ indicates a Multivariate normal density with specified
-mean vector and covariance matrix. Equation \@ref(eq:pcl-Eq) is the
-probability of the data point $y_{i}$ from distribution $f_{i}$ with
-latent varaible $l_{i}$, multiplied by the probability of the linear
-predictor residual. The linear predictor residual follows a conditional
-normal distribution where the conditioning is on the residuals
-associated with data points other than $i$. Vectors and matrices with
-the row and/or column associated with $i$ removed are denoted $/i$.
-Three special cases exist for which we sample directly from Equation
-\@ref(eq:pcl-Eq): i) When $y_{i}$ is normal $f_{i}(y_{i} | l_{i})=1$ if
-$y_{i}=l_{i}$ and zero otherwise so $l_{i}=y_{i}$ with out the need for
-updating, ii) when $y_{i}$ is discrete and modelled using
-`family="threshold"` then Equation []{#pcl-Eq label="pcl-Eq"} defines a
-truncated normal distribution and can be slice sampled [@Robert.1995]
-and iii) when $y_{i}$ is missing $f_{i}(y_{i} | l_{i})$ is not defined
-and samples can drawn directly from the normal.\
-In practice, the conditional distribution in Equation \@ref(eq:pcl-Eq)
-only involves other residuals which are expected to show some form of
-residual covariation, as defined by the ${\bf R}$ structure. Because of
-this we actually update latent variables in blocks, where the block is
-defined as groups of residuals which are expected to be correlated:
+where $f_{N}$ indicates a Multivariate normal density with specified mean vector and covariance matrix. Equation \@ref(eq:pcl-Eq) is the probability of the data point $y_{i}$ from distribution $f_{i}$ with latent varaible $l_{i}$, multiplied by the probability of the linear predictor residual. The linear predictor residual follows a conditional normal distribution where the conditioning is on the residuals associated with data points other than $i$. Vectors and matrices with the row and/or column associated with $i$ removed are denoted $/i$.
 
-$$Pr({\bf l}_{j}|{\bf y}, {\boldsymbol{\mathbf{\theta}}}, {\bf R}, {\bf G}) \propto   \prod_{i \in j}{p}_{i}({y}_{i} | l_{i})f_{N}({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
+Three special cases exist for which we sample directly from Equation \@ref(eq:pcl-Eq): i) When $y_{i}$ is normal $f_{i}(y_{i} | l_{i})=1$ if $y_{i}=l_{i}$ and zero otherwise so $l_{i}=y_{i}$ with out the need for updating, ii) when $y_{i}$ is discrete and modelled using `family="threshold"` then Equation []{#pcl-Eq label="pcl-Eq"} defines a truncated normal distribution and can be slice sampled [@Robert.1995] and iii) when $y_{i}$ is missing $f_{i}(y_{i} | l_{i})$ is not defined and samples can drawn directly from the normal.
+
+In practice, the conditional distribution in Equation \@ref(eq:pcl-Eq) only involves other residuals which are expected to show some form of residual covariation, as defined by the ${\bf R}$ structure. Because of this we actually update latent variables in blocks, where the block is defined as groups of residuals which are expected to be correlated:
+
+$$Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto   \prod_{i \in j}{p}_{i}({y}_{i} | l_{i})f_{N}({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
 \label{pcl2-Eq}   (\#eq:pcl2-Eq)$$
 
-where $j$ indexes blocks of latent variables that have non-zero residual
-covariances. For response variables that are neither Gaussian nor
-threshold, the density in equation \@ref(eq:pcl2-Eq) is in non-standard
-form and so Metropolis-Hastings updates are employed. We use adaptive
-methods during the burn-in phase to determine an efficient multivariate
-normal proposal distribution centered at the previous value of
-${\bf l}_{j}$ with covariance matrix $m{\bf M}$. For computational
-efficiency we use the same ${\bf M}$ for each block $j$, where ${\bf M}$
-is the average posterior (co)variance of ${\bf l}_{j}$ within blocks and
-is updated each iteration of the burn-in period @Haario.2001. The scalar
-$m$ is chosen using the method of @Ovaskainen.2008 so that the
-proportion of successful jumps is optimal, with a rate of 0.44 when
-${\bf l}_{j}$ is a scalar declining to 0.23 when ${\bf l}_{j}$ is high
-dimensional [@Gelman.2004].\
-A special case arises for multi-parameter distributions in which each
-parameter is associated with a linear predictor. For example, in the
-zero-inflated Poisson two linear predictors are used to model the same
-data point, one to predict zero-inflation, and one to predict the
-Poisson variable. In this case the two linear predictors are updated in
-a single block even when the residual covariance between them is set to
-zero, because the first probability in Equation \@ref(eq:pcl2-Eq) cannot
+where $j$ indexes blocks of latent variables that have non-zero residual covariances. For response variables that are neither Gaussian nor threshold, the density in equation \@ref(eq:pcl2-Eq) is in non-standard form and so Metropolis-Hastings updates are employed. We use adaptive methods during the burn-in phase to determine an efficient multivariate normal proposal distribution centered at the previous value of ${\bf l}_{j}$ with covariance matrix $m{\bf M}$. For computational efficiency we use the same ${\bf M}$ for each block $j$, where ${\bf M}$ is the average posterior (co)variance of ${\bf l}_{j}$ within blocks and is updated each iteration of the burn-in period @Haario.2001. The scalar $m$ is chosen using the method of @Ovaskainen.2008 so that the proportion of successful jumps is optimal, with a rate of 0.44 when ${\bf l}_{j}$ is a scalar declining to 0.23 when ${\bf l}_{j}$ is high dimensional [@Gelman.2004].
+
+A special case arises for multi-parameter distributions in which each parameter is associated with a linear predictor. For example, in the zero-inflated Poisson two linear predictors are used to model the same data point, one to predict zero-inflation, and one to predict the Poisson variable. In this case the two linear predictors are updated in a single block even when the residual covariance between them is set to zero, because the first probability in Equation \@ref(eq:pcl2-Eq) cannot
 be factored:
 
-$$Pr({\bf l}_{j}|{\bf y}, {\boldsymbol{\mathbf{\theta}}}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
+$$Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
 \label{pcl3-Eq}   (\#eq:pcl3-Eq)$$
 
-When the block size is one (i.e. a univariate analysis) then the latent
-variables can be slice sampled for two-category `ordinal` and
-`categorical` models if `slice=TRUE` is passed to `MCMCglmm`.\
+When the block size is one (i.e. a univariate analysis) then the latent variables can be slice sampled for two-category `ordinal` and `categorical` models if `slice=TRUE` is passed to `MCMCglmm`.\
 
-### Updating the location vector ${\boldsymbol{\mathbf{\theta}}} =  \left[{\boldsymbol{\mathbf{\beta}}}^{'}\; {\bf u}^{'}\right]^{'}$
+### Updating the location vector $\boldsymbol{\theta} =  \left[{\boldsymbol{\mathbf{\beta}}}^{'}\; {\bf u}^{'}\right]^{'}$
 
-@Garcia-Cortes.2001 provide a method for sampling
-${\boldsymbol{\mathbf{\theta}}}$ as a complete block that involves
-solving the sparse linear system:
+@Garcia-Cortes.2001 provide a method for sampling $\boldsymbol{\theta}$ as a complete block that involves solving the sparse linear system:
 
-$$\tilde{\boldsymbol{\mathbf{\theta}}} = {\bf C}^{-1}{\bf W}^{'}{\bf R}^{-1}({\bf l} - {\bf W}{\boldsymbol{\mathbf{\theta}}}_{\star}-{\bf e}_{\star})
+$$\tilde{\boldsymbol{\theta}} = {\bf C}^{-1}{\bf W}^{'}{\bf R}^{-1}({\bf l} - {\bf W}\boldsymbol{\theta}_{\star}-{\bf e}_{\star})
 \label{sMME-Eq}   (\#eq:sMME-Eq)$$
 
 where ${\bf C}$ is the mixed model coefficient matrix:
@@ -178,12 +113,11 @@ $${\bf C} = {\bf W}^{'}{\bf R}^{-1}{\bf W}+
 \end{array}
 \right]$$
 
-and ${\bf W} = \left[{\bf X}\; {\bf Z}\right]$, and ${\bf B}$ is the
-prior (co)variance matrix for the fixed effects.\
-${\boldsymbol{\mathbf{\theta}}}_{\star}$ and ${\bf e}_{\star}$ are
-random draws from the multivariate normal distributions:
+and ${\bf W} = \left[{\bf X}\; {\bf Z}\right]$, and ${\bf B}$ is the prior (co)variance matrix for the fixed effects.
 
-$${\boldsymbol{\mathbf{\theta}}}_{\star} \sim N\left(
+$\boldsymbol{\theta}_{\star}$ and ${\bf e}_{\star}$ are random draws from the multivariate normal distributions:
+
+$$\boldsymbol{\theta}_{\star} \sim N\left(
 \left[
 \begin{array}{c}
 {\boldsymbol{\mathbf{\beta}}_{0}}\\
@@ -203,23 +137,13 @@ and
 
 $${\bf e}_{\star} \sim N\left({\bf 0},{\bf R}\right)$$
 
-$\tilde{\boldsymbol{\mathbf{\theta}}} + {\boldsymbol{\mathbf{\theta}}}_{\star}$
-gives a realisation from the required probability distribution:
+$\tilde{\boldsymbol{\theta}} + \boldsymbol{\theta}_{\star}$ gives a realisation from the required probability distribution:
 
-$$Pr({\boldsymbol{\mathbf{\theta}}} | {\bf l}, {\bf W}, {\bf R}, {\bf G})$$
+$$Pr(\boldsymbol{\theta} | {\bf l}, {\bf W}, {\bf R}, {\bf G})$$
 
-Equation \@ref(eq:sMME-Eq) is solved using Cholesky factorisation.
-Because ${\bf C}$ is sparse and the pattern of non-zero elements fixed,
-an initial symbolic Cholesky factorisation of
-${\bf P}{\bf C}{\bf P}^{'}$ is preformed where ${\bf P}$ is a
-fill-reducing permutation matrix [@Davis.2006]. Numerical factorisation
-must be performed each iteration but the fill-reducing permutation
-(found via a minimum degree ordering of ${\bf C}+{\bf C}^{'}$) reduces
-the computational burden dramatically compared to a direct factorisation
-of ${\bf C}$ [@Davis.2006].\
-Forming the inverse of the variance structures is usually simpler
-because they can be expressed as a series of direct sums and Kronecker
-products:
+Equation \@ref(eq:sMME-Eq) is solved using Cholesky factorisation. Because ${\bf C}$ is sparse and the pattern of non-zero elements fixed, an initial symbolic Cholesky factorisation of ${\bf P}{\bf C}{\bf P}^{'}$ is preformed where ${\bf P}$ is a fill-reducing permutation matrix [@Davis.2006]. Numerical factorisation must be performed each iteration but the fill-reducing permutation (found via a minimum degree ordering of ${\bf C}+{\bf C}^{'}$) reduces the computational burden dramatically compared to a direct factorisation of ${\bf C}$ [@Davis.2006].
+
+Forming the inverse of the variance structures is usually simpler because they can be expressed as a series of direct sums and Kronecker products:
 
 $${\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots$$
 
@@ -227,119 +151,59 @@ and the inverse of such a structure has the form
 
 $${\bf G}^{-1} = \left({\bf V}^{-1}_{1}\otimes{\bf A}^{-1}_{1}\right) \oplus \left({\bf V}^{-1}_{2}\otimes{\bf A}^{-1}_{2}\right) \oplus \ldots\\$$
 
-which involves inverting the parameter (co)variance matrices
-(${\bf V}$), which are usually of low dimension, and inverting
-${\bf A}$. For many problems ${\bf A}$ is actually an identity matrix
-and so inversion is not required. When ${\bf A}$ is a relationship
-matrix associated with a pedigree, @Henderson.1976 [@Meuwissen.1992]
-give efficient recursive algorithms for obtaining the inverse, and
-@Hadfield.2010b derive a similar procedure for phylogenies.
+which involves inverting the parameter (co)variance matrices (${\bf V}$), which are usually of low dimension, and inverting ${\bf A}$. For many problems ${\bf A}$ is actually an identity matrix and so inversion is not required. When ${\bf A}$ is a relationship matrix associated with a pedigree, @Henderson.1976 [@Meuwissen.1992] give efficient recursive algorithms for obtaining the inverse, and @Hadfield.2010b derive a similar procedure for phylogenies.
 
 ### Updating the variance structures ${\bf G}$ and ${\bf R}$
 
-Components of the direct sum used to construct the desired variance
-structures are conditionally independent. The sum of squares matrix
-associated with each component term has the form:
+Components of the direct sum used to construct the desired variance structures are conditionally independent. The sum of squares matrix associated with each component term has the form:
 
 $${\bf S} = {\bf U}^{'}{\bf A}^{-1}{\bf U}$$
 
-where ${\bf U}$ is a matrix of random effects where each column is
-associated with the relevant row/column of ${\bf V}$ and each row
-associated with the relevant row/column of ${\bf A}$. The parameter
-(co)variance matrix can then be sampled from the inverse Wishart
-distribution:
+where ${\bf U}$ is a matrix of random effects where each column is associated with the relevant row/column of ${\bf V}$ and each row associated with the relevant row/column of ${\bf A}$. The parameter (co)variance matrix can then be sampled from the inverse Wishart distribution:
 
 $${\bf V} \sim IW(({\bf S}_{p}+{\bf S})^{-1},\ n_{p}+n)
 \label{pIW-Eq}   (\#eq:pIW-Eq)$$
 
-where $n$ is the number of rows in ${\bf U}$, and ${\bf S}_{p}$ and
-$n_{p}$ are the prior sum of squares and prior degree's of freedom,
-respectively.\
-In some models, some elements of a parameter (co)variance matrix cannot
-be estimated from the data and all the information comes from the prior.
-In these cases it can be advantageous to fix these elements at some
-value and @Korsgaard.1999 provide a strategy for sampling from a
-conditional inverse-Wishart distribution which is appropriate when the
-rows/columns of the parameter matrix can be permuted so that the
-conditioning occurs on some diagonal sub-matrix. When this is not
-possible Metropolis-Hastings updates can be made.
+where $n$ is the number of rows in ${\bf U}$, and ${\bf S}_{p}$ and $n_{p}$ are the prior sum of squares and prior degree's of freedom, respectively.
+
+In some models, some elements of a parameter (co)variance matrix cannot be estimated from the data and all the information comes from the prior. In these cases it can be advantageous to fix these elements at some value and @Korsgaard.1999 provide a strategy for sampling from a conditional inverse-Wishart distribution which is appropriate when the rows/columns of the parameter matrix can be permuted so that the conditioning occurs on some diagonal sub-matrix. When this is not possible Metropolis-Hastings updates can be made.
 
 ### Ordinal Models
 
-For ordinal models it is necessary to update the cutpoints which define
-the bin boundaries for latent variables associated with each category of
-the outcome. To achieve good mixing we used the method developed by
-[@Cowles.1996] that allows the latent variables and cutpoints to be
-updated simultaneously using a Hastings-with-Gibbs update.
+For ordinal models it is necessary to update the cutpoints which define the bin boundaries for latent variables associated with each category of the outcome. To achieve good mixing we used the method developed by [@Cowles.1996] that allows the latent variables and cutpoints to be updated simultaneously using a Hastings-with-Gibbs update.
 
 ### Path Analyses
 
-Elements of the response vector can be regressed on each other using the
-`sir` and `path` functions. Using the matrix notation of @Gianola.2004,
-Equation \@ref(eq:l-Eq) can be rewritten as:
+Elements of the response vector can be regressed on each other using the `sir` and `path` functions. Using the matrix notation of @Gianola.2004, Equation \@ref(eq:l-Eq) can be rewritten as:
 
-$${\boldsymbol{\mathbf{\Lambda}}}{\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
+$$\boldsymbol{\Lambda}{\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
 \label{rs-Eq1}   (\#eq:rs-Eq1)$$
 
-where ${\boldsymbol{\mathbf{\Lambda}}}$ is a square matrix of the form:
+where $\boldsymbol{\Lambda}$ is a square matrix of the form:
 
 $$\begin{array}{rl}
-{\boldsymbol{\mathbf{\Lambda}}} =& {\bf I}-\sum_{l}{\boldsymbol{\mathbf{\Psi}}}^{(l)}\lambda_{l}\\
+\boldsymbol{\Lambda} =& {\bf I}-\sum_{l}\boldsymbol{\Psi}^{(l)}\lambda_{l}\\
 \end{array}
 \label{rs-Eq2}   (\#eq:rs-Eq2)$$
 
-This sets up a regression where the $i^{th}$ element of the response
-vector acts as a weighted (by $\Psi^{(l)}_{i,j}$) predictor for the
-$j^{th}$ element of the response vector with associated regression
-parameter $\lambda_{l}$. Often ${\boldsymbol{\mathbf{\Psi}}}^{(l)}$ is
-an incidence matrix with the patterns of ones determining which elements
-of the response are regressed on each other.\
-Conditional on the vector of regression coefficients
-${\boldsymbol{\mathbf{\lambda}}}$, the location effects and variance
-structures can be updated as before by simply substituting ${\bf l}$ for
-${\boldsymbol{\mathbf{\Lambda}}}{\bf l}$ in the necessary equations.
-@Gianola.2004 provide a simple scheme for updating
-${\boldsymbol{\mathbf{\lambda}}}$. Note that Equation \@ref(eq:rs-Eq1)
-can be rewritten as:
+This sets up a regression where the $i^{th}$ element of the response vector acts as a weighted (by $\Psi^{(l)}_{i,j}$) predictor for the $j^{th}$ element of the response vector with associated regression parameter $\lambda_{l}$. Often $\boldsymbol{\Psi}^{(l)}$ is an incidence matrix with the patterns of ones determining which elements of the response are regressed on each other.
+
+Conditional on the vector of regression coefficients $\boldsymbol{\Lambda}$, the location effects and variance structures can be updated as before by simply substituting ${\bf l}$ for $\boldsymbol{\Lambda}{\bf l}$ in the necessary equations. @Gianola.2004 provide a simple scheme for updating $\boldsymbol{\Lambda}$. Note that Equation \@ref(eq:rs-Eq1) can be rewritten as:
 
 $$\begin{array}{rl}
-{\bf l} - {\bf X}{\boldsymbol{\mathbf{\beta}}} - {\bf Z}{\bf u} =& {\bf e}+\sum_{l}{\boldsymbol{\mathbf{\Psi}}}^{(l)}{\bf l}\lambda_{l}\\
-                                              =& {\bf e}+{\bf L}{\boldsymbol{\mathbf{\lambda}}}\\
+{\bf l} - {\bf X}{\boldsymbol{\mathbf{\beta}}} - {\bf Z}{\bf u} =& {\bf e}+\sum_{l}\boldsymbol{\Psi}^{(l)}{\bf l}\lambda_{l}\\
+                                              =& {\bf e}+{\bf L}\boldsymbol{\Lambda}\\
 \end{array}$$
 
-where ${\bf L}$ is the design matrix
-$\left[{\boldsymbol{\mathbf{\Psi}}}^{(1)}{\bf l}, {\boldsymbol{\mathbf{\Psi}}}^{(2)}{\bf l} \dots {\boldsymbol{\mathbf{\Psi}}}^{(L)}{\bf l}\right]$
-for the $L$ path coefficients. Conditional on
-${\boldsymbol{\mathbf{\beta}}}$ and ${\boldsymbol{\mathbf{u}}}$,
-${\boldsymbol{\mathbf{\lambda}}}$ can then be sampled using the method
-of @Garcia-Cortes.2001 with
-${\bf l} - {\bf X}{\boldsymbol{\mathbf{\beta}}} - {\bf Z}{\bf u}$ as
-response and ${\bf L}$ as predictor. However, only in a fully recursive
-system (there exists a row/column permutation by which all
-${\boldsymbol{\mathbf{\Psi}}}$'s are triangular) are the resulting draws
-from the appropriate conditional distribution, which requires
-multiplication by the Jacobian of the transform:
-$|{\boldsymbol{\mathbf{\Lambda}}}|$. An extra Metropolis Hastings step
-is used to accept/reject the proposed draw when
-$|{\boldsymbol{\mathbf{\Lambda}}}|\neq 1$.\
-When the response vector is Gaussian and fully observed, the latent
-variable does not need updating. For non-Gaussian data, or with missing
-responses, updating the latent variable is difficult because Equation
-\@ref(eq:pcl-Eq) becomes:
+where ${\bf L}$ is the design matrix $\left[\boldsymbol{\Psi}^{(1)}{\bf l}, \boldsymbol{\Psi}^{(2)}{\bf l} \dots \boldsymbol{\Psi}^{(L)}{\bf l}\right]$ for the $L$ path coefficients. Conditional on ${\boldsymbol{\mathbf{\beta}}}$ and ${\boldsymbol{\mathbf{u}}}$, $\boldsymbol{\Lambda}$ can then be sampled using the method of @Garcia-Cortes.2001 with ${\bf l} - {\bf X}{\boldsymbol{\mathbf{\beta}}} - {\bf Z}{\bf u}$ as response and ${\bf L}$ as predictor. However, only in a fully recursive system (there exists a row/column permutation by which all $\boldsymbol{\Psi}$'s are triangular) are the resulting draws from the appropriate conditional distribution, which requires multiplication by the Jacobian of the transform: $|\boldsymbol{\Lambda}|$. An extra Metropolis Hastings step is used to accept/reject the proposed draw when $|\boldsymbol{\Lambda}|\neq 1$.
 
-$$Pr(l_{i}| {\bf y}, {\boldsymbol{\mathbf{\theta}}}, {\bf R}, {\bf G}, {\boldsymbol{\mathbf{\lambda}}}) \propto  f_{i}(y_{i} | l_{i})f_{N}(({\boldsymbol{\mathbf{\Lambda}}}^{-1}{\bf e})_{i}|{\bf q}_{i}{\bf Q}_{/i}^{-1}{\bf e}_{/i}, q_{i}-{\bf q}_{i}{\bf Q}_{/i}^{-1}{\bf q}^{'}_{i})$$
+When the response vector is Gaussian and fully observed, the latent variable does not need updating. For non-Gaussian data, or with missing responses, updating the latent variable is difficult because Equation \@ref(eq:pcl-Eq) becomes:
 
-where
-${\bf Q} = {\boldsymbol{\mathbf{\Lambda}}}^{-1}{\bf R}{\boldsymbol{\mathbf{\Lambda}}}^{-\top}$.
-In the general case ${\bf Q}$ will not have block diagonal structure
-like ${\bf R}$ and so the scheme for updating latent variables within
-residual blocks (i.e. Equation \@ref(eq:pcl2-Eq)) is not possible.
-However, in some cases ${\boldsymbol{\mathbf{\Lambda}}}$ may have the
-form where all non-zero elements correspond to elements of the response
-vector that are in the same residual block. In such cases updating the
-latent variables remains relatively simple:
+$$Pr(l_{i}| {\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}, \boldsymbol{\Lambda}) \propto  f_{i}(y_{i} | l_{i})f_{N}((\boldsymbol{\Lambda}^{-1}{\bf e})_{i}|{\bf q}_{i}{\bf Q}_{/i}^{-1}{\bf e}_{/i}, q_{i}-{\bf q}_{i}{\bf Q}_{/i}^{-1}{\bf q}^{'}_{i})$$
 
-$$Pr({\bf l}_{j}|{\bf y}, {\boldsymbol{\mathbf{\theta}}}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})({\boldsymbol{\mathbf{\Lambda}}}^{-1}_{j}{\bf e}_{j}|{\bf 0}, {\boldsymbol{\mathbf{\Lambda}}}^{-1}_{j}{\bf R}_{j}{\boldsymbol{\mathbf{\Lambda}}}^{-\top}_{j})$$
+where ${\bf Q} = \boldsymbol{\Lambda}^{-1}{\bf R}\boldsymbol{\Lambda}^{-\top}$. In the general case ${\bf Q}$ will not have block diagonal structure like ${\bf R}$ and so the scheme for updating latent variables within residual blocks (i.e. Equation \@ref(eq:pcl2-Eq)) is not possible. However, in some cases $\boldsymbol{\Lambda}$ may have the form where all non-zero elements correspond to elements of the response vector that are in the same residual block. In such cases updating the latent variables remains relatively simple:
+
+$$Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})(\boldsymbol{\Lambda}^{-1}_{j}{\bf e}_{j}|{\bf 0}, \boldsymbol{\Lambda}^{-1}_{j}{\bf R}_{j}\boldsymbol{\Lambda}^{-\top}_{j})$$
 
 ### Deviance and DIC
 
@@ -347,183 +211,97 @@ The deviance $D$ is defined as:
 
 $$D = -2\textrm{log}(\Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}))$$
 
-where ${\boldsymbol{\mathbf{\Omega}}}$ is some parameter set of the
-model. The deviance can be calculated in different ways depending on
-what is in 'focus', and `MCMCglmm` calculates this probability for the
-lowest level of the hierarchy [@Spiegelhalter.2002]. For fully-observed
-Gaussian response variables in the likelihood is the density:
+where ${\boldsymbol{\mathbf{\Omega}}}$ is some parameter set of the model. The deviance can be calculated in different ways depending on what is in 'focus', and `MCMCglmm` calculates this probability for the lowest level of the hierarchy [@Spiegelhalter.2002]. For fully-observed Gaussian response variables in the likelihood is the density:
 
-$$f_{N}({\bf y} | {\bf W}{\boldsymbol{\mathbf{\theta}}},\ {\bf R})$$
+$$f_{N}({\bf y} | {\bf W}\boldsymbol{\theta},\ {\bf R})$$
 
-where
-${\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\theta}}},\ {\bf R}\right\}$.
-For discrete response variables in univariate analyses modeled using
-`family="threshold"` the density is
+where ${\boldsymbol{\mathbf{\Omega}}} = \left\{\boldsymbol{\theta},\ {\bf R}\right\}$. For discrete response variables in univariate analyses modeled using `family="threshold"` the density is
 
-$$\prod_{i} F_{N}(\gamma_{y_{i}} | {\bf w}_{i}{\boldsymbol{\mathbf{\theta}}}, \ r_{ii})-F_{N}(\gamma_{y_{i}+1} | {\bf w}_{i}{\boldsymbol{\mathbf{\theta}}}, \ r_{ii})$$
+$$\prod_{i} F_{N}(\gamma_{y_{i}} | {\bf w}_{i}\boldsymbol{\theta}, \ r_{ii})-F_{N}(\gamma_{y_{i}+1} | {\bf w}_{i}\boldsymbol{\theta}, \ r_{ii})$$
 
-where
-${\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\gamma}}},\ {\boldsymbol{\mathbf{\theta}}},\ {\bf R}\right\}$.
-For other response variables variables (including discrete response
+where ${\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\gamma}}},\ \boldsymbol{\theta},\ {\bf R}\right\}$. For other response variables variables (including discrete response
 variables modeled using `family="ordinal"`) it is the product:
 
 $$\prod_{i}f_{i}(y_{i} | l_{i})
 \label{LLikL}   (\#eq:LLikL)$$
 
-with ${\boldsymbol{\mathbf{\Omega}}} = {\bf l}$.\
-For multivariate models with mixtures of Gaussian (g), threshold (t) and
-other non-Gaussian (n) data (including missing data) we can define the
-deviance in terms of three conditional densities:
+with ${\boldsymbol{\mathbf{\Omega}}} = {\bf l}$.
+
+For multivariate models with mixtures of Gaussian (g), threshold (t) and other non-Gaussian (n) data (including missing data) we can define the deviance in terms of three conditional densities:
 
 $$\begin{array}{rl}
-Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}) =& \Pr({\bf y}_{g}, {\bf y}_{t}, {\bf y}_{n} | {\boldsymbol{\mathbf{\gamma}}}, {\boldsymbol{\mathbf{\theta}}}_{g}, {\boldsymbol{\mathbf{\theta}}}_{t}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\\
-                           =& \Pr({\bf y}_{t} | {\boldsymbol{\mathbf{\gamma}}}, {\boldsymbol{\mathbf{\theta}}}_{t}, {\bf y}_{g}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\Pr({\bf y}_{g} | {\boldsymbol{\mathbf{\theta}}}_{g}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\Pr({\bf y}_{n} | {\boldsymbol{\mathbf{l}}}_{n})\\
+Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}) =& \Pr({\bf y}_{g}, {\bf y}_{t}, {\bf y}_{n} | {\boldsymbol{\mathbf{\gamma}}}, \boldsymbol{\theta}_{g}, \boldsymbol{\theta}_{t}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\\
+                           =& \Pr({\bf y}_{t} | {\boldsymbol{\mathbf{\gamma}}}, \boldsymbol{\theta}_{t}, {\bf y}_{g}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\Pr({\bf y}_{g} | \boldsymbol{\theta}_{g}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\Pr({\bf y}_{n} | {\boldsymbol{\mathbf{l}}}_{n})\\
 \label{Eq-MVdeviance}
 \end{array}   (\#eq:Eq-MVdeviance)$$
 
-with
-${\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\gamma}}},\ {\boldsymbol{\mathbf{\theta}}}_{/n},\ {\boldsymbol{\mathbf{l}}}_{n}\ {\bf R}\right\}$.
-Have
-$({\boldsymbol{\mathbf{W}}}{\boldsymbol{\mathbf{\theta}}})_{a|b}={\boldsymbol{\mathbf{W}}}_{a}{\boldsymbol{\mathbf{\theta}}}_{a}+{\bf R}_{a,b}{\bf R}^{-1}_{b,b}({\bf l}_{b}-{\boldsymbol{\mathbf{W}}}_{b}{\boldsymbol{\mathbf{\theta}}}_{b})$
-and
-${\bf R}_{a |b} = {\bf R}_{a,a}-{\bf R}_{a,b}{\bf R}^{-1}_{b,b}{\bf R}_{a,b}$
-where the subscripts denote rows of the data vector/design matrices or
-rows/columns of the ${\bf R}$-structure. Then, the conditional density
-of ${\bf y}_{g}$ in Equation \@ref(eq:Eq-MVdeviance) is:
+with ${\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\gamma}}},\ \boldsymbol{\theta}_{/n},\ {\boldsymbol{\mathbf{l}}}_{n}\ {\bf R}\right\}$. Have $({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{a|b}={\boldsymbol{\mathbf{W}}}_{a}\boldsymbol{\theta}_{a}+{\bf R}_{a,b}{\bf R}^{-1}_{b,b}({\bf l}_{b}-{\boldsymbol{\mathbf{W}}}_{b}\boldsymbol{\theta}_{b})$ and ${\bf R}_{a |b} = {\bf R}_{a,a}-{\bf R}_{a,b}{\bf R}^{-1}_{b,b}{\bf R}_{a,b}$ where the subscripts denote rows of the data vector/design matrices or rows/columns of the ${\bf R}$-structure. Then, the conditional density of ${\bf y}_{g}$ in Equation \@ref(eq:Eq-MVdeviance) is:
 
-$$f_{N}\left({\bf y}_{g} | ({\boldsymbol{\mathbf{W}}}{\boldsymbol{\mathbf{\theta}}})_{g|n},\ {\bf R}_{g|n}\right)$$
+$$f_{N}\left({\bf y}_{g} | ({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{g|n},\ {\bf R}_{g|n}\right)$$
 
-The conditional density of ${\bf y}_{n}$ in Equation
-\@ref(eq:Eq-MVdeviance) is identical to that given in Equation
-\@ref(eq:LLikL), and for a single `"threshold"` trait
+The conditional density of ${\bf y}_{n}$ in Equation \@ref(eq:Eq-MVdeviance) is identical to that given in Equation \@ref(eq:LLikL), and for a single `"threshold"` trait
 
-$$\prod_{i} F_{N}(\gamma_{y_{i}} | ({\boldsymbol{\mathbf{W}}}{\boldsymbol{\mathbf{\theta}}})_{ti|g,n}, \ r_{ti|g, n})-F_{N}(\gamma_{y_{i}+1} | ({\boldsymbol{\mathbf{W}}}{\boldsymbol{\mathbf{\theta}}})_{ti|g,n}, \ r_{ti|g, n})
+$$\prod_{i} F_{N}(\gamma_{y_{i}} | ({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{ti|g,n}, \ r_{ti|g, n})-F_{N}(\gamma_{y_{i}+1} | ({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{ti|g,n}, \ r_{ti|g, n})
 \label{Eq-cpmvnorm}   (\#eq:Eq-cpmvnorm)$$
 
-is the conditional density for ${\bf y}_{t}$ in Equation
-\@ref(eq:Eq-MVdeviance), where
-$({\boldsymbol{\mathbf{W}}}{\boldsymbol{\mathbf{\theta}}})_{ti|g,n}$ is
-the $i^{\textrm{th}}$ element of
-$({\boldsymbol{\mathbf{W}}}{\boldsymbol{\mathbf{\theta}}})_{t|g,n}$.
-Currently the deviance (and hence the DIC) will not be returned if there
-is more than one threshold trait.\
-The deviance is calculated at each iteration if `DIC=TRUE` and stored
-each `thin`$^{th}$ iteration after burn-in. However, for computational
-reasons the deviance is calculated mid-iteration such that the deviance
-returned at iteration $i$ uses
-${\boldsymbol{\mathbf{\Omega}}}_{i} = \left\{{\boldsymbol{\mathbf{\gamma}}}_{i},\ {\boldsymbol{\mathbf{\theta}}}_{/n, i},\ {\boldsymbol{\mathbf{l}}}_{n, i-1}\ {\bf R}_{i}\right\}$.
-The mean deviance ($\bar{D}$) is calculated over all iterations, as is
-the mean of the latent variables (${\bf l}$) the ${\bf R}$-structure and
-the vector of predictors (${\bf W}{\boldsymbol{\mathbf{\theta}}}$). The
-deviance is calculated at the mean estimate of the parameters
-($D(\bar{\boldsymbol{\mathbf{\Omega}}})$) and the deviance information
-criterion calculated as:
+is the conditional density for ${\bf y}_{t}$ in Equation \@ref(eq:Eq-MVdeviance), where $({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{ti|g,n}$ is the $i^{\textrm{th}}$ element of $({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{t|g,n}$. Currently the deviance (and hence the DIC) will not be returned if there
+is more than one threshold trait.
+
+The deviance is calculated at each iteration if `DIC=TRUE` and stored each `thin`$^{th}$ iteration after burn-in. However, for computational reasons the deviance is calculated mid-iteration such that the deviance returned at iteration $i$ uses ${\boldsymbol{\mathbf{\Omega}}}_{i} = \left\{{\boldsymbol{\mathbf{\gamma}}}_{i},\ \boldsymbol{\theta}_{/n, i},\ {\boldsymbol{\mathbf{l}}}_{n, i-1}\ {\bf R}_{i}\right\}$. The mean deviance ($\bar{D}$) is calculated over all iterations, as is the mean of the latent variables (${\bf l}$) the ${\bf R}$-structure and the vector of predictors (${\bf W}\boldsymbol{\theta}$). The deviance is calculated at the mean estimate of the parameters ($D(\bar{\boldsymbol{\mathbf{\Omega}}})$) and the deviance information criterion calculated as:
 
 $$\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})$$
 
-:::: landscape
-:::
-  ---------------------- ---------- ------------ ------------------------------ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-       Distribution       No. Data   No. latent                         Density function
+``` {r echo=FALSE, results='asis'}
+df <- data.frame(
+  Distribution = c("`\"gaussian\"`", "`\"poisson\"`", "`\"categorical\"`", "`\"multinomialJ\"`", "`\"ordinal\"`", "`\"threshold\"`", "`\"exponential\"`", "`\"geometric\"`", "`\"cengaussian\"`", "`\"cenpoisson\"`", "`\"cenexponential\"`", "`\"zipoisson\"`", "`\"ztpoisson\"`", "`\"hupoisson\"`", "`\"zapoisson\"`", "`\"hubinomial\"`", "`\"nzbinom\"`", "`\"ncst\"`", "`\"msst\"`", "`\"ztmbJ\"`", "`\"ztmultinomialJ\"`"),
+  NoDataColumns =c(1,1,       1,   "$J$", 1, 1, 1,1,2,2,2,1,1,1,1,2,2,3, 3, "$J$", "$J$"),
+  NoTraits =     c(1,1, "$J-1$", "$J-1$", 1, 1, 1,1,1,1,1,2,1,2,2,2,1,1,1, "$J$", "$J-1$"),
+  Density =c("$Pr(y)$",
+                     "$Pr(y)$",
+                     "$Pr(y = k| k\\neq k_1)$\\\n\\\n$Pr(y=k | k=k_1)$",
+                     "$Pr(y_k | k\\neq J)$\\\n\\\n$Pr(y_k | k=J)$",
+                     "$Pr(y=k)$",
+                     "$Pr(y=k)$",
+                     "$Pr(y)$",
+                     "$Pr(y)$",
+                     "$Pr(y_{1}>y>y_{2})$",
+                     "$Pr(y_{1}>y>y_{2})$",
+                     "$Pr(y_{1}>y>y_{2})$",
+                     "$Pr(y=0)$\\\n\\\n$Pr(y | y>0)$",
+                     "$Pr(y)$",
+                     "$Pr(y=0)$\\\n\\\n$Pr(y | y>0)$",
+                     "$Pr(y=0)$\\\n$Pr(y | y>0)$",
+                     "$Pr(y_{1}=0)$\\\n\\\n$Pr(y_{1} | y_{1}>0)$", 
+                     "$Pr(y=1)$\\\n\\\n$Pr(y=0)$", "$Pr(y)$", "$Pr(y)$", "$Pr(y_k=1)$\\\n\\\n$Pr(y_k=0)$", "$Pr(y_k | k\\neq J, y_k>0)$\\\n\\\n$Pr(y_k | k=J, y_k>0)$\\\n\\\n$Pr(y_k=0 | k=J)$"),
+  Function =c("$=f_{N}({\\bf w}^{\\top}\\boldsymbol{\\theta},\\sigma^{2}_{e})$",
+                     "$=f_{P}(\\textrm{exp}(l))$",
+                     "$=\\frac{\\textrm{exp}(l_{k})}{1+\\sum^{J-1}_{j=1}\\textrm{exp}(l_{j})}$\\\n$=\\frac{1}{1+\\sum^{J-1}_{j=1}\\textrm{exp}(l_{j})}$",
+                     "$={\\sum^{J}_{j=1}y_j \\choose y_k}\\left(\\frac{\\textrm{exp}(l_{k})}{1+\\sum^{J-1}_{j=1}\\textrm{exp}(l_{j})}\\right)^{y_k}\\left(1-\\frac{\\textrm{exp}(l_{k})}{1+\\sum^{J-1}_{j=1}\\textrm{exp}(l_{j})}\\right)^{\\sum^{J}_{j\\neq k} y_j}$\\\n$={\\sum^{J}_{j=1}y_j \\choose y_k}\\left(\\frac{1}{1+\\sum^{J-1}_{j=1}\\textrm{exp}(l_{j})}\\right)^{y_k}\\left(1-\\frac{1}{1+\\sum^{J-1}_{j=1}\\textrm{exp}(l_{j})}\\right)^{\\sum^{J}_{j\\neq k} y_j}$",
+                     "$=F_{N}(\\gamma_{k} | l,1)-F_{N}(\\gamma_{k+1} | l,1)$",
+                     "$=F_{N}(\\gamma_{k} | {\\bf w}^{\\top}\\boldsymbol{\\theta}, \\sigma^{2}_{e})-F_{N}(\\gamma_{k+1} | {\\bf w}^{\\top}\\boldsymbol{\\theta}, \\sigma^{2}_{e})$",
+                     "$=f_{E}(\\textrm{exp}(-l))$",
+                     "$=f_{G}(\\frac{\\textrm{exp}(l)}{1+\\textrm{exp}(l)})$",
+                     "$=F_{N}(y_{2} | {\\bf w}^{\\top}\\boldsymbol{\\theta},\\sigma^{2}_{e})-F_{N}(y_{1} | {\\bf w}^{\\top}\\boldsymbol{\\theta},\\sigma^{2}_{e})$",
+                     "$=F_{P}(y_{2} | l)-F_{P}(y_{1} | l)$",
+                     "$=F_{E}(y_{2} | l)-F_{E}(y_{1} | l)$",
+                     "$=\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}+\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)f_{P}(y|\\textrm{exp}(l_{1}))$\\\n$=\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)f_{P}(y |\\textrm{exp}(l_{1}))$",
+                     "$=\\frac{f_{P}(y |\\textrm{exp}(l))}{1-f_{P}(0 |\\textrm{exp}(l))}$",
+                     "$=\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}$\\\n$=\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)\\frac{f_{P}(y |\\textrm{exp}(l_{1}))}{1-f_{P}(0 |\\textrm{exp}(l_{1}))}$",
+                     "$=1-\\textrm{exp}(\\textrm{exp}(l_{2}))$\\\n$=\\textrm{exp}(\\textrm{exp}(l_{2}))\\frac{f_{P}(y |\\textrm{exp}(l_{1}))}{1-f_{P}(0 |\\textrm{exp}(l_{1}))}$",
+                     "$=\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}+\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)f_{B}(0 | n=y_{1}+y_{2}, \\frac{\\textrm{exp}(l_{1})}{1+\\textrm{exp}(l_{1})})$\\\n$=\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)f_{B}(y_{1} |  n=y_{1}+y_{2} \\frac{\\textrm{exp}(l_{1})}{1+\\textrm{exp}(l_{1})})$",
+                     "$=1-\\left(1-\\frac{\\textrm{exp}(l)}{1+\\textrm{exp}(l)}\\right)^{y_2}$\\\n$=\\left(1-\\frac{\\textrm{exp}(l)}{1+\\textrm{exp}(l)}\\right)^{y_2}$", "$=f_{NCt}(y_1y_2 | \\nu=y_3, \\mu=l/y_2)/y_2$", "$=f_{t}(y_1y_2-l/y_2 | \\nu=y_3)/y_2$", "$=\\left(1-\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)\\left(1-\\prod^{J}_{j=1}\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)^{-1}$\\\n$=\\left(\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)\\left(1-\\prod^{J}_{j=1}\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)^{-1}$", 
+                     "$={\\sum^{J}_{j=1}y_j \\choose y_k}\\left(\\frac{\\textrm{exp}(l_{k})}{P_k(k)}\\right)^{y_k}\\left(1-\\frac{\\textrm{exp}(l_{k})}{P_k(k)}\\right)^{\\sum^{J}_{j\\neq k} y_j}$\\\n$={\\sum^{J}_{j=1}y_j \\choose y_k}\\left(\\frac{1}{P_k(k)}\\right)^{y_k}\\left(1-\\frac{1}{P_k(k)}\\right)^{\\sum^{J}_{j\\neq k} y_j}$\\\n \ \\ \\ \\ \\  ignored"),
 
-           type           columns     columns                                   
+  stringsAsFactors = FALSE
+)
 
-                                                                                
+kable(df, "html", escape = FALSE, caption = "Distribution types that can fitted using `MCMCglmm`. The prefixes `\"zi\"`, `\"zt\"`, `\"hu\"` and `\"za\"` stand for zero-inflated, zero-truncated, hurdle and zero-altered respectively. The prefix `\"cen\"` standards for censored where $y_{1}$ and $y_{2}$ are the upper and lower bounds for the unobserved datum $y$. $J$ stands for the number of categories in the multinomial, categorical, zero-truncated multivariate Bernoulli distributions and this must be specified in the family argument for the multinomial zero-truncated multivariate Bernoulli distributions. The density function is for a single datum in a univariate model with ${\\bf w}^{\\top}$ being a row vector of ${\\bf W}$. $f$ and $F$ are the density and distribution functions for the subscripted distribution ($N$=Normal, $P$=Poisson, $E$=Exponential, $G$=Geometric, $B$=Binomial, $NCt$=non-central $t$ and $t$=Student's $t$). The $J-1$ $\\gamma$'s in the ordinal/threshold models are the cutpoints, with $\\gamma_{1}$ set to zero. The normalising probability $P_k(k)$ in the denominator of zero-truncated multinomial - which is the probability of no zero's in the non-zero categories - is not given explicitly.", label="dist", align = "cccrl") |>
+  kable_styling(full_width = FALSE)%>%
+  scroll_box(width = "100%", box_css = "border: 0px;")
+```
 
-       `"gaussian"`          1           1                            $Pr(y) =$ $f_{N}({\bf w}{\boldsymbol{\mathbf{\theta}}},\sigma^{2}_{e})$
 
-                                                                                
 
-       `"poisson"`           1           1                            $Pr(y) =$ $f_{P}(\textrm{exp}(l))$
 
-                                                                                
 
-     `"categorical"`         1         $J$-1               $Pr(y=k | k\neq1) =$ $\frac{\textrm{exp}(l_{k})}{1+\sum^{J-1}_{j=1}\textrm{exp}(l_{j})}$
 
-                                                                    $Pr(y=1) =$ $\frac{1}{1+\sum^{J-1}_{j=1}\textrm{exp}(l_{j})}$
-
-                                                                                
-
-   `"multinomial`$J$`"`     $J$        $J$-1       $Pr(y_{k}=n_{k}| k\neq J) =$ $\left(\frac{\textrm{exp}(l_{k})}{1+\sum^{J-1}_{j=1}\textrm{exp}(l_{j})}\right)^{n_{k}}$
-
-                                                      $Pr(y_{k}=n_{k} | k=J) =$ $\left(\frac{1}{1+\sum^{J-1}_{j=1}\textrm{exp}(l_{j})}\right)^{n_{k}}$
-
-                                                                                
-
-       `"ordinal"`           1           1                          $Pr(y=k) =$ $F_{N}(\gamma_{k} | l,1)-F_{N}(\gamma_{k+1} | l,1)$
-
-                                                                                
-
-      `"threshold"`          1           1                          $Pr(y=k) =$ $F_{N}(\gamma_{k} | {\bf w}{\boldsymbol{\mathbf{\theta}}}, \sigma^{2}_{e})-F_{N}(\gamma_{k+1} | {\bf w}{\boldsymbol{\mathbf{\theta}}}, \sigma^{2}_{e})$
-
-                                                                                
-
-     `"exponential"`         1           1                             $Pr(y)=$ $f_{E}(\textrm{exp}(-l))$
-
-                                                                                
-
-      `"geometric"`          1           1                             $Pr(y)=$ $f_{G}(\frac{\textrm{exp}(l)}{1+\textrm{exp}(l)})$
-
-                                                                                
-
-     `"cengaussian"`         2           1                $Pr(y_{1}>y>y_{2}) =$ $F_{N}(y_{2} | {\bf w}{\boldsymbol{\mathbf{\theta}}},\sigma^{2}_{e})-F_{N}( y_{1} | {\bf w}{\boldsymbol{\mathbf{\theta}}},\sigma^{2}_{e})$
-
-                                                                                
-
-      `"cenpoisson"`         2           1                $Pr(y_{1}>y>y_{2}) =$ $F_{P}(y_{2} | l)-F_{P}(y_{1} | l)$
-
-                                                                                
-
-    `"cenexponential"`       2           1                $Pr(y_{1}>y>y_{2}) =$ $F_{E}(y_{2} | l)-F_{E}(y_{1} | l)$
-
-                                                                                
-
-      `"zipoisson"`          1           2                          $Pr(y=0) =$ $\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}+\left(1-\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}\right)f_{P}(y|\textrm{exp}(l_{1}))$
-
-                                                                $Pr(y | y>0) =$ $\left(1-\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}\right)f_{P}(y |\textrm{exp}(l_{1}))$
-
-                                                                                
-
-      `"ztpoisson"`          1           1                             $Pr(y)=$ $\frac{f_{P}(y |\textrm{exp}(l))}{1-f_{P}(0 |\textrm{exp}(l))}$
-
-                                                                                
-
-      `"hupoisson"`          1           2                          $Pr(y=0) =$ $\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}$
-
-                                                                $Pr(y | y>0) =$ $\left(1-\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}\right)\frac{f_{P}(y |\textrm{exp}(l_{1}))}{1-f_{P}(0 |\textrm{exp}(l_{1}))}$
-
-                                                                                
-
-      `"zapoisson"`          1           2                          $Pr(y=0) =$ $1-\textrm{exp}(\textrm{exp}(l_{2}))$
-
-                                                                $Pr(y | y>0) =$ $\textrm{exp}(\textrm{exp}(l_{2}))\frac{f_{P}(y |\textrm{exp}(l_{1}))}{1-f_{P}(0 |\textrm{exp}(l_{1}))}$
-
-                                                                                
-
-      `"zibinomial"`         2           2                      $Pr(y_{1}=0) =$ $\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}+\left(1-\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}\right)f_{B}(0, n=y_{1}+y_{2}|\frac{\textrm{exp}(l_{1})}{1+\textrm{exp}(l_{1})})$
-
-                                                        $Pr(y_{1} | y_{1}>0) =$ $\left(1-\frac{\textrm{exp}(l_{2})}{1+\textrm{exp}(l_{2})}\right)f_{B}(y_{1}, n=y_{1}+y_{2}|\frac{\textrm{exp}(l_{1})}{1+\textrm{exp}(l_{1})})$
-
-                                                                                
-
-                                                                                
-
-                                                                                
-  ---------------------- ---------- ------------ ------------------------------ -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-  : (#tab:dist) Distribution types that can fitted using `MCMCglmm`.
-  The prefixes `"zi"`, `"zt"`, `"hu"` and `"za"` stand for
-  zero-inflated, zero-truncated, hurdle and zero-altered respectively.
-  The prefix `"cen"` standards for censored where $y_{1}$ and $y_{2}$
-  are the upper and lower bounds for the unobserved datum $y$. $J$
-  stands for the number of categories in the multinomial/categorical
-  distributions and this must be specified in the family argument for
-  the multinomial distribution. The density function is for a single
-  datum in a univariate model with ${\bf w}$ being a row vector of
-  ${\bf W}$. $f$ and $F$ are the density and distribution functions for
-  the subscripted distribution ($N$=Normal, $P$=Poisson,
-  $E$=Exponential, $G$=Geometric, $B$=Binomial). The $J-1$ $\gamma$'s in
-  the ordinal models are the cutpoints, with $\gamma_{1}$ set to zero.
-:::
-::::
-:::::

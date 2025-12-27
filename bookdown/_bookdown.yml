@@ -11,4 +11,5 @@ rmd_files:
   - 7.pedigree.Rmd  
   - 8.technical.Rmd
   - 9.px.Rmd
-  - 10.path.Rmd  
+  - 10.path.Rmd
+  - 11.references.Rmd  

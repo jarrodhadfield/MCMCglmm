@@ -437,7 +437,7 @@ hist(m1a.4$VCV[which(m1a.4$VCV<5)], breaks=50, main=expression(paste("Posterior 
 abline(v=summary(m1a.1)$dispersion, col="red")
 ```
 
-## References
+
 
 
 [^1.1]: The inverse gamma is a special case of the inverse Wishart, although it is parametrised using `shape` and `scale`, where $\texttt{nu}=2\ast\texttt{shape}$ and $\texttt{V} = \frac{\texttt{scale}}{\texttt{shape}}$ (or $\texttt{shape} = \frac{\texttt{nu}}{2}$ and $\texttt{scale} = \texttt{V}\frac{\texttt{nu}}{2}$). There is no density function for the inverse-gamma in base R. However, it can be obtained using the density function for the gamma. using $\texttt{shape_g}$ and $\texttt{scale_g}$ to designate the shape and scale parameters of a gamma distribution then the density of $\texttt{x}$ under the inverse-gamma is the density of $1/\texttt{x}$ under a gamma distribution with $\texttt{shape_g}=\texttt{shape}$ and $\texttt{scale_g}=1/\texttt{scale}$ multiplied by the Jacobian, $1/\texttt{x}^2$. Consequently, we can implement the function `dinvgamma<-function(x, shape, scale, ...){dgamma(1/x, shape=shape, rate=scale, ...)/(x^2)}`. Note $\texttt{rate}=1/\texttt{scale}$

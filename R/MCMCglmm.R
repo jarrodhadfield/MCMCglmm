@@ -1316,7 +1316,7 @@ data$MCMC_y.additional[which(data$MCMC_y.additional==-Inf | data$MCMC_y.addition
 if(any(data$MCMC_family.names=="gaussian")){                                       # replace liabilities of ovserved gaussian data with data                                    
 data$MCMC_liab[which(data$MCMC_family.names=="gaussian" & observed)]<-data$MCMC_y[which(data$MCMC_family.names=="gaussian" & observed)]
 }
-if(any(data$MCMC_family.names%in%c("ncst", "msst"))){        # replace liabilities of ovserved gaussian data with data                                    
+if(any(data$MCMC_family.names%in%c("ncst", "msst"))){        # replace liabilities of observed gaussian data with data                                    
 data$MCMC_liab[which(data$MCMC_family.names%in%c("ncst", "msst") & observed)]<-data$MCMC_y[which(data$MCMC_family.name%in%c("ncst", "msst") & observed)]*data$MCMC_y.additional[which(data$MCMC_family.names%in%c("ncst", "msst") & observed)]
 }
 

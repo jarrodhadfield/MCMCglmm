@@ -8,18 +8,16 @@ description: "Extended documentation and course notes for the MCMCglmm R package
 output:
   bookdown::gitbook
 bibliography: CourseNotes.bib
+link-citations: true
 ---
 
 # Overview
 
-These are (incomplete) course notes about generalised linear mixed models (GLMM). Special emphasis is placed on understanding the underlying structure of a GLMM in order to show that slight modifications of this structure can produce a wide range of models.  These include familiar models like regression and ANOVA, but also models with intimidating names: animal models, threshold models, meta-analysis, random regression \dots The primary aim of the course is to show that these models are only daunting by name. The secondary aim is to show how these models can be fitted in a Bayesian framework using Markov chain Monte Carlo (MCMC) methods in the R package `MCMCglmm`. For those not comfortable using Bayesian methods, many of the models outlined in the course notes can be fitted in `asreml`,  `lmer` or `glmmTMB` with little extra work. If you do use `MCMCglmm`, please, cite @Hadfield.2010c.
+These are (incomplete) course notes about generalised linear mixed models (GLMM). Special emphasis is placed on understanding the underlying structure of a GLMM in order to show that slight modifications of this structure can produce a wide range of models.  These include familiar models like regression and ANOVA, but also models with intimidating names: animal models, threshold models, meta-analysis, random regression \dots The primary aim of the course is to show that these models are only daunting by name. The secondary aim is to show how these models can be fitted in a Bayesian framework using Markov chain Monte Carlo (MCMC) methods in the R package $\texttt{MCMCglmm}$. For those not comfortable using Bayesian methods, many of the models outlined in the course notes can be fitted in $\texttt{asreml},  $\texttt{glmer}$ or $\texttt{glmmTMB}$ with little extra work. If you do use $\texttt{MCMCglmm}$, please, cite @Hadfield.2010c.
 
 ## Outline
 
 Chapter \@ref(bayesian) covers the very basics of Bayesian analysis and Markov chain Monte Carlo (MCMC) techniques. Chapter \@ref(glm) covers simple generalised linear mixed models (GLMM). The response is assumed to be (conditionally) normal or from a single-parameter family such as the Poisson, and the distribution of the random effects can be parameterised through scalar variances. Chapters \@ref(cat-int) and \@ref(cont-int) cover situations where the distribution of the random effects are parameterised through a (co)variance matrix either because the random terms are interacted with categorical predictors (Chapter \@ref(cat-int)) or continuos predictors (random-regression - Chapter \@ref(cont-int)).  Chapter \@ref(multi) covers multi-response models in which multiple response variables, possibly from different distributions, are simultaneously analysed. This chapter also covers distributions that are multi-parameter such as multinomial and zero-inflated distributions. Chapter \@ref(pedigree) discusses models where a set of random-effects are correlated through a known structure such as a pedigree or phylogeny. Much of the technical details regarding the implementation are in Chapter \@ref(technical-details). Chapter \@ref(parameter-expansion) covers parameter-expansion, an algorithm designed to improve the mixing properties of MCMC but which also induces new, and useful, prior distributions.  Chapter \@ref(path) covers path analysis and related antedependence models. Much of the material is currently taken from the old CourseNotes (*c*2009) but the hope is that over time these new notes will be better structured and include better/some documentation for more recent functionality.
-
-
-## References
 
 ``` {r echo=FALSE, include=FALSE}
 library(MCMCglmm)

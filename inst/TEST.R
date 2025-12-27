@@ -1,4 +1,4 @@
-#source("~/Work/MCMCglmm/vignettes/Figures/TEST.R")
+#source("~/Work/MCMCglmm/inc/TEST.R")
 library(MASS)
 library(MCMCglmm)
 
@@ -1910,14 +1910,15 @@ psets<-c(psets, tpar)
 print("res50")
 res50<-matrix(NA, nsim,2)
 
-tpar<-c(-1,1)
+tpar<-c(-0.5,1.3)
 
 for(i in 1:nsim){
   
 
   n<-rgeom(200, 0.05)+5
 
-  y<-sapply(n, function(x){rnorm(x, mean=tpar[1]+rnorm(1,0, sqrt(tpar[2])), sd=1)}, simplify=FALSE)
+  sd.e<-2.7
+  y<-sapply(n, function(x){rnorm(x, mean=(tpar[1]*sd.e+rnorm(1,0, sqrt(tpar[2])*sd.e)), sd=sd.e)}, simplify=FALSE)
 
   sd.hat<-unlist(lapply(y,sd))
   mu.hat<-unlist(lapply(y, mean))
@@ -1929,7 +1930,7 @@ for(i in 1:nsim){
  
   dat<-data.frame(y.sd=y.sd, df=df, scale=scale)
   
-  m1<-MCMCglmm(cbind(y.sd, scale, df)~1, data=dat, family="ncst", nitt=nitt, thin=thin, burnin=burnin, verbose=verbose)
+  m1<-MCMCglmm(cbind(y.sd, scale, df)~1, data=dat, family="ncst", verbose=verbose, nitt=nitt, thin=thin, burnin=burnin)
   
   res50[i,]<-c(posterior.mode(m1$Sol), posterior.mode(m1$VCV))
   if(SUMtest){
@@ -1951,14 +1952,15 @@ psets<-c(psets, tpar)
 print("res51")
 res51<-matrix(NA, nsim,2)
 
-tpar<-c(-1,1)
+tpar<-c(-0.5,1.3)
 
 for(i in 1:nsim){
   
-  
+
   n<-rgeom(200, 0.05)+5
   
-  y<-sapply(n, function(x){rnorm(x, mean=tpar[1]+rnorm(1,0, sqrt(tpar[2])), sd=1)}, simplify=FALSE)
+  sd.e<-2.7
+  y<-sapply(n, function(x){rnorm(x, mean=tpar[1]+rnorm(1,0, sqrt(tpar[2])), sd=sd.e)}, simplify=FALSE)
   
   mu.hat<-unlist(lapply(y, mean))
   sd.hat<-unlist(lapply(y,sd))
