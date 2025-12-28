@@ -72,6 +72,7 @@ eq:Eq-MVdeviance
 eq:Eq-cpmvnorm
 tab:dist
 eq:wstar
+fig:sexratio
 fig:school1
 fig:school2
 fig:school3
@@ -80,7 +81,6 @@ fig:sexratio3
 eq:rs-Eq
 overview
 outline
-references
 bayesian
 introduction
 likelihood
@@ -98,7 +98,6 @@ mcmc-diagnostics
 IP-sec
 flat-improper-prior
 non-informative-improper-prior
-references-1
 glm
 linear-model-lm
 lm-sec
@@ -142,15 +141,17 @@ technical-details
 model-form
 MCMC-app
 updating-the-latent-variables-bf-l
-updating-the-location-vector-boldsymbolmathbftheta-leftboldsymbolmathbfbeta-bf-uright
+updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright
 updating-the-variance-structures-bf-g-and-bf-r
 ordinal-models
 path-analyses
 deviance-and-dic
 parameter-expansion
 variances-close-to-zero
+secPX-p
 binary-response-models
 path
 path-anlaysis
 ante-sec
 scaling
+references

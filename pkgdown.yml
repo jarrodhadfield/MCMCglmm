@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   CourseNotes: CourseNotes.html
-last_built: 2025-12-26T21:19Z
+last_built: 2025-12-28T05:28Z
 urls:
   reference: https://jarrodhadfield.github.io/MCMCglmm/reference
   article: https://jarrodhadfield.github.io/MCMCglmm/articles
