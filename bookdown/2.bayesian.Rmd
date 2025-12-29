@@ -177,7 +177,7 @@ loglikprior<-function(par, y, priorR, priorB, exponentiate=FALSE){
  if(exponentiate){
     return(exp(lpd))
  }else{
-    retun(lpd)
+    return(lpd)
  }
 
 }
@@ -444,7 +444,15 @@ abline(v=summary(m1a.1)$dispersion, col="red")
 
 ## Transformations {#transform-sec}
 
-Priors for transformed parameters, Jacobian etc..... 
+Sometimes we would like to know the posterior distribution for some transformation of the parameters. For example, we may wish to obtain the posterior distribution for $\log(\sigma^2_e)$. With MCMC this is easy - we can just transform the posterior samples (i.e. `log(m1a.2$VCV)`) and treat these as we would any other set of posterior samples. However, it is useful to understand how probabilities are expected to behave under these transformations. The key idea is that the probability of some function of $x$, $f(x)$, is equal to the probability $x$ divided by the Jacobian. When the transform only involves single parameters the Jacobian is $df(x)/dx$ which for the log-transform is $1/x$. For model `m1a.2` we used an inverse-Wishart prior with $\texttt{V=1}$ and $\texttt{nu=0.002}$. This prior for $\sigma^2_e$ is plotted in Figure \@ref(fig:dinvgamma1) and has a spike close to zero but is flat for larger values. What does the prior look like for $log(\sigma^2_e)$:
+
+
+```{r label=trans, eval=FALSE, echo=FALSE, include=TRUE, fig.cap="Probability density function for the log variance when the variance follows a univariate inverse Wishart distribution with the variance at the limit set to 1 ($\\texttt{V}=1$) and a degree of belief parameter set to 0.002 ($\\texttt{nu}=0.002$)."}
+xv<-seq(1e-16, 5,length=1000)
+prior.v<-exp(logprior(xv, priorR=list(V=1, nu=0.002), priorB=list(mu=0, V=10^8)))
+prior.lv<-prior.v/xv
+plot(prior.lv~log(xv), xlab=expression(log(sigma^2)), ylab="Density", cex.lab=1.25, type="l")
+```
 
 
 [^1.1]: The double `t` is because I cannot spell.
