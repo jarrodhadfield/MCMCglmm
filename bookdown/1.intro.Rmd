@@ -28,6 +28,7 @@ library(kinship2)
 library(lme4)
 library(rgl)
 library(kableExtra)
+library(cubature)
 knitr::knit_hooks$set(webgl = hook_webgl)
 
 
@@ -52,6 +53,6 @@ formals(new_MCMCglmm) <- fmls
 
 MCMCglmm <- new_MCMCglmm
 
-set.seed(2)
+set.seed(5)
 ```
 

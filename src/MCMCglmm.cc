@@ -2685,7 +2685,7 @@ if(thetaS){
                    
                  break;
                    
-                 case 23:  /* noncentral scaled t */
+                 case 23:  /* non-central scaled t */
                    
                  densityl1 += dnt(yP[record], y2P[record+ny], linki[k]->x[i]/y2P[record], true)-log(y2P[record]);
                  densityl2 += dnt(yP[record], y2P[record+ny], linki_tmp[k]->x[i]/y2P[record], true)-log(y2P[record]);

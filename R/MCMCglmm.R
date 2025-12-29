@@ -1313,11 +1313,12 @@ data$MCMC_y[which(data$MCMC_y==-Inf | data$MCMC_y==Inf)]<-sign(data$MCMC_y[which
 data$MCMC_y.additional[which(data$MCMC_y.additional==-Inf | data$MCMC_y.additional==Inf)]<-sign(data$MCMC_y.additional[which(data$MCMC_y.additional==-Inf | data$MCMC_y.additional==Inf)])*1e+32
 
 
-if(any(data$MCMC_family.names=="gaussian")){                                       # replace liabilities of ovserved gaussian data with data                                    
+if(any(data$MCMC_family.names=="gaussian")){                       # replace liabilities of observed gaussian data with data                                    
 data$MCMC_liab[which(data$MCMC_family.names=="gaussian" & observed)]<-data$MCMC_y[which(data$MCMC_family.names=="gaussian" & observed)]
 }
 if(any(data$MCMC_family.names%in%c("ncst", "msst"))){        # replace liabilities of observed gaussian data with data                                    
 data$MCMC_liab[which(data$MCMC_family.names%in%c("ncst", "msst") & observed)]<-data$MCMC_y[which(data$MCMC_family.name%in%c("ncst", "msst") & observed)]*data$MCMC_y.additional[which(data$MCMC_family.names%in%c("ncst", "msst") & observed)]
+# not this is just taking y back to it's original state
 }
 
 split<-unlist(lapply(GRprior, function(x){x$fix}))

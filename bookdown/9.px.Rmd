@@ -27,7 +27,7 @@ and so the methods described above can be used to update them.
 
 ### Variances close to zero
 
-To use parameter exapnsion in `MCMCglmm` it is necessary to specify a prior covariance matrix for ${\boldsymbol{\mathbf{\alpha}}}$ which is non-null. In section I discuss what this prior means in the context of posterior inference but for now we will specify two models, one parameter expanded and the other not. To illustrate I will fit a model that estimates the between mother variation in offsping sex ratio using parameter expansions:
+To use parameter exapnsion in $\texttt{MCMCglmm}$ it is necessary to specify a prior covariance matrix for ${\boldsymbol{\mathbf{\alpha}}}$ which is non-null. In section I discuss what this prior means in the context of posterior inference but for now we will specify two models, one parameter expanded and the other not. To illustrate I will fit a model that estimates the between mother variation in offsping sex ratio using parameter expansions:
 
 ``` {r echo=TRUE, source=TRUE, cache=TRUE}
 data(BTdata)
@@ -156,7 +156,7 @@ effectiveSize(m7b.1$VCV[,1]/(1+c2*m7b.1$VCV[,"units"]))
 effectiveSize(m7b.3$VCV[,1]/(1+c2*m7b.3$VCV[,"units"]))
 ```
 
-Although the chain mixes faster as the residual variance is set to be larger, numerical problem are often encountered because the latent variables can take on extreme values. For most models a variance of 1 is safe, but care needs to be taken so that the absolute value of the latent variable is less than 20 in the case of the logit link and less than 7 for the probit link. If the residual variance is not fixed but has an alternative proper prior placed on it then the Metropolis-Hastings proposal distribution for the latent variables may not be well suited to the local properties of the conditional distribution and the acceptance ratio may fluctuate widely around the optimal 0.44. This can be fixed by using the slice sampling methods outlined in @Damien.1999 by passing `slice=TRUE` to `MCMCglmm`. Slice sampling can also be more efficient even if the prior is fixed at some value:
+Although the chain mixes faster as the residual variance is set to be larger, numerical problem are often encountered because the latent variables can take on extreme values. For most models a variance of 1 is safe, but care needs to be taken so that the absolute value of the latent variable is less than 20 in the case of the logit link and less than 7 for the probit link. If the residual variance is not fixed but has an alternative proper prior placed on it then the Metropolis-Hastings proposal distribution for the latent variables may not be well suited to the local properties of the conditional distribution and the acceptance ratio may fluctuate widely around the optimal 0.44. This can be fixed by using the slice sampling methods outlined in @Damien.1999 by passing `slice=TRUE` to $\texttt{MCMCglmm}$. Slice sampling can also be more efficient even if the prior is fixed at some value:
 
 ``` {r echo=TRUE, cache=TRUE}
 m7b.4<-MCMCglmm(sex~1, random=~dam, data=BTdata, family="categorical", prior=prior3b, slice=TRUE)

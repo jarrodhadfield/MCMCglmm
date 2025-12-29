@@ -51,7 +51,7 @@ $$\left[
 
 where ${\boldsymbol{\mathbf{\beta}}}_{0}$ is a vector of prior means for the fixed effects with prior (co)variance ${\bf B}$, and ${\bf G}$ and ${\bf R}$ are the expected (co)variances of the random effects and residuals respectively. The zero off-diagonal matrices imply *a priori* independence between fixed effects, random effects, and residuals. Generally, ${\bf G}$ and ${\bf R}$ are large square matrices with dimensions equal to the number of random effects or residuals. Typically they are unknown, and must be estimated from the data, usually by assuming they are structured in a way that they can be parameterised by few parameters. Below we will focus on the structure of ${\bf G}$, but the same logic can be applied to ${\bf R}$.
 
-At its most general, `MCMCglmm` allows variance structures of the form:
+At its most general, $\texttt{MCMCglmm}$ allows variance structures of the form:
 
 $${\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
 \label{G3-Eq}   (\#eq:G3-Eq)$$
@@ -94,7 +94,7 @@ be factored:
 $$Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
 \label{pcl3-Eq}   (\#eq:pcl3-Eq)$$
 
-When the block size is one (i.e. a univariate analysis) then the latent variables can be slice sampled for two-category `ordinal` and `categorical` models if `slice=TRUE` is passed to `MCMCglmm`.\
+When the block size is one (i.e. a univariate analysis) then the latent variables can be slice sampled for two-category `ordinal` and `categorical` models if `slice=TRUE` is passed to $\texttt{MCMCglmm}$.\
 
 ### Updating the location vector $\boldsymbol{\theta} =  \left[{\boldsymbol{\mathbf{\beta}}}^{'}\; {\bf u}^{'}\right]^{'}$
 
@@ -211,7 +211,7 @@ The deviance $D$ is defined as:
 
 $$D = -2\textrm{log}(\Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}))$$
 
-where ${\boldsymbol{\mathbf{\Omega}}}$ is some parameter set of the model. The deviance can be calculated in different ways depending on what is in 'focus', and `MCMCglmm` calculates this probability for the lowest level of the hierarchy [@Spiegelhalter.2002]. For fully-observed Gaussian response variables in the likelihood is the density:
+where ${\boldsymbol{\mathbf{\Omega}}}$ is some parameter set of the model. The deviance can be calculated in different ways depending on what is in 'focus', and $\texttt{MCMCglmm}$ calculates this probability for the lowest level of the hierarchy [@Spiegelhalter.2002]. For fully-observed Gaussian response variables in the likelihood is the density:
 
 $$f_{N}({\bf y} | {\bf W}\boldsymbol{\theta},\ {\bf R})$$
 
@@ -289,13 +289,13 @@ df <- data.frame(
                      "$=\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}$\\\n$=\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)\\frac{f_{P}(y |\\textrm{exp}(l_{1}))}{1-f_{P}(0 |\\textrm{exp}(l_{1}))}$",
                      "$=1-\\textrm{exp}(\\textrm{exp}(l_{2}))$\\\n$=\\textrm{exp}(\\textrm{exp}(l_{2}))\\frac{f_{P}(y |\\textrm{exp}(l_{1}))}{1-f_{P}(0 |\\textrm{exp}(l_{1}))}$",
                      "$=\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}+\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)f_{B}(0 | n=y_{1}+y_{2}, \\frac{\\textrm{exp}(l_{1})}{1+\\textrm{exp}(l_{1})})$\\\n$=\\left(1-\\frac{\\textrm{exp}(l_{2})}{1+\\textrm{exp}(l_{2})}\\right)f_{B}(y_{1} |  n=y_{1}+y_{2} \\frac{\\textrm{exp}(l_{1})}{1+\\textrm{exp}(l_{1})})$",
-                     "$=1-\\left(1-\\frac{\\textrm{exp}(l)}{1+\\textrm{exp}(l)}\\right)^{y_2}$\\\n$=\\left(1-\\frac{\\textrm{exp}(l)}{1+\\textrm{exp}(l)}\\right)^{y_2}$", "$=f_{NCt}(y_1y_2 | \\nu=y_3, \\mu=l/y_2)/y_2$", "$=f_{t}(y_1y_2-l/y_2 | \\nu=y_3)/y_2$", "$=\\left(1-\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)\\left(1-\\prod^{J}_{j=1}\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)^{-1}$\\\n$=\\left(\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)\\left(1-\\prod^{J}_{j=1}\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)^{-1}$", 
+                     "$=1-\\left(1-\\frac{\\textrm{exp}(l)}{1+\\textrm{exp}(l)}\\right)^{y_2}$\\\n$=\\left(1-\\frac{\\textrm{exp}(l)}{1+\\textrm{exp}(l)}\\right)^{y_2}$", "$=f_{NCt}(y_1 | \\nu=y_3, \\mu=l/y_2)/y_2$", "$=f_{t}(y_1-l/y_2 | \\nu=y_3)/y_2$", "$=\\left(1-\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)\\left(1-\\prod^{J}_{j=1}\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)^{-1}$\\\n$=\\left(\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)\\left(1-\\prod^{J}_{j=1}\\frac{\\textrm{exp}(l_k)}{1+\\textrm{exp}(l_k)}\\right)^{-1}$", 
                      "$={\\sum^{J}_{j=1}y_j \\choose y_k}\\left(\\frac{\\textrm{exp}(l_{k})}{P_k(k)}\\right)^{y_k}\\left(1-\\frac{\\textrm{exp}(l_{k})}{P_k(k)}\\right)^{\\sum^{J}_{j\\neq k} y_j}$\\\n$={\\sum^{J}_{j=1}y_j \\choose y_k}\\left(\\frac{1}{P_k(k)}\\right)^{y_k}\\left(1-\\frac{1}{P_k(k)}\\right)^{\\sum^{J}_{j\\neq k} y_j}$\\\n \ \\ \\ \\ \\  ignored"),
 
   stringsAsFactors = FALSE
 )
 
-kable(df, "html", escape = FALSE, caption = "Distribution types that can fitted using `MCMCglmm`. The prefixes `\"zi\"`, `\"zt\"`, `\"hu\"` and `\"za\"` stand for zero-inflated, zero-truncated, hurdle and zero-altered respectively. The prefix `\"cen\"` standards for censored where $y_{1}$ and $y_{2}$ are the upper and lower bounds for the unobserved datum $y$. $J$ stands for the number of categories in the multinomial, categorical, zero-truncated multivariate Bernoulli distributions and this must be specified in the family argument for the multinomial zero-truncated multivariate Bernoulli distributions. The density function is for a single datum in a univariate model with ${\\bf w}^{\\top}$ being a row vector of ${\\bf W}$. $f$ and $F$ are the density and distribution functions for the subscripted distribution ($N$=Normal, $P$=Poisson, $E$=Exponential, $G$=Geometric, $B$=Binomial, $NCt$=non-central $t$ and $t$=Student's $t$). The $J-1$ $\\gamma$'s in the ordinal/threshold models are the cutpoints, with $\\gamma_{1}$ set to zero. The normalising probability $P_k(k)$ in the denominator of zero-truncated multinomial - which is the probability of no zero's in the non-zero categories - is not given explicitly.", label="dist", align = "cccrl") |>
+kable(df, "html", escape = FALSE, caption = "Distribution types that can fitted using $\texttt{MCMCglmm}$. The prefixes `\"zi\"`, `\"zt\"`, `\"hu\"` and `\"za\"` stand for zero-inflated, zero-truncated, hurdle and zero-altered respectively. The prefix `\"cen\"` standards for censored where $y_{1}$ and $y_{2}$ are the upper and lower bounds for the unobserved datum $y$. $J$ stands for the number of categories in the multinomial, categorical, zero-truncated multivariate Bernoulli distributions and this must be specified in the family argument for the multinomial zero-truncated multivariate Bernoulli distributions. The density function is for a single datum in a univariate model with ${\\bf w}^{\\top}$ being a row vector of ${\\bf W}$. $f$ and $F$ are the density and distribution functions for the subscripted distribution ($N$=Normal, $P$=Poisson, $E$=Exponential, $G$=Geometric, $B$=Binomial, $NCt$=non-central $t$ and $t$=Student's $t$). The $J-1$ $\\gamma$'s in the ordinal/threshold models are the cutpoints, with $\\gamma_{1}$ set to zero. The normalising probability $P_k(k)$ in the denominator of zero-truncated multinomial - which is the probability of no zero's in the non-zero categories - is not given explicitly.", label="dist", align = "cccrl") |>
   kable_styling(full_width = FALSE)%>%
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```

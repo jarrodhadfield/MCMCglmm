@@ -25,7 +25,7 @@ y.hol<-(ac_wealth*(1-ac_ratio))^0.25 # disposable income * proportion spent on h
 Spending<-data.frame(y.hol=y.hol, y.car=y.car, id=id)
 ```
 
-A simple regression suggests the two types of spending are negatively related but the association is weak with the $R^{2}=$`r round(summary(lm(y.car~y.hol))$r.squared,3)`.
+A simple regression suggests the two types of spending are negatively related but the association is weak with the $R^2$ close to zero.
 
 ``` {r echo=TRUE}
 summary(lm(y.car~y.hol, data=Spending))
@@ -33,7 +33,7 @@ summary(lm(y.car~y.hol, data=Spending))
 
 With `id` added as a random term to deal with the the repeated measures, a similar conclusion is reached although the estimate is more negative:
 
-``` {r echo=TRUE, eval=TRUE, cache=TRUE}
+``` {r echo=TRUE, eval=TRUE}
 m5a.1<-MCMCglmm(y.car~y.hol, random=~id, data=Spending)
 summary(m5a.1$Sol[,"y.hol"])
 ```
@@ -66,8 +66,13 @@ $$\begin{array}{cc}
 
 From this we can see that fitting a multi-response model is a direct extension to how we fitted models with categorical random interactions (Chapter \@ref(cat-int)):
 
-``` {r echo=TRUE, eval=FALSE}
-m5a.2<-MCMCglmm(cbind(y.hol, y.car)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"))
+``` {r multi.1, echo=TRUE}
+prior.m5a.2<-list(R=list(V=diag(2), nu=1.002),
+                  G=list(
+                  	G1=list(V=diag(2), nu=2, alpha.mu=rep(0,2), alpha.V=diag(2)*1000)
+                  ))
+
+m5a.2<-MCMCglmm(cbind(y.hol, y.car)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, prior=prior.m5a.2, family=c("gaussian", "gaussian"))
 ```
 
 We have fitted the fixed effect `trait` so that the two types of spending can have different intercepts. I usually suppress the intercept (`-1`) for these types of models so the second coefficient is not the difference between the intercept for the first level of `trait` (`y.hol`) and the second level (`y.car`) but the actual trait specific intercepts. In other words the design matrix for the fixed effects has the form:
@@ -104,7 +109,7 @@ A $2\times2$ covariance matrix is estimated for the random term where the diagon
 
 A univariate regression is defined as the covariance between the response and the predictor divided by the variance in the predictor. We can therefore estimate a regression coefficient for these two levels of random variation, and compare them with the regression coefficient we obtained in the simpler model:
 
-``` {r echo=TRUE, eval=FALSE}
+``` {r eval=FALSE}
 id.regression<-m5a.2$VCV[,2]/m5a.2$VCV[,1]
 units.regression<-m5a.2$VCV[,6]/m5a.2$VCV[,5]
 plot(mcmc.list(m5a.1$Sol[,"y.hol"], id.regression,units.regression), density=FALSE)
@@ -114,13 +119,9 @@ The regression coefficients (see Figure \@ref(fig:asUV)) differ substantially at
 individual (red) levels, and neither is entirely consistent with the regression coefficient from the univariate model (black). The process by which we generated the data gives rise to this phenomenon - large variation between individuals in their disposable income means that people who are able to spend a lot on their holiday can also afford to spend a lot on their holidays (hence positive covariation between `id` effects). However, a person that spent a large proportion of their disposable income in a particular year on a holiday, must have less to spend that year on a car (hence negative residual (within year) covariation).
 
 
-``` {r echo=FALSE, eval=TRUE}
-m5a.2<-MCMCglmm(cbind(y.hol, y.car)~trait-1, random=~us(trait):id, rcov=~us(trait):units, data=Spending, family=c("gaussian", "gaussian"))
+``` {r label=asUV, echo=FALSE, include=TRUE, fig.cap="MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). The relationship between the two types of spending is in part mediating by a third unmeasured variable, disposable income.", fig.width=7, fig.height=5}
 id.regression<-m5a.2$VCV[,2]/m5a.2$VCV[,1]
 units.regression<-m5a.2$VCV[,6]/m5a.2$VCV[,5]
-```
-
-``` {r label=asUV, echo=FALSE, include=TRUE, fig.cap="MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). The relationship between the two types of spending is in part mediating by a third unmeasured variable, disposable income.", fig.width=7, fig.height=5}
 muv<-max(m5a.1$Sol[,"y.hol"])
 mid<-max(id.regression)
 mu<-min(units.regression)
@@ -135,8 +136,8 @@ When fitting the simpler univariate model we make the assumption that the effect
 For example, we could set up a simpler model where two thirds of the variation in holiday expenditure is due to between individual differences, and holiday expenditure directly affects how much an individual will spend on their car (using a regression coefficient of -0.3). The variation in car expenditure not caused by holiday expenditure is also due to individual differences, but in this case they only explain a third of the variance.
 
 ``` {r echo=TRUE, eval=TRUE}
-Spending$y.hol2<-rnorm(200,0,sqrt(2))[Spending$id]+rnorm(800,0,sqrt(1))
-Spending$y.car2<-Spending$y.hol2*-0.3+rnorm(200,0,sqrt(1))[Spending$id]+rnorm(800,0,sqrt(2))
+Spending$y.hol2<-rnorm(200,0,sqrt(2))[Spending$id]+rnorm(800,0,1)
+Spending$y.car2<-Spending$y.hol2*-0.3+rnorm(200,0,1)[Spending$id]+rnorm(800,0,sqrt(2))
 ```
 
 We can fit the univariate and multivariate models to these data, and compare the regression coefficients as we did before. Figure \@ref(fig:MVvUV2) shows that the regression coefficients are all very similar and a value of -0.3 has a reasonably high posterior probability. However, it should be noted that the posterior standard deviation is smaller in the simpler model because the more strict assumptions have allowed us to pool information across the two levels to get a more precise answer.
@@ -378,7 +379,7 @@ abline(v=oz, col="red", lwd=2)
 
 ## Hurdle Models {#Hurdle}
 
-Hurdle models are very similar to zero-inflated models but they can be used to model zero-deflation as well as zero-inflation and seem to have much better mixing properties in `MCMCglmm`. As in ZIP models each datum
+Hurdle models are very similar to zero-inflated models but they can be used to model zero-deflation as well as zero-inflation and seem to have much better mixing properties in $\texttt{MCMCglmm}$. As in ZIP models each datum
 in the hurdle model is associated with two latent variables. However, whereas in a ZIP model the first latent variable is the mean parameter of a Poisson distribution the equivalent latent variable in the hurdle model is the mean parameter of a zero-truncated Possion distribution (i.e. a Poisson distribution without the zeros observed). In addition the second latent variable in a ZIP model is the probability that an observed zero is due to zero-inflation rather than the Poisson process. In hurdle models the second latent variable is simply the probability (on the logit scale) that the response variable is zero or not. The likelihood is:
 
 $$\begin{array}{rl}

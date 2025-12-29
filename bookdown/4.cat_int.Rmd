@@ -229,7 +229,7 @@ df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-kable(df, "html", escape = FALSE, caption = "Different random effect specifications in `MCMCglmm` (with equivalent `lmer` syntax when possible). `sex` is a factor with three levels so the resulting covariance and correlation matrices are $3\\times3$. For the `cors(sex):dam` structure, the prior specification had `fix=2` which forces the last diagonal block (starting from position 2,2) to be a correlation matrix rather than a covariance matrix. `fix` can also be specified for other structures but then it fixes last diagonal block to what ever is specified in the `V` element of the prior.  `ante` structures are not covered here but in Section \\@ref(ante-sec)", label="vfunction") |>
+kable(df, "html", escape = FALSE, caption = "Different random effect specifications in $\texttt{MCMCglmm}$ (with equivalent `lmer` syntax when possible). `sex` is a factor with three levels so the resulting covariance and correlation matrices are $3\\times3$. For the `cors(sex):dam` structure, the prior specification had `fix=2` which forces the last diagonal block (starting from position 2,2) to be a correlation matrix rather than a covariance matrix. `fix` can also be specified for other structures but then it fixes last diagonal block to what ever is specified in the `V` element of the prior.  `ante` structures are not covered here but in Section \\@ref(ante-sec)", label="vfunction") |>
   kable_styling(full_width = FALSE)%>%
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```
@@ -306,7 +306,7 @@ Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, & |r|<1\\
 
 and as shown above setting `nu` =`dim(V)+1` results in marginal correlations that are uniform on the interval \[-1,1\].
 
-In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. `MCMCglmm` uses a method proposed by @Liu.2006 with the target prior as in @Barnard.2000. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a diffuse prior is set, mixing is generally not a problem. If `nu=0` is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.
+In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. $\texttt{MCMCglmm}$ uses a method proposed by @Liu.2006 with the target prior as in @Barnard.2000. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a diffuse prior is set, mixing is generally not a problem. If `nu=0` is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.
 
 
 
@@ -314,4 +314,4 @@ In most cases correlation matrices do not have known form and so cannot be direc
 
 [^4.2]: IMPORTANT: In versions $<$ 2.05 priors on each variance of an`idh` structure were distributed as $IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$ but this was a source of confusion and was changed.
 
-[^4.3]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and `MCMCglmm` syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in `MCMCglmm` the variances are fixed in the prior.
+[^4.3]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
