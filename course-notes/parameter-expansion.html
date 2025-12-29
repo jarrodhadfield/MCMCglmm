@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-28" />
+<meta name="date" content="2025-12-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,11 +209,11 @@ div.csl-indent {
 <li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#slice-sampling"><i class="fa fa-check"></i><b>2.5.4</b> Slice Sampling</a></li>
 <li class="chapter" data-level="2.5.5" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.5</b> MCMC Diagnostics</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6</b> Improper Priors</a>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#Vprior-sec"><i class="fa fa-check"></i><b>2.6</b> Prior for Residual Variances</a>
 <ul>
-<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.6.1</b> Flat Improper Prior</a></li>
-<li class="chapter" data-level="2.6.2" data-path="bayesian.html"><a href="bayesian.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.6.2</b> Non-Informative Improper Prior</a></li>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6.1</b> Improper Priors</a></li>
 </ul></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#transform-sec"><i class="fa fa-check"></i><b>2.7</b> Transformations</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
 <ul>
@@ -335,7 +335,7 @@ div.csl-indent {
 <p>and so the methods described above can be used to update them.</p>
 <div id="variances-close-to-zero" class="section level3 hasAnchor" number="9.0.1">
 <h3><span class="header-section-number">9.0.1</span> Variances close to zero<a href="parameter-expansion.html#variances-close-to-zero" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>To use parameter exapnsion in <code>MCMCglmm</code> it is necessary to specify a prior covariance matrix for <span class="math inline">\({\boldsymbol{\mathbf{\alpha}}}\)</span> which is non-null. In section I discuss what this prior means in the context of posterior inference but for now we will specify two models, one parameter expanded and the other not. To illustrate I will fit a model that estimates the between mother variation in offsping sex ratio using parameter expansions:</p>
+<p>To use parameter exapnsion in <span class="math inline">\(\texttt{MCMCglmm}\)</span> it is necessary to specify a prior covariance matrix for <span class="math inline">\({\boldsymbol{\mathbf{\alpha}}}\)</span> which is non-null. In section I discuss what this prior means in the context of posterior inference but for now we will specify two models, one parameter expanded and the other not. To illustrate I will fit a model that estimates the between mother variation in offsping sex ratio using parameter expansions:</p>
 <div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="parameter-expansion.html#cb262-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
 <span id="cb262-2"><a href="parameter-expansion.html#cb262-2" tabindex="-1"></a>BTdata<span class="sc">$</span>sex[<span class="fu">which</span>(BTdata<span class="sc">$</span>sex <span class="sc">==</span> <span class="st">&quot;UNK&quot;</span>)] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
 <span id="cb262-3"><a href="parameter-expansion.html#cb262-3" tabindex="-1"></a>BTdata<span class="sc">$</span>sex <span class="ot">&lt;-</span> gdata<span class="sc">::</span><span class="fu">drop.levels</span>(BTdata<span class="sc">$</span>sex)  <span class="co"># treat unknowns as missing data</span></span>
@@ -356,13 +356,13 @@ div.csl-indent {
 Figure 9.1: Traces of the sampled posterior distribution for between female variance in sex ratio. The black trace is from a parameter expanded model, and the red trace from a non-parameter expanded model.
 </p>
 </div>
-<p>The parameter expanded model is 25% slower per iteration but the effective sample size is 3.586 times greater:</p>
+<p>The parameter expanded model is 25% slower per iteration but the effective sample size is 2.774 times greater:</p>
 <div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="parameter-expansion.html#cb265-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])</span></code></pre></div>
 <pre><code>##     var1 
-## 201.7535</code></pre>
+## 158.9623</code></pre>
 <div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="parameter-expansion.html#cb267-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])</span></code></pre></div>
 <pre><code>##     var1 
-## 56.25997</code></pre>
+## 57.29969</code></pre>
 </div>
 <div id="secPX-p" class="section level3 hasAnchor" number="9.0.2">
 <h3><span class="header-section-number">9.0.2</span> Parameter expanded priors<a href="parameter-expansion.html#secPX-p" class="anchor-section" aria-label="Anchor link to header"></a></h3>
@@ -448,16 +448,16 @@ Figure 9.6: Between mother variation in sex ratio with the residual variance fix
 <p>The prior specification for the between mother variance is different in the two models but Figure <a href="parameter-expansion.html#fig:sexratio3">9.6</a> suggests that the difference has little influence. However, the mixing properties of the second chain are much better <span class="citation">(<a href="#ref-vanDyk.2001">Dyk and Meng 2001</a>)</span>:</p>
 <div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="parameter-expansion.html#cb279-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
 <pre><code>##     var1 
-## 201.7535</code></pre>
+## 158.9623</code></pre>
 <div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="parameter-expansion.html#cb281-1" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
-<pre><code>##    var1 
-## 782.793</code></pre>
-<p>Although the chain mixes faster as the residual variance is set to be larger, numerical problem are often encountered because the latent variables can take on extreme values. For most models a variance of 1 is safe, but care needs to be taken so that the absolute value of the latent variable is less than 20 in the case of the logit link and less than 7 for the probit link. If the residual variance is not fixed but has an alternative proper prior placed on it then the Metropolis-Hastings proposal distribution for the latent variables may not be well suited to the local properties of the conditional distribution and the acceptance ratio may fluctuate widely around the optimal 0.44. This can be fixed by using the slice sampling methods outlined in <span class="citation">Damien, Wakefield, and Walker (<a href="#ref-Damien.1999">1999</a>)</span> by passing <code>slice=TRUE</code> to <code>MCMCglmm</code>. Slice sampling can also be more efficient even if the prior is fixed at some value:</p>
+<pre><code>##     var1 
+## 653.5057</code></pre>
+<p>Although the chain mixes faster as the residual variance is set to be larger, numerical problem are often encountered because the latent variables can take on extreme values. For most models a variance of 1 is safe, but care needs to be taken so that the absolute value of the latent variable is less than 20 in the case of the logit link and less than 7 for the probit link. If the residual variance is not fixed but has an alternative proper prior placed on it then the Metropolis-Hastings proposal distribution for the latent variables may not be well suited to the local properties of the conditional distribution and the acceptance ratio may fluctuate widely around the optimal 0.44. This can be fixed by using the slice sampling methods outlined in <span class="citation">Damien, Wakefield, and Walker (<a href="#ref-Damien.1999">1999</a>)</span> by passing <code>slice=TRUE</code> to <span class="math inline">\(\texttt{MCMCglmm}\)</span>. Slice sampling can also be more efficient even if the prior is fixed at some value:</p>
 <div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="parameter-expansion.html#cb283-1" tabindex="-1"></a>m7b<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(sex <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>dam, <span class="at">data =</span> BTdata, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>,</span>
 <span id="cb283-2"><a href="parameter-expansion.html#cb283-2" tabindex="-1"></a>    <span class="at">prior =</span> prior3b, <span class="at">slice =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb283-3"><a href="parameter-expansion.html#cb283-3" tabindex="-1"></a><span class="fu">effectiveSize</span>(m7b<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m7b<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;units&quot;</span>]))</span></code></pre></div>
 <pre><code>##     var1 
-## 813.9908</code></pre>
+## 713.4343</code></pre>
 
 </div>
 </div>

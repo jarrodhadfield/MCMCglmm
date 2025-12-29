@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-28" />
+<meta name="date" content="2025-12-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,11 +209,11 @@ div.csl-indent {
 <li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#slice-sampling"><i class="fa fa-check"></i><b>2.5.4</b> Slice Sampling</a></li>
 <li class="chapter" data-level="2.5.5" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.5</b> MCMC Diagnostics</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6</b> Improper Priors</a>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#Vprior-sec"><i class="fa fa-check"></i><b>2.6</b> Prior for Residual Variances</a>
 <ul>
-<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.6.1</b> Flat Improper Prior</a></li>
-<li class="chapter" data-level="2.6.2" data-path="bayesian.html"><a href="bayesian.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.6.2</b> Non-Informative Improper Prior</a></li>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6.1</b> Improper Priors</a></li>
 </ul></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#transform-sec"><i class="fa fa-check"></i><b>2.7</b> Transformations</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
 <ul>
@@ -405,18 +405,18 @@ Figure 5.4: MCMC summary plots for the chick covariance components from model . 
 <p>The traces look OKish for the chick (co)variance matrices (Figure <a href="cont-int.html#fig:RR2VCV">5.4</a> but notice that the the estimate of intercept-slope correlation is close to the boundary of parameter space (-1):</p>
 <div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="cont-int.html#cb164-1" tabindex="-1"></a>int.slope.cor <span class="ot">&lt;-</span> m4a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(m4a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">1</span>] <span class="sc">*</span> m4a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">4</span>])</span>
 <span id="cb164-2"><a href="cont-int.html#cb164-2" tabindex="-1"></a><span class="fu">posterior.mode</span>(int.slope.cor)</span></code></pre></div>
-<pre><code>##       var1 
-## -0.9730651</code></pre>
+<pre><code>##      var1 
+## -0.972331</code></pre>
 <p>and shows strong autocorrelation</p>
 <div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="cont-int.html#cb166-1" tabindex="-1"></a><span class="fu">autocorr</span>(int.slope.cor)</span></code></pre></div>
 <pre><code>## , , 1
 ## 
-##               [,1]
-## Lag 0   1.00000000
-## Lag 10  0.14239733
-## Lag 50  0.03948260
-## Lag 100 0.02075519
-## Lag 500 0.05389151</code></pre>
+##                 [,1]
+## Lag 0    1.000000000
+## Lag 10   0.172158992
+## Lag 50   0.065908478
+## Lag 100 -0.009727089
+## Lag 500 -0.023027156</code></pre>
 <p>and we should run it for longer in order to sample the posterior adequately. For now we will carry on and obtain the predictions from the model we ran, but using the <code>perdict</code> function rather than dong it ‘by hand’:</p>
 <div class="sourceCode" id="cb168"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb168-1"><a href="cont-int.html#cb168-1" tabindex="-1"></a><span class="fu">xyplot</span>(weight <span class="sc">+</span> <span class="fu">predict</span>(m4a<span class="fl">.2</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>) <span class="sc">~</span> Time <span class="sc">|</span> Chick, <span class="at">data =</span> ChickWeight)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:CWpred-2"></span>
@@ -451,11 +451,11 @@ Figure 5.6: Weights of each chick as a function of age in blue, with the predict
 </div>
 <p>and the DIC has gone down, suggesting that the model is better:</p>
 <div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="cont-int.html#cb171-1" tabindex="-1"></a>m4a<span class="fl">.1</span><span class="sc">$</span>DIC</span></code></pre></div>
-<pre><code>## [1] 5525.448</code></pre>
+<pre><code>## [1] 5525.556</code></pre>
 <div class="sourceCode" id="cb173"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb173-1"><a href="cont-int.html#cb173-1" tabindex="-1"></a>m4a<span class="fl">.2</span><span class="sc">$</span>DIC</span></code></pre></div>
-<pre><code>## [1] 4544.471</code></pre>
+<pre><code>## [1] 4544.724</code></pre>
 <div class="sourceCode" id="cb175"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb175-1"><a href="cont-int.html#cb175-1" tabindex="-1"></a>m4a<span class="fl">.3</span><span class="sc">$</span>DIC</span></code></pre></div>
-<pre><code>## [1] 3932.512</code></pre>
+<pre><code>## [1] 3932.902</code></pre>
 <p>It is worth seeing whether using an AIC measure using REML also suggests the highest order model is the better model.</p>
 <div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb177-1"><a href="cont-int.html#cb177-1" tabindex="-1"></a><span class="fu">library</span>(lme4, <span class="at">warn.conflicts =</span> <span class="cn">FALSE</span>)</span>
 <span id="cb177-2"><a href="cont-int.html#cb177-2" tabindex="-1"></a>m5a.<span class="fl">1.</span>REML <span class="ot">&lt;-</span> <span class="fu">lmer</span>(weight <span class="sc">~</span> Diet <span class="sc">+</span> <span class="fu">poly</span>(Time, <span class="dv">2</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>) <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> Chick), <span class="at">data =</span> ChickWeight)</span>

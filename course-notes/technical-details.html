@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-28" />
+<meta name="date" content="2025-12-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,11 +209,11 @@ div.csl-indent {
 <li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#slice-sampling"><i class="fa fa-check"></i><b>2.5.4</b> Slice Sampling</a></li>
 <li class="chapter" data-level="2.5.5" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.5</b> MCMC Diagnostics</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6</b> Improper Priors</a>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#Vprior-sec"><i class="fa fa-check"></i><b>2.6</b> Prior for Residual Variances</a>
 <ul>
-<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.6.1</b> Flat Improper Prior</a></li>
-<li class="chapter" data-level="2.6.2" data-path="bayesian.html"><a href="bayesian.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.6.2</b> Non-Informative Improper Prior</a></li>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6.1</b> Improper Priors</a></li>
 </ul></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#transform-sec"><i class="fa fa-check"></i><b>2.7</b> Transformations</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
 <ul>
@@ -359,7 +359,7 @@ div.csl-indent {
 \right)
 \label{V-Eq}   \tag{8.4}\]</span></p>
 <p>where <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}_{0}\)</span> is a vector of prior means for the fixed effects with prior (co)variance <span class="math inline">\({\bf B}\)</span>, and <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span> are the expected (co)variances of the random effects and residuals respectively. The zero off-diagonal matrices imply <em>a priori</em> independence between fixed effects, random effects, and residuals. Generally, <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span> are large square matrices with dimensions equal to the number of random effects or residuals. Typically they are unknown, and must be estimated from the data, usually by assuming they are structured in a way that they can be parameterised by few parameters. Below we will focus on the structure of <span class="math inline">\({\bf G}\)</span>, but the same logic can be applied to <span class="math inline">\({\bf R}\)</span>.</p>
-<p>At its most general, <code>MCMCglmm</code> allows variance structures of the form:</p>
+<p>At its most general, <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows variance structures of the form:</p>
 <p><span class="math display" id="eq:G3-Eq">\[{\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
 \label{G3-Eq}   \tag{8.5}\]</span></p>
 <p>where the parameter (co)variance matrices (<span class="math inline">\({\bf V}\)</span>) are usually low-dimensional and are to be estimated, and the structured matrices (<span class="math inline">\({\bf A}\)</span>) are usually high dimensional and treated as known.</p>
@@ -386,7 +386,7 @@ div.csl-indent {
 be factored:</p>
 <p><span class="math display" id="eq:pcl3-Eq">\[Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
 \label{pcl3-Eq}   \tag{8.8}\]</span></p>
-<p>When the block size is one (i.e. a univariate analysis) then the latent variables can be slice sampled for two-category <code>ordinal</code> and <code>categorical</code> models if <code>slice=TRUE</code> is passed to <code>MCMCglmm</code>.<br />
+<p>When the block size is one (i.e. a univariate analysis) then the latent variables can be slice sampled for two-category <code>ordinal</code> and <code>categorical</code> models if <code>slice=TRUE</code> is passed to <span class="math inline">\(\texttt{MCMCglmm}\)</span>.<br />
 </p>
 </div>
 <div id="updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright" class="section level3 hasAnchor" number="8.2.2">
@@ -470,7 +470,7 @@ be factored:</p>
 <h3><span class="header-section-number">8.2.6</span> Deviance and DIC<a href="technical-details.html#deviance-and-dic" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The deviance <span class="math inline">\(D\)</span> is defined as:</p>
 <p><span class="math display">\[D = -2\textrm{log}(\Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}))\]</span></p>
-<p>where <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}}\)</span> is some parameter set of the model. The deviance can be calculated in different ways depending on what is in ‘focus’, and <code>MCMCglmm</code> calculates this probability for the lowest level of the hierarchy <span class="citation">(<a href="#ref-Spiegelhalter.2002">Spiegelhalter et al. 2002</a>)</span>. For fully-observed Gaussian response variables in the likelihood is the density:</p>
+<p>where <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}}\)</span> is some parameter set of the model. The deviance can be calculated in different ways depending on what is in ‘focus’, and <span class="math inline">\(\texttt{MCMCglmm}\)</span> calculates this probability for the lowest level of the hierarchy <span class="citation">(<a href="#ref-Spiegelhalter.2002">Spiegelhalter et al. 2002</a>)</span>. For fully-observed Gaussian response variables in the likelihood is the density:</p>
 <p><span class="math display">\[f_{N}({\bf y} | {\bf W}\boldsymbol{\theta},\ {\bf R})\]</span></p>
 <p>where <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}} = \left\{\boldsymbol{\theta},\ {\bf R}\right\}\)</span>. For discrete response variables in univariate analyses modeled using <code>family="threshold"</code> the density is</p>
 <p><span class="math display">\[\prod_{i} F_{N}(\gamma_{y_{i}} | {\bf w}_{i}\boldsymbol{\theta}, \ r_{ii})-F_{N}(\gamma_{y_{i}+1} | {\bf w}_{i}\boldsymbol{\theta}, \ r_{ii})\]</span></p>
@@ -497,7 +497,7 @@ is more than one threshold trait.</p>
 <div style="border: 0px;overflow-x: scroll; width:100%; ">
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:dist">Table 8.1: </span>Distribution types that can fitted using <code>MCMCglmm</code>. The prefixes <code>"zi"</code>, <code>"zt"</code>, <code>"hu"</code> and <code>"za"</code> stand for zero-inflated, zero-truncated, hurdle and zero-altered respectively. The prefix <code>"cen"</code> standards for censored where <span class="math inline">\(y_{1}\)</span> and <span class="math inline">\(y_{2}\)</span> are the upper and lower bounds for the unobserved datum <span class="math inline">\(y\)</span>. <span class="math inline">\(J\)</span> stands for the number of categories in the multinomial, categorical, zero-truncated multivariate Bernoulli distributions and this must be specified in the family argument for the multinomial zero-truncated multivariate Bernoulli distributions. The density function is for a single datum in a univariate model with <span class="math inline">\({\bf w}^{\top}\)</span> being a row vector of <span class="math inline">\({\bf W}\)</span>. <span class="math inline">\(f\)</span> and <span class="math inline">\(F\)</span> are the density and distribution functions for the subscripted distribution (<span class="math inline">\(N\)</span>=Normal, <span class="math inline">\(P\)</span>=Poisson, <span class="math inline">\(E\)</span>=Exponential, <span class="math inline">\(G\)</span>=Geometric, <span class="math inline">\(B\)</span>=Binomial, <span class="math inline">\(NCt\)</span>=non-central <span class="math inline">\(t\)</span> and <span class="math inline">\(t\)</span>=Student’s <span class="math inline">\(t\)</span>). The <span class="math inline">\(J-1\)</span> <span class="math inline">\(\gamma\)</span>’s in the ordinal/threshold models are the cutpoints, with <span class="math inline">\(\gamma_{1}\)</span> set to zero. The normalising probability <span class="math inline">\(P_k(k)\)</span> in the denominator of zero-truncated multinomial - which is the probability of no zero’s in the non-zero categories - is not given explicitly.
+<span id="tab:dist">Table 8.1: </span>Distribution types that can fitted using $ exttt{MCMCglmm}$. The prefixes <code>"zi"</code>, <code>"zt"</code>, <code>"hu"</code> and <code>"za"</code> stand for zero-inflated, zero-truncated, hurdle and zero-altered respectively. The prefix <code>"cen"</code> standards for censored where <span class="math inline">\(y_{1}\)</span> and <span class="math inline">\(y_{2}\)</span> are the upper and lower bounds for the unobserved datum <span class="math inline">\(y\)</span>. <span class="math inline">\(J\)</span> stands for the number of categories in the multinomial, categorical, zero-truncated multivariate Bernoulli distributions and this must be specified in the family argument for the multinomial zero-truncated multivariate Bernoulli distributions. The density function is for a single datum in a univariate model with <span class="math inline">\({\bf w}^{\top}\)</span> being a row vector of <span class="math inline">\({\bf W}\)</span>. <span class="math inline">\(f\)</span> and <span class="math inline">\(F\)</span> are the density and distribution functions for the subscripted distribution (<span class="math inline">\(N\)</span>=Normal, <span class="math inline">\(P\)</span>=Poisson, <span class="math inline">\(E\)</span>=Exponential, <span class="math inline">\(G\)</span>=Geometric, <span class="math inline">\(B\)</span>=Binomial, <span class="math inline">\(NCt\)</span>=non-central <span class="math inline">\(t\)</span> and <span class="math inline">\(t\)</span>=Student’s <span class="math inline">\(t\)</span>). The <span class="math inline">\(J-1\)</span> <span class="math inline">\(\gamma\)</span>’s in the ordinal/threshold models are the cutpoints, with <span class="math inline">\(\gamma_{1}\)</span> set to zero. The normalising probability <span class="math inline">\(P_k(k)\)</span> in the denominator of zero-truncated multinomial - which is the probability of no zero’s in the non-zero categories - is not given explicitly.
 </caption>
 <thead>
 <tr>
@@ -842,7 +842,7 @@ Function
 <span class="math inline">\(Pr(y)\)</span>
 </td>
 <td style="text-align:left;">
-<span class="math inline">\(=f_{NCt}(y_1y_2 | \nu=y_3, \mu=l/y_2)/y_2\)</span>
+<span class="math inline">\(=f_{NCt}(y_1 | \nu=y_3, \mu=l/y_2)/y_2\)</span>
 </td>
 </tr>
 <tr>
@@ -859,7 +859,7 @@ Function
 <span class="math inline">\(Pr(y)\)</span>
 </td>
 <td style="text-align:left;">
-<span class="math inline">\(=f_{t}(y_1y_2-l/y_2 | \nu=y_3)/y_2\)</span>
+<span class="math inline">\(=f_{t}(y_1-l/y_2 | \nu=y_3)/y_2\)</span>
 </td>
 </tr>
 <tr>

@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-28" />
+<meta name="date" content="2025-12-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -209,11 +209,11 @@ div.csl-indent {
 <li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#slice-sampling"><i class="fa fa-check"></i><b>2.5.4</b> Slice Sampling</a></li>
 <li class="chapter" data-level="2.5.5" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.5</b> MCMC Diagnostics</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6</b> Improper Priors</a>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#Vprior-sec"><i class="fa fa-check"></i><b>2.6</b> Prior for Residual Variances</a>
 <ul>
-<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#flat-improper-prior"><i class="fa fa-check"></i><b>2.6.1</b> Flat Improper Prior</a></li>
-<li class="chapter" data-level="2.6.2" data-path="bayesian.html"><a href="bayesian.html#non-informative-improper-prior"><i class="fa fa-check"></i><b>2.6.2</b> Non-Informative Improper Prior</a></li>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6.1</b> Improper Priors</a></li>
 </ul></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#transform-sec"><i class="fa fa-check"></i><b>2.7</b> Transformations</a></li>
 </ul></li>
 <li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
 <ul>
@@ -338,7 +338,7 @@ div.csl-indent {
 <span id="cb192-12"><a href="multi.html#cb192-12" tabindex="-1"></a>y.hol<span class="ot">&lt;-</span>(ac_wealth<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>ac_ratio))<span class="sc">^</span><span class="fl">0.25</span> <span class="co"># disposable income * proportion spent on holiday                              </span></span>
 <span id="cb192-13"><a href="multi.html#cb192-13" tabindex="-1"></a></span>
 <span id="cb192-14"><a href="multi.html#cb192-14" tabindex="-1"></a>Spending<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">y.hol=</span>y.hol, <span class="at">y.car=</span>y.car, <span class="at">id=</span>id)</span></code></pre></div>
-<p>A simple regression suggests the two types of spending are negatively related but the association is weak with the $R^{2}=$0.002.</p>
+<p>A simple regression suggests the two types of spending are negatively related but the association is weak with the <span class="math inline">\(R^2\)</span> close to zero.</p>
 <div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb193-1"><a href="multi.html#cb193-1" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">data =</span> Spending))</span></code></pre></div>
 <pre><code>## 
 ## Call:
@@ -346,18 +346,18 @@ div.csl-indent {
 ## 
 ## Residuals:
 ##      Min       1Q   Median       3Q      Max 
-## -0.82240 -0.18954 -0.00736  0.17910  1.06231 
+## -0.95800 -0.19784  0.00529  0.18034  1.33546 
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  1.07416    0.03759  28.573   &lt;2e-16 ***
-## y.hol       -0.05090    0.03630  -1.402    0.161    
+## (Intercept)  1.05164    0.03791  27.739   &lt;2e-16 ***
+## y.hol       -0.02157    0.03660  -0.589    0.556    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
-## Residual standard error: 0.3023 on 798 degrees of freedom
-## Multiple R-squared:  0.002457,   Adjusted R-squared:  0.001207 
-## F-statistic: 1.966 on 1 and 798 DF,  p-value: 0.1613</code></pre>
+## Residual standard error: 0.3138 on 798 degrees of freedom
+## Multiple R-squared:  0.0004351,  Adjusted R-squared:  -0.0008175 
+## F-statistic: 0.3473 on 1 and 798 DF,  p-value: 0.5558</code></pre>
 <p>With <code>id</code> added as a random term to deal with the the repeated measures, a similar conclusion is reached although the estimate is more negative:</p>
 <div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb195-1"><a href="multi.html#cb195-1" tabindex="-1"></a>m5a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">random =</span> <span class="sc">~</span>id, <span class="at">data =</span> Spending)</span>
 <span id="cb195-2"><a href="multi.html#cb195-2" tabindex="-1"></a><span class="fu">summary</span>(m5a<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="st">&quot;y.hol&quot;</span>])</span></code></pre></div>
@@ -371,38 +371,41 @@ div.csl-indent {
 ##    plus standard error of the mean:
 ## 
 ##           Mean             SD       Naive SE Time-series SE 
-##       -0.11965        0.03701        0.00117        0.00117 
+##      -0.153569       0.038754       0.001226       0.001293 
 ## 
 ## 2. Quantiles for each variable:
 ## 
-##     2.5%      25%      50%      75%    97.5% 
-## -0.19232 -0.14313 -0.11947 -0.09646 -0.04827</code></pre>
+##    2.5%     25%     50%     75%   97.5% 
+## -0.2292 -0.1809 -0.1534 -0.1280 -0.0784</code></pre>
 <p>We may be inclined to stop there, but lets proceed with a multi-response model of the problem. The two responses are passed as a matrix using <code>cbind()</code>, and the rows of this matrix are indexed by the reserved variable <code>units</code>, and the columns by the reserved variable <code>trait</code>.</p>
 <p>It is useful to think of a new data frame where the response variables have been stacked column-wise and the other predictors duplicated accordingly. Below is the original data frame on the left (<code>Spending</code>) and the stacked data frame on the right:</p>
 <p><span class="math display">\[\begin{array}{cc}
 \begin{array}{cccc}
 &amp;{\color{blue}{\texttt{y.hol}}}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{id}\\
-{\color{red}{\texttt{1}}}&amp;\texttt{1.538590}&amp;\texttt{0.616512}&amp;\texttt{1}\\
-{\color{red}{\texttt{2}}}&amp;\texttt{0.907144}&amp;\texttt{1.440492}&amp;\texttt{1}\\
+{\color{red}{\texttt{1}}}&amp;\texttt{0.962356}&amp;\texttt{1.172044}&amp;\texttt{1}\\
+{\color{red}{\texttt{2}}}&amp;\texttt{1.191424}&amp;\texttt{0.750792}&amp;\texttt{1}\\
 \vdots&amp;\vdots&amp;\vdots\\
-{\color{red}{\texttt{800}}}&amp;\texttt{0.748241}&amp;\texttt{1.384999}&amp;\texttt{200}\\
+{\color{red}{\texttt{800}}}&amp;\texttt{0.951780}&amp;\texttt{1.201600}&amp;\texttt{200}\\
 \end{array}&amp;
 \Longrightarrow
 \begin{array}{ccccc}
 &amp;\texttt{y}&amp;{\color{blue}{\texttt{trait}}}&amp;\texttt{id}&amp;{\color{red}{\texttt{units}}}\\
-1&amp;\texttt{1.538590}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
-2&amp;\texttt{0.907144}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
+1&amp;\texttt{0.962356}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
+2&amp;\texttt{1.191424}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
 \vdots&amp;\vdots&amp;\vdots&amp;\vdots\\
-800&amp;\texttt{0.748241}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
-801&amp;\texttt{0.616512}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
-802&amp;\texttt{1.440492}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
+800&amp;\texttt{0.951780}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
+801&amp;\texttt{1.172044}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
+802&amp;\texttt{0.750792}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
 \vdots&amp;\vdots&amp;\vdots&amp;\vdots\\
-1600&amp;\texttt{1.384999}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
+1600&amp;\texttt{1.201600}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
 \end{array}
 \end{array}\]</span></p>
 <p>From this we can see that fitting a multi-response model is a direct extension to how we fitted models with categorical random interactions (Chapter <a href="cat-int.html#cat-int">4</a>):</p>
-<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="multi.html#cb197-1" tabindex="-1"></a>m5a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb197-2"><a href="multi.html#cb197-2" tabindex="-1"></a>    <span class="at">data =</span> Spending, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;gaussian&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="multi.html#cb197-1" tabindex="-1"></a>prior.m5a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">1.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>),</span>
+<span id="cb197-2"><a href="multi.html#cb197-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="dv">2</span>, <span class="at">alpha.mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="at">alpha.V =</span> <span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">*</span> <span class="dv">1000</span>)))</span>
+<span id="cb197-3"><a href="multi.html#cb197-3" tabindex="-1"></a></span>
+<span id="cb197-4"><a href="multi.html#cb197-4" tabindex="-1"></a>m5a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb197-5"><a href="multi.html#cb197-5" tabindex="-1"></a>    <span class="at">data =</span> Spending, <span class="at">prior =</span> prior.m5a<span class="fl">.2</span>, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;gaussian&quot;</span>))</span></code></pre></div>
 <p>We have fitted the fixed effect <code>trait</code> so that the two types of spending can have different intercepts. I usually suppress the intercept (<code>-1</code>) for these types of models so the second coefficient is not the difference between the intercept for the first level of <code>trait</code> (<code>y.hol</code>) and the second level (<code>y.car</code>) but the actual trait specific intercepts. In other words the design matrix for the fixed effects has the form:</p>
 <p><span class="math display">\[\begin{array}{rl}
 \left[
@@ -446,9 +449,9 @@ Figure 6.1: MCMC summary plot of the coefficient from a regression of car spendi
 </div>
 <p>When fitting the simpler univariate model we make the assumption that the effect of spending money on a car directly effects how much you spend on a holiday. If this relationship was purely causal then all regression coefficients would have the same expectation, and the simpler model would be justified.</p>
 <p>For example, we could set up a simpler model where two thirds of the variation in holiday expenditure is due to between individual differences, and holiday expenditure directly affects how much an individual will spend on their car (using a regression coefficient of -0.3). The variation in car expenditure not caused by holiday expenditure is also due to individual differences, but in this case they only explain a third of the variance.</p>
-<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="multi.html#cb199-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.hol2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">1</span>))</span>
-<span id="cb199-2"><a href="multi.html#cb199-2" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2 <span class="ot">&lt;-</span> Spending<span class="sc">$</span>y.hol2 <span class="sc">*</span> <span class="sc">-</span><span class="fl">0.3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">1</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span></span>
-<span id="cb199-3"><a href="multi.html#cb199-3" tabindex="-1"></a>    <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="multi.html#cb199-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.hol2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb199-2"><a href="multi.html#cb199-2" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2 <span class="ot">&lt;-</span> Spending<span class="sc">$</span>y.hol2 <span class="sc">*</span> <span class="sc">-</span><span class="fl">0.3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="dv">1</span>)[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>,</span>
+<span id="cb199-3"><a href="multi.html#cb199-3" tabindex="-1"></a>    <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
 <p>We can fit the univariate and multivariate models to these data, and compare the regression coefficients as we did before. Figure <a href="multi.html#fig:MVvUV2">6.2</a> shows that the regression coefficients are all very similar and a value of -0.3 has a reasonably high posterior probability. However, it should be noted that the posterior standard deviation is smaller in the simpler model because the more strict assumptions have allowed us to pool information across the two levels to get a more precise answer.</p>
 <div class="figure"><span style="display:block;" id="fig:MVvUV2"></span>
 <img src="MCMCglmm-course-notes_files/figure-html/MVvUV2-1.png" alt="MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). In this model the relationship between the two types of spending is causal and the regression coefficients have the same expectation. However, the posterior standard deviation from the simple regression is smaller because information from the two different levels is pooled." width="672" />
@@ -546,17 +549,17 @@ probability for each horn type:</p>
 ## 1. Empirical mean and standard deviation for each variable,
 ##    plus standard error of the mean:
 ## 
-##         Mean      SD  Naive SE Time-series SE
-## [1,] 0.65543 0.01747 0.0005523       0.001199
-## [2,] 0.09909 0.01079 0.0003412       0.001463
-## [3,] 0.24548 0.01670 0.0005282       0.001559
+##        Mean      SD  Naive SE Time-series SE
+## [1,] 0.6512 0.01962 0.0006206       0.001830
+## [2,] 0.1018 0.01170 0.0003701       0.001743
+## [3,] 0.2470 0.01682 0.0005320       0.001575
 ## 
 ## 2. Quantiles for each variable:
 ## 
-##        2.5%     25%     50%    75%  97.5%
-## var1 0.6203 0.64374 0.65587 0.6674 0.6887
-## var2 0.0806 0.09125 0.09838 0.1057 0.1229
-## var3 0.2147 0.23429 0.24550 0.2561 0.2802</code></pre>
+##         2.5%    25%    50%    75%  97.5%
+## var1 0.61214 0.6373 0.6514 0.6641 0.6897
+## var2 0.08107 0.0938 0.1009 0.1094 0.1265
+## var3 0.21363 0.2355 0.2463 0.2584 0.2810</code></pre>
 <p>which agrees well with those observed:</p>
 <div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb211-1"><a href="multi.html#cb211-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">rowSums</span>(Ctable))</span></code></pre></div>
 <pre><code>##    normal    polled   scurred 
@@ -590,16 +593,16 @@ Figure 6.4: Posterior distribution of fixed effects from model <code>m5c.2</code
 ##    plus standard error of the mean:
 ## 
 ##        Mean      SD  Naive SE Time-series SE
-## [1,] 0.3435 0.03151 0.0009963       0.003058
-## [2,] 0.2650 0.02885 0.0009124       0.002599
-## [3,] 0.3915 0.03131 0.0009902       0.003681
+## [1,] 0.3494 0.02680 0.0008473       0.002161
+## [2,] 0.2612 0.02998 0.0009480       0.002790
+## [3,] 0.3894 0.03229 0.0010211       0.003969
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##        2.5%    25%    50%    75%  97.5%
-## var1 0.2811 0.3237 0.3424 0.3638 0.4064
-## var2 0.2105 0.2458 0.2649 0.2834 0.3251
-## var3 0.3289 0.3721 0.3927 0.4110 0.4527</code></pre>
+## var1 0.2982 0.3310 0.3484 0.3661 0.4072
+## var2 0.2070 0.2400 0.2606 0.2812 0.3254
+## var3 0.3250 0.3668 0.3895 0.4111 0.4499</code></pre>
 <p>compared to the observed frequencies:</p>
 <div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="multi.html#cb217-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">1</span>])</span></code></pre></div>
 <pre><code>##    normal    polled   scurred 
@@ -619,16 +622,16 @@ Figure 6.4: Posterior distribution of fixed effects from model <code>m5c.2</code
 ##    plus standard error of the mean:
 ## 
 ##          Mean       SD  Naive SE Time-series SE
-## [1,] 0.829693 0.018762 0.0005933       0.002295
-## [2,] 0.008224 0.003922 0.0001240       0.001336
-## [3,] 0.162083 0.017735 0.0005608       0.002127
+## [1,] 0.829980 0.016917 0.0005350       0.001826
+## [2,] 0.008481 0.003571 0.0001129       0.001137
+## [3,] 0.161538 0.016469 0.0005208       0.002050
 ## 
 ## 2. Quantiles for each variable:
 ## 
 ##          2.5%      25%      50%     75%   97.5%
-## var1 0.787446 0.817690 0.831336 0.84227 0.86278
-## var2 0.001294 0.005643 0.007625 0.01066 0.01718
-## var3 0.132136 0.149882 0.160211 0.17244 0.20248</code></pre>
+## var1 0.794724 0.819088 0.830739 0.84133 0.86146
+## var2 0.003427 0.005486 0.008167 0.01125 0.01607
+## var3 0.130903 0.150019 0.160475 0.17205 0.19489</code></pre>
 <p>compared to the observed frequencies:</p>
 <div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="multi.html#cb221-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">2</span>])</span></code></pre></div>
 <pre><code>##    normal    polled   scurred 
@@ -658,7 +661,7 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 ##   640   275</code></pre>
 <div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb227-1"><a href="multi.html#cb227-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
 <pre><code>## [1] 0.1839859</code></pre>
-<p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code><a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures over-dispersion:</p>
+<p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code><a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures over-dispersion:</p>
 <div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="multi.html#cb229-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
 <span id="cb229-2"><a href="multi.html#cb229-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
 <span id="cb229-3"><a href="multi.html#cb229-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
@@ -672,8 +675,8 @@ Figure 6.5: Posterior distribution of fixed effects from model <code>m5d.1</code
 </div>
 <p>The model would have to be run for (much) longer to say something concrete about the level of zero-inflation but my guess would be it’s not a big issue, given the probability is probably quite small:</p>
 <div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="multi.html#cb230-1" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">plogis</span>(m5d<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
-<pre><code>##           0%          25%          50%          75%         100% 
-## 0.0005808592 0.0012644008 0.0024571298 0.0172839780 0.0491606026</code></pre>
+<pre><code>##          0%         25%         50%         75%        100% 
+## 0.001884189 0.004936050 0.008467295 0.016578180 0.038791426</code></pre>
 <div id="posterior-predictive-checks" class="section level3 hasAnchor" number="6.3.1">
 <h3><span class="header-section-number">6.3.1</span> Posterior predictive checks<a href="multi.html#posterior-predictive-checks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Another useful check is to fit the standard Poisson model and use posterior predictive checks to see how many zero’s you would expect under the simple model:</p>
@@ -699,7 +702,7 @@ Figure 6.6: Posterior predictive distribution of zeros from model <code>m5d.2</c
 </div>
 <div id="Hurdle" class="section level2 hasAnchor" number="6.4">
 <h2><span class="header-section-number">6.4</span> Hurdle Models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Hurdle models are very similar to zero-inflated models but they can be used to model zero-deflation as well as zero-inflation and seem to have much better mixing properties in <code>MCMCglmm</code>. As in ZIP models each datum
+<p>Hurdle models are very similar to zero-inflated models but they can be used to model zero-deflation as well as zero-inflation and seem to have much better mixing properties in <span class="math inline">\(\texttt{MCMCglmm}\)</span>. As in ZIP models each datum
 in the hurdle model is associated with two latent variables. However, whereas in a ZIP model the first latent variable is the mean parameter of a Poisson distribution the equivalent latent variable in the hurdle model is the mean parameter of a zero-truncated Possion distribution (i.e. a Poisson distribution without the zeros observed). In addition the second latent variable in a ZIP model is the probability that an observed zero is due to zero-inflation rather than the Poisson process. In hurdle models the second latent variable is simply the probability (on the logit scale) that the response variable is zero or not. The likelihood is:</p>
 <p><span class="math display">\[\begin{array}{rl}
 Pr(y=0) =&amp; \texttt{plogis}(l_{2})\\
@@ -720,19 +723,19 @@ Figure 6.7: Posterior distribution of fixed effects from model <code>m5d.3</code
 <div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="multi.html#cb234-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
 <span id="cb234-2"><a href="multi.html#cb234-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##          lower     upper
-## var1 0.2619553 0.3229821
+## var1 0.2652124 0.3233572
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>and we can compare this to the predicted number of zero’s from the Poisson process if it had not been zero-truncated:</p>
 <div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="multi.html#cb236-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##          lower     upper
-## var1 0.1543881 0.3611977
+## var1 0.1522069 0.3702385
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>The credible intervals largely overlap, strongly suggesting a standard Poisson model would be adequate. However, our prediction for the number of zero’s that would arise form a non-truncated Poisson process only involved the intercept term. This prediction therefore pertains to the number of articles published by single women with no young children who obtained their Ph.D’s from departments scoring zero for prestige (<code>phd</code>) and whose mentors had published nothing in the previous 3 years. Our equivalent prediction for men is a little lower</p>
 <div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="multi.html#cb238-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##           lower    upper
-## var1 0.09016178 0.290933
+## var1 0.08676197 0.296859
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>suggesting that perhaps the number of zero’s is greater than we expected for this group. However, this may just be a consequence of us fixing the proportion of zero’s to be constant across these groups. We can relax this assumption by fitting a separate term for the proportion of zeros for men:</p>
@@ -741,14 +744,14 @@ Figure 6.7: Posterior distribution of fixed effects from model <code>m5d.3</code
 <span id="cb240-3"><a href="multi.html#cb240-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
 <p>which reveals that although this proportion is expected to be (slightly) smaller:</p>
 <div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="multi.html#cb241-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>((m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">2</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">4</span>])<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
-<pre><code>##         lower     upper
-## var1 0.231598 0.3088967
+<pre><code>##        lower     upper
+## var1 0.23111 0.3046061
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>the proportion of zeros expected for men is probably still less than what we expect from a non-truncated Poisson process for which the estimates have changed very little:</p>
 <div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="multi.html#cb243-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##           lower     upper
-## var1 0.07728822 0.2430297
+## var1 0.07963797 0.2511149
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>This highlights one of the disadvantages of hurdle models. If explanatory variables have been fitted that affect the expectation of the Poisson process then this implies that the proportion of zero’s observed will also vary across these same explanatory variables, even in the absence of zero-inflation. It may then be necessary to fit an equally complicated model for both processes even though a single parameter would suffice in a ZIP model. However, in the absence of zero-inflation the intercept of the zero-inflation process in a ZIP model is <span class="math inline">\(-\infty\)</span> on the logit scale causing numerical and inferential problems. An alternative type of model are zero-altered models.</p>
@@ -778,28 +781,28 @@ Pr(y | y&gt;0) =&amp; \texttt{dpois}(y, \texttt{exp}(l))\\
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3043.483 
+##  DIC: 3039.385 
 ## 
 ##  R-structure:  ~trait:units
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp
-## trait:units    0.3622   0.2491   0.4558     33.4
+## trait:units    0.3635    0.287   0.4633    74.49
 ## 
 ##  Location effects: art ~ trait * (fem + mar + kid5 + phd + ment) 
 ## 
 ##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## (Intercept)             0.343512  0.035024  0.677069    202.0  0.028 *  
-## traitza_art            -0.543805 -1.067422 -0.034763    145.1  0.046 *  
-## femWomen               -0.192275 -0.376558 -0.025857    346.4  0.034 *  
-## marMarried              0.078478 -0.094853  0.290538    311.3  0.414    
-## kid5                   -0.130817 -0.273966 -0.030204    242.4  0.038 *  
-## phd                     0.014618 -0.063398  0.093427    344.2  0.700    
-## ment                    0.019499  0.012340  0.026933    378.9 &lt;0.001 ***
-## traitza_art:femWomen    0.020056 -0.243504  0.353819    219.6  0.914    
-## traitza_art:marMarried  0.163014 -0.125193  0.504806    197.6  0.310    
-## traitza_art:kid5       -0.075172 -0.276277  0.145705    159.9  0.476    
-## traitza_art:phd         0.011684 -0.126162  0.144771    201.2  0.864    
-## traitza_art:ment        0.027241  0.008985  0.042554    109.8 &lt;0.001 ***
+## (Intercept)             0.344681  0.029766  0.685610    246.6  0.050 .  
+## traitza_art            -0.539564 -1.121066  0.012477    204.6  0.064 .  
+## femWomen               -0.194446 -0.366989 -0.041888    292.0  0.026 *  
+## marMarried              0.090033 -0.107126  0.268313    281.5  0.348    
+## kid5                   -0.122603 -0.235042  0.002288    240.7  0.038 *  
+## phd                     0.014063 -0.069258  0.100647    214.9  0.750    
+## ment                    0.019077  0.012140  0.026323    423.5 &lt;0.001 ***
+## traitza_art:femWomen    0.019855 -0.249448  0.319240    189.3  0.884    
+## traitza_art:marMarried  0.139209 -0.156087  0.469808    191.5  0.388    
+## traitza_art:kid5       -0.088677 -0.280962  0.110013    182.9  0.378    
+## traitza_art:phd         0.011197 -0.140835  0.151818    231.8  0.852    
+## traitza_art:ment        0.029574  0.011652  0.045101    111.6  0.002 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>we can see from this that the more papers a mentor produces, the more zero-deflation (or conversely the less papers a mentor produces, the more zero-inflation).</p>
@@ -817,8 +820,8 @@ Clutton-Brock, T. H., and J. M. Pemberton, eds. 2004. <em>Soay Sheep: Dynamics a
 </div>
 <div class="footnotes">
 <hr />
-<ol start="7">
-<li id="fn7"><p>Earlier versions of the CourseNotes had <code>nu=1.002</code>. In versions <span class="math inline">\(&lt;\)</span><!-- -->2.05 the marginal prior of a variance associated with an <code>idh</code> structure was inverse-Wishart with <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}-1\)</span> where <span class="math inline">\(\texttt{nu}^{\ast}\)</span> is the marginal degree of belief. In versions <span class="math inline">\(&gt;=\)</span><!-- -->2.05 I changed this so that <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}\)</span> as it was leading to confusion.<a href="multi.html#fnref7" class="footnote-back">↩︎</a></p></li>
+<ol start="8">
+<li id="fn8"><p>Earlier versions of the CourseNotes had <code>nu=1.002</code>. In versions <span class="math inline">\(&lt;\)</span><!-- -->2.05 the marginal prior of a variance associated with an <code>idh</code> structure was inverse-Wishart with <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}-1\)</span> where <span class="math inline">\(\texttt{nu}^{\ast}\)</span> is the marginal degree of belief. In versions <span class="math inline">\(&gt;=\)</span><!-- -->2.05 I changed this so that <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}\)</span> as it was leading to confusion.<a href="multi.html#fnref8" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

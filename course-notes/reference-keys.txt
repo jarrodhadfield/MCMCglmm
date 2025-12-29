@@ -3,7 +3,7 @@ fig:dnorm
 fig:dnorm1
 fig:Lsurface
 fig:muvar
-fig:dinvgamma
+fig:dinvgamma1
 fig:Psurface
 eq:marg-eq
 fig:PsurfaceMCMC
@@ -12,10 +12,12 @@ fig:Psurface-persp
 fig:Psurface-persp2
 fig:time-series
 fig:time-series2
+fig:dinvgamma
+fig:Psurface-nu0
+fig:Pmarg-nu0
 eq:fprior-eq
 fig:Psurface-flat
-fig:Psurface-NI
-fig:Pmarg-NI
+fig:Pmarg-flat
 eq:SE-eq
 eq:lm
 fig:hist-traffic
@@ -95,9 +97,9 @@ metrpolis-hastings-updates
 gibbs-sampling
 slice-sampling
 mcmc-diagnostics
+Vprior-sec
 IP-sec
-flat-improper-prior
-non-informative-improper-prior
+transform-sec
 glm
 linear-model-lm
 lm-sec
