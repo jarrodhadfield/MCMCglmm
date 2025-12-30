@@ -2,10 +2,7 @@
 
 ## Linear Model (LM)
 
-A linear model is one in which unknown parameters are multiplied by
-observed variables and then added together to give a prediction for the
-response variable. As an example, lets take the results from a Swedish
-experiment from the sixties:
+A linear model is one in which unknown parameters are multiplied by (functions of) observed variables and then added together to give a prediction for the response variable. As an example, lets take the results from a Swedish experiment from the sixties:
 
 ``` {r label=traffic, echo=TRUE, include=FALSE}
 data(Traffic, package="MASS")
@@ -13,11 +10,7 @@ Traffic$year<-as.factor(Traffic$year)
 Traffic[c(1,2,184),]
 ```
 
-The experiment involved enforcing speed limits on Swedish roads on some
-days, but on other days letting everyone drive as fast as they liked.
-The response variable (`y`) was how many of their citizens were injured
-in road accidents! The experiment was conducted in 1961 and 1962 for 92
-days in each year. As a first attempt we could specify the linear model:
+The experiment involved enforcing speed limits on Swedish roads on some days, but on other days letting everyone drive as fast as they liked. The response variable (`y`) is the number of accidents recorded. The experiment was conducted in 1961 and 1962 for 92 days in each year. As a first attempt we could specify the linear model:
 
 ``` r
 y ~ limit + year + day
@@ -37,8 +30,7 @@ E[y\texttt{[184]}] &= \beta_{1}+\beta_{2}(\texttt{limit[184]=="yes"})+\beta_{3}(
 \end{array}
 \label{SE-eq}   (\#eq:SE-eq)$$
 
-where the $\beta$'s are the unknown coefficients to be estimated, and the variables in $\texttt{this font}$ are observed predictors. Continuous predictors such as `day` remain unchanged, but categorical predictors are expanded into a series of binary variables of the form '*do the data come from 1961, yes or no?*', '*do the data come from 1962, yes or
-no?*', and so on for as many years for which there are data.
+where the $\beta$'s are the unknown coefficients to be estimated, and the variables in $\texttt{this font}$ are observed predictors. Continuous predictors such as `day` remain unchanged, but categorical predictors are expanded into a series of binary variables of the form '*do the data come from 1961, yes or no?*', '*do the data come from 1962, yes or no?*', and so on for as many years for which there are data.
 
 It is cumbersome to write out the equation for each data point in this way, and a more compact way of representing the system of equations is
 
@@ -47,7 +39,7 @@ E[{\bf y}] = {\bf X}{\boldsymbol{\mathbf{\beta}}}
 (\#eq:lm)
 $$
 
-where ${\bf X}$ is called a design matrix and contains the predictor information, and ${\boldsymbol{\mathbf{\beta}}} = [\beta_{1}\ \beta_{2}\ \beta_{3}\ \beta_{4}]^{'}$ is the vector of parameters.
+where ${\bf X}$ is called a design matrix and contains the predictor information for all observations, and ${\boldsymbol{\mathbf{\beta}}} = [\beta_{1}\ \beta_{2}\ \beta_{3}\ \beta_{4}]^{'}$ is the vector of parameters.  Here,  $E[{\bf y}]$ is a vector of the 184 expected values.
 
 ``` {r echo=TRUE}
 X<-model.matrix(y~limit+year+day, data=Traffic)
@@ -56,17 +48,28 @@ X[c(1,2,184),]
 
 The binary predictors *do the data come from 1961, yes or no?* and *there was no speed limit, yes or no?* do not appear. These are the first factor levels of `year` and `limit` respectively, and are absorbed into the global intercept ($\beta_{1}$) which is fitted by default in R. Hence the expected number of injuries for the four combinations (on day zero) are $\beta_{1}$ for 1961 with no speed limit, $\beta_{1}+\beta_{2}$ for 1961 with a speed limit, $\beta_{1}+\beta_{3}$ for 1962 with no speed limit and $\beta_{1}+\beta_{2}+\beta_{3}$ for 1962 with a speed limit.
 
-The simultaneous equations defined by Equation \@ref(eq:lm) cannot be solved directly because we do not know the left-hand side - expected values of $y$. We only know the observed value, which we assume is distributed around the expected value with some error. In a normal linear model we assume that these errors are normally distributed so that the data are also normally distributed (after conditioning o the predictor variables):
+The simultaneous equations defined by Equation \@ref(eq:lm) cannot be solved directly because we do not know the left-hand side - expected values of $y$. We only know the observed value, which we assume is distributed around the expected value with some error. In a normal linear model we assume that these errors (residuals) are normally distributed:
 
-$${\bf y} \sim N({\bf X}{\boldsymbol{\mathbf{\beta}}}, \sigma^{2}_{e}{\bf I})$$
+$${\bf y}-{\bf X}{\boldsymbol{\mathbf{\beta}}} = {\bf e} \sim N(0, \sigma^{2}_{e}{\bf I})$$
 
-${\bf I}$ is an identity matrix. It has ones along the diagonal, and zeros in the off-diagonals. The zero off-diagonals imply that the residuals are uncorrelated, and the ones along the diagonal imply that they have the same variance $\sigma^{2}_{e}$. We could use `glm` to estimate ${\bf \beta}$ and $\sigma^{2}_{e}$ assuming that $y$ follows a conditional normal distribution:
+${\bf I}$ is a $184\times 184$ identity matrix. It has ones along the diagonal, and zeros in the off-diagonals. The zero off-diagonals imply that the residuals are uncorrelated, and the ones along the diagonal imply that they have the same variance $\sigma^{2}_{e}$. Thinking about the distribution of residuals is less helpful when we move on to GLM's and so I prefer to think about the model in the form:
+
+
+$${\bf y}\sim N({\bf X}{\boldsymbol{\mathbf{\beta}}}, \sigma^{2}_{e}{\bf I})$$
+
+and say the response is *conditionally* normal, with the conditioning on the model (${\bf X}{\boldsymbol{\mathbf{\beta}}}$). It is important to note that this is different from saying the response is normal. If speed-limit had a very strong effect the (marginal) distribution of the response may be bimodal and far from normal, and yet by including speed-limit as a predictor conditional normality may be achieved.
+
+We could use `MCMCglmm` to fit this model, but to connect better with what comes next, let's use `glm` to estimate ${\bf \beta}$ and $\sigma^{2}_{e}$ assuming that the number of accidents follow a conditional normal distribution (the `MCMCglmm` syntax is identical):
 
 ``` {r echo=TRUE}
 m2a.1<-glm(y ~ limit + year + day, data=Traffic)
+summary(m2a.1)
 ```
 
-but the injuries are count data and the residuals show the typical right skew:
+On day zero in 1961 in the absence of a speed-limit we expect `r round(coef(m2a.1)["(Intercept)"],1)` accidents. With a speed-limit
+we expect `r round(abs(coef(m2a.1)["(limityes)"]),1)` fewer accidents and we can quite confidently reject the null-hypothesis of  no effect - particularly if we were willing to use a one-tailed test which seems reasonable. There are `r round(abs(coef(m2a.1)["(year1962)"]),1)` fewer accidents in 1962, although this could just be due to chance, and for every unit increase in $\texttt{day}$ the number of accidents goes up by `r round(coef(m2a.1)["day"],2)`. The $\texttt{day}$ variable is encoded as integers from 1 to 92 with the same $\texttt{day}$ in different years being comparable (for example, the same day of the week and roughly the same date). If $\texttt{day}$'s are evenly spaced throughout the year the $\texttt{day}$ effect is roughly the effect of increasing calender date by four (365/92) days. The estimate of the residual variance, $\sigma^2_e$, is the dispersion parameter (`r round(sigma(m2a.1)^2,1)`). 
+
+Because the injuries are count data we might worry about the assumption of conditional normality, and indeed the residuals show the typical right skew:
 
 ``` {r label=hist-traffic, echo=TRUE, include=TRUE, fig.cap="Histogram of residuals from model `m2a.1` which assumed they followed a Gaussian distribution."}
 hist(m2a.1$resid)
@@ -84,19 +87,20 @@ or alternatively
 
 $$E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}})$$
 
-where $\textrm{exp}$ is the inverse of the log link function. The second difference is that many distributions are single parameter distributions for which a variance does not need to be estimated because it can be
-inferred from the mean. For example, we could assume that the number of injuries are Poisson distributed, in which case we also make the assumption that the variance is equal to the expected value. There are many different types of distribution and link functions and those supported by $\texttt{MCMCglmm}$ can be found in Table \@ref(tab:dist). For now we will concentrate on a Poisson GLM with log link (the default link function for the Poisson distribution):
+where $\textrm{exp}$ is the inverse of the log link function. The second difference is that many distributions are single parameter distributions for which a variance does not need to be estimated because it can be inferred from the mean. For example, we could assume that the number of injuries are Poisson distributed, in which case we also make the assumption that the variance is equal to the expected value. Technically, GLM's only apply to a restricted set of distributions (those in the exponential family) but $\texttt{MCMCglmm}$ can accommodate a range of GLM-like models for other distributions (see Table \@ref(tab:dist)). For now we will concentrate on a Poisson GLM with log link (the default link function for the Poisson distribution):
 
 ``` {r echo=TRUE}
 m2a.2<-glm(y ~ limit + year + day, family=poisson, data=Traffic)
 summary(m2a.2)
 ```
 
-The results look fairly straightforward, having a speed limit reduces the number of injuries significantly, there are fewer injuries in 1962 (although significance is marginal) and there is a significant increase in the number of injuries over the year. Are these big effects or small effects? The coefficients are on the log scale so to get back to the data scale we need to exponentiate. The exponent of the intercept is the predicted number of injuries on day zero in 1961 without a speed limit:
+While the sign of the effects are comparable to that seen in the linear model, their numerical values are completely different and the significance of all effects has increased dramatically. Should we worry? The linear model is defined on the log scale and so to get back to the data scale we need to exponentiate. Exponentiating the intercept is the predicted number of injuries on day zero in 1961 without a speed limit:
 
 ``` {r echo=TRUE}
 exp(m2a.2$coef["(Intercept)"])
 ```
+
+which is very close to the intercept in the linear model, which is reassuring. 
 
 To get the prediction for the same day with a speed limit we need to add the `limityes` coefficient
 
@@ -104,7 +108,7 @@ To get the prediction for the same day with a speed limit we need to add the `li
 exp(m2a.2$coef["(Intercept)"]+m2a.2$coef["limityes"])
 ```
 
-With a speed limit there are expected to be `r formatC(exp(m2a.2$coef["(Intercept)"]+m2a.2$coef["limityes"])/exp(m2a.2$coef["(Intercept)"]), format="f", 3)` times less injuries than if there were no speed limits. This value can be more directly obtained:
+With a speed limit there are expected to be `r formatC(exp(m2a.2$coef["(Intercept)"]+m2a.2$coef["limityes"])/exp(m2a.2$coef["(Intercept)"]), format="f", 3)` as many injuries than if there were no speed limits. This value can be more directly obtained:
 
 ``` {r echo=TRUE}
 exp(m2a.2$coef["limityes"])
@@ -117,21 +121,20 @@ injuries:
 exp(m2a.2$coef["(Intercept)"]+m2a.2$coef["year1962"]+92*m2a.2$coef["day"])
 ```
 
-and
-
-`r formatC(exp(m2a.2$coef["(Intercept)"]+m2a.2$coef["limityes"]+m2a.2$coef["year1962"]+92*m2a.2$coef["day"]), format="f", 3)`
-
-injuries if a speed limit had been in place:
+and `r formatC(exp(m2a.2$coef["(Intercept)"]+m2a.2$coef["limityes"]+m2a.2$coef["year1962"]+92*m2a.2$coef["day"]), format="f", 3)`injuries if a speed limit had been in place:
 
 ``` {r echo=TRUE}
 exp(m2a.2$coef["(Intercept)"]+m2a.2$coef["limityes"]+m2a.2$coef["year1962"]+92*m2a.2$coef["day"])
 ```
 
-The proportional change is identical because the model is *linear* on the log scale.
+The proportional change is identical because the model is *linear* on the log scale. There is not always a direct relationship with the corresponding coefficients from the linear model but we can reassure ourselves that the parameters have the same qualitative meaning. For example, for $\texttt{day}$ 0 in 1961 the linear models predicts a drop from `r round(m2a.1$coef["(Intercept)"],1)` to `r round(m2a.1$coef["(Intercept)"]+m2a.1$coef["limityes"],1)` accidents when a speed-limit is in place - around  `r round(1+m2a.1$coef["limityes"]/m2a.1$coef["(Intercept)"],2)` as many injuries, comparable to that predicted in the log-linear model.    
+
+So in terms of the reported coefficients, the linear model and the Poisson log-linear model are roughly consistent with each other. However, in terms of accurately quantifying the uncertainty in those coefficients the Poisson model has a serious problem - it is very over confident.
+
 
 ## Over-dispersion
 
-Most count data do not conform to a Poisson distribution because the variance in the response exceeds the expectation. This is known as over-dispersion and it is easy to see how it arises, and why it is so common. In the summary to `m2a.2` note that the ratio of the residual deviance to the residual degrees of freedom is `r formatC(m2a.2$deviance/m2a.2$df.residual, format="f",3)` which means, roughly speaking, there is `r formatC(m2a.2$deviance/m2a.2$df.residual, format="f",1)` times as much variation in the residuals than what we expect.
+Most count data do not conform to a Poisson distribution because the variance in the response exceeds the expectation. This is known as over-dispersion and it is easy to see how it arises, and why it is so common. In the summary to `m2a.2` note that the ratio of the residual deviance to the residual degrees of freedom is `r formatC(m2a.2$deviance/m2a.2$df.residual, format="f",3)` which means, roughly speaking, there is `r formatC(m2a.2$deviance/m2a.2$df.residual, format="f",1)` times more variation in our response (after conditioning on the model) than what we expect.
 
 If the predictor data had not been available to us then the only model we could have fitted was one with just an intercept:
 
@@ -151,25 +154,20 @@ m2a.4<-glm(y ~ limit + year + day, family=quasipoisson, data=Traffic)
 summary(m2a.4)
 ```
 
-`glm` uses a multiplicative model of over-dispersion and so the estimate of the dispersion parameter is roughly equivalent to how many times greater the variance is than expected, after taking into account the predictor variables. You will notice that although the parameter estimates have changed very little, the standard errors have gone up and the significance gone down. Over-dispersion, if not dealt with, can result in extreme anti-conservatism because the assumption of independence is contravened. For example, the second lowest number of accidents (8) occurred on the
-91$^{st}$ day of 1961 without a speed limit. This should have been the second worst day for injuries over the whole two years, and the probability of observing 9 or less accidents on this day, under the assumption of independence is almost 1 in a 100,000:
+`glm` uses a multiplicative model of over-dispersion and so the estimate of the dispersion parameter is roughly equivalent to how many times greater the variance is than expected, after taking into account the predictor variables. You will notice that although the parameter estimates have changed very little, the standard errors have gone up and the significance gone down. Over-dispersion, if not dealt with, can result in extreme anti-conservatism. For example, the second lowest number of accidents (8) occurred on $\texttt{day}$ 91 of 1961 without a speed limit. Our model predicts this should have been the second worst day for injuries over the whole two years, and the probability of observing 8 or less accidents on this day is predicted to be approximately 3 in a 100,000:
 
 ``` {r echo=TRUE}
-ppois(9, exp(m2a.2$coef["(Intercept)"]+91*m2a.2$coef["day"]))
+ppois(8, exp(m2a.2$coef["(Intercept)"]+91*m2a.2$coef["day"]))
 ```
 
-However, perhaps it was Christmas day and everything was under 5 foot of snow. Although the accidents may have been independent in the sense that all 9 cars didn't crash into each other, they are non-independent in the sense that they all happened on a day where the underlying probability may be different from that underlying any other day (data point).
+If we did not accommodate the over-dispersion, anything additional we put in in the model that could potentially explain such an improbable occurrence would come out as significant even if in reality it wasn't important. This is because there simply isn't any flexibility in the null model to accommodate such occurrences.  For example, if the extreme value happened to be associated with a particular level of a categorical predictor or happened to be associated with an extreme value of some continuous predictor, then the coefficients associated with these predictors may well come out as significant. However, under a more plausible null model the extreme observations may not be too surprising and there may be little support for the predictors having an effect on the response. A more plausible model, and one that we've alluded to, would be to allow the \emph{expected} number of accidents to vary across sampling points due to unmeasured variables. This would allow the variation in the number of \emph{observed} accidents to exceed the predicted mean based on the measured variables (the assumption of the standard Poisson). 
 
 ### Additive Over-dispersion {#addod-sec}
 
 I believe that a model assuming all relevant variables have been measured or controlled for, should **not** be the default model, and so when you specify `family=poisson` in $\texttt{MCMCglmm}$, over-dispersion is always dealt with[^3.1]. However, $\texttt{MCMCglmm}$ does not use a multiplicative model, but an additive model.
 
-``` {r echo=TRUE, eval=FALSE}
-prior<-list(R=list(V=1, nu=0.002))
-m2a.5<-MCMCglmm(y ~ limit + year + day, family="poisson", data=Traffic, prior=prior, pl=TRUE)
-```
 
-``` {r m2a.5, echo=FALSE, include=FALSE, cache=TRUE}
+``` {r m2a.5}
 prior<-list(R=list(V=1, nu=0.002))
 m2a.5<-MCMCglmm(y ~ limit + year + day, family="poisson", data=Traffic, prior=prior, pl=TRUE)
 ```
@@ -180,7 +178,11 @@ The element `Sol` contains the posterior distribution of the coefficients of the
 plot(m2a.5$Sol)
 ```
 
-Notice that the `year1962` coefficient has a high posterior density around zero, in agreement with the over-dispersed `glm` model, and that in general the estimates for the two models are broadly similar. This agreement is superficial.
+Notice that the `year1962` coefficient has a high posterior density around zero, in agreement with the quasipoisson `glm` model, and that in general the estimates for the two models (and their uncertainty - see Section \@ref(intervals-sec)) are broadly similar. 
+
+``` {r }
+summary(m2a.4)
+```
 
 With additive over-dispersion the linear predictor includes a 'residual', for which a residual variance is estimated (hence our prior specification).
 
