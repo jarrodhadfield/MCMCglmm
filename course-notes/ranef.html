@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4 Random effects | MCMCglmm Course Notes</title>
+  <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4 Random effects | MCMCglmm Course Notes" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4 Random effects | MCMCglmm Course Notes" />
+  
+  <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
+  
+
+<meta name="author" content="Jarrod Hadfield" />
+
+
+<meta name="date" content="2025-12-31" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="glm.html"/>
+<link rel="next" href="cat-int.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="libs/rglWebGL-binding-1.3.31/rglWebGL.js"></script>
+<link href="libs/rglwidgetClass-1.3.31/rgl.css" rel="stylesheet" />
+<script src="libs/rglwidgetClass-1.3.31/rglClass.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/utils.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/buffer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/subscenes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shaders.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/shadersrc.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/textures.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/projection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/mouse.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/init.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pieces.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/draw.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/controls.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/selection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/rglTimer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/pretty.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/axes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.31/animation.src.js"></script>
+<script src="libs/CanvasMatrix4-1.3.31/CanvasMatrix.src.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+<style type="text/css">
+/* Used with Pandoc 2.11+ new --citeproc when CSL is used */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="1" data-path="overview.html"><a href="overview.html"><i class="fa fa-check"></i><b>1</b> Overview</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="overview.html"><a href="overview.html#outline"><i class="fa fa-check"></i><b>1.1</b> Outline</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="bayesian.html"><a href="bayesian.html"><i class="fa fa-check"></i><b>2</b> Bayesian Analysis and MCMC</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="bayesian.html"><a href="bayesian.html#introduction"><i class="fa fa-check"></i><b>2.1</b> Introduction</a></li>
+<li class="chapter" data-level="2.2" data-path="bayesian.html"><a href="bayesian.html#likelihood"><i class="fa fa-check"></i><b>2.2</b> Likelihood</a>
+<ul>
+<li class="chapter" data-level="2.2.1" data-path="bayesian.html"><a href="bayesian.html#maximum-likelihood-ml"><i class="fa fa-check"></i><b>2.2.1</b> Maximum Likelihood (ML)</a></li>
+<li class="chapter" data-level="2.2.2" data-path="bayesian.html"><a href="bayesian.html#restricted-maximum-likelihood-reml"><i class="fa fa-check"></i><b>2.2.2</b> Restricted Maximum Likelihood (REML)</a></li>
+</ul></li>
+<li class="chapter" data-level="2.3" data-path="bayesian.html"><a href="bayesian.html#prior-distribution"><i class="fa fa-check"></i><b>2.3</b> Prior Distribution</a></li>
+<li class="chapter" data-level="2.4" data-path="bayesian.html"><a href="bayesian.html#posterior-distribution"><i class="fa fa-check"></i><b>2.4</b> Posterior Distribution</a>
+<ul>
+<li class="chapter" data-level="2.4.1" data-path="bayesian.html"><a href="bayesian.html#marginal-posterior-distribution"><i class="fa fa-check"></i><b>2.4.1</b> Marginal Posterior Distribution</a></li>
+<li class="chapter" data-level="2.4.2" data-path="bayesian.html"><a href="bayesian.html#intervals-sec"><i class="fa fa-check"></i><b>2.4.2</b> Credible Intervals</a></li>
+</ul></li>
+<li class="chapter" data-level="2.5" data-path="bayesian.html"><a href="bayesian.html#mcmc"><i class="fa fa-check"></i><b>2.5</b> MCMC</a>
+<ul>
+<li class="chapter" data-level="2.5.1" data-path="bayesian.html"><a href="bayesian.html#starting-values"><i class="fa fa-check"></i><b>2.5.1</b> Starting values</a></li>
+<li class="chapter" data-level="2.5.2" data-path="bayesian.html"><a href="bayesian.html#metropolis-hastings-updates"><i class="fa fa-check"></i><b>2.5.2</b> Metropolis-Hastings updates</a></li>
+<li class="chapter" data-level="2.5.3" data-path="bayesian.html"><a href="bayesian.html#gibbs-sampling"><i class="fa fa-check"></i><b>2.5.3</b> Gibbs Sampling</a></li>
+<li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.4</b> MCMC Diagnostics</a></li>
+</ul></li>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#Vprior-sec"><i class="fa fa-check"></i><b>2.6</b> Prior for Residual Variances</a>
+<ul>
+<li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6.1</b> Improper Priors</a></li>
+</ul></li>
+<li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#transform-sec"><i class="fa fa-check"></i><b>2.7</b> Transformations</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> Linear and Generalised Linear Models</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="glm.html"><a href="glm.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
+<ul>
+<li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a>
+<ul>
+<li class="chapter" data-level="3.2.1" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.2.1</b> Poisson GLM</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.3</b> Overdispersion</a>
+<ul>
+<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Overdispersion</a></li>
+<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Overdispersion</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#prediction-in-glm"><i class="fa fa-check"></i><b>3.4</b> Prediction in GLM</a>
+<ul>
+<li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>3.4.1</b> Posterior Predictive Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#bernoulli-and-binomial-glm"><i class="fa fa-check"></i><b>3.5</b> Bernoulli and Binomial GLM</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="ranef.html"><a href="ranef.html"><i class="fa fa-check"></i><b>4</b> Random effects</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="ranef.html"><a href="ranef.html#pred-sec"><i class="fa fa-check"></i><b>4.1</b> Prediction with Random effects</a></li>
+<li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#PriorContr-sec"><i class="fa fa-check"></i><b>4.2</b> A note on fixed effect priors and covariances</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>5.1</b> <code>idh</code> Variance Structure</a></li>
+<li class="chapter" data-level="5.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>5.2</b> <code>us</code> Variance Structure</a></li>
+<li class="chapter" data-level="5.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>5.3</b> Compound Variance Structures</a></li>
+<li class="chapter" data-level="5.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>5.4</b> Heterogenous Residual Variance</a></li>
+<li class="chapter" data-level="5.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>5.5</b> Contrasts and Covariances</a></li>
+<li class="chapter" data-level="5.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>5.6</b> Priors for Covariance Matrices</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>5.6.1</b> Priors for <code>us</code> structures</a></li>
+<li class="chapter" data-level="5.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>5.6.2</b> Priors for <code>idh</code> structures</a></li>
+<li class="chapter" data-level="5.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>5.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>6</b> Continuous Random Interactions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>6.1</b> Random Regression</a></li>
+<li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>6.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>6.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>6.4</b> Meta-analysis</a></li>
+<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.5</b> Splines</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response models</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>7.1</b> Relaxing the univariate assumptions of causality</a></li>
+<li class="chapter" data-level="7.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.2</b> Multinomial Models</a></li>
+<li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>7.3</b> Zero-inflated Models</a>
+<ul>
+<li class="chapter" data-level="7.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>7.3.1</b> Posterior predictive checks</a></li>
+</ul></li>
+<li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.4</b> Hurdle Models</a></li>
+<li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.5</b> Zero-altered Models</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>8.1</b> Pedigree and phylogeny formats</a>
+<ul>
+<li class="chapter" data-level="8.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="8.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.1.2</b> Phylogenies</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.2</b> The animal model and the phylogenetic mixed model</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="parameter-expansion.html"><a href="parameter-expansion.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
+<ul>
+<li class="chapter" data-level="9.0.1" data-path="parameter-expansion.html"><a href="parameter-expansion.html#variances-close-to-zero"><i class="fa fa-check"></i><b>9.0.1</b> Variances close to zero</a></li>
+<li class="chapter" data-level="9.0.2" data-path="parameter-expansion.html"><a href="parameter-expansion.html#secPX-p"><i class="fa fa-check"></i><b>9.0.2</b> Parameter expanded priors</a></li>
+<li class="chapter" data-level="9.0.3" data-path="parameter-expansion.html"><a href="parameter-expansion.html#binary-response-models"><i class="fa fa-check"></i><b>9.0.3</b> Binary response models</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>11</b> Technical Details</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>11.1</b> Model Form</a></li>
+<li class="chapter" data-level="11.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>11.2</b> MCMC Sampling Schemes</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>11.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
+<li class="chapter" data-level="11.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>11.2.2</b> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
+<li class="chapter" data-level="11.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>11.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
+<li class="chapter" data-level="11.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>11.2.4</b> Ordinal Models</a></li>
+<li class="chapter" data-level="11.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>11.2.5</b> Path Analyses</a></li>
+<li class="chapter" data-level="11.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>11.2.6</b> Deviance and DIC</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>12</b> References</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">MCMCglmm Course Notes</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="ranef" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">4</span> Random effects<a href="ranef.html#ranef" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>In some cases we may have measured variables whose effects we would like to treat as random. Often the distinction between fixed and random is given by example; things like population, species, individual and vial are random, but sex, treatment and age are not. Or the distinction is made using rules of thumb; if there are few factor levels and they are
+interesting to other people they are fixed. However, this doesn’t really confer any understanding about what it means to treat something as fixed or random, and doesn’t really allow judgements to be made regarding ambiguous variables (for example year) or give any insight into the fact that in a Bayesian analysis all effects are technically random.</p>
+<p>When we treat an effect as fixed we believe that the only information regarding its value comes from data associated with that particular level. If we treat an effect as random we also use this information, but we weight it by what other data tell us about the likely values that the effects could take. In a Bayesian analysis this additional information could come from data not formally included in the analysis, in which case it would be called a prior. In hierarchical models this additional information comes from data associated with other factor levels of the
+same type.</p>
+<p>The degree to which this additional information is important depends on the variability of the effects, as measured by the estimated variance component, and the degree of replication within a particular level. If variability is high then most of the information must come from data associated with an individual effect, particularly if replication within
+that effect is high. However, if variability and replication are low then extreme mean values of the response for a given level are more likely to be due to sampling error alone, and so the estimates are shrunk towards zero.</p>
+<p>It is common to hear things like ‘year is a random effect’ as if you just have to estimate <em>a</em> single effect for all years. It is also common to hear things like ‘years is random’ as if years were sampled at random. Better to say year effects are random and understand that it is the effects that are random not the years, and that we’re trying to
+estimate as many effects as there are years. In this sense they’re the same as fixed effects, and we can easily treat the year effects as random to see what difference it makes.</p>
+<p>Random effect models are often expressed as:</p>
+<p><span class="math display">\[E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})\]</span></p>
+<p>where <span class="math inline">\({\bf Z}\)</span> is a design matrix like <span class="math inline">\({\bf X}\)</span>, and <span class="math inline">\({\bf u}\)</span> is a vector of parameters like <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span>.</p>
+<p>In Chapter {#glm} we got introduced to the <code>Traffic</code> data set consisting of the the number of injuries on Sweedish roads in 1961 and 1962 when speed-limits were in place or not. We can specify simple random effect models in the same way that we specified the fixed effects:</p>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="ranef.html#cb97-1" tabindex="-1"></a>random <span class="ot">=</span>  <span class="er">~</span> year</span></code></pre></div>
+<p>although we don’t need anything to the left of the <span class="math inline">\(\sim\)</span> because the response is known from the fixed effect specification. In addition, the global intercept is suppressed by default, so in fact this specification produces the design matrix:</p>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="ranef.html#cb98-1" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>year <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> Traffic)</span>
+<span id="cb98-2"><a href="ranef.html#cb98-2" tabindex="-1"></a>Z[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     year1961 year1962
+## 1          1        0
+## 2          1        0
+## 184        0        1</code></pre>
+<p>Earlier I said that there was no distinction between fixed and random effects in a Bayesian analysis - all effects are random - so lets not make the distinction and combine the design matrices (<span class="math inline">\({\bf W} = [{\bf X}, {\bf Z}]\)</span>) and combine the vectors of parameters (<span class="math inline">\(\boldsymbol{\theta} = [{\boldsymbol{\mathbf{\beta}}}^{&#39;}, {\bf u}^{&#39;}]^{&#39;}\)</span>):</p>
+<p><span class="math display" id="eq:MM-eq">\[E[{\bf y}] = \textrm{exp}({\bf W}\boldsymbol{\theta}+{\bf e})
+\label{MM-eq}   \tag{4.1}\]</span></p>
+<p>If we drop year from the fixed terms, the new fixed effect design matrix looks like:</p>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="ranef.html#cb100-1" tabindex="-1"></a>X2 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(y <span class="sc">~</span> limit <span class="sc">+</span> day, <span class="at">data =</span> Traffic)</span>
+<span id="cb100-2"><a href="ranef.html#cb100-2" tabindex="-1"></a>X2[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     (Intercept) limityes day
+## 1             1        0   1
+## 2             1        0   2
+## 184           1        1  92</code></pre>
+<p>and</p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="ranef.html#cb102-1" tabindex="-1"></a>W <span class="ot">&lt;-</span> <span class="fu">cbind</span>(X2, Z)</span>
+<span id="cb102-2"><a href="ranef.html#cb102-2" tabindex="-1"></a>W[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     (Intercept) limityes day year1961 year1962
+## 1             1        0   1        1        0
+## 2             1        0   2        1        0
+## 184           1        1  92        0        1</code></pre>
+<p>You will notice that this new design matrix is exactly equivalent to the original design matrix <code>X</code> except we have one additional variable <code>year1961</code>. In our first model this variable was absorbed in to the global intercept because it could no be uniquely estimated from the data. What has changed that could make this additional parameter estimable? As is usual in a Bayesian analysis, if there is no information in the data it has to come from the prior. In model <code>m2a.5</code> we used the default normal prior for the fixed effects with means of zero, large variances of <span class="math inline">\(10^{8}\)</span>, and no covariances. Lets treat the year effects as random, but rather than estimate a variance component for them we’ll fix the variance at <span class="math inline">\(10^{8}\)</span> in the prior:</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="ranef.html#cb104-1" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e+08</span>, <span class="at">fix =</span> <span class="dv">1</span>)))</span>
+<span id="cb104-2"><a href="ranef.html#cb104-2" tabindex="-1"></a>m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> limit <span class="sc">+</span> day, <span class="at">random =</span> <span class="sc">~</span>year, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">data =</span> Traffic,</span>
+<span id="cb104-3"><a href="ranef.html#cb104-3" tabindex="-1"></a>    <span class="at">prior =</span> prior, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb104-4"><a href="ranef.html#cb104-4" tabindex="-1"></a><span class="fu">plot</span>(m2a<span class="fl">.6</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:yrandom"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/yrandom-1.png" alt="MCMC summary plots for the intercept, speed limit and day coefficients from model `m2a.6` where year effects were treated as random. Note the high posterior variance for the intercept." width="672" />
+<p class="caption">
+Figure 4.1: MCMC summary plots for the intercept, speed limit and day coefficients from model <code>m2a.6</code> where year effects were treated as random. Note the high posterior variance for the intercept.
+</p>
+</div>
+<p>The estimates for the intercept, day and the effect of a speed limit now appear completely different (Figure
+<a href="ranef.html#fig:yrandom">4.1</a>. However, in the original model (<code>m2a.5</code>) the prediction for each year is obtained by:</p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="ranef.html#cb105-1" tabindex="-1"></a>y1961.m2a<span class="fl">.5</span> <span class="ot">&lt;-</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>]</span>
+<span id="cb105-2"><a href="ranef.html#cb105-2" tabindex="-1"></a>y1962.m2a<span class="fl">.5</span> <span class="ot">&lt;-</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.5</span><span class="sc">$</span>Sol[, <span class="st">&quot;year1962&quot;</span>]</span></code></pre></div>
+<p>However, for this model we have to add the intercept to both random effects to get the year predictions. <span class="math inline">\(\texttt{MCMCglmm}\)</span> does not store the posterior distribution of the random effects by default, but because we specified <code>pr=TRUE</code>, the whole of <span class="math inline">\(\boldsymbol{\theta}\)</span> is stored rather than just <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span>:</p>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="ranef.html#cb106-1" tabindex="-1"></a>y1961.m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1961&quot;</span>]</span>
+<span id="cb106-2"><a href="ranef.html#cb106-2" tabindex="-1"></a>y1962.m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1962&quot;</span>]</span></code></pre></div>
+<p>We can merge the two posterior distributions to see how they compare:</p>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="ranef.html#cb107-1" tabindex="-1"></a>y.m2a<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(<span class="fu">cbind</span>(<span class="at">y1961 =</span> y1961.m2a<span class="fl">.5</span>, <span class="at">y1962 =</span> y1962.m2a<span class="fl">.5</span>))</span>
+<span id="cb107-2"><a href="ranef.html#cb107-2" tabindex="-1"></a>y.m2a<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">mcmc</span>(<span class="fu">cbind</span>(<span class="at">y1961 =</span> y1961.m2a<span class="fl">.6</span>, <span class="at">y1962 =</span> y1962.m2a<span class="fl">.6</span>))</span>
+<span id="cb107-3"><a href="ranef.html#cb107-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(y.m2a<span class="fl">.5</span>, y.m2a<span class="fl">.6</span>))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:ypred"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/ypred-1.png" alt="MCMC summary plots for the year effects from a model where year effects were treated as fixed (black) and where they were treated as random (red) but with the variance component set at a large value rather than being estimated. The posterior distributions are virtually identical." width="672" />
+<p class="caption">
+Figure 4.2: MCMC summary plots for the year effects from a model where year effects were treated as fixed (black) and where they were treated as random (red) but with the variance component set at a large value rather than being estimated. The posterior distributions are virtually identical.
+</p>
+</div>
+<p>The posterior distributions are very similar (Figure <a href="ranef.html#fig:ypred">4.2</a> but see Section
+<a href="ranef.html#PriorContr-sec" reference-type="ref" reference="PriorContr-sec">7</a> why they are not identical), highlighting the fact that effects that are fixed are those associated with a variance component which has been set <em>a priori</em> to something large (<span class="math inline">\(10^8\)</span> in this case), where effects that are random are associated with a variance component which is not set <em>a priori</em> but is estimated from the data. As the variance component tends to zero then no matter how many random effects there are, we are effectively only estimating a single parameter (the variance). This makes sense, if there were no differences between years we only need to estimate a global intercept and not separate effects for each year. Alternatively if the variance is infinite then we need to estimate separate effects for each year. In this case the intercept is confounded with the average value of the random effect, resulting in a wide marginal distribution for the intercept, and strong posterior correlations between the intercept and the mean of the random effects:</p>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="ranef.html#cb108-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">c</span>(m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1961&quot;</span>] <span class="sc">+</span> m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;year.1962&quot;</span>])<span class="sc">/</span><span class="dv">2</span>, <span class="fu">c</span>(m2a<span class="fl">.6</span><span class="sc">$</span>Sol[, <span class="st">&quot;(Intercept)&quot;</span>]))</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:yfixed-int"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/yfixed-int-1.png" alt="Joint posterior distribution of the intercept and the mean of the two random year effects. The variance component associated with year was fixed at a large value ($10^8$) and so the effects are almost completely confounded." width="672" />
+<p class="caption">
+Figure 4.3: Joint posterior distribution of the intercept and the mean of the two random year effects. The variance component associated with year was fixed at a large value (<span class="math inline">\(10^8\)</span>) and so the effects are almost completely confounded.
+</p>
+</div>
+<p>With only two levels, there is very little information to estimate the variance, and so we would often make the <em>a priori</em> decision to treat year effects as fixed, and fix the variance components to something
+large (or infinity in a frequentist analysis).</p>
+<p>At the moment we have day as a continuous covariate, but we could also have random day effects and ask whether the number of injuries on the same day but in different years are correlated. Rather than fixing the variance component at something large, we’ll use the same weaker prior that we used for the residual variance:</p>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="ranef.html#cb109-1" tabindex="-1"></a>Traffic<span class="sc">$</span>day <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(Traffic<span class="sc">$</span>day)</span>
+<span id="cb109-2"><a href="ranef.html#cb109-2" tabindex="-1"></a>prior <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
+<span id="cb109-3"><a href="ranef.html#cb109-3" tabindex="-1"></a>m2a<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> year <span class="sc">+</span> limit <span class="sc">+</span> <span class="fu">as.numeric</span>(day), <span class="at">random =</span> <span class="sc">~</span>day, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>,</span>
+<span id="cb109-4"><a href="ranef.html#cb109-4" tabindex="-1"></a>    <span class="at">data =</span> Traffic, <span class="at">prior =</span> prior)</span></code></pre></div>
+<p><code>day</code> has also gone in the fixed formula, but as a numeric variable, in order to capture any time trends in the number of injuries. Most of the overdispersion seems to be captured by fitting day as a random term
+(Figure <a href="ranef.html#fig:GLMM-VCV">4.4</a>):</p>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="ranef.html#cb110-1" tabindex="-1"></a><span class="fu">plot</span>(m2a<span class="fl">.7</span><span class="sc">$</span>VCV)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:GLMM-VCV"></span>
+<img src="MCMCglmm-course-notes_files/figure-html/GLMM-VCV-1.png" alt="MCMC summary plot of the variance component associated with day (top) and the residual variance component (below). The trace for the residual variance shows strong autocorrelation and needs to be ran for longer." width="672" />
+<p class="caption">
+Figure 4.4: MCMC summary plot of the variance component associated with day (top) and the residual variance component (below). The trace for the residual variance shows strong autocorrelation and needs to be ran for longer.
+</p>
+</div>
+<p>In fact it explains so much that the residual variance is close to zero and mixing seems to be a problem. The chain would have to be run for longer, and the perhaps an alternative prior specification used.</p>
+<div id="pred-sec" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> Prediction with Random effects<a href="ranef.html#pred-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In section <a href="glm.html#addod-sec" reference-type="ref" reference="addod-sec">3.2</a> we showed that for non-Gaussian data the expectation of the response variable <span class="math inline">\(y\)</span> is different from the linear predictor if we wish to average over the residuals. Often it is important to get the expectation after marginalising residuals, and indeed after marginalising other random effects. For example we may not be so interested in knowing the expected number of injuries on the average day, but knowing the expected number of injuries on any random day.</p>
+<p>For the Poisson mixed model:</p>
+<p><span class="math display">\[E[y] = \texttt{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})\]</span></p>
+<p>we can marginalise with respect to the random effects, including the overdispersion residual:</p>
+<p><span class="math display">\[E_{{u,e}}[y] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+0.5\sigma^{2})\]</span></p>
+<p>where <span class="math inline">\(\sigma^{2}\)</span> is the sum of the variance components.</p>
+<p>For the Binomial mixed model with logit link</p>
+<p><span class="math display">\[E[y] = \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})\]</span></p>
+<p>it is not possible to marginilse with respect to the random effects analytically, but two approximations exist. The first</p>
+<p><span class="math display">\[E_{{u,e}}[y] \approx \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}-0.5\sigma^{2}\textrm{tanh}({\bf X}{\boldsymbol{\mathbf{\beta}}}(1+2\textrm{exp}(-0.5\sigma^{2}))/6)))\]</span></p>
+<p>can be found on p452 in <span class="citation">McCulloch and Searle (<a href="#ref-McCulloch.2001">2001</a>)</span> and the second (and possibly less accurate) approximation in <span class="citation">Diggle et al. (<a href="#ref-Diggle.2004">2004</a>)</span>:</p>
+<p><span class="math display">\[E_{{u,e}}[y] \approx \textrm{logit}^{-1}\left(\frac{{\bf X}{\boldsymbol{\mathbf{\beta}}}}{\sqrt{1+(\frac{16\sqrt{3}}{15\pi})^{2}\sigma^{2}}}\right)\]</span></p>
+<p>The predict function for <span class="math inline">\(\texttt{MCMCglmm}\)</span> object allows us to predict the laibality on the latent scale after marginalising the random effects in model <code>m2a.7</code>:</p>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="ranef.html#cb111-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;terms&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<pre><code>## [1] 3.015005 3.017436 3.019867 3.022297 3.024728</code></pre>
+<p>or we can predict on the data scale:</p>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="ranef.html#cb113-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span></code></pre></div>
+<pre><code>## [1] 21.48941 21.53993 21.59061 21.64145 21.69244</code></pre>
+<p>In addition, credible intervals can be obtained</p>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="ranef.html#cb115-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="at">interval =</span> <span class="st">&quot;confidence&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb115-2"><a href="ranef.html#cb115-2" tabindex="-1"></a>    ]</span></code></pre></div>
+<pre><code>##        fit      lwr      upr
+## 1 21.48941 18.57274 24.79262
+## 2 21.53993 18.60621 24.77252
+## 3 21.59061 18.77809 24.86478
+## 4 21.64145 18.94554 24.92552
+## 5 21.69244 19.00939 24.90448</code></pre>
+<p>as can prediction intervals through posterior predictive simulation:</p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="ranef.html#cb117-1" tabindex="-1"></a><span class="fu">predict</span>(m2a<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="sc">~</span>day, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb117-2"><a href="ranef.html#cb117-2" tabindex="-1"></a>    ]</span></code></pre></div>
+<pre><code>##      fit lwr upr
+## 1 21.431   6  38
+## 2 21.879   6  35
+## 3 22.191   8  39
+## 4 21.501   6  38
+## 5 21.710   6  38</code></pre>
+</div>
+<div id="PriorContr-sec" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> A note on fixed effect priors and covariances<a href="ranef.html#PriorContr-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Fixed and random effects are essentially the same thing. The only difference is that the variance component for the fixed effects is usually fixed at some large value, whereas the variance component for the random effects is estimated. In Section <a href="#ranef-sec"><strong>??</strong></a> I demonstrated this by claiming that a model where year effects were fixed (<code>m2a.5</code>) was identical to one where they were treated as random, but with the variance component set to a large value (<code>m2a.6</code>). This was a white lie as I did not want to distract attention from the main point. The reason why they were not identical is as follows:</p>
+<p>In the fixed effect model (<code>m2a.5</code>) we had the prior:</p>
+<p><span class="math display">\[\begin{array}{rcl}
+\left[
+\begin{array}{c}
+\beta_{\texttt{(Intercept)}}\\
+\beta_{\texttt{year1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+10^8&amp;0\\
+0&amp;10^8\\
+\end{array}
+\right]\\
+\end{array}\]</span></p>
+<p>Where <span class="math inline">\(\beta_{\texttt{(Intercept)}}\)</span> and <span class="math inline">\(\beta_{\texttt{year1962}}\)</span> are the fixed effects to be estimated.</p>
+<p>Remembering the identity <span class="math inline">\(\sigma^{2}_{(a+b)} = \sigma^{2}_{a}+ \sigma^{2}_{b}+2\sigma_{a,b}\)</span>, this implies:</p>
+<p><span class="math display">\[\begin{array}{rccl}
+\left[
+\begin{array}{c}
+\beta_{1961}\\
+\beta_{1962}\\
+\end{array}
+\right]
+=
+&amp;
+\left[
+\begin{array}{c}
+\beta_{\texttt{(Intercept)}}\\
+\beta_{\texttt{(Intercept)}}+\beta_{\texttt{year1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+10^8&amp;10^8\\
+10^8&amp;10^8+10^8\\
+\end{array}
+\right]
+&amp;=
+\left[
+\begin{array}{cc}
+10^8&amp;10^8\\
+10^8&amp;20^8\\
+\end{array}
+\right]\\
+\end{array}\]</span></p>
+<p>where <span class="math inline">\(\beta_{1961}\)</span> and <span class="math inline">\(\beta_{1962}\)</span> are the actual year effects, rather than the global intercept and the contrast. In hindsight this is a bit odd, for one thing we expect the 1962 effect to be twice as variable as the 1961 effect. With such weak priors it makes little difference, but lets reparameterise the model anyway.</p>
+<p>Rather than having a global intercept and a year contrast, we will have separate intercepts for each year:</p>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="ranef.html#cb119-1" tabindex="-1"></a>X3 <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(y <span class="sc">~</span> year <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> Traffic)</span>
+<span id="cb119-2"><a href="ranef.html#cb119-2" tabindex="-1"></a>X3[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">184</span>), ]</span></code></pre></div>
+<pre><code>##     year1961 year1962
+## 1          1        0
+## 2          1        0
+## 184        0        1</code></pre>
+<p>and a prior that has a covariance between the two year effects:</p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="ranef.html#cb121-1" tabindex="-1"></a>PBV.yfixed <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">*</span> <span class="fl">1e+08</span></span>
+<span id="cb121-2"><a href="ranef.html#cb121-2" tabindex="-1"></a>PBV.yfixed[<span class="dv">1</span>, <span class="dv">2</span>] <span class="ot">&lt;-</span> PBV.yfixed[<span class="dv">2</span>, <span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fl">1e+08</span><span class="sc">/</span><span class="dv">2</span></span>
+<span id="cb121-3"><a href="ranef.html#cb121-3" tabindex="-1"></a>PBV.yfixed</span></code></pre></div>
+<pre><code>##       [,1]  [,2]
+## [1,] 1e+08 5e+07
+## [2,] 5e+07 1e+08</code></pre>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="ranef.html#cb123-1" tabindex="-1"></a>prior.m2a.<span class="fl">5.1</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="at">V =</span> PBV.yfixed), <span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>))</span></code></pre></div>
+<p>This new model:</p>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="ranef.html#cb124-1" tabindex="-1"></a>m2a.<span class="fl">5.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> year <span class="sc">-</span> <span class="dv">1</span>, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">data =</span> Traffic, <span class="at">prior =</span> prior.m2a.<span class="fl">5.1</span>)</span></code></pre></div>
+<p>has the same form as a mixed effect model with a prior variance of <span class="math inline">\(\frac{10^{8}}{2}\)</span> for the intercept, and the variance component associated with the random year effects also fixed at <span class="math inline">\(\frac{10^{8}}{2}\)</span>:</p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="ranef.html#cb125-1" tabindex="-1"></a>prior.m2a.<span class="fl">6.1</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="dv">0</span>, <span class="at">V =</span> <span class="fl">1e+08</span><span class="sc">/</span><span class="dv">2</span>), <span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>),</span>
+<span id="cb125-2"><a href="ranef.html#cb125-2" tabindex="-1"></a>    <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fl">1e+08</span><span class="sc">/</span><span class="dv">2</span>, <span class="at">fix =</span> <span class="dv">1</span>)))</span></code></pre></div>
+<p>This arises because the two random effects have the joint prior distribution:</p>
+<p><span class="math display">\[\begin{array}{rl}
+\left[
+\begin{array}{c}
+\beta_{\texttt{year.1961}}\\
+\beta_{\texttt{year.1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+\frac{10^{8}}{2}&amp;0\\
+0&amp;\frac{10^{8}}{2}\\
+\end{array}
+\right]\\
+\end{array}\]</span></p>
+<p>which when combined with the prior for the intercept, <span class="math inline">\(N(0, \frac{10^{8}}{2})\)</span>, gives:</p>
+<p><span class="math display">\[\begin{array}{rccl}
+\left[
+\begin{array}{c}
+\beta_{1961}\\
+\beta_{1962}\\
+\end{array}
+\right]
+=
+&amp;
+\left[
+\begin{array}{c}
+\beta_{\texttt{(Intercept)}}+\beta_{\texttt{year.1961}}\\
+\beta_{\texttt{(Intercept)}}+\beta_{\texttt{year.1962}}\\
+\end{array}
+\right]
+\sim
+&amp;
+\left[
+\begin{array}{cc}
+\frac{10^{8}}{2}+\frac{10^{8}}{2}&amp;\frac{10^{8}}{2}\\
+\frac{10^{8}}{2}&amp;\frac{10^{8}}{2}+\frac{10^{8}}{2}\\
+\end{array}
+\right]
+&amp;=
+\left[
+\begin{array}{cc}
+10^8&amp;\frac{10^{8}}{2}\\
+\frac{10^{8}}{2}&amp;10^8\\
+\end{array}
+\right]
+\\
+\end{array}\]</span></p>
+<p>which is equivalent to the <code>PBV.yfixed</code> parameteristaion of for the two years.</p>
+<p>The model:</p>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="ranef.html#cb126-1" tabindex="-1"></a>m2a.<span class="fl">6.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>year, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">data =</span> Traffic, <span class="at">prior =</span> prior.m2a.<span class="fl">6.1</span>,</span>
+<span id="cb126-2"><a href="ranef.html#cb126-2" tabindex="-1"></a>    <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>is therefore sampling from the same posterior distribution as model <code>m2a.5.1</code>.</p>
+
+</div>
+</div>
+<h3> References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Diggle.2004" class="csl-entry">
+Diggle, P., P. Heagerty, K. Liang, and S. Zeger. 2004. <em>Analysis of Longitudinal Data</em>. II. Oxford University Press.
+</div>
+<div id="ref-McCulloch.2001" class="csl-entry">
+McCulloch, C. E., and S. R. Searle. 2001. <em>Generalized, Linear and Mixed Models</em>. Wiley Series in Probability and Statistics. New York: John Wiley &amp; Sons.
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="glm.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="cat-int.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": {
+    "github": false,
+    "facebook": true,
+    "twitter": true,
+    "linkedin": false,
+    "weibo": false,
+    "instapaper": false,
+    "vk": false,
+    "whatsapp": false,
+    "all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+  },
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": ["MCMCglmm-course-notes.pdf", "MCMCglmm-course-notes.epub"],
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "subsection"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

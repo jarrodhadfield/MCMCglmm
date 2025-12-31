@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>7 Pedigrees and Phylogenies | MCMCglmm Course Notes</title>
+  <title>8 Pedigrees and Phylogenies | MCMCglmm Course Notes</title>
   <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="7 Pedigrees and Phylogenies | MCMCglmm Course Notes" />
+  <meta property="og:title" content="8 Pedigrees and Phylogenies | MCMCglmm Course Notes" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="7 Pedigrees and Phylogenies | MCMCglmm Course Notes" />
+  <meta name="twitter:title" content="8 Pedigrees and Phylogenies | MCMCglmm Course Notes" />
   
   <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-30" />
+<meta name="date" content="2025-12-31" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="multi.html"/>
-<link rel="next" href="technical-details.html"/>
+<link rel="next" href="parameter-expansion.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -215,77 +215,73 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#transform-sec"><i class="fa fa-check"></i><b>2.7</b> Transformations</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
+<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> Linear and Generalised Linear Models</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="glm.html"><a href="glm.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
-<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#over-dispersion"><i class="fa fa-check"></i><b>3.3</b> Over-dispersion</a>
+<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-over-dispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Over-dispersion</a></li>
-<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Over-dispersion</a></li>
+<li class="chapter" data-level="3.2.1" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.2.1</b> Poisson GLM</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#ranef-sec"><i class="fa fa-check"></i><b>3.4</b> Random effects</a></li>
-<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#pred-sec"><i class="fa fa-check"></i><b>3.5</b> Prediction with Random effects</a></li>
-<li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#categorical-data"><i class="fa fa-check"></i><b>3.6</b> Categorical Data</a></li>
-<li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#PriorContr-sec"><i class="fa fa-check"></i><b>3.7</b> A note on fixed effect priors and covariances</a></li>
-</ul></li>
-<li class="chapter" data-level="4" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>4</b> Categorical Random Interactions</a>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.3</b> Overdispersion</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>4.1</b> <code>idh</code> Variance Structure</a></li>
-<li class="chapter" data-level="4.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>4.2</b> <code>us</code> Variance Structure</a></li>
-<li class="chapter" data-level="4.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>4.3</b> Compound Variance Structures</a></li>
-<li class="chapter" data-level="4.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>4.4</b> Heterogenous Residual Variance</a></li>
-<li class="chapter" data-level="4.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>4.5</b> Contrasts and Covariances</a></li>
-<li class="chapter" data-level="4.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Covariance Matrices</a>
+<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Overdispersion</a></li>
+<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Overdispersion</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#prediction-in-glm"><i class="fa fa-check"></i><b>3.4</b> Prediction in GLM</a>
 <ul>
-<li class="chapter" data-level="4.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>4.6.1</b> Priors for <code>us</code> structures</a></li>
-<li class="chapter" data-level="4.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>4.6.2</b> Priors for <code>idh</code> structures</a></li>
-<li class="chapter" data-level="4.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>4.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+<li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>3.4.1</b> Posterior Predictive Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#bernoulli-and-binomial-glm"><i class="fa fa-check"></i><b>3.5</b> Bernoulli and Binomial GLM</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="ranef.html"><a href="ranef.html"><i class="fa fa-check"></i><b>4</b> Random effects</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="ranef.html"><a href="ranef.html#pred-sec"><i class="fa fa-check"></i><b>4.1</b> Prediction with Random effects</a></li>
+<li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#PriorContr-sec"><i class="fa fa-check"></i><b>4.2</b> A note on fixed effect priors and covariances</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>5.1</b> <code>idh</code> Variance Structure</a></li>
+<li class="chapter" data-level="5.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>5.2</b> <code>us</code> Variance Structure</a></li>
+<li class="chapter" data-level="5.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>5.3</b> Compound Variance Structures</a></li>
+<li class="chapter" data-level="5.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>5.4</b> Heterogenous Residual Variance</a></li>
+<li class="chapter" data-level="5.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>5.5</b> Contrasts and Covariances</a></li>
+<li class="chapter" data-level="5.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>5.6</b> Priors for Covariance Matrices</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>5.6.1</b> Priors for <code>us</code> structures</a></li>
+<li class="chapter" data-level="5.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>5.6.2</b> Priors for <code>idh</code> structures</a></li>
+<li class="chapter" data-level="5.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>5.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>5</b> Continuous Random Interactions</a>
+<li class="chapter" data-level="6" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>6</b> Continuous Random Interactions</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>5.1</b> Random Regression</a></li>
-<li class="chapter" data-level="5.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>5.2</b> Expected Variances and Covariances</a></li>
-<li class="chapter" data-level="5.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>5.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
-<li class="chapter" data-level="5.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>5.4</b> Meta-analysis</a></li>
-<li class="chapter" data-level="5.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>5.5</b> Splines</a></li>
+<li class="chapter" data-level="6.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>6.1</b> Random Regression</a></li>
+<li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>6.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>6.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>6.4</b> Meta-analysis</a></li>
+<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.5</b> Splines</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>6</b> Multi-response models</a>
+<li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response models</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>6.1</b> Relaxing the univariate assumptions of causality</a></li>
-<li class="chapter" data-level="6.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>6.2</b> Multinomial Models</a></li>
-<li class="chapter" data-level="6.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>6.3</b> Zero-inflated Models</a>
+<li class="chapter" data-level="7.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>7.1</b> Relaxing the univariate assumptions of causality</a></li>
+<li class="chapter" data-level="7.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.2</b> Multinomial Models</a></li>
+<li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>7.3</b> Zero-inflated Models</a>
 <ul>
-<li class="chapter" data-level="6.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>6.3.1</b> Posterior predictive checks</a></li>
+<li class="chapter" data-level="7.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>7.3.1</b> Posterior predictive checks</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>6.4</b> Hurdle Models</a></li>
-<li class="chapter" data-level="6.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>6.5</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.4</b> Hurdle Models</a></li>
+<li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.5</b> Zero-altered Models</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>7</b> Pedigrees and Phylogenies</a>
+<li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>7.1</b> Pedigree and phylogeny formats</a>
+<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>8.1</b> Pedigree and phylogeny formats</a>
 <ul>
-<li class="chapter" data-level="7.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>7.1.1</b> Pedigrees</a></li>
-<li class="chapter" data-level="7.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>7.1.2</b> Phylogenies</a></li>
+<li class="chapter" data-level="8.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="8.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.1.2</b> Phylogenies</a></li>
 </ul></li>
-<li class="chapter" data-level="7.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>7.2</b> The animal model and the phylogenetic mixed model</a></li>
-</ul></li>
-<li class="chapter" data-level="8" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>8</b> Technical Details</a>
-<ul>
-<li class="chapter" data-level="8.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>8.1</b> Model Form</a></li>
-<li class="chapter" data-level="8.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>8.2</b> MCMC Sampling Schemes</a>
-<ul>
-<li class="chapter" data-level="8.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>8.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
-<li class="chapter" data-level="8.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>8.2.2</b> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
-<li class="chapter" data-level="8.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>8.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
-<li class="chapter" data-level="8.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>8.2.4</b> Ordinal Models</a></li>
-<li class="chapter" data-level="8.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>8.2.5</b> Path Analyses</a></li>
-<li class="chapter" data-level="8.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>8.2.6</b> Deviance and DIC</a></li>
-</ul></li>
+<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.2</b> The animal model and the phylogenetic mixed model</a></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="parameter-expansion.html"><a href="parameter-expansion.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
 <ul>
@@ -299,7 +295,20 @@ div.csl-indent {
 <li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
 <li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>11</b> References</a></li>
+<li class="chapter" data-level="11" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>11</b> Technical Details</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>11.1</b> Model Form</a></li>
+<li class="chapter" data-level="11.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>11.2</b> MCMC Sampling Schemes</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>11.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
+<li class="chapter" data-level="11.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>11.2.2</b> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
+<li class="chapter" data-level="11.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>11.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
+<li class="chapter" data-level="11.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>11.2.4</b> Ordinal Models</a></li>
+<li class="chapter" data-level="11.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>11.2.5</b> Path Analyses</a></li>
+<li class="chapter" data-level="11.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>11.2.6</b> Deviance and DIC</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>12</b> References</a></li>
 </ul>
 
       </nav>
@@ -317,22 +326,22 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="pedigree" class="section level1 hasAnchor" number="7">
-<h1><span class="header-section-number">7</span> Pedigrees and Phylogenies<a href="pedigree.html#pedigree" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="pedigree" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">8</span> Pedigrees and Phylogenies<a href="pedigree.html#pedigree" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Pedigrees and phylogenies are similar things: they are both ways of representing shared ancestry. Under a quantitative genetic model of inheritance, or a Brownian motion model of evolution, GLMM’s can be readily extended to model the similarities that exist between the phenotypes of related individuals or taxa. In the context of quantitative genetics these models are known as ‘animal’ models <span class="citation">(<a href="#ref-Henderson.1976">Henderson 1976</a>)</span>, and in the context of the comparative method these models are known as phylogenetic mixed models <span class="citation">(<a href="#ref-Lynch.1991">Lynch 1991</a>)</span>. The two models are almost identical, and are relatively minor modifications to the basic mixed model <span class="citation">(<a href="#ref-Hadfield.2010b">Hadfield and Nakagawa 2010</a>)</span>.</p>
-<div id="pedigree-and-phylogeny-formats" class="section level2 hasAnchor" number="7.1">
-<h2><span class="header-section-number">7.1</span> Pedigree and phylogeny formats<a href="pedigree.html#pedigree-and-phylogeny-formats" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="pedigrees" class="section level3 hasAnchor" number="7.1.1">
-<h3><span class="header-section-number">7.1.1</span> Pedigrees<a href="pedigree.html#pedigrees" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="pedigree-and-phylogeny-formats" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Pedigree and phylogeny formats<a href="pedigree.html#pedigree-and-phylogeny-formats" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="pedigrees" class="section level3 hasAnchor" number="8.1.1">
+<h3><span class="header-section-number">8.1.1</span> Pedigrees<a href="pedigree.html#pedigrees" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><span class="math inline">\(\texttt{MCMCglmm}\)</span> handles pedigrees stored in 3-column tabular form, with each row representing a single individual. The first column should contain the unique identifier of the individual, and columns 2 and 3 should be the unique identifiers of the individual’s parents. Parents must appear before their offspring in the table. I usually have the dam (mother) in
 the first column and the sire (father) in the third. I prefer the words dam and sire because if I subscript things with <span class="math inline">\(m\)</span> and <span class="math inline">\(f\)</span> I can never remember whether I mean male and female, or mother and father. In hermaphrodite systems the same individual may appear in both columns, even within the same row if an individual was produced through selfing. This is not a problem, but <span class="math inline">\(\texttt{MCMCglmm}\)</span> will issue a warning in case hermaphrodites are not present and a data entry mistake has been made. Impossible pedigrees (for example individual’s that give birth to their own mother) are a problem and <span class="math inline">\(\texttt{MCMCglmm}\)</span> will issue an error, hopefully with an appropriate message, when impossibilities are detected.</p>
 <p>If the parent(s) of an individual are unknown then a missing value (<code>NA</code>) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. <span class="math inline">\(\texttt{MCMCglmm}\)</span> can handle this, as long as all the individuals appearing in the data frame passed to <code>data</code> also appear in the pedigree.</p>
 <p>To illustrate, we can load a pedigree for a population of blue tits and display the pedigree for the nuclear family that has individuals <span class="math inline">\(\texttt{R187920}\)</span> and <span class="math inline">\(\texttt{R187921}\)</span> as parents:</p>
-<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="pedigree.html#cb254-1" tabindex="-1"></a><span class="fu">data</span>(BTped)</span>
-<span id="cb254-2"><a href="pedigree.html#cb254-2" tabindex="-1"></a>Nped <span class="ot">&lt;-</span> BTped[<span class="fu">which</span>(<span class="fu">apply</span>(BTped, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb254-3"><a href="pedigree.html#cb254-3" tabindex="-1"></a>    <span class="fu">any</span>(x <span class="sc">==</span> <span class="st">&quot;R187920&quot;</span> <span class="sc">|</span> x <span class="sc">==</span> <span class="st">&quot;R187921&quot;</span>)</span>
-<span id="cb254-4"><a href="pedigree.html#cb254-4" tabindex="-1"></a>})), ]</span>
-<span id="cb254-5"><a href="pedigree.html#cb254-5" tabindex="-1"></a>Nped</span></code></pre></div>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="pedigree.html#cb252-1" tabindex="-1"></a><span class="fu">data</span>(BTped)</span>
+<span id="cb252-2"><a href="pedigree.html#cb252-2" tabindex="-1"></a>Nped <span class="ot">&lt;-</span> BTped[<span class="fu">which</span>(<span class="fu">apply</span>(BTped, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb252-3"><a href="pedigree.html#cb252-3" tabindex="-1"></a>    <span class="fu">any</span>(x <span class="sc">==</span> <span class="st">&quot;R187920&quot;</span> <span class="sc">|</span> x <span class="sc">==</span> <span class="st">&quot;R187921&quot;</span>)</span>
+<span id="cb252-4"><a href="pedigree.html#cb252-4" tabindex="-1"></a>})), ]</span>
+<span id="cb252-5"><a href="pedigree.html#cb252-5" tabindex="-1"></a>Nped</span></code></pre></div>
 <pre><code>##       animal     dam    sire
 ## 66   R187920    &lt;NA&gt;    &lt;NA&gt;
 ## 172  R187921    &lt;NA&gt;    &lt;NA&gt;
@@ -346,16 +355,16 @@ the first column and the sire (father) in the third. I prefer the words dam and 
 <p><span class="math inline">\(\texttt{MCMCglmm}\)</span> and <code>MasterBayes</code> have several pedigree manipulation functions. (<code>MasterBayes::orderPed</code>) orders a pedigree so parents appear before their offspring, (<code>MasterBayes::insertPed</code>) inserts records for individuals that only appear as parents (or a vector of specified individuals). When the number of individuals with phenotypic data is less than the number of individuals in the pedigree it is sometimes possible to remove uninformative individuals from the pedigree and thus reduce the computation time. This is known as pruning the pedigree and is implemented in the <span class="math inline">\(\texttt{MCMCglmm}\)</span> function <code>prunePed</code>. A vector of measured individuals is specified in the argument <code>keep</code> and specifying <code>make.base=TRUE</code> implements the most complete pruning. Note, <code>make.base=FALSE</code> is the default argument so you’ll need to explicitly specify <code>TRUE</code> in the call to <code>prunePed</code>. Michael Morrissey’s <code>pedantics</code> package, and the <code>kinship2</code> package also have many other useful pedigree orientated functions. In fact, the <code>orderPed</code> function in <code>MasterBayes</code> is built around functions provided by <code>kinship2</code>.<br />
 </p>
 </div>
-<div id="phylogenies" class="section level3 hasAnchor" number="7.1.2">
-<h3><span class="header-section-number">7.1.2</span> Phylogenies<a href="pedigree.html#phylogenies" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="phylogenies" class="section level3 hasAnchor" number="8.1.2">
+<h3><span class="header-section-number">8.1.2</span> Phylogenies<a href="pedigree.html#phylogenies" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Phylogenies can be expressed in tabular form, although only two columns are required because each species only has a single parent. In general however, phylogenies are not expressed in this form presumably because it is hard to traverse phylogenies (and pedigrees) backwards in time when they are stored this way. For phylogenetic mixed models we generally only need to traverse phylogenies forward in time (if at all) but I have stuck with convention and used the <code>phylo</code> class from the <code>ape</code> package to store phylogenies. As with pedigrees, all species appearing in the data frame passed to <code>data</code> need to appear in the phylogeny. Typically, this will only include species at the tips of the phylogeny and so the measured species should appear in the <code>tip.label</code> element of the phylo object. An error message will be issued if this is not the case. Data may also exist for ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data as long as the phylogeny has labelled internal nodes. If nodes are unlabelled then <span class="math inline">\(\texttt{MCMCglmm}\)</span> names them internally using the default arguments of <code>makeNodeLabel</code> from <code>ape</code>.</p>
 <p>To illustrate, lets take the phylogeny of bird families included in the <code>ape</code> package, and extract the phylogeny in tabular form for the Paridae (Tits), Certhiidae (Treecreepers), Gruidae (Cranes) and the Struthionidae (Ostriches):</p>
-<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="pedigree.html#cb256-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bird.families&quot;</span>)</span>
-<span id="cb256-2"><a href="pedigree.html#cb256-2" tabindex="-1"></a>bird.families <span class="ot">&lt;-</span> <span class="fu">makeNodeLabel</span>(bird.families)</span>
-<span id="cb256-3"><a href="pedigree.html#cb256-3" tabindex="-1"></a>some.families <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Certhiidae&quot;</span>, <span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Gruidae&quot;</span>, <span class="st">&quot;Struthionidae&quot;</span>)</span>
-<span id="cb256-4"><a href="pedigree.html#cb256-4" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.families, <span class="fu">setdiff</span>(bird.families<span class="sc">$</span>tip.label, some.families))</span>
-<span id="cb256-5"><a href="pedigree.html#cb256-5" tabindex="-1"></a>INphylo <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(Nphylo)</span>
-<span id="cb256-6"><a href="pedigree.html#cb256-6" tabindex="-1"></a>INphylo<span class="sc">$</span>pedigree</span></code></pre></div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="pedigree.html#cb254-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bird.families&quot;</span>)</span>
+<span id="cb254-2"><a href="pedigree.html#cb254-2" tabindex="-1"></a>bird.families <span class="ot">&lt;-</span> <span class="fu">makeNodeLabel</span>(bird.families)</span>
+<span id="cb254-3"><a href="pedigree.html#cb254-3" tabindex="-1"></a>some.families <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Certhiidae&quot;</span>, <span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Gruidae&quot;</span>, <span class="st">&quot;Struthionidae&quot;</span>)</span>
+<span id="cb254-4"><a href="pedigree.html#cb254-4" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.families, <span class="fu">setdiff</span>(bird.families<span class="sc">$</span>tip.label, some.families))</span>
+<span id="cb254-5"><a href="pedigree.html#cb254-5" tabindex="-1"></a>INphylo <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(Nphylo)</span>
+<span id="cb254-6"><a href="pedigree.html#cb254-6" tabindex="-1"></a>INphylo<span class="sc">$</span>pedigree</span></code></pre></div>
 <pre><code>##      node.names                  
 ## [1,] &quot;Node58&quot;        NA        NA
 ## [2,] &quot;Node122&quot;       &quot;Node58&quot;  NA
@@ -370,21 +379,21 @@ the first column and the sire (father) in the third. I prefer the words dam and 
 </p>
 </div>
 <p>The full phylogeny, with these families and their connecting notes displayed, is shown in Figure @ref(fig:bird.families). You will notice that <span class="math inline">\(\texttt{Node1}\)</span> - the root - does not appear in the phylogeny in tabular form. This is because the root is equivalent to the base population in a pedigree analysis, an issue which we will come back to later. Another piece of information that seems to be lacking in the tabular form is the branch length information. Branch lengths are equivalent to inbreeding coefficients in a pedigree. As with pedigrees the inbreeding coefficients are calculated by <code>inverseA</code>:</p>
-<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="pedigree.html#cb258-1" tabindex="-1"></a>INphylo<span class="sc">$</span>inbreeding</span></code></pre></div>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="pedigree.html#cb256-1" tabindex="-1"></a>INphylo<span class="sc">$</span>inbreeding</span></code></pre></div>
 <pre><code>## [1] 0.2285714 0.3857143 1.0000000 0.7714286 0.3857143 0.3857143</code></pre>
 <p>You will notice that the Struthionidae have an inbreeding coefficient of 1 because we used the default <code>scale=TRUE</code> in the call to <code>inverseA</code>. Only ultrametric trees can be scaled in <span class="math inline">\(\texttt{MCMCglmm}\)</span> and in this case the sum of the inbreeding coefficients connecting the root to a terminal node is one. To take the Paridae as an example:</p>
-<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="pedigree.html#cb260-1" tabindex="-1"></a><span class="fu">sum</span>(INphylo<span class="sc">$</span>inbreeding[<span class="fu">which</span>(INphylo<span class="sc">$</span>pedigree[, <span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Node122&quot;</span>, <span class="st">&quot;Node58&quot;</span>))])</span></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="pedigree.html#cb258-1" tabindex="-1"></a><span class="fu">sum</span>(INphylo<span class="sc">$</span>inbreeding[<span class="fu">which</span>(INphylo<span class="sc">$</span>pedigree[, <span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Node122&quot;</span>, <span class="st">&quot;Node58&quot;</span>))])</span></code></pre></div>
 <pre><code>## [1] 1</code></pre>
 <p>The inbreeding coefficients for the members of the blue tit nuclear family are of course all zero:</p>
-<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="pedigree.html#cb262-1" tabindex="-1"></a><span class="fu">inverseA</span>(Nped)<span class="sc">$</span>inbreeding</span></code></pre></div>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="pedigree.html#cb260-1" tabindex="-1"></a><span class="fu">inverseA</span>(Nped)<span class="sc">$</span>inbreeding</span></code></pre></div>
 <pre><code>## [1] 0 0 0 0 0 0 0 0</code></pre>
 </div>
 </div>
-<div id="the-animal-model-and-the-phylogenetic-mixed-model" class="section level2 hasAnchor" number="7.2">
-<h2><span class="header-section-number">7.2</span> The animal model and the phylogenetic mixed model<a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="the-animal-model-and-the-phylogenetic-mixed-model" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> The animal model and the phylogenetic mixed model<a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The structure of pedigrees and phylogenies can be expressed in terms of the relatedness matrix <span class="math inline">\({\bf A}\)</span>. This matrix is symmetric, square, and has dimensions equal to the number of individuals in the pedigree (or the number of taxa in the phylogeny). For pedigrees, element <span class="math inline">\(A_{i,j}\)</span> is twice the probability that an allele drawn from individual <span class="math inline">\(i\)</span> is identical by descent to an allele in individual <span class="math inline">\(j\)</span>. For phylogenies, element <span class="math inline">\(A_{i,j}\)</span> is the amount of time that elapsed (since the common ancestor of all sampled taxa) before the speciation event that resulted in taxa <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. Simple, but perhaps slow, recursive methods exist for calculating <span class="math inline">\({\bf A}\)</span> in both cases:</p>
-<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="pedigree.html#cb264-1" tabindex="-1"></a>Aped <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> kinship2<span class="sc">::</span><span class="fu">kinship</span>(Nped[, <span class="dv">1</span>], Nped[, <span class="dv">2</span>], Nped[, <span class="dv">3</span>])</span>
-<span id="cb264-2"><a href="pedigree.html#cb264-2" tabindex="-1"></a>Aped</span></code></pre></div>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="pedigree.html#cb262-1" tabindex="-1"></a>Aped <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> kinship2<span class="sc">::</span><span class="fu">kinship</span>(Nped[, <span class="dv">1</span>], Nped[, <span class="dv">2</span>], Nped[, <span class="dv">3</span>])</span>
+<span id="cb262-2"><a href="pedigree.html#cb262-2" tabindex="-1"></a>Aped</span></code></pre></div>
 <pre><code>##         R187920 R187921 R187726 R187724 R187723 R187613 R187612 R187609
 ## R187920     1.0     0.0     0.5     0.5     0.5     0.5     0.5     0.5
 ## R187921     0.0     1.0     0.5     0.5     0.5     0.5     0.5     0.5
@@ -394,17 +403,17 @@ the first column and the sire (father) in the third. I prefer the words dam and 
 ## R187613     0.5     0.5     0.5     0.5     0.5     1.0     0.5     0.5
 ## R187612     0.5     0.5     0.5     0.5     0.5     0.5     1.0     0.5
 ## R187609     0.5     0.5     0.5     0.5     0.5     0.5     0.5     1.0</code></pre>
-<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="pedigree.html#cb266-1" tabindex="-1"></a>Aphylo <span class="ot">&lt;-</span> <span class="fu">vcv.phylo</span>(Nphylo, <span class="at">cor =</span> T)</span>
-<span id="cb266-2"><a href="pedigree.html#cb266-2" tabindex="-1"></a>Aphylo</span></code></pre></div>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="pedigree.html#cb264-1" tabindex="-1"></a>Aphylo <span class="ot">&lt;-</span> <span class="fu">vcv.phylo</span>(Nphylo, <span class="at">cor =</span> T)</span>
+<span id="cb264-2"><a href="pedigree.html#cb264-2" tabindex="-1"></a>Aphylo</span></code></pre></div>
 <pre><code>##               Struthionidae   Gruidae Certhiidae   Paridae
 ## Struthionidae             1 0.0000000  0.0000000 0.0000000
 ## Gruidae                   0 1.0000000  0.2285714 0.2285714
 ## Certhiidae                0 0.2285714  1.0000000 0.6142857
 ## Paridae                   0 0.2285714  0.6142857 1.0000000</code></pre>
 <p>Note that specifying <code>cor=T</code> is equivalent to scaling the tree as we did in the argument to <code>inverseA</code>.</p>
-<p>In fact, all of the mixed models we fitted in earlier sections also used an <span class="math inline">\({\bf A}\)</span> matrix, but in those cases the matrix was an identity matrix (i.e. <span class="math inline">\({\bf A}={\bf I}\)</span>) and we didn’t have to worry about it. Let’s reconsider the Blue tit model <code>m3a.1</code> from Section <a href="cat-int.html#cat-int">4</a> where we were interested in estimating <code>sex</code> effects for <code>tarsus</code> length together with the amount of variance explained by genetic mother (<code>dam</code>) and foster mother (<code>fosternest</code>):</p>
-<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="pedigree.html#cb268-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
-<span id="cb268-2"><a href="pedigree.html#cb268-2" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>In fact, all of the mixed models we fitted in earlier sections also used an <span class="math inline">\({\bf A}\)</span> matrix, but in those cases the matrix was an identity matrix (i.e. <span class="math inline">\({\bf A}={\bf I}\)</span>) and we didn’t have to worry about it. Let’s reconsider the Blue tit model <code>m3a.1</code> from Section <a href="cat-int.html#cat-int">5</a> where we were interested in estimating <code>sex</code> effects for <code>tarsus</code> length together with the amount of variance explained by genetic mother (<code>dam</code>) and foster mother (<code>fosternest</code>):</p>
+<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="pedigree.html#cb266-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
+<span id="cb266-2"><a href="pedigree.html#cb266-2" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>All individuals that contributed to that analysis are from a single generation and appear in <code>BTped</code> together with their parents. However, individuals in the parental generation do not have tarsus length measurements so they do not have their own records in <code>BTdata</code>.</p>
 <p>The model can be expressed as:</p>
 <p><span class="math display">\[{\bf y}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}_{1}{\bf u}_{1}+{\bf Z}_{2}{\bf u}_{2}+{\bf e}\]</span></p>
@@ -435,7 +444,7 @@ Lynch, M. 1991. <span>“Methods for the Analysis of Comparative Data in Evoluti
         </div>
       </div>
 <a href="multi.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="technical-details.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="parameter-expansion.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

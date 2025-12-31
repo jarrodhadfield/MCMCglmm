@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>8 Technical Details | MCMCglmm Course Notes</title>
+  <title>11 Technical Details | MCMCglmm Course Notes</title>
   <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="8 Technical Details | MCMCglmm Course Notes" />
+  <meta property="og:title" content="11 Technical Details | MCMCglmm Course Notes" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="8 Technical Details | MCMCglmm Course Notes" />
+  <meta name="twitter:title" content="11 Technical Details | MCMCglmm Course Notes" />
   
   <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
@@ -23,15 +23,15 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-30" />
+<meta name="date" content="2025-12-31" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="pedigree.html"/>
-<link rel="next" href="parameter-expansion.html"/>
+<link rel="prev" href="path.html"/>
+<link rel="next" href="references.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -215,77 +215,73 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="2.7" data-path="bayesian.html"><a href="bayesian.html#transform-sec"><i class="fa fa-check"></i><b>2.7</b> Transformations</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> GLMs and GLMMs</a>
+<li class="chapter" data-level="3" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>3</b> Linear and Generalised Linear Models</a>
 <ul>
 <li class="chapter" data-level="3.1" data-path="glm.html"><a href="glm.html#linear-model-lm"><i class="fa fa-check"></i><b>3.1</b> Linear Model (LM)</a>
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
-<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#over-dispersion"><i class="fa fa-check"></i><b>3.3</b> Over-dispersion</a>
+<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-over-dispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Over-dispersion</a></li>
-<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Over-dispersion</a></li>
+<li class="chapter" data-level="3.2.1" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.2.1</b> Poisson GLM</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#ranef-sec"><i class="fa fa-check"></i><b>3.4</b> Random effects</a></li>
-<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#pred-sec"><i class="fa fa-check"></i><b>3.5</b> Prediction with Random effects</a></li>
-<li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#categorical-data"><i class="fa fa-check"></i><b>3.6</b> Categorical Data</a></li>
-<li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#PriorContr-sec"><i class="fa fa-check"></i><b>3.7</b> A note on fixed effect priors and covariances</a></li>
-</ul></li>
-<li class="chapter" data-level="4" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>4</b> Categorical Random Interactions</a>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.3</b> Overdispersion</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>4.1</b> <code>idh</code> Variance Structure</a></li>
-<li class="chapter" data-level="4.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>4.2</b> <code>us</code> Variance Structure</a></li>
-<li class="chapter" data-level="4.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>4.3</b> Compound Variance Structures</a></li>
-<li class="chapter" data-level="4.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>4.4</b> Heterogenous Residual Variance</a></li>
-<li class="chapter" data-level="4.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>4.5</b> Contrasts and Covariances</a></li>
-<li class="chapter" data-level="4.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Covariance Matrices</a>
+<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Overdispersion</a></li>
+<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Overdispersion</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#prediction-in-glm"><i class="fa fa-check"></i><b>3.4</b> Prediction in GLM</a>
 <ul>
-<li class="chapter" data-level="4.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>4.6.1</b> Priors for <code>us</code> structures</a></li>
-<li class="chapter" data-level="4.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>4.6.2</b> Priors for <code>idh</code> structures</a></li>
-<li class="chapter" data-level="4.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>4.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+<li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>3.4.1</b> Posterior Predictive Distribution</a></li>
+</ul></li>
+<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#bernoulli-and-binomial-glm"><i class="fa fa-check"></i><b>3.5</b> Bernoulli and Binomial GLM</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="ranef.html"><a href="ranef.html"><i class="fa fa-check"></i><b>4</b> Random effects</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="ranef.html"><a href="ranef.html#pred-sec"><i class="fa fa-check"></i><b>4.1</b> Prediction with Random effects</a></li>
+<li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#PriorContr-sec"><i class="fa fa-check"></i><b>4.2</b> A note on fixed effect priors and covariances</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="cat-int.html"><a href="cat-int.html#idh-variance-structure"><i class="fa fa-check"></i><b>5.1</b> <code>idh</code> Variance Structure</a></li>
+<li class="chapter" data-level="5.2" data-path="cat-int.html"><a href="cat-int.html#us-variance-structure"><i class="fa fa-check"></i><b>5.2</b> <code>us</code> Variance Structure</a></li>
+<li class="chapter" data-level="5.3" data-path="cat-int.html"><a href="cat-int.html#compound-variance-structures"><i class="fa fa-check"></i><b>5.3</b> Compound Variance Structures</a></li>
+<li class="chapter" data-level="5.4" data-path="cat-int.html"><a href="cat-int.html#heter-sec"><i class="fa fa-check"></i><b>5.4</b> Heterogenous Residual Variance</a></li>
+<li class="chapter" data-level="5.5" data-path="cat-int.html"><a href="cat-int.html#contrasts-and-covariances"><i class="fa fa-check"></i><b>5.5</b> Contrasts and Covariances</a></li>
+<li class="chapter" data-level="5.6" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>5.6</b> Priors for Covariance Matrices</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="cat-int.html"><a href="cat-int.html#priors-for-us-structures"><i class="fa fa-check"></i><b>5.6.1</b> Priors for <code>us</code> structures</a></li>
+<li class="chapter" data-level="5.6.2" data-path="cat-int.html"><a href="cat-int.html#priors-for-idh-structures"><i class="fa fa-check"></i><b>5.6.2</b> Priors for <code>idh</code> structures</a></li>
+<li class="chapter" data-level="5.6.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>5.6.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="5" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>5</b> Continuous Random Interactions</a>
+<li class="chapter" data-level="6" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>6</b> Continuous Random Interactions</a>
 <ul>
-<li class="chapter" data-level="5.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>5.1</b> Random Regression</a></li>
-<li class="chapter" data-level="5.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>5.2</b> Expected Variances and Covariances</a></li>
-<li class="chapter" data-level="5.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>5.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
-<li class="chapter" data-level="5.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>5.4</b> Meta-analysis</a></li>
-<li class="chapter" data-level="5.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>5.5</b> Splines</a></li>
+<li class="chapter" data-level="6.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>6.1</b> Random Regression</a></li>
+<li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>6.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>6.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>6.4</b> Meta-analysis</a></li>
+<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.5</b> Splines</a></li>
 </ul></li>
-<li class="chapter" data-level="6" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>6</b> Multi-response models</a>
+<li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response models</a>
 <ul>
-<li class="chapter" data-level="6.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>6.1</b> Relaxing the univariate assumptions of causality</a></li>
-<li class="chapter" data-level="6.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>6.2</b> Multinomial Models</a></li>
-<li class="chapter" data-level="6.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>6.3</b> Zero-inflated Models</a>
+<li class="chapter" data-level="7.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>7.1</b> Relaxing the univariate assumptions of causality</a></li>
+<li class="chapter" data-level="7.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.2</b> Multinomial Models</a></li>
+<li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>7.3</b> Zero-inflated Models</a>
 <ul>
-<li class="chapter" data-level="6.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>6.3.1</b> Posterior predictive checks</a></li>
+<li class="chapter" data-level="7.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>7.3.1</b> Posterior predictive checks</a></li>
 </ul></li>
-<li class="chapter" data-level="6.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>6.4</b> Hurdle Models</a></li>
-<li class="chapter" data-level="6.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>6.5</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.4</b> Hurdle Models</a></li>
+<li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.5</b> Zero-altered Models</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>7</b> Pedigrees and Phylogenies</a>
+<li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>7.1</b> Pedigree and phylogeny formats</a>
+<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>8.1</b> Pedigree and phylogeny formats</a>
 <ul>
-<li class="chapter" data-level="7.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>7.1.1</b> Pedigrees</a></li>
-<li class="chapter" data-level="7.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>7.1.2</b> Phylogenies</a></li>
+<li class="chapter" data-level="8.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="8.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.1.2</b> Phylogenies</a></li>
 </ul></li>
-<li class="chapter" data-level="7.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>7.2</b> The animal model and the phylogenetic mixed model</a></li>
-</ul></li>
-<li class="chapter" data-level="8" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>8</b> Technical Details</a>
-<ul>
-<li class="chapter" data-level="8.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>8.1</b> Model Form</a></li>
-<li class="chapter" data-level="8.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>8.2</b> MCMC Sampling Schemes</a>
-<ul>
-<li class="chapter" data-level="8.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>8.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
-<li class="chapter" data-level="8.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>8.2.2</b> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
-<li class="chapter" data-level="8.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>8.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
-<li class="chapter" data-level="8.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>8.2.4</b> Ordinal Models</a></li>
-<li class="chapter" data-level="8.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>8.2.5</b> Path Analyses</a></li>
-<li class="chapter" data-level="8.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>8.2.6</b> Deviance and DIC</a></li>
-</ul></li>
+<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.2</b> The animal model and the phylogenetic mixed model</a></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="parameter-expansion.html"><a href="parameter-expansion.html"><i class="fa fa-check"></i><b>9</b> Parameter Expansion</a>
 <ul>
@@ -299,7 +295,20 @@ div.csl-indent {
 <li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
 <li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
 </ul></li>
-<li class="chapter" data-level="11" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>11</b> References</a></li>
+<li class="chapter" data-level="11" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>11</b> Technical Details</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="technical-details.html"><a href="technical-details.html#model-form"><i class="fa fa-check"></i><b>11.1</b> Model Form</a></li>
+<li class="chapter" data-level="11.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>11.2</b> MCMC Sampling Schemes</a>
+<ul>
+<li class="chapter" data-level="11.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>11.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
+<li class="chapter" data-level="11.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>11.2.2</b> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
+<li class="chapter" data-level="11.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>11.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
+<li class="chapter" data-level="11.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>11.2.4</b> Ordinal Models</a></li>
+<li class="chapter" data-level="11.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>11.2.5</b> Path Analyses</a></li>
+<li class="chapter" data-level="11.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>11.2.6</b> Deviance and DIC</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>12</b> References</a></li>
 </ul>
 
       </nav>
@@ -317,21 +326,21 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="technical-details" class="section level1 hasAnchor" number="8">
-<h1><span class="header-section-number">8</span> Technical Details<a href="technical-details.html#technical-details" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="model-form" class="section level2 hasAnchor" number="8.1">
-<h2><span class="header-section-number">8.1</span> Model Form<a href="technical-details.html#model-form" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="technical-details" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">11</span> Technical Details<a href="technical-details.html#technical-details" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="model-form" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Model Form<a href="technical-details.html#model-form" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The probability of the <span class="math inline">\(i^{th}\)</span> data point is represented by:</p>
 <p><span class="math display" id="eq:pyl-Eq">\[f_{i}(y_{i} | l_{i})
-\label{pyl-Eq}   \tag{8.1}\]</span></p>
-<p>where <span class="math inline">\(f_{i}\)</span> is the probability density function associated with <span class="math inline">\(y_{i}\)</span>. For example, if <span class="math inline">\(y_{i}\)</span> was assumed to be Poisson distributed and we used the canonical log link function, then Equation <a href="technical-details.html#eq:pyl-Eq">(8.1)</a> would have the form:</p>
+\label{pyl-Eq}   \tag{11.1}\]</span></p>
+<p>where <span class="math inline">\(f_{i}\)</span> is the probability density function associated with <span class="math inline">\(y_{i}\)</span>. For example, if <span class="math inline">\(y_{i}\)</span> was assumed to be Poisson distributed and we used the canonical log link function, then Equation <a href="technical-details.html#eq:pyl-Eq">(11.1)</a> would have the form:</p>
 <p><span class="math display" id="eq:pyl2-Eq">\[f_{P}\left(y_{i} | \lambda = \textrm{exp}(l_{i})\right)
-\label{pyl2-Eq}   \tag{8.2}\]</span></p>
-<p>where <span class="math inline">\(\lambda\)</span> is the canonical parameter of the Poisson density function <span class="math inline">\(f_{P}\)</span>. Table <a href="technical-details.html#tab:dist">8.1</a> has a full list of supported distributions and link functions.</p>
+\label{pyl2-Eq}   \tag{11.2}\]</span></p>
+<p>where <span class="math inline">\(\lambda\)</span> is the canonical parameter of the Poisson density function <span class="math inline">\(f_{P}\)</span>. Table <a href="technical-details.html#tab:dist">11.1</a> has a full list of supported distributions and link functions.</p>
 <p>The vector of latent variables follow the linear model</p>
 <p><span class="math display" id="eq:l-Eq">\[{\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
-\label{l-Eq}   \tag{8.3}\]</span></p>
-<p>where <span class="math inline">\({\bf X}\)</span> is a design matrix relating fixed predictors to the data, and <span class="math inline">\({\bf Z}\)</span> is a design matrix relating random predictors to the data. These predictors have associated parameter vectors <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span> and <span class="math inline">\({\bf u}\)</span>, and <span class="math inline">\({\bf e}\)</span> is a vector of residuals. In the Poisson case these residuals deal with any over-dispersion in the data after accounting for fixed and random sources of variation.</p>
+\label{l-Eq}   \tag{11.3}\]</span></p>
+<p>where <span class="math inline">\({\bf X}\)</span> is a design matrix relating fixed predictors to the data, and <span class="math inline">\({\bf Z}\)</span> is a design matrix relating random predictors to the data. These predictors have associated parameter vectors <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span> and <span class="math inline">\({\bf u}\)</span>, and <span class="math inline">\({\bf e}\)</span> is a vector of residuals. In the Poisson case these residuals deal with any overdispersion in the data after accounting for fixed and random sources of variation.</p>
 <p>The location effects (<span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span> and <span class="math inline">\({\bf u}\)</span>), and the residuals (<span class="math inline">\({\bf e}\)</span>) are assumed to come from a multivariate normal distribution:</p>
 <p><span class="math display" id="eq:V-Eq">\[\left[
 \begin{array}{c}
@@ -357,11 +366,11 @@ div.csl-indent {
 \end{array}
 \right]
 \right)
-\label{V-Eq}   \tag{8.4}\]</span></p>
+\label{V-Eq}   \tag{11.4}\]</span></p>
 <p>where <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}_{0}\)</span> is a vector of prior means for the fixed effects with prior (co)variance <span class="math inline">\({\bf B}\)</span>, and <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span> are the expected (co)variances of the random effects and residuals respectively. The zero off-diagonal matrices imply <em>a priori</em> independence between fixed effects, random effects, and residuals. Generally, <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span> are large square matrices with dimensions equal to the number of random effects or residuals. Typically they are unknown, and must be estimated from the data, usually by assuming they are structured in a way that they can be parameterised by few parameters. Below we will focus on the structure of <span class="math inline">\({\bf G}\)</span>, but the same logic can be applied to <span class="math inline">\({\bf R}\)</span>.</p>
 <p>At its most general, <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows variance structures of the form:</p>
 <p><span class="math display" id="eq:G3-Eq">\[{\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots
-\label{G3-Eq}   \tag{8.5}\]</span></p>
+\label{G3-Eq}   \tag{11.5}\]</span></p>
 <p>where the parameter (co)variance matrices (<span class="math inline">\({\bf V}\)</span>) are usually low-dimensional and are to be estimated, and the structured matrices (<span class="math inline">\({\bf A}\)</span>) are usually high dimensional and treated as known.</p>
 <p>In the case of ordinal probit models with <span class="math inline">\(&gt;2\)</span> categories (i.e. <code>"threshold"</code> or <code>"ordinal"</code> models), <span class="math inline">\(f_{T}/f_{O}\)</span> depends on an extra set of parameters in addition to the latent variable: the <span class="math inline">\(\textrm{max}(y)+1\)</span> cutpoints <span class="math inline">\({\boldsymbol{\mathbf{\gamma}}}\)</span>. The probability of <span class="math inline">\(y_{i}\)</span> is then:</p>
 <p><span class="math display">\[f_{T}(y_{i} | l_{i}, {\boldsymbol{\mathbf{\gamma}}}) = 1\ \textrm{if}\ \gamma_{y_{i}+1} &lt;  l_{i} &lt; \gamma_{y_{i}}\]</span></p>
@@ -369,31 +378,31 @@ div.csl-indent {
 <p><span class="math display">\[f_{O}(y_{i} | l_{i}, {\boldsymbol{\mathbf{\gamma}}}) = F_{N}(\gamma_{y_{i}} | l_{i}, 1)-F_{N}(\gamma_{y_{i}+1} | l_{i},1)\]</span></p>
 <p>where <span class="math inline">\(F_{N}\)</span> is the cumulative density function for the normal. Note that the two models can be made equivalent.</p>
 </div>
-<div id="MCMC-app" class="section level2 hasAnchor" number="8.2">
-<h2><span class="header-section-number">8.2</span> MCMC Sampling Schemes<a href="technical-details.html#MCMC-app" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="updating-the-latent-variables-bf-l" class="section level3 hasAnchor" number="8.2.1">
-<h3><span class="header-section-number">8.2.1</span> Updating the latent variables <span class="math inline">\({\bf l}\)</span><a href="technical-details.html#updating-the-latent-variables-bf-l" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="MCMC-app" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> MCMC Sampling Schemes<a href="technical-details.html#MCMC-app" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="updating-the-latent-variables-bf-l" class="section level3 hasAnchor" number="11.2.1">
+<h3><span class="header-section-number">11.2.1</span> Updating the latent variables <span class="math inline">\({\bf l}\)</span><a href="technical-details.html#updating-the-latent-variables-bf-l" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The conditional density of <span class="math inline">\(l\)</span> is given by:</p>
 <p><span class="math display" id="eq:pcl-Eq">\[Pr(l_{i}| {\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto  f_{i}(y_{i} | l_{i})f_{N}(e_{i}|{\bf r}_{i}{\bf R}_{/i}^{-1}{\bf e}_{/i}, r_{i}-{\bf r}_{i}{\bf R}_{/i}^{-1}{\bf r}^{&#39;}_{i})
-\label{pcl-Eq}   \tag{8.6}\]</span></p>
-<p>where <span class="math inline">\(f_{N}\)</span> indicates a Multivariate normal density with specified mean vector and covariance matrix. Equation <a href="technical-details.html#eq:pcl-Eq">(8.6)</a> is the probability of the data point <span class="math inline">\(y_{i}\)</span> from distribution <span class="math inline">\(f_{i}\)</span> with latent varaible <span class="math inline">\(l_{i}\)</span>, multiplied by the probability of the linear predictor residual. The linear predictor residual follows a conditional normal distribution where the conditioning is on the residuals associated with data points other than <span class="math inline">\(i\)</span>. Vectors and matrices with the row and/or column associated with <span class="math inline">\(i\)</span> removed are denoted <span class="math inline">\(/i\)</span>.</p>
-<p>Three special cases exist for which we sample directly from Equation <a href="technical-details.html#eq:pcl-Eq">(8.6)</a>: i) When <span class="math inline">\(y_{i}\)</span> is normal <span class="math inline">\(f_{i}(y_{i} | l_{i})=1\)</span> if <span class="math inline">\(y_{i}=l_{i}\)</span> and zero otherwise so <span class="math inline">\(l_{i}=y_{i}\)</span> with out the need for updating, ii) when <span class="math inline">\(y_{i}\)</span> is discrete and modelled using <code>family="threshold"</code> then Equation <span id="pcl-Eq" label="pcl-Eq"></span> defines a truncated normal distribution and can be slice sampled <span class="citation">(<a href="#ref-Robert.1995">Robert 1995</a>)</span> and iii) when <span class="math inline">\(y_{i}\)</span> is missing <span class="math inline">\(f_{i}(y_{i} | l_{i})\)</span> is not defined and samples can drawn directly from the normal.</p>
-<p>In practice, the conditional distribution in Equation <a href="technical-details.html#eq:pcl-Eq">(8.6)</a> only involves other residuals which are expected to show some form of residual covariation, as defined by the <span class="math inline">\({\bf R}\)</span> structure. Because of this we actually update latent variables in blocks, where the block is defined as groups of residuals which are expected to be correlated:</p>
+\label{pcl-Eq}   \tag{11.6}\]</span></p>
+<p>where <span class="math inline">\(f_{N}\)</span> indicates a Multivariate normal density with specified mean vector and covariance matrix. Equation <a href="technical-details.html#eq:pcl-Eq">(11.6)</a> is the probability of the data point <span class="math inline">\(y_{i}\)</span> from distribution <span class="math inline">\(f_{i}\)</span> with latent varaible <span class="math inline">\(l_{i}\)</span>, multiplied by the probability of the linear predictor residual. The linear predictor residual follows a conditional normal distribution where the conditioning is on the residuals associated with data points other than <span class="math inline">\(i\)</span>. Vectors and matrices with the row and/or column associated with <span class="math inline">\(i\)</span> removed are denoted <span class="math inline">\(/i\)</span>.</p>
+<p>Three special cases exist for which we sample directly from Equation <a href="technical-details.html#eq:pcl-Eq">(11.6)</a>: i) When <span class="math inline">\(y_{i}\)</span> is normal <span class="math inline">\(f_{i}(y_{i} | l_{i})=1\)</span> if <span class="math inline">\(y_{i}=l_{i}\)</span> and zero otherwise so <span class="math inline">\(l_{i}=y_{i}\)</span> with out the need for updating, ii) when <span class="math inline">\(y_{i}\)</span> is discrete and modelled using <code>family="threshold"</code> then Equation <span id="pcl-Eq" label="pcl-Eq"></span> defines a truncated normal distribution and can be slice sampled <span class="citation">(<a href="#ref-Robert.1995">Robert 1995</a>)</span> and iii) when <span class="math inline">\(y_{i}\)</span> is missing <span class="math inline">\(f_{i}(y_{i} | l_{i})\)</span> is not defined and samples can drawn directly from the normal.</p>
+<p>In practice, the conditional distribution in Equation <a href="technical-details.html#eq:pcl-Eq">(11.6)</a> only involves other residuals which are expected to show some form of residual covariation, as defined by the <span class="math inline">\({\bf R}\)</span> structure. Because of this we actually update latent variables in blocks, where the block is defined as groups of residuals which are expected to be correlated:</p>
 <p><span class="math display" id="eq:pcl2-Eq">\[Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto   \prod_{i \in j}{p}_{i}({y}_{i} | l_{i})f_{N}({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
-\label{pcl2-Eq}   \tag{8.7}\]</span></p>
-<p>where <span class="math inline">\(j\)</span> indexes blocks of latent variables that have non-zero residual covariances. For response variables that are neither Gaussian nor threshold, the density in equation <a href="technical-details.html#eq:pcl2-Eq">(8.7)</a> is in non-standard form and so Metropolis-Hastings updates are employed. We use adaptive methods during the burn-in phase to determine an efficient multivariate normal proposal distribution centered at the previous value of <span class="math inline">\({\bf l}_{j}\)</span> with covariance matrix <span class="math inline">\(m{\bf M}\)</span>. For computational efficiency we use the same <span class="math inline">\({\bf M}\)</span> for each block <span class="math inline">\(j\)</span>, where <span class="math inline">\({\bf M}\)</span> is the average posterior (co)variance of <span class="math inline">\({\bf l}_{j}\)</span> within blocks and is updated each iteration of the burn-in period <span class="citation">Haario, Saksman, and Tamminen (<a href="#ref-Haario.2001">2001</a>)</span>. The scalar <span class="math inline">\(m\)</span> is chosen using the method of <span class="citation">Ovaskainen et al. (<a href="#ref-Ovaskainen.2008">2008</a>)</span> so that the proportion of successful jumps is optimal, with a rate of 0.44 when <span class="math inline">\({\bf l}_{j}\)</span> is a scalar declining to 0.23 when <span class="math inline">\({\bf l}_{j}\)</span> is high dimensional <span class="citation">(<a href="#ref-Gelman.2004">Gelman et al. 2004</a>)</span>.</p>
-<p>A special case arises for multi-parameter distributions in which each parameter is associated with a linear predictor. For example, in the zero-inflated Poisson two linear predictors are used to model the same data point, one to predict zero-inflation, and one to predict the Poisson variable. In this case the two linear predictors are updated in a single block even when the residual covariance between them is set to zero, because the first probability in Equation <a href="technical-details.html#eq:pcl2-Eq">(8.7)</a> cannot
+\label{pcl2-Eq}   \tag{11.7}\]</span></p>
+<p>where <span class="math inline">\(j\)</span> indexes blocks of latent variables that have non-zero residual covariances. For response variables that are neither Gaussian nor threshold, the density in equation <a href="technical-details.html#eq:pcl2-Eq">(11.7)</a> is in non-standard form and so Metropolis-Hastings updates are employed. We use adaptive methods during the burn-in phase to determine an efficient multivariate normal proposal distribution centered at the previous value of <span class="math inline">\({\bf l}_{j}\)</span> with covariance matrix <span class="math inline">\(m{\bf M}\)</span>. For computational efficiency we use the same <span class="math inline">\({\bf M}\)</span> for each block <span class="math inline">\(j\)</span>, where <span class="math inline">\({\bf M}\)</span> is the average posterior (co)variance of <span class="math inline">\({\bf l}_{j}\)</span> within blocks and is updated each iteration of the burn-in period <span class="citation">Haario, Saksman, and Tamminen (<a href="#ref-Haario.2001">2001</a>)</span>. The scalar <span class="math inline">\(m\)</span> is chosen using the method of <span class="citation">Ovaskainen et al. (<a href="#ref-Ovaskainen.2008">2008</a>)</span> so that the proportion of successful jumps is optimal, with a rate of 0.44 when <span class="math inline">\({\bf l}_{j}\)</span> is a scalar declining to 0.23 when <span class="math inline">\({\bf l}_{j}\)</span> is high dimensional <span class="citation">(<a href="#ref-Gelman.2004">Gelman et al. 2004</a>)</span>.</p>
+<p>A special case arises for multi-parameter distributions in which each parameter is associated with a linear predictor. For example, in the zero-inflated Poisson two linear predictors are used to model the same data point, one to predict zero-inflation, and one to predict the Poisson variable. In this case the two linear predictors are updated in a single block even when the residual covariance between them is set to zero, because the first probability in Equation <a href="technical-details.html#eq:pcl2-Eq">(11.7)</a> cannot
 be factored:</p>
 <p><span class="math display" id="eq:pcl3-Eq">\[Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})({\bf e}_{j}|{\bf 0}, {\bf R}_{j})
-\label{pcl3-Eq}   \tag{8.8}\]</span></p>
+\label{pcl3-Eq}   \tag{11.8}\]</span></p>
 <p>When the block size is one (i.e. a univariate analysis) then the latent variables can be slice sampled for two-category <code>ordinal</code> and <code>categorical</code> models if <code>slice=TRUE</code> is passed to <span class="math inline">\(\texttt{MCMCglmm}\)</span>.<br />
 </p>
 </div>
-<div id="updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright" class="section level3 hasAnchor" number="8.2.2">
-<h3><span class="header-section-number">8.2.2</span> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright" class="section level3 hasAnchor" number="11.2.2">
+<h3><span class="header-section-number">11.2.2</span> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><span class="citation">Garcia-Cortes and Sorensen (<a href="#ref-Garcia-Cortes.2001">2001</a>)</span> provide a method for sampling <span class="math inline">\(\boldsymbol{\theta}\)</span> as a complete block that involves solving the sparse linear system:</p>
 <p><span class="math display" id="eq:sMME-Eq">\[\tilde{\boldsymbol{\theta}} = {\bf C}^{-1}{\bf W}^{&#39;}{\bf R}^{-1}({\bf l} - {\bf W}\boldsymbol{\theta}_{\star}-{\bf e}_{\star})
-\label{sMME-Eq}   \tag{8.9}\]</span></p>
+\label{sMME-Eq}   \tag{11.9}\]</span></p>
 <p>where <span class="math inline">\({\bf C}\)</span> is the mixed model coefficient matrix:</p>
 <p><span class="math display">\[{\bf C} = {\bf W}^{&#39;}{\bf R}^{-1}{\bf W}+
 \left[
@@ -423,51 +432,51 @@ be factored:</p>
 <p><span class="math display">\[{\bf e}_{\star} \sim N\left({\bf 0},{\bf R}\right)\]</span></p>
 <p><span class="math inline">\(\tilde{\boldsymbol{\theta}} + \boldsymbol{\theta}_{\star}\)</span> gives a realisation from the required probability distribution:</p>
 <p><span class="math display">\[Pr(\boldsymbol{\theta} | {\bf l}, {\bf W}, {\bf R}, {\bf G})\]</span></p>
-<p>Equation <a href="technical-details.html#eq:sMME-Eq">(8.9)</a> is solved using Cholesky factorisation. Because <span class="math inline">\({\bf C}\)</span> is sparse and the pattern of non-zero elements fixed, an initial symbolic Cholesky factorisation of <span class="math inline">\({\bf P}{\bf C}{\bf P}^{&#39;}\)</span> is preformed where <span class="math inline">\({\bf P}\)</span> is a fill-reducing permutation matrix <span class="citation">(<a href="#ref-Davis.2006">Davis 2006</a>)</span>. Numerical factorisation must be performed each iteration but the fill-reducing permutation (found via a minimum degree ordering of <span class="math inline">\({\bf C}+{\bf C}^{&#39;}\)</span>) reduces the computational burden dramatically compared to a direct factorisation of <span class="math inline">\({\bf C}\)</span> <span class="citation">(<a href="#ref-Davis.2006">Davis 2006</a>)</span>.</p>
+<p>Equation <a href="technical-details.html#eq:sMME-Eq">(11.9)</a> is solved using Cholesky factorisation. Because <span class="math inline">\({\bf C}\)</span> is sparse and the pattern of non-zero elements fixed, an initial symbolic Cholesky factorisation of <span class="math inline">\({\bf P}{\bf C}{\bf P}^{&#39;}\)</span> is preformed where <span class="math inline">\({\bf P}\)</span> is a fill-reducing permutation matrix <span class="citation">(<a href="#ref-Davis.2006">Davis 2006</a>)</span>. Numerical factorisation must be performed each iteration but the fill-reducing permutation (found via a minimum degree ordering of <span class="math inline">\({\bf C}+{\bf C}^{&#39;}\)</span>) reduces the computational burden dramatically compared to a direct factorisation of <span class="math inline">\({\bf C}\)</span> <span class="citation">(<a href="#ref-Davis.2006">Davis 2006</a>)</span>.</p>
 <p>Forming the inverse of the variance structures is usually simpler because they can be expressed as a series of direct sums and Kronecker products:</p>
 <p><span class="math display">\[{\bf G}= \left({\bf V}_{1}\otimes{\bf A}_{1}\right) \oplus \left({\bf V}_{2}\otimes{\bf A}_{2}\right) \oplus \ldots\]</span></p>
 <p>and the inverse of such a structure has the form</p>
 <p><span class="math display">\[{\bf G}^{-1} = \left({\bf V}^{-1}_{1}\otimes{\bf A}^{-1}_{1}\right) \oplus \left({\bf V}^{-1}_{2}\otimes{\bf A}^{-1}_{2}\right) \oplus \ldots\\\]</span></p>
 <p>which involves inverting the parameter (co)variance matrices (<span class="math inline">\({\bf V}\)</span>), which are usually of low dimension, and inverting <span class="math inline">\({\bf A}\)</span>. For many problems <span class="math inline">\({\bf A}\)</span> is actually an identity matrix and so inversion is not required. When <span class="math inline">\({\bf A}\)</span> is a relationship matrix associated with a pedigree, <span class="citation">Henderson (<a href="#ref-Henderson.1976">1976</a>; <a href="#ref-Meuwissen.1992">Meuwissen and Luo 1992</a>)</span> give efficient recursive algorithms for obtaining the inverse, and <span class="citation">Hadfield and Nakagawa (<a href="#ref-Hadfield.2010b">2010</a>)</span> derive a similar procedure for phylogenies.</p>
 </div>
-<div id="updating-the-variance-structures-bf-g-and-bf-r" class="section level3 hasAnchor" number="8.2.3">
-<h3><span class="header-section-number">8.2.3</span> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="updating-the-variance-structures-bf-g-and-bf-r" class="section level3 hasAnchor" number="11.2.3">
+<h3><span class="header-section-number">11.2.3</span> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Components of the direct sum used to construct the desired variance structures are conditionally independent. The sum of squares matrix associated with each component term has the form:</p>
 <p><span class="math display">\[{\bf S} = {\bf U}^{&#39;}{\bf A}^{-1}{\bf U}\]</span></p>
 <p>where <span class="math inline">\({\bf U}\)</span> is a matrix of random effects where each column is associated with the relevant row/column of <span class="math inline">\({\bf V}\)</span> and each row associated with the relevant row/column of <span class="math inline">\({\bf A}\)</span>. The parameter (co)variance matrix can then be sampled from the inverse Wishart distribution:</p>
 <p><span class="math display" id="eq:pIW-Eq">\[{\bf V} \sim IW(({\bf S}_{p}+{\bf S})^{-1},\ n_{p}+n)
-\label{pIW-Eq}   \tag{8.10}\]</span></p>
+\label{pIW-Eq}   \tag{11.10}\]</span></p>
 <p>where <span class="math inline">\(n\)</span> is the number of rows in <span class="math inline">\({\bf U}\)</span>, and <span class="math inline">\({\bf S}_{p}\)</span> and <span class="math inline">\(n_{p}\)</span> are the prior sum of squares and prior degree’s of freedom, respectively.</p>
 <p>In some models, some elements of a parameter (co)variance matrix cannot be estimated from the data and all the information comes from the prior. In these cases it can be advantageous to fix these elements at some value and <span class="citation">Korsgaard, Andersen, and Sorensen (<a href="#ref-Korsgaard.1999">1999</a>)</span> provide a strategy for sampling from a conditional inverse-Wishart distribution which is appropriate when the rows/columns of the parameter matrix can be permuted so that the conditioning occurs on some diagonal sub-matrix. When this is not possible Metropolis-Hastings updates can be made.</p>
 </div>
-<div id="ordinal-models" class="section level3 hasAnchor" number="8.2.4">
-<h3><span class="header-section-number">8.2.4</span> Ordinal Models<a href="technical-details.html#ordinal-models" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="ordinal-models" class="section level3 hasAnchor" number="11.2.4">
+<h3><span class="header-section-number">11.2.4</span> Ordinal Models<a href="technical-details.html#ordinal-models" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>For ordinal models it is necessary to update the cutpoints which define the bin boundaries for latent variables associated with each category of the outcome. To achieve good mixing we used the method developed by <span class="citation">(<a href="#ref-Cowles.1996">Cowles 1996</a>)</span> that allows the latent variables and cutpoints to be updated simultaneously using a Hastings-with-Gibbs update.</p>
 </div>
-<div id="path-analyses" class="section level3 hasAnchor" number="8.2.5">
-<h3><span class="header-section-number">8.2.5</span> Path Analyses<a href="technical-details.html#path-analyses" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Elements of the response vector can be regressed on each other using the <code>sir</code> and <code>path</code> functions. Using the matrix notation of <span class="citation">Gianola and Sorensen (<a href="#ref-Gianola.2004">2004</a>)</span>, Equation <a href="technical-details.html#eq:l-Eq">(8.3)</a> can be rewritten as:</p>
+<div id="path-analyses" class="section level3 hasAnchor" number="11.2.5">
+<h3><span class="header-section-number">11.2.5</span> Path Analyses<a href="technical-details.html#path-analyses" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Elements of the response vector can be regressed on each other using the <code>sir</code> and <code>path</code> functions. Using the matrix notation of <span class="citation">Gianola and Sorensen (<a href="#ref-Gianola.2004">2004</a>)</span>, Equation <a href="technical-details.html#eq:l-Eq">(11.3)</a> can be rewritten as:</p>
 <p><span class="math display" id="eq:rs-Eq1">\[\boldsymbol{\Lambda}{\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
-\label{rs-Eq1}   \tag{8.11}\]</span></p>
+\label{rs-Eq1}   \tag{11.11}\]</span></p>
 <p>where <span class="math inline">\(\boldsymbol{\Lambda}\)</span> is a square matrix of the form:</p>
 <p><span class="math display" id="eq:rs-Eq2">\[\begin{array}{rl}
 \boldsymbol{\Lambda} =&amp; {\bf I}-\sum_{l}\boldsymbol{\Psi}^{(l)}\lambda_{l}\\
 \end{array}
-\label{rs-Eq2}   \tag{8.12}\]</span></p>
+\label{rs-Eq2}   \tag{11.12}\]</span></p>
 <p>This sets up a regression where the <span class="math inline">\(i^{th}\)</span> element of the response vector acts as a weighted (by <span class="math inline">\(\Psi^{(l)}_{i,j}\)</span>) predictor for the <span class="math inline">\(j^{th}\)</span> element of the response vector with associated regression parameter <span class="math inline">\(\lambda_{l}\)</span>. Often <span class="math inline">\(\boldsymbol{\Psi}^{(l)}\)</span> is an incidence matrix with the patterns of ones determining which elements of the response are regressed on each other.</p>
-<p>Conditional on the vector of regression coefficients <span class="math inline">\(\boldsymbol{\Lambda}\)</span>, the location effects and variance structures can be updated as before by simply substituting <span class="math inline">\({\bf l}\)</span> for <span class="math inline">\(\boldsymbol{\Lambda}{\bf l}\)</span> in the necessary equations. <span class="citation">Gianola and Sorensen (<a href="#ref-Gianola.2004">2004</a>)</span> provide a simple scheme for updating <span class="math inline">\(\boldsymbol{\Lambda}\)</span>. Note that Equation <a href="technical-details.html#eq:rs-Eq1">(8.11)</a> can be rewritten as:</p>
+<p>Conditional on the vector of regression coefficients <span class="math inline">\(\boldsymbol{\Lambda}\)</span>, the location effects and variance structures can be updated as before by simply substituting <span class="math inline">\({\bf l}\)</span> for <span class="math inline">\(\boldsymbol{\Lambda}{\bf l}\)</span> in the necessary equations. <span class="citation">Gianola and Sorensen (<a href="#ref-Gianola.2004">2004</a>)</span> provide a simple scheme for updating <span class="math inline">\(\boldsymbol{\Lambda}\)</span>. Note that Equation <a href="technical-details.html#eq:rs-Eq1">(11.11)</a> can be rewritten as:</p>
 <p><span class="math display">\[\begin{array}{rl}
 {\bf l} - {\bf X}{\boldsymbol{\mathbf{\beta}}} - {\bf Z}{\bf u} =&amp; {\bf e}+\sum_{l}\boldsymbol{\Psi}^{(l)}{\bf l}\lambda_{l}\\
                                               =&amp; {\bf e}+{\bf L}\boldsymbol{\Lambda}\\
 \end{array}\]</span></p>
 <p>where <span class="math inline">\({\bf L}\)</span> is the design matrix <span class="math inline">\(\left[\boldsymbol{\Psi}^{(1)}{\bf l}, \boldsymbol{\Psi}^{(2)}{\bf l} \dots \boldsymbol{\Psi}^{(L)}{\bf l}\right]\)</span> for the <span class="math inline">\(L\)</span> path coefficients. Conditional on <span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span> and <span class="math inline">\({\boldsymbol{\mathbf{u}}}\)</span>, <span class="math inline">\(\boldsymbol{\Lambda}\)</span> can then be sampled using the method of <span class="citation">Garcia-Cortes and Sorensen (<a href="#ref-Garcia-Cortes.2001">2001</a>)</span> with <span class="math inline">\({\bf l} - {\bf X}{\boldsymbol{\mathbf{\beta}}} - {\bf Z}{\bf u}\)</span> as response and <span class="math inline">\({\bf L}\)</span> as predictor. However, only in a fully recursive system (there exists a row/column permutation by which all <span class="math inline">\(\boldsymbol{\Psi}\)</span>’s are triangular) are the resulting draws from the appropriate conditional distribution, which requires multiplication by the Jacobian of the transform: <span class="math inline">\(|\boldsymbol{\Lambda}|\)</span>. An extra Metropolis Hastings step is used to accept/reject the proposed draw when <span class="math inline">\(|\boldsymbol{\Lambda}|\neq 1\)</span>.</p>
-<p>When the response vector is Gaussian and fully observed, the latent variable does not need updating. For non-Gaussian data, or with missing responses, updating the latent variable is difficult because Equation <a href="technical-details.html#eq:pcl-Eq">(8.6)</a> becomes:</p>
+<p>When the response vector is Gaussian and fully observed, the latent variable does not need updating. For non-Gaussian data, or with missing responses, updating the latent variable is difficult because Equation <a href="technical-details.html#eq:pcl-Eq">(11.6)</a> becomes:</p>
 <p><span class="math display">\[Pr(l_{i}| {\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}, \boldsymbol{\Lambda}) \propto  f_{i}(y_{i} | l_{i})f_{N}((\boldsymbol{\Lambda}^{-1}{\bf e})_{i}|{\bf q}_{i}{\bf Q}_{/i}^{-1}{\bf e}_{/i}, q_{i}-{\bf q}_{i}{\bf Q}_{/i}^{-1}{\bf q}^{&#39;}_{i})\]</span></p>
-<p>where <span class="math inline">\({\bf Q} = \boldsymbol{\Lambda}^{-1}{\bf R}\boldsymbol{\Lambda}^{-\top}\)</span>. In the general case <span class="math inline">\({\bf Q}\)</span> will not have block diagonal structure like <span class="math inline">\({\bf R}\)</span> and so the scheme for updating latent variables within residual blocks (i.e. Equation <a href="technical-details.html#eq:pcl2-Eq">(8.7)</a>) is not possible. However, in some cases <span class="math inline">\(\boldsymbol{\Lambda}\)</span> may have the form where all non-zero elements correspond to elements of the response vector that are in the same residual block. In such cases updating the latent variables remains relatively simple:</p>
+<p>where <span class="math inline">\({\bf Q} = \boldsymbol{\Lambda}^{-1}{\bf R}\boldsymbol{\Lambda}^{-\top}\)</span>. In the general case <span class="math inline">\({\bf Q}\)</span> will not have block diagonal structure like <span class="math inline">\({\bf R}\)</span> and so the scheme for updating latent variables within residual blocks (i.e. Equation <a href="technical-details.html#eq:pcl2-Eq">(11.7)</a>) is not possible. However, in some cases <span class="math inline">\(\boldsymbol{\Lambda}\)</span> may have the form where all non-zero elements correspond to elements of the response vector that are in the same residual block. In such cases updating the latent variables remains relatively simple:</p>
 <p><span class="math display">\[Pr({\bf l}_{j}|{\bf y}, \boldsymbol{\theta}, {\bf R}, {\bf G}) \propto    {p}_{i}({y}_{i} | {\bf l}_{j})(\boldsymbol{\Lambda}^{-1}_{j}{\bf e}_{j}|{\bf 0}, \boldsymbol{\Lambda}^{-1}_{j}{\bf R}_{j}\boldsymbol{\Lambda}^{-\top}_{j})\]</span></p>
 </div>
-<div id="deviance-and-dic" class="section level3 hasAnchor" number="8.2.6">
-<h3><span class="header-section-number">8.2.6</span> Deviance and DIC<a href="technical-details.html#deviance-and-dic" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="deviance-and-dic" class="section level3 hasAnchor" number="11.2.6">
+<h3><span class="header-section-number">11.2.6</span> Deviance and DIC<a href="technical-details.html#deviance-and-dic" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The deviance <span class="math inline">\(D\)</span> is defined as:</p>
 <p><span class="math display">\[D = -2\textrm{log}(\Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}))\]</span></p>
 <p>where <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}}\)</span> is some parameter set of the model. The deviance can be calculated in different ways depending on what is in ‘focus’, and <span class="math inline">\(\texttt{MCMCglmm}\)</span> calculates this probability for the lowest level of the hierarchy <span class="citation">(<a href="#ref-Spiegelhalter.2002">Spiegelhalter et al. 2002</a>)</span>. For fully-observed Gaussian response variables in the likelihood is the density:</p>
@@ -477,27 +486,27 @@ be factored:</p>
 <p>where <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\gamma}}},\ \boldsymbol{\theta},\ {\bf R}\right\}\)</span>. For other response variables variables (including discrete response
 variables modeled using <code>family="ordinal"</code>) it is the product:</p>
 <p><span class="math display" id="eq:LLikL">\[\prod_{i}f_{i}(y_{i} | l_{i})
-\label{LLikL}   \tag{8.13}\]</span></p>
+\label{LLikL}   \tag{11.13}\]</span></p>
 <p>with <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}} = {\bf l}\)</span>.</p>
 <p>For multivariate models with mixtures of Gaussian (g), threshold (t) and other non-Gaussian (n) data (including missing data) we can define the deviance in terms of three conditional densities:</p>
 <p><span class="math display" id="eq:Eq-MVdeviance">\[\begin{array}{rl}
 Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}) =&amp; \Pr({\bf y}_{g}, {\bf y}_{t}, {\bf y}_{n} | {\boldsymbol{\mathbf{\gamma}}}, \boldsymbol{\theta}_{g}, \boldsymbol{\theta}_{t}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\\
                            =&amp; \Pr({\bf y}_{t} | {\boldsymbol{\mathbf{\gamma}}}, \boldsymbol{\theta}_{t}, {\bf y}_{g}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\Pr({\bf y}_{g} | \boldsymbol{\theta}_{g}, {\boldsymbol{\mathbf{l}}}_{n}, {\boldsymbol{\mathbf{R}}})\Pr({\bf y}_{n} | {\boldsymbol{\mathbf{l}}}_{n})\\
 \label{Eq-MVdeviance}
-\end{array}   \tag{8.14}\]</span></p>
-<p>with <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\gamma}}},\ \boldsymbol{\theta}_{/n},\ {\boldsymbol{\mathbf{l}}}_{n}\ {\bf R}\right\}\)</span>. Have <span class="math inline">\(({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{a|b}={\boldsymbol{\mathbf{W}}}_{a}\boldsymbol{\theta}_{a}+{\bf R}_{a,b}{\bf R}^{-1}_{b,b}({\bf l}_{b}-{\boldsymbol{\mathbf{W}}}_{b}\boldsymbol{\theta}_{b})\)</span> and <span class="math inline">\({\bf R}_{a |b} = {\bf R}_{a,a}-{\bf R}_{a,b}{\bf R}^{-1}_{b,b}{\bf R}_{a,b}\)</span> where the subscripts denote rows of the data vector/design matrices or rows/columns of the <span class="math inline">\({\bf R}\)</span>-structure. Then, the conditional density of <span class="math inline">\({\bf y}_{g}\)</span> in Equation <a href="technical-details.html#eq:Eq-MVdeviance">(8.14)</a> is:</p>
+\end{array}   \tag{11.14}\]</span></p>
+<p>with <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}} = \left\{{\boldsymbol{\mathbf{\gamma}}},\ \boldsymbol{\theta}_{/n},\ {\boldsymbol{\mathbf{l}}}_{n}\ {\bf R}\right\}\)</span>. Have <span class="math inline">\(({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{a|b}={\boldsymbol{\mathbf{W}}}_{a}\boldsymbol{\theta}_{a}+{\bf R}_{a,b}{\bf R}^{-1}_{b,b}({\bf l}_{b}-{\boldsymbol{\mathbf{W}}}_{b}\boldsymbol{\theta}_{b})\)</span> and <span class="math inline">\({\bf R}_{a |b} = {\bf R}_{a,a}-{\bf R}_{a,b}{\bf R}^{-1}_{b,b}{\bf R}_{a,b}\)</span> where the subscripts denote rows of the data vector/design matrices or rows/columns of the <span class="math inline">\({\bf R}\)</span>-structure. Then, the conditional density of <span class="math inline">\({\bf y}_{g}\)</span> in Equation <a href="technical-details.html#eq:Eq-MVdeviance">(11.14)</a> is:</p>
 <p><span class="math display">\[f_{N}\left({\bf y}_{g} | ({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{g|n},\ {\bf R}_{g|n}\right)\]</span></p>
-<p>The conditional density of <span class="math inline">\({\bf y}_{n}\)</span> in Equation <a href="technical-details.html#eq:Eq-MVdeviance">(8.14)</a> is identical to that given in Equation <a href="technical-details.html#eq:LLikL">(8.13)</a>, and for a single <code>"threshold"</code> trait</p>
+<p>The conditional density of <span class="math inline">\({\bf y}_{n}\)</span> in Equation <a href="technical-details.html#eq:Eq-MVdeviance">(11.14)</a> is identical to that given in Equation <a href="technical-details.html#eq:LLikL">(11.13)</a>, and for a single <code>"threshold"</code> trait</p>
 <p><span class="math display" id="eq:Eq-cpmvnorm">\[\prod_{i} F_{N}(\gamma_{y_{i}} | ({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{ti|g,n}, \ r_{ti|g, n})-F_{N}(\gamma_{y_{i}+1} | ({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{ti|g,n}, \ r_{ti|g, n})
-\label{Eq-cpmvnorm}   \tag{8.15}\]</span></p>
-<p>is the conditional density for <span class="math inline">\({\bf y}_{t}\)</span> in Equation <a href="technical-details.html#eq:Eq-MVdeviance">(8.14)</a>, where <span class="math inline">\(({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{ti|g,n}\)</span> is the <span class="math inline">\(i^{\textrm{th}}\)</span> element of <span class="math inline">\(({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{t|g,n}\)</span>. Currently the deviance (and hence the DIC) will not be returned if there
+\label{Eq-cpmvnorm}   \tag{11.15}\]</span></p>
+<p>is the conditional density for <span class="math inline">\({\bf y}_{t}\)</span> in Equation <a href="technical-details.html#eq:Eq-MVdeviance">(11.14)</a>, where <span class="math inline">\(({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{ti|g,n}\)</span> is the <span class="math inline">\(i^{\textrm{th}}\)</span> element of <span class="math inline">\(({\boldsymbol{\mathbf{W}}}\boldsymbol{\theta})_{t|g,n}\)</span>. Currently the deviance (and hence the DIC) will not be returned if there
 is more than one threshold trait.</p>
 <p>The deviance is calculated at each iteration if <code>DIC=TRUE</code> and stored each <code>thin</code><span class="math inline">\(^{th}\)</span> iteration after burn-in. However, for computational reasons the deviance is calculated mid-iteration such that the deviance returned at iteration <span class="math inline">\(i\)</span> uses <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}}_{i} = \left\{{\boldsymbol{\mathbf{\gamma}}}_{i},\ \boldsymbol{\theta}_{/n, i},\ {\boldsymbol{\mathbf{l}}}_{n, i-1}\ {\bf R}_{i}\right\}\)</span>. The mean deviance (<span class="math inline">\(\bar{D}\)</span>) is calculated over all iterations, as is the mean of the latent variables (<span class="math inline">\({\bf l}\)</span>) the <span class="math inline">\({\bf R}\)</span>-structure and the vector of predictors (<span class="math inline">\({\bf W}\boldsymbol{\theta}\)</span>). The deviance is calculated at the mean estimate of the parameters (<span class="math inline">\(D(\bar{\boldsymbol{\mathbf{\Omega}}})\)</span>) and the deviance information criterion calculated as:</p>
 <p><span class="math display">\[\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})\]</span></p>
 <div style="border: 0px;overflow-x: scroll; width:100%; ">
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:dist">Table 8.1: </span>Distribution types that can fitted using $ exttt{MCMCglmm}$. The prefixes <code>"zi"</code>, <code>"zt"</code>, <code>"hu"</code> and <code>"za"</code> stand for zero-inflated, zero-truncated, hurdle and zero-altered respectively. The prefix <code>"cen"</code> standards for censored where <span class="math inline">\(y_{1}\)</span> and <span class="math inline">\(y_{2}\)</span> are the upper and lower bounds for the unobserved datum <span class="math inline">\(y\)</span>. <span class="math inline">\(J\)</span> stands for the number of categories in the multinomial, categorical, zero-truncated multivariate Bernoulli distributions and this must be specified in the family argument for the multinomial zero-truncated multivariate Bernoulli distributions. The density function is for a single datum in a univariate model with <span class="math inline">\({\bf w}^{\top}\)</span> being a row vector of <span class="math inline">\({\bf W}\)</span>. <span class="math inline">\(f\)</span> and <span class="math inline">\(F\)</span> are the density and distribution functions for the subscripted distribution (<span class="math inline">\(N\)</span>=Normal, <span class="math inline">\(P\)</span>=Poisson, <span class="math inline">\(E\)</span>=Exponential, <span class="math inline">\(G\)</span>=Geometric, <span class="math inline">\(B\)</span>=Binomial, <span class="math inline">\(NCt\)</span>=non-central <span class="math inline">\(t\)</span> and <span class="math inline">\(t\)</span>=Student’s <span class="math inline">\(t\)</span>). The <span class="math inline">\(J-1\)</span> <span class="math inline">\(\gamma\)</span>’s in the ordinal/threshold models are the cutpoints, with <span class="math inline">\(\gamma_{1}\)</span> set to zero. The normalising probability <span class="math inline">\(P_k(k)\)</span> in the denominator of zero-truncated multinomial - which is the probability of no zero’s in the non-zero categories - is not given explicitly.
+<span id="tab:dist">Table 11.1: </span>Distribution types that can fitted using $ exttt{MCMCglmm}$. The prefixes <code>"zi"</code>, <code>"zt"</code>, <code>"hu"</code> and <code>"za"</code> stand for zero-inflated, zero-truncated, hurdle and zero-altered respectively. The prefix <code>"cen"</code> standards for censored where <span class="math inline">\(y_{1}\)</span> and <span class="math inline">\(y_{2}\)</span> are the upper and lower bounds for the unobserved datum <span class="math inline">\(y\)</span>. <span class="math inline">\(J\)</span> stands for the number of categories in the multinomial, categorical, zero-truncated multivariate Bernoulli distributions and this must be specified in the family argument for the multinomial zero-truncated multivariate Bernoulli distributions. The density function is for a single datum in a univariate model with <span class="math inline">\({\bf w}^{\top}\)</span> being a row vector of <span class="math inline">\({\bf W}\)</span>. <span class="math inline">\(f\)</span> and <span class="math inline">\(F\)</span> are the density and distribution functions for the subscripted distribution (<span class="math inline">\(N\)</span>=Normal, <span class="math inline">\(P\)</span>=Poisson, <span class="math inline">\(E\)</span>=Exponential, <span class="math inline">\(G\)</span>=Geometric, <span class="math inline">\(B\)</span>=Binomial, <span class="math inline">\(NCt\)</span>=non-central <span class="math inline">\(t\)</span> and <span class="math inline">\(t\)</span>=Student’s <span class="math inline">\(t\)</span>). The <span class="math inline">\(J-1\)</span> <span class="math inline">\(\gamma\)</span>’s in the ordinal/threshold models are the cutpoints, with <span class="math inline">\(\gamma_{1}\)</span> set to zero. The normalising probability <span class="math inline">\(P_k(k)\)</span> in the denominator of zero-truncated multinomial - which is the probability of no zero’s in the non-zero categories - is not given explicitly.
 </caption>
 <thead>
 <tr>
@@ -959,8 +968,8 @@ Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <spa
           </div>
         </div>
       </div>
-<a href="pedigree.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="parameter-expansion.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="path.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="references.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
