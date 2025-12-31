@@ -455,7 +455,7 @@ plot(m2c.4$Sol)
 predict(m2c.4, interval = "confidence")[26, ]
 ```
 
-[^3.1]: This is a bit disingenuous - it is no coincidence that the Markov chain without overdispersion would be reducible
+[^3.1]: This is a bit disingenuous. The MCMC algorithm implemented in \texttt{MCMcglmm} depends on a non-zero residual variance to ensure mixing  -  if the residual variance was set to zero (i.e. no overdispersion in GLM(M)) then the Markov chain would be reducible.
 
 [^3.2]: Since the residuals are assumed normal the exponentiated residuals are log-normal, and so this model is often referred to as the Poisson log-normal [@Hinde.1982]. The Negative Binomial distribution is a commonly used alternative for overdispersed count data. The Negative Binomial is conceptually identical to the Poisson log-normal except the exponentiated residuals are assumed to be gamma distributed. The log-normal and gamma distributions are so similar that for most data sets it would be hard to distinguish between the Negative Binomial and the Poisson log-normal.  
 
