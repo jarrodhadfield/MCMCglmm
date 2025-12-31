@@ -783,7 +783,7 @@ Hinde, John. 1982. <span>“Compound <span>Poisson</span> Regression Models.”<
 <div class="footnotes">
 <hr />
 <ol start="4">
-<li id="fn4"><p>This is a bit disingenuous - it is no coincidence that the Markov chain without overdispersion would be reducible<a href="glm.html#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>This is a bit disingenuous. The MCMC algorithm implemented in depends on a non-zero residual variance to ensure mixing - if the residual variance was set to zero (i.e. no overdispersion in GLM(M)) then the Markov chain would be reducible.<a href="glm.html#fnref4" class="footnote-back">↩︎</a></p></li>
 <li id="fn5"><p>Since the residuals are assumed normal the exponentiated residuals are log-normal, and so this model is often referred to as the Poisson log-normal <span class="citation">(<a href="#ref-Hinde.1982">Hinde 1982</a>)</span>. The Negative Binomial distribution is a commonly used alternative for overdispersed count data. The Negative Binomial is conceptually identical to the Poisson log-normal except the exponentiated residuals are assumed to be gamma distributed. The log-normal and gamma distributions are so similar that for most data sets it would be hard to distinguish between the Negative Binomial and the Poisson log-normal.<a href="glm.html#fnref5" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
