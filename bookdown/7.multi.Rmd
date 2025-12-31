@@ -334,14 +334,14 @@ table(bioChemists$art==0)
 ppois(0,mean(bioChemists$art))
 ```
 
-As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I've fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting `V=diag(2)` and `nu=0.002`[^6.1] we have the inverse-gamma prior with `shape=scale=0.001` for the residual component of the Poisson process which captures over-dispersion:
+As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I've fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting `V=diag(2)` and `nu=0.002`[^6.1] we have the inverse-gamma prior with `shape=scale=0.001` for the residual component of the Poisson process which captures overdispersion:
 
 ``` {r echo=TRUE, cache=TRUE}
 prior.m5d.1=list(R=list(V=diag(2), nu=0.002, fix=2))
 m5d.1<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="zipoisson")
 ```
 
-As is often the case the parameters of the zero-inflation model mixes poorly (See Figure \@ref(fig:ZIP) especially when compared to equivalent hurdle models (See Section \@ref(Hurdle)). Poor mixing is often associated with distributions that may *not* be zero-inflated but instead over-dispersed.
+As is often the case the parameters of the zero-inflation model mixes poorly (See Figure \@ref(fig:ZIP) especially when compared to equivalent hurdle models (See Section \@ref(Hurdle)). Poor mixing is often associated with distributions that may *not* be zero-inflated but instead overdispersed.
 
 ``` {r label=ZIP, echo=FALSE, include=TRUE, fig.cap="Posterior distribution of fixed effects from model `m5d.1` in which trait 1 ($\\texttt{art}$) is the Poisson process and trait 2 ($\\texttt{zi.art}$) is the zero-inflation.", fig.width=7, fig.height=8}
 plot(m5d.1$Sol[,1:4])
@@ -460,7 +460,7 @@ Pr(y | y>0) =& \texttt{dpois}(y, \texttt{exp}(l))\\
 
 which is equivalent to a standard Poisson model.
 
-We can then test for zero-flation by constraining the over-dispersion to be the same for both process using a `trait` by `units` interaction in the R-structure, and by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-flation, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:
+We can then test for zero-flation by constraining the overdispersion to be the same for both process using a `trait` by `units` interaction in the R-structure, and by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-flation, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:
 
 ``` {r echo=TRUE, cache=TRUE}
 m5d.5<-MCMCglmm(art~trait*(fem +mar + kid5 + phd + ment), rcov=~trait:units, data=bioChemists, family="zapoisson")

@@ -141,17 +141,17 @@ Vdam.3
 
 Note, that they are in general less than the marginal mean of the dam variance in model `m3a.1` (`r formatC(mean(m3a.1$VCV[,1]),format="f", 3)`) where a sex interaction was not fitted. Because the dam effects are assumed to be multivariate normal we can plot an ellipsoid that completely represents their distribution:
 
-``` {r label=rgl, fig=TRUE, echo=TRUE, include=TRUE, webgl=TRUE, cache=FALSE, fig.cap="Ellipsoid that circumscribes 95\\% of the expected dam effects as estimated in model \\texttt{m3a.3}. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  Because the covariances of the dam effects between the sexes were set to zero the axes of the ellipsoids are all parallel to the figure axes."}
+```{r label=rgl, echo=TRUE, include=TRUE, webgl=TRUE, cache=FALSE}
 plotsubspace(Vdam.3, axes.lab=TRUE)
 ```
-Figure: Ellipsoid that circumscribes 95\% of the expected dam effects as estimated in model `m3a.3`. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  Because the covariances of the dam effects between the sexes were set to zero the axes of the ellipsoids are all parallel to the figure axes.
+Widget 4.1: Ellipsoid that circumscribes 95\% of the expected dam effects as estimated in model `m3a.3`. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  Because the covariances of the dam effects between the sexes were set to zero the axes of the ellipsoids are all parallel to the figure axes.
 
 
-If we had measured the offspring of a lot of dams, and for each dam we had measured a very large number of offspring of each sex, then we could calculate the average tarsus lengths within a nest for males, females and unknowns separately. If we produced a scatter plot of these means the data would have the same shape as this ellipsoid and 95% of the data would lie inside.
+If we had measured the offspring of a lot of dams, and for each dam we had measured a very large number of offspring of each sex, then we could calculate the average tarsus lengths within a nest for males, females and unknowns separately. If we produced a scatter plot of these means the data would have the same shape as this ellipsoid and 95% of the data would lie inside it.
 
 ## `us` Variance Structure
 
-The oddity of the model, and the meaning of the off-diagonal zeros, should become apparent. We have assumed that the different sexes with in a nest are independent. If we plotted the average tarsus lengths for males against the average tarsus lengths for females for each dam this model implies we should see no relationship. We can relax this assumption using the `us` function which estimates the matrix:
+The oddity of the model, and the meaning of the off-diagonal zeros, should become apparent. We have assumed that the different sexes within a nest are independent. If we plotted the average tarsus lengths for males against the average tarsus lengths for females for each dam this model implies we should see no relationship. We can relax this assumption using the `us` function which estimates the matrix:
 
 $${\bf V}_{{\color{red}{\texttt{dam}}}}=
 \left[
@@ -183,7 +183,8 @@ The distribution of dam effects in this model look substantially different from 
 
 plotsubspace(Vdam.4, axes.lab=TRUE, wire.frame=T)
 ```
-Figure: Ellipsoid that circumscribes 95\% of the expected dam effects as estimated in model `m3a.4`. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  The correlations of the dam effects between the sexes were estimated and found to be close to one, and the sex-specific variances were all roughly equal in magnitude.  Consequently the major axis of the ellipsoid lies at $45^{o}$ to the figure axes.
+Widget 4.2: Ellipsoid that circumscribes 95\% of the expected dam effects as estimated in model `m3a.4`. This can be thought of as a scatter plot of the dam effects between each sex, if the dam effects could be directly measured.  The correlations of the dam effects between the sexes were estimated and found to be close to one, and the sex-specific variances were all roughly equal in magnitude.  Consequently the major axis of the ellipsoid lies at $45^{o}$ to the figure axes.
+
 
 Covariances can be hard to interpret, and I usually find correlations easier to think about. They can also be useful for detecting problems in the chain. In model `m3a.1` the dam variance for chicks with unknown sex was behaving badly and was getting 'trapped' at zero. When fitting a $2\times2$ covariance matrix similar things can happen when correlations are close to -1 and 1, and this may not be obvious from the marginal distribution of the covariances:
 
@@ -224,12 +225,12 @@ df <- data.frame(
                       "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&{\\color{red}{0}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{1}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{0}}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
                       "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
                       "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$",
-                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&r_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\r_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$"
+                      "$\\left[\\begin{array}{ccc}{\\color{red}{1}}&r_{1,2}&C_{1,3}\\\\r_{2,1}&{\\color{red}{1}}&r_{2,3}\\\\C_{3,1}&r_{3,2}&{\\color{red}{1}}\\\\ \\end{array}\\right]$"
                       ),
   stringsAsFactors = FALSE
 )
 
-kable(df, "html", escape = FALSE, caption = "Different random effect specifications in $\texttt{MCMCglmm}$ (with equivalent `lmer` syntax when possible). `sex` is a factor with three levels so the resulting covariance and correlation matrices are $3\\times3$. For the `cors(sex):dam` structure, the prior specification had `fix=2` which forces the last diagonal block (starting from position 2,2) to be a correlation matrix rather than a covariance matrix. `fix` can also be specified for other structures but then it fixes last diagonal block to what ever is specified in the `V` element of the prior.  `ante` structures are not covered here but in Section \\@ref(ante-sec)", label="vfunction") |>
+kable(df, "html", escape = FALSE, caption = "Different random effect specifications in $\\texttt{MCMCglmm}$ (with equivalent $\\texttt{lmer}$ syntax when possible). $\\texttt{sex}$ is a factor with three levels so the resulting covariance and correlation matrices are $3\\times3$. For the `cors(sex):dam` structure, the prior specification had `fix=2` which forces the last diagonal block (starting from position 2,2) to be a correlation matrix rather than a covariance matrix. `fix` can also be specified for other structures but then it fixes the last diagonal block to what ever is specified in the `V` element of the prior.  `ante` structures are not covered here but in Section \\@ref(ante-sec)", label="vfunction") |>
   kable_styling(full_width = FALSE)%>%
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```

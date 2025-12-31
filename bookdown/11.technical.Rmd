@@ -19,7 +19,7 @@ The vector of latent variables follow the linear model
 $${\bf l}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e}
 \label{l-Eq}   (\#eq:l-Eq)$$
 
-where ${\bf X}$ is a design matrix relating fixed predictors to the data, and ${\bf Z}$ is a design matrix relating random predictors to the data. These predictors have associated parameter vectors ${\boldsymbol{\mathbf{\beta}}}$ and ${\bf u}$, and ${\bf e}$ is a vector of residuals. In the Poisson case these residuals deal with any over-dispersion in the data after accounting for fixed and random sources of variation.
+where ${\bf X}$ is a design matrix relating fixed predictors to the data, and ${\bf Z}$ is a design matrix relating random predictors to the data. These predictors have associated parameter vectors ${\boldsymbol{\mathbf{\beta}}}$ and ${\bf u}$, and ${\bf e}$ is a vector of residuals. In the Poisson case these residuals deal with any overdispersion in the data after accounting for fixed and random sources of variation.
 
 The location effects (${\boldsymbol{\mathbf{\beta}}}$ and ${\bf u}$), and the residuals (${\bf e}$) are assumed to come from a multivariate normal distribution:
 

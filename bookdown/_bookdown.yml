@@ -5,11 +5,12 @@ rmd_files:
   - 1.intro.Rmd
   - 2.bayesian.Rmd
   - 3.glm.Rmd
-  - 4.cat_int.Rmd
-  - 5.cont_int.Rmd
-  - 6.multi.Rmd
-  - 7.pedigree.Rmd  
-  - 8.technical.Rmd
+  - 4.ranef.Rmd
+  - 5.cat_int.Rmd
+  - 6.cont_int.Rmd
+  - 7.multi.Rmd
+  - 8.pedigree.Rmd  
   - 9.px.Rmd
   - 10.path.Rmd
-  - 11.references.Rmd  
+  - 11.technical.Rmd
+  - 12.references.Rmd  

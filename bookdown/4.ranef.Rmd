@@ -1,0 +1,323 @@
+# Random effects {#ranef}
+
+In some cases we may have measured variables whose effects we would like to treat as random. Often the distinction between fixed and random is given by example; things like population, species, individual and vial are random, but sex, treatment and age are not. Or the distinction is made using rules of thumb; if there are few factor levels and they are
+interesting to other people they are fixed. However, this doesn't really confer any understanding about what it means to treat something as fixed or random, and doesn't really allow judgements to be made regarding ambiguous variables (for example year) or give any insight into the fact that in a Bayesian analysis all effects are technically random.
+
+When we treat an effect as fixed we believe that the only information regarding its value comes from data associated with that particular level. If we treat an effect as random we also use this information, but we weight it by what other data tell us about the likely values that the effects could take. In a Bayesian analysis this additional information could come from data not formally included in the analysis, in which case it would be called a prior. In hierarchical models this additional information comes from data associated with other factor levels of the
+same type.
+
+The degree to which this additional information is important depends on the variability of the effects, as measured by the estimated variance component, and the degree of replication within a particular level. If variability is high then most of the information must come from data associated with an individual effect, particularly if replication within
+that effect is high. However, if variability and replication are low then extreme mean values of the response for a given level are more likely to be due to sampling error alone, and so the estimates are shrunk towards zero.
+
+It is common to hear things like 'year is a random effect' as if you just have to estimate *a* single effect for all years. It is also common to hear things like 'years is random' as if years were sampled at random. Better to say year effects are random and understand that it is the effects that are random not the years, and that we're trying to
+estimate as many effects as there are years. In this sense they're the same as fixed effects, and we can easily treat the year effects as random to see what difference it makes.
+
+Random effect models are often expressed as:
+
+$$E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})$$
+
+where ${\bf Z}$ is a design matrix like ${\bf X}$, and ${\bf u}$ is a vector of parameters like ${\boldsymbol{\mathbf{\beta}}}$.
+
+In Chapter {#glm} we got introduced to the `Traffic` data set consisting of the the number of injuries on Sweedish roads in 1961 and 1962 when speed-limits were in place or not. We can specify simple random effect models in the same way that we specified the fixed effects:
+
+``` r
+random =  ~ year
+```
+
+although we don't need anything to the left of the $\sim$ because the response is known from the fixed effect specification. In addition, the global intercept is suppressed by default, so in fact this specification produces the design matrix:
+
+``` {r echo=TRUE}
+Z<-model.matrix(~year-1, data=Traffic)
+Z[c(1,2,184),]
+```
+
+Earlier I said that there was no distinction between fixed and random effects in a Bayesian analysis - all effects are random - so lets not make the distinction and combine the design matrices (${\bf W} = [{\bf X}, {\bf Z}]$) and combine the vectors of parameters ($\boldsymbol{\theta} = [{\boldsymbol{\mathbf{\beta}}}^{'}, {\bf u}^{'}]^{'}$):
+
+$$E[{\bf y}] = \textrm{exp}({\bf W}\boldsymbol{\theta}+{\bf e})
+\label{MM-eq}   (\#eq:MM-eq)$$
+
+If we drop year from the fixed terms, the new fixed effect design matrix looks like:
+
+``` {r echo=TRUE}
+X2<-model.matrix(y~limit+day, data=Traffic)
+X2[c(1,2,184),]
+```
+
+and
+
+``` {r echo=TRUE}
+W<-cbind(X2,Z)
+W[c(1,2,184),]
+```
+
+You will notice that this new design matrix is exactly equivalent to the original design matrix `X` except we have one additional variable `year1961`. In our first model this variable was absorbed in to the global intercept because it could no be uniquely estimated from the data. What has changed that could make this additional parameter estimable? As is usual in a Bayesian analysis, if there is no information in the data it has to come from the prior. In model `m2a.5` we used the default normal prior for the fixed effects with means of zero, large variances of $10^{8}$, and no covariances. Lets treat the year effects as random, but rather than estimate a variance component for them we'll fix the variance at $10^{8}$ in the prior:
+
+``` {r echo=TRUE, eval=FALSE}
+prior<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1e+8, fix=1)))
+m2a.6<-MCMCglmm(y ~ limit + day, random=~year, family="poisson", data=Traffic, prior=prior, pr=TRUE)
+plot(m2a.6$Sol)
+```
+
+``` {r echo=FALSE, cache=TRUE}
+prior<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1e+8, fix=1)))
+m2a.6<-MCMCglmm(y ~ limit + day, random=~year, family="poisson", data=Traffic, prior=prior, pr=TRUE)
+```
+
+``` {r label=yrandom, echo=FALSE, fig.width=7, fig.height=5, include=TRUE, fig.cap="MCMC summary plots for the intercept, speed limit and day coefficients from model `m2a.6` where year effects were treated as random. Note the high posterior variance for the intercept."}
+plot(m2a.6$Sol[,1:3])
+```
+
+The estimates for the intercept, day and the effect of a speed limit now appear completely different (Figure
+\@ref(fig:yrandom). However, in the original model (`m2a.5`) the prediction for each year is obtained by:
+
+``` {r echo=TRUE}
+y1961.m2a.5<-m2a.5$Sol[,"(Intercept)"]
+y1962.m2a.5<-m2a.5$Sol[,"(Intercept)"]+m2a.5$Sol[,"year1962"]
+```
+
+However, for this model we have to add the intercept to both random effects to get the year predictions. $\texttt{MCMCglmm}$ does not store the posterior distribution of the random effects by default, but because we specified `pr=TRUE`, the whole of $\boldsymbol{\theta}$ is stored rather than just ${\boldsymbol{\mathbf{\beta}}}$:
+
+``` {r echo=TRUE}
+y1961.m2a.6<-m2a.6$Sol[,"(Intercept)"]+m2a.6$Sol[,"year.1961"]
+y1962.m2a.6<-m2a.6$Sol[,"(Intercept)"]+m2a.6$Sol[,"year.1962"]
+```
+
+We can merge the two posterior distributions to see how they compare:
+
+``` {r label=ypred, echo=TRUE, fig.width=7, fig.height=5, include=TRUE, fig.cap="MCMC summary plots for the year effects from a model where year effects were treated as fixed (black) and where they were treated as random (red) but with the variance component set at a large value rather than being estimated. The posterior distributions are virtually identical."}
+y.m2a.5<-mcmc(cbind("y1961"=y1961.m2a.5,"y1962"=y1962.m2a.5))
+y.m2a.6<-mcmc(cbind("y1961"=y1961.m2a.6,"y1962"=y1962.m2a.6))
+plot(mcmc.list(y.m2a.5,y.m2a.6))
+```
+
+The posterior distributions are very similar (Figure \@ref(fig:ypred) but see Section
+[7](#PriorContr-sec){reference-type="ref" reference="PriorContr-sec"} why they are not identical), highlighting the fact that effects that are fixed are those associated with a variance component which has been set *a priori* to something large ($10^8$ in this case), where effects that are random are associated with a variance component which is not set *a priori* but is estimated from the data. As the variance component tends to zero then no matter how many random effects there are, we are effectively only estimating a single parameter (the variance). This makes sense, if there were no differences between years we only need to estimate a global intercept and not separate effects for each year. Alternatively if the variance is infinite then we need to estimate separate effects for each year. In this case the intercept is confounded with the average value of the random effect, resulting in a wide marginal distribution for the intercept, and strong posterior correlations between the intercept and the mean of the random effects:
+
+``` {r label=yfixed-int, echo=TRUE, fig.width=7, fig.height=5, include=TRUE, fig.cap="Joint posterior distribution of the intercept and the mean of the two random year effects. The variance component associated with year was fixed at a large value ($10^8$) and so the effects are almost completely confounded."}
+plot(c(m2a.6$Sol[,"year.1961"]+m2a.6$Sol[,"year.1962"])/2, c(m2a.6$Sol[,"(Intercept)"]))
+```
+
+With only two levels, there is very little information to estimate the variance, and so we would often make the *a priori* decision to treat year effects as fixed, and fix the variance components to something
+large (or infinity in a frequentist analysis).
+
+At the moment we have day as a continuous covariate, but we could also have random day effects and ask whether the number of injuries on the same day but in different years are correlated. Rather than fixing the variance component at something large, we'll use the same weaker prior that we used for the residual variance:
+
+``` {r echo=TRUE, cache=TRUE}
+Traffic$day<-as.factor(Traffic$day)
+prior<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=0.002)))
+m2a.7<-MCMCglmm(y ~ year+limit+as.numeric(day), random=~day, family="poisson", data=Traffic, prior=prior)
+```
+
+`day` has also gone in the fixed formula, but as a numeric variable, in order to capture any time trends in the number of injuries. Most of the overdispersion seems to be captured by fitting day as a random term
+(Figure \@ref(fig:GLMM-VCV)):
+
+``` {r label=GLMM-VCV, echo=TRUE,  fig.width=7, fig.height=5, include=TRUE, fig.cap="MCMC summary plot of the variance component associated with day (top) and the residual variance component (below). The trace for the residual variance shows strong autocorrelation and needs to be ran for longer."}
+plot(m2a.7$VCV)
+```
+
+In fact it explains so much that the residual variance is close to zero and mixing seems to be a problem. The chain would have to be run for longer, and the perhaps an alternative prior specification used.
+
+## Prediction with Random effects {#pred-sec}
+
+In section [3.2](#addod-sec){reference-type="ref" reference="addod-sec"} we showed that for non-Gaussian data the expectation of the response variable $y$ is different from the linear predictor if we wish to average over the residuals. Often it is important to get the expectation after marginalising residuals, and indeed after marginalising other random effects. For example we may not be so interested in knowing the expected number of injuries on the average day, but knowing the expected number of injuries on any random day.
+
+For the Poisson mixed model:
+
+$$E[y] = \texttt{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})$$
+
+we can marginalise with respect to the random effects, including the overdispersion residual:
+
+$$E_{{u,e}}[y] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+0.5\sigma^{2})$$
+
+where $\sigma^{2}$ is the sum of the variance components.
+
+For the Binomial mixed model with logit link
+
+$$E[y] = \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})$$
+
+it is not possible to marginilse with respect to the random effects analytically, but two approximations exist. The first
+
+$$E_{{u,e}}[y] \approx \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}-0.5\sigma^{2}\textrm{tanh}({\bf X}{\boldsymbol{\mathbf{\beta}}}(1+2\textrm{exp}(-0.5\sigma^{2}))/6)))$$
+
+can be found on p452 in @McCulloch.2001 and the second (and possibly less accurate) approximation in @Diggle.2004:
+
+$$E_{{u,e}}[y] \approx \textrm{logit}^{-1}\left(\frac{{\bf X}{\boldsymbol{\mathbf{\beta}}}}{\sqrt{1+(\frac{16\sqrt{3}}{15\pi})^{2}\sigma^{2}}}\right)$$
+
+The predict function for $\texttt{MCMCglmm}$ object allows us to predict the laibality on the latent scale after marginalising the random effects in model `m2a.7`:
+
+``` {r echo=TRUE}
+predict(m2a.7, marginal = ~day, type = "terms")[1:5]
+```
+
+or we can predict on the data scale:
+
+``` {r echo=TRUE}
+predict(m2a.7, marginal = ~day, type = "response")[1:5]
+```
+
+In addition, credible intervals can be obtained
+
+``` {r echo=TRUE}
+predict(m2a.7, marginal = ~day, type = "response", interval = "confidence")[1:5,] 
+```
+
+as can prediction intervals through posterior predictive simulation:
+
+``` {r echo=TRUE}
+predict(m2a.7, marginal = ~day, type = "response", interval = "prediction")[1:5, ]
+```
+
+## A note on fixed effect priors and covariances {#PriorContr-sec}
+
+Fixed and random effects are essentially the same thing. The only difference is that the variance component for the fixed effects is usually fixed at some large value, whereas the variance component for the random effects is estimated. In Section \@ref(ranef-sec) I demonstrated this by claiming that a model where year effects were fixed (`m2a.5`) was identical to one where they were treated as random, but with the variance component set to a large value (`m2a.6`). This was a white lie as I did not want to distract attention from the main point. The reason why they were not identical is as follows:
+
+In the fixed effect model (`m2a.5`) we had the prior:
+
+$$\begin{array}{rcl}
+\left[
+\begin{array}{c}
+ \beta_{\texttt{(Intercept)}}\\
+ \beta_{\texttt{year1962}}\\
+\end{array}
+\right]
+\sim
+&
+\left[
+\begin{array}{cc}
+10^8&0\\
+0&10^8\\
+\end{array}
+\right]\\
+\end{array}$$
+
+Where $\beta_{\texttt{(Intercept)}}$ and $\beta_{\texttt{year1962}}$ are the fixed effects to be estimated.
+
+Remembering the identity $\sigma^{2}_{(a+b)} = \sigma^{2}_{a}+ \sigma^{2}_{b}+2\sigma_{a,b}$, this implies:
+
+$$\begin{array}{rccl}
+\left[
+\begin{array}{c}
+ \beta_{1961}\\
+ \beta_{1962}\\
+\end{array}
+\right]
+=
+&
+\left[
+\begin{array}{c}
+ \beta_{\texttt{(Intercept)}}\\
+ \beta_{\texttt{(Intercept)}}+\beta_{\texttt{year1962}}\\
+\end{array}
+\right]
+\sim
+&
+\left[
+\begin{array}{cc}
+10^8&10^8\\
+10^8&10^8+10^8\\
+\end{array}
+\right]
+&=
+\left[
+\begin{array}{cc}
+10^8&10^8\\
+10^8&20^8\\
+\end{array}
+\right]\\
+\end{array}$$
+
+where $\beta_{1961}$ and $\beta_{1962}$ are the actual year effects, rather than the global intercept and the contrast. In hindsight this is a bit odd, for one thing we expect the 1962 effect to be twice as variable as the 1961 effect. With such weak priors it makes little difference, but lets reparameterise the model anyway.
+
+Rather than having a global intercept and a year contrast, we will have separate intercepts for each year:
+
+``` {r echo=TRUE}
+X3<-model.matrix(y ~ year-1, data=Traffic)
+X3[c(1,2,184),]
+```
+
+and a prior that has a covariance between the two year effects:
+
+``` {r echo=TRUE}
+PBV.yfixed<-diag(2)*1e+8
+PBV.yfixed[1,2]<-PBV.yfixed[2,1]<-1e+8/2
+PBV.yfixed
+prior.m2a.5.1<-list(B=list(mu=rep(0,2), V=PBV.yfixed), R=list(V=1, nu=0.002))
+```
+
+This new model:
+
+``` {r echo=TRUE, cache=TRUE}
+m2a.5.1<-MCMCglmm(y ~ year-1, family="poisson", data=Traffic, prior=prior.m2a.5.1)
+```
+
+has the same form as a mixed effect model with a prior variance of $\frac{10^{8}}{2}$ for the intercept, and the variance component associated with the random year effects also fixed at $\frac{10^{8}}{2}$:
+
+``` {r echo=TRUE}
+prior.m2a.6.1<-list(B=list(mu=0, V=1e+8/2), R=list(V=1, nu=0.002), G=list(G1=list(V=1e+8/2, fix=1)))
+```
+
+This arises because the two random effects have the joint prior distribution:
+
+$$\begin{array}{rl}
+\left[
+\begin{array}{c}
+ \beta_{\texttt{year.1961}}\\
+ \beta_{\texttt{year.1962}}\\
+\end{array}
+\right]
+\sim
+&
+\left[
+\begin{array}{cc}
+\frac{10^{8}}{2}&0\\
+0&\frac{10^{8}}{2}\\
+\end{array}
+\right]\\
+\end{array}$$
+
+which when combined with the prior for the intercept, $N(0, \frac{10^{8}}{2})$, gives:
+
+$$\begin{array}{rccl}
+\left[
+\begin{array}{c}
+ \beta_{1961}\\
+ \beta_{1962}\\
+\end{array}
+\right]
+=
+&
+\left[
+\begin{array}{c}
+ \beta_{\texttt{(Intercept)}}+\beta_{\texttt{year.1961}}\\
+ \beta_{\texttt{(Intercept)}}+\beta_{\texttt{year.1962}}\\
+\end{array}
+\right]
+\sim
+&
+\left[
+\begin{array}{cc}
+\frac{10^{8}}{2}+\frac{10^{8}}{2}&\frac{10^{8}}{2}\\
+\frac{10^{8}}{2}&\frac{10^{8}}{2}+\frac{10^{8}}{2}\\
+\end{array}
+\right]
+&=
+\left[
+\begin{array}{cc}
+10^8&\frac{10^{8}}{2}\\
+\frac{10^{8}}{2}&10^8\\
+\end{array}
+\right]
+\\
+\end{array}$$
+
+which is equivalent to the `PBV.yfixed` parameteristaion of for the two years.
+
+The model:
+
+``` {r echo=TRUE, cache=TRUE}
+m2a.6.1<-MCMCglmm(y ~ 1, random=~year, family="poisson", data=Traffic, prior=prior.m2a.6.1, pr=TRUE)
+```
+
+is therefore sampling from the same posterior distribution as model `m2a.5.1`.
+
+

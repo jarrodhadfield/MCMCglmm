@@ -31,8 +31,8 @@ navbar:
 
 home:
   links:
-    - text: "MCMCglmm Course Notes (bookdown)"
-      href: course-notes/
+    - text: "MCMCglmm Course Notes"
+      href: course-notes/overview.html
 
 articles:
   - title: "Vignettes"
