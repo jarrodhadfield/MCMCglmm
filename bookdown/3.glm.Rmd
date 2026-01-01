@@ -234,14 +234,14 @@ d.ly<-dnorm(pos.ly,intercept.coef+day.coef*92, sqrt(resid.var))
 d.y<-dlnorm(exp(pos.ly),intercept.coef+day.coef*92, sqrt(resid.var))
 ```
 
-```{r label=prediction2, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, eval.after = "fig.cap", fig.cap="The estimated distribution for the number of accidents on the log scale for a $\\texttt{day}$ of type 92 in 1961 without a speed limit (in red). On the log scale the distribution is assumed to be normal around the linear predictor ($\\eta=$) with a variance of $\\sigma^{2}_e$. As a consequence the mean, median and mode of the distribution are equal to the linear predictor on the log scale."}
+```{r label=prediction2, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap="The predicted distribution for the average number of accidents on the log scale for a $\\texttt{day}$ of type 92 in 1961 without a speed limit (in red). On the log scale the distribution is assumed to be normal around the linear predictor ($\\eta=$) with a variance of $\\sigma^{2}_e$. As a consequence the mean, median and mode of the distribution are equal to the linear predictor on the log scale."}
 
-plot(d.ly~pos.ly,type="l", col="red",, xlab="log(y)", ylab="Density", ylim=c(min(d.ly), max(d.ly)*1.1))
+plot(d.ly~pos.ly,type="l", col="red",, xlab="log(E[y])", ylab="Density", ylim=c(min(d.ly), max(d.ly)*1.1))
 abline(v=intercept.coef+day.coef*92, col="black", lwd=2)
-text(intercept.coef+day.coef*92, max(d.ly)*1.05,expression(paste(E[e], paste("[log(y)]=",eta))), pos=4)
+text(intercept.coef+day.coef*92, max(d.ly)*1.05,expression(paste("log(", E[e], paste("[y])=",eta))), pos=4)
 ```
 
-To get the prediction on the data scale (i.e. in terms of the actual number of accidents) it is tempting to think we could just calculate `exp(eta92)`. However, this is the expected number of accidents had the residual been exactly zero. If we wish to average over the residuals we require:
+To get the prediction on the data scale (i.e. in terms of the actual expected number of accidents) it is tempting to think we could just calculate `exp(eta92)`. However, this is the expected number of accidents had the residual been exactly zero. If we wish to average over the residuals we require:
 
 $$
 E_e[y] = E_e[\textrm{exp}(l)] = E_e[\textrm{exp}(\eta+e)]
@@ -250,9 +250,9 @@ $$
 
 and because exponentiation is a non-linear function this average will deviate from $\textrm{exp}(\eta)$ (Figure \@ref(fig:prediction3). 
 
-```{r label=prediction3, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, eval.after = "fig.cap", fig.cap="The predicted distribution for the number of accidents on the data scale for a $\\texttt{day}$ of type 92 in 1961 without a speed limit (in red).  On the log scale the distribution is assumed to be normal around the linear predictor ($\\eta$) with a variance of $\\sigma^{2}_e$ (see \\@ref(fig:prediction2)). However when transforming to the data scale (by exponentiating) the symmetry is lost and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median."}
+```{r label=prediction3, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap="The predicted distribution for the average number of accidents on the data scale for a $\\texttt{day}$ of type 92 in 1961 without a speed limit (in red).  On the log scale the distribution is assumed to be normal around the linear predictor ($\\eta$) with a variance of $\\sigma^{2}_e$ (see \\@ref(fig:prediction2)). However when transforming to the data scale (by exponentiating) the symmetry is lost and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median."}
 
-plot(d.y~exp(pos.ly),type="l", col="red", xlab="y", ylab="Density", ylim=c(min(d.y), max(d.y)*1.1), xlim=c(min(exp(pos.ly))*0.95, max(exp(pos.ly))))
+plot(d.y~exp(pos.ly),type="l", col="red", xlab="E[y]", ylab="Density", ylim=c(min(d.y), max(d.y)*1.1), xlim=c(min(exp(pos.ly))*0.95, max(exp(pos.ly))))
 med<-exp(intercept.coef+day.coef*92)
 mu<-exp(intercept.coef+day.coef*92+0.5*resid.var)
 mod<-exp(intercept.coef+day.coef*92-resid.var)
@@ -291,6 +291,13 @@ When `interval="prediction"` `predict` is calling `simulate` with `nsim` set to 
 ypred<-simulate(m2a.5)
 ```
 
+Useful diagnostics...
+
+
+```{r marginal-qq, fig.width=7, fig.height=5, fig.cap="qq-plot of the posterior predictive distribution and the data distribution"}
+qqplot(ypred, Traffic$y)
+abline(0,1)
+```
 
 
 ## Bernoulli and Binomial GLM
