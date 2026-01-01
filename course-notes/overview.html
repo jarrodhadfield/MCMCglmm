@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2025-12-31" />
+<meta name="date" content="2026-01-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -329,11 +329,11 @@ div.csl-indent {
 <div id="header">
 <h1 class="title">MCMCglmm Course Notes</h1>
 <p class="author"><em>Jarrod Hadfield</em></p>
-<p class="date"><em>2025-12-31</em></p>
+<p class="date"><em>2026-01-01</em></p>
 </div>
 <div id="overview" class="section level1 hasAnchor" number="1">
 <h1><span class="header-section-number">1</span> Overview<a href="overview.html#overview" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>These are (incomplete) course notes about generalised linear mixed models (GLMM). Special emphasis is placed on understanding the underlying structure of a GLMM in order to show that slight modifications of this structure can produce a wide range of models. These include familiar models like regression and ANOVA, but also models with intimidating names: animal models, threshold models, meta-analysis, random regression The primary aim of the course is to show that these models are only daunting by name. The secondary aim is to show how these models can be fitted in a Bayesian framework using Markov chain Monte Carlo (MCMC) methods in the R package <span class="math inline">\(\texttt{MCMCglmm}\)</span> <span class="citation">(<a href="#ref-Hadfield.2010c">Hadfield 2010</a>)</span>. For those not comfortable using Bayesian methods, many of the models outlined in the course notes can be fitted using the packages <span class="math inline">\(\texttt{asreml-r}\)</span>, <span class="math inline">\(\texttt{lme4}\)</span> or <span class="math inline">\(\texttt{glmmTMB}\)</span> with little extra work.</p>
+<p>These are (incomplete) course notes about generalised linear mixed models (GLMM). Special emphasis is placed on understanding the underlying structure of a GLMM in order to show that slight modifications of this structure can produce a wide range of models. These include familiar models like regression and ANOVA, but also models with intimidating names: animal models, threshold models, meta-analysis, random regression The primary aim of the course is to show that these models are only daunting by name. The secondary aim is to show how these models can be fitted in a Bayesian framework using Markov chain Monte Carlo (MCMC) methods in the R package <span class="math inline">\(\texttt{MCMCglmm}\)</span> <span class="citation">(<a href="#ref-Hadfield.2010c">Hadfield 2010</a>)</span>. For those not comfortable using Bayesian methods, many of the models outlined in the course notes can be fitted using the packages <span class="math inline">\(\texttt{asreml-r}\)</span> <span class="citation">(<a href="#ref-Butler.2017">Butler et al. 2017</a>)</span>, <span class="math inline">\(\texttt{lme4}\)</span> <span class="citation">(<a href="#ref-Bates.2015">Bates et al. 2015</a>)</span> or <span class="math inline">\(\texttt{glmmTMB}\)</span> <span class="citation">(<a href="#ref-Brooks.2017">Brooks et al. 2017</a>)</span> with little extra work.</p>
 <div id="outline" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> Outline<a href="overview.html#outline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Chapter <a href="bayesian.html#bayesian">2</a> covers the very basics of Bayesian analysis and Markov chain Monte Carlo (MCMC) techniques. Chapter <a href="glm.html#glm">3</a> covers simple generalised linear mixed models (GLMM). The response is assumed to be (conditionally) normal or from a single-parameter family such as the Poisson, and the distribution of the random effects can be parameterised through scalar variances. Chapters <a href="cat-int.html#cat-int">5</a> and <a href="cont-int.html#cont-int">6</a> cover situations where the distribution of the random effects are parameterised through a (co)variance matrix either because the random terms are interacted with categorical predictors (Chapter <a href="cat-int.html#cat-int">5</a>) or continuos predictors (random-regression - Chapter <a href="cont-int.html#cont-int">6</a>). Chapter <a href="multi.html#multi">7</a> covers multi-response models in which multiple response variables, possibly from different distributions, are simultaneously analysed. This chapter also covers distributions that are multi-parameter such as multinomial and zero-inflated distributions. Chapter <a href="pedigree.html#pedigree">8</a> discusses models where a set of random-effects are correlated through a known structure such as a pedigree or phylogeny. Much of the technical details regarding the implementation are in Chapter <a href="technical-details.html#technical-details">11</a>. Chapter <a href="parameter-expansion.html#parameter-expansion">9</a> covers parameter-expansion, an algorithm designed to improve the mixing properties of MCMC but which also induces new, and useful, prior distributions. Chapter <a href="path.html#path">10</a> covers path analysis and related antedependence models. Much of the material is currently taken from the old CourseNotes (<em>c</em>2009) but the hope is that over time these new notes will be better structured and include better/some documentation for more recent functionality.</p>
@@ -342,6 +342,15 @@ div.csl-indent {
 </div>
 <h3> References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Bates.2015" class="csl-entry">
+Bates, Douglas, Martin Mächler, Ben Bolker, and Steve Walker. 2015. <span>“Fitting Linear Mixed-Effects Models Using Lme4.”</span> <em>Journal of Statistical Software</em> 67: 1–48.
+</div>
+<div id="ref-Brooks.2017" class="csl-entry">
+Brooks, Mollie E, Kasper Kristensen, Koen J Van Benthem, Arni Magnusson, Casper W Berg, Anders Nielsen, Hans J Skaug, Martin Mächler, and Benjamin M Bolker. 2017. <span>“<span class="nocase">glmmTMB</span> Balances Speed and Flexibility Among Packages for Zero-Inflated Generalized Linear Mixed Modeling.”</span>
+</div>
+<div id="ref-Butler.2017" class="csl-entry">
+Butler, DG, BR Cullis, AR Gilmour, BJ Gogel, and Ret al Thompson. 2017. <span>“<span>ASReml-R</span> Reference Manual Version 4.”</span> <em><span>VSN</span> International Ltd, Hemel Hempstead, HP1 1ES, UK</em>.
+</div>
 <div id="ref-Hadfield.2010c" class="csl-entry">
 Hadfield, J. D. 2010. <span>“<span>MCMC</span> Methods for Multi–Response Generalised Linear Mixed Models: The <span>MCMCglmm R</span> Package.”</span> <em>Journal of Statistical Software</em> 33 (2): 1–22.
 </div>

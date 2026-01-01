@@ -26,6 +26,7 @@ fig:mcmc-traffic
 fig:vcv-traffic
 fig:prediction2
 fig:prediction3
+fig:marginal-qq
 fig:Bin1
 fig:Bin2
 fig:IC
