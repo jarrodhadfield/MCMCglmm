@@ -378,7 +378,7 @@ mean(plogis(mbinom.1$Liab[,25]))
 
 When calculating the predicted probability in the absence of the residuals in Equation \@ref(eq:plogis) I was careful to say that the prediction assumed an absence of overdispersion. However, when overdispersion is present we need to average over the distribution of the residuals in order to get an average. As we saw in the log-linear Poisson model, because the inverse-link function (`plogis`) is non-linear the average of $E_e[\texttt{plogis}(\eta+e)]$ is different from $\texttt{plogis}(E_e[\eta+e])=\texttt{plogis}(\eta)$. Unlike the Poisson log-linear model this expectation cannot be calculated analytically and the predict function by default numerically evaluates the integral:
 
-$$\int_l \texttt{plogis}(l)f_N(l, \eta, \sigma^2_e)dl$$
+$$\int_l \texttt{plogis}(l)f_N(l | \eta, \sigma^2_e)dl$$
 
 where $f_N$ is the probability density function of the normal. For each of the 44 observations this is done 1,000 times (the number of saved posterior samples) to get the posterior mean prediction and can be very slow (it is actually faster to fit the model). The number reported by `predict` is $np$ rather than $p$ and so to get the predicted probability for a photo of someone who has grumpy and had been publishing for 16 years we can get the prediction for the 3rd observation and divide by the number of trials (122):
 
@@ -420,11 +420,11 @@ mbinom.3<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=
 and if we compare the MCMC traces for the coefficients we can see that we are sampling different posterior distributions (Figure \@ref(fig:bernoulli)).
 
 
-```{r bernoulli, fig.width=7, fig.height=8, fig.cap="MCMC trace for coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance"}
+```{r bernoulli, fig.width=7, fig.height=8, fig.cap="MCMC trace for coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance."}
 plot(mcmc.list(mbinom.2$Sol, mbinom.3$Sol), density=FALSE)
 ```
 
-Should we worry? Not really. We just have to be careful about how we express the results. Stating that the `typehappy` coefficient is `r round(mean(mbinom.2$Sol[,"typehappy"]),3)` (the posterior mean estimate from `mbinom.2`) is meaningless without putting it in the context of the assumed residual variance (one). The two models give almost identical predictions (Figure \@ref(bernoulli-pred)).
+Should we worry? Not really. The two models give almost identical predictions (Figure \@ref(fig:bernoulli-pred)). We just have to be careful about how we express the results. Stating that the `typehappy` coefficient is `r round(mean(mbinom.2$Sol[,"typehappy"]),3)` (the posterior mean estimate from `mbinom.2`) is meaningless without putting it in the context of the assumed residual variance (one). The two models give almost identical predictions (Figure \@ref(fig:bernoulli-pred)).
 
 ```{r bernoulli-pred, fig.width=7, fig.height=5, fig.cap="Predicted probabilities from a Bernoulli GLM from two models. The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance."}
 plot(predict(mbinom.2), predict(mbinom.3))
