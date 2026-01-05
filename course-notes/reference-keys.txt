@@ -27,6 +27,11 @@ fig:vcv-traffic
 fig:prediction2
 fig:prediction3
 fig:marginal-qq
+eq:plogis
+fig:DandC
+fig:bernoulli
+fig:bernoulli-pred
+fig:bernoulli-rescale
 fig:Bin1
 fig:Bin2
 fig:IC
@@ -113,7 +118,11 @@ multiplicative-overdispersion
 addod-sec
 prediction-in-glm
 posterior-predictive-distribution
-bernoulli-and-binomial-glm
+binomial-and-bernoulli-glm
+overdispersion-1
+prediction
+bernoulli-glm
+complete-separation
 ranef
 pred-sec
 PriorContr-sec

@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-01" />
+<meta name="date" content="2026-01-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -221,20 +221,24 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
-<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a>
+<li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
 <ul>
-<li class="chapter" data-level="3.2.1" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.2.1</b> Poisson GLM</a></li>
+<li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.4.1</b> Multiplicative Overdispersion</a></li>
+<li class="chapter" data-level="3.4.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.4.2</b> Additive Overdispersion</a></li>
 </ul></li>
-<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.3</b> Overdispersion</a>
+<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#prediction-in-glm"><i class="fa fa-check"></i><b>3.5</b> Prediction in GLM</a>
 <ul>
-<li class="chapter" data-level="3.3.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.3.1</b> Multiplicative Overdispersion</a></li>
-<li class="chapter" data-level="3.3.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.3.2</b> Additive Overdispersion</a></li>
+<li class="chapter" data-level="3.5.1" data-path="glm.html"><a href="glm.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>3.5.1</b> Posterior Predictive Distribution</a></li>
 </ul></li>
-<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#prediction-in-glm"><i class="fa fa-check"></i><b>3.4</b> Prediction in GLM</a>
+<li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#binomial-and-bernoulli-glm"><i class="fa fa-check"></i><b>3.6</b> Binomial and Bernoulli GLM</a>
 <ul>
-<li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#posterior-predictive-distribution"><i class="fa fa-check"></i><b>3.4.1</b> Posterior Predictive Distribution</a></li>
+<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#overdispersion-1"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
+<li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#prediction"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
+<li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-glm"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
 </ul></li>
-<li class="chapter" data-level="3.5" data-path="glm.html"><a href="glm.html#bernoulli-and-binomial-glm"><i class="fa fa-check"></i><b>3.5</b> Bernoulli and Binomial GLM</a></li>
+<li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#complete-separation"><i class="fa fa-check"></i><b>3.7</b> Complete Separation</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="ranef.html"><a href="ranef.html"><i class="fa fa-check"></i><b>4</b> Random effects</a>
 <ul>
@@ -341,36 +345,36 @@ div.csl-indent {
 \label{rs-Eq}   \tag{10.1}\]</span></p>
 <p>where <span class="math inline">\(\boldsymbol{\Lambda} = \left[\lambda_{1}\ \lambda_{2} \dots \lambda_{L-1}\ \lambda_{L} \right]^{\top}\)</span>, and <span class="math inline">\(\boldsymbol{\Lambda}={\bf I}_{N}-\boldsymbol{\Psi}\left(\boldsymbol{\Lambda}\otimes {\bf I}_{N}\right)\)</span></p>
 <p>Each <span class="math inline">\(\boldsymbol{\Psi}^{(l)}\)</span> can be formed using the function <code>sir</code> which takes two formulae. <span class="math inline">\(\boldsymbol{\Psi} = {\bf X}_{1}{\bf X}_{2}^{\top}\)</span> where <span class="math inline">\({\bf X}_{1}\)</span> and <span class="math inline">\({\bf X}_{2}\)</span> are the model matrices defined by the formulae (with intercept removed). <span class="math inline">\({\bf X}_{1}\)</span> and <span class="math inline">\({\bf X}_{2}^{\top}\)</span> have to be conformable, and although this could be achieved in many ways, one way to ensure this is to have categorical predictors in each which have common factor levels. To give a concrete example, lets take a sample of individuals measured a variable number of times for 2 traits:</p>
-<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="path.html#cb291-1" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="dv">100</span>, <span class="at">replace =</span> T)</span>
-<span id="cb291-2"><a href="path.html#cb291-2" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb291-3"><a href="path.html#cb291-3" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
-<span id="cb291-4"><a href="path.html#cb291-4" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(y1, y2)</span>
-<span id="cb291-5"><a href="path.html#cb291-5" tabindex="-1"></a>trait <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">2</span>, <span class="dv">100</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="path.html#cb313-1" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>, <span class="dv">100</span>, <span class="at">replace =</span> T)</span>
+<span id="cb313-2"><a href="path.html#cb313-2" tabindex="-1"></a>y1 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb313-3"><a href="path.html#cb313-3" tabindex="-1"></a>y2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">100</span>)</span>
+<span id="cb313-4"><a href="path.html#cb313-4" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">c</span>(y1, y2)</span>
+<span id="cb313-5"><a href="path.html#cb313-5" tabindex="-1"></a>trait <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">2</span>, <span class="dv">100</span>)</span></code></pre></div>
 <p>Lets then imagine that each of these individuals interacts with another randomly chosen individual - indexed in the vector <code>id1</code></p>
-<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="path.html#cb292-1" tabindex="-1"></a>id1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(id, <span class="dv">100</span>, <span class="at">replace =</span> T)</span>
-<span id="cb292-2"><a href="path.html#cb292-2" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">c</span>(id, id))</span>
-<span id="cb292-3"><a href="path.html#cb292-3" tabindex="-1"></a>id1 <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">c</span>(id1, id1), <span class="at">levels =</span> <span class="fu">levels</span>(id))</span></code></pre></div>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="path.html#cb314-1" tabindex="-1"></a>id1 <span class="ot">&lt;-</span> <span class="fu">sample</span>(id, <span class="dv">100</span>, <span class="at">replace =</span> T)</span>
+<span id="cb314-2"><a href="path.html#cb314-2" tabindex="-1"></a>id <span class="ot">&lt;-</span> <span class="fu">as.factor</span>(<span class="fu">c</span>(id, id))</span>
+<span id="cb314-3"><a href="path.html#cb314-3" tabindex="-1"></a>id1 <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">c</span>(id1, id1), <span class="at">levels =</span> <span class="fu">levels</span>(id))</span></code></pre></div>
 <p>we will adopt a recursive model where by the phenotypes of individuals in the <code>id1</code> vector affect those in the <code>id</code> vector:</p>
-<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="path.html#cb293-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id)</span></code></pre></div>
-<p>we can see that the first record for individual <code>id[1]=</code>100 is directly affected by individual <code>id1[1]=</code>100’s traits:</p>
-<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="path.html#cb294-1" tabindex="-1"></a>Psi[<span class="dv">1</span>, <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
-<pre><code>##   1  43  53 101 143 153 
-##   1   1   1   1   1   1</code></pre>
-<p>i.e individual <code>id1[1]=</code>100 has 6 records.</p>
+<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="path.html#cb315-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id)</span></code></pre></div>
+<p>we can see that the first record for individual <code>id[1]=</code>87 is directly affected by individual <code>id1[1]=</code>13’s traits:</p>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="path.html#cb316-1" tabindex="-1"></a>Psi[<span class="dv">1</span>, <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
+<pre><code>##  78 178 
+##   1   1</code></pre>
+<p>i.e individual <code>id1[1]=</code>13 has 2 records.</p>
 <p>We can build on this simple model by stating that only trait 2 affects trait 1:</p>
-<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="path.html#cb296-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">1</span>), <span class="sc">~</span>id<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">2</span>))</span>
-<span id="cb296-2"><a href="path.html#cb296-2" tabindex="-1"></a>Psi[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">101</span>), <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
-<pre><code>##     1 43 53 101 143 153
-## 1   0  0  0   1   1   1
-## 101 0  0  0   0   0   0</code></pre>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="path.html#cb318-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">1</span>), <span class="sc">~</span>id<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">2</span>))</span>
+<span id="cb318-2"><a href="path.html#cb318-2" tabindex="-1"></a>Psi[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">101</span>), <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
+<pre><code>##     78 178
+## 1    0   1
+## 101  0   0</code></pre>
 <p>or that trait 2 affect both trait 2 and trait 1:</p>
-<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="path.html#cb298-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">2</span>))</span>
-<span id="cb298-2"><a href="path.html#cb298-2" tabindex="-1"></a>Psi[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">101</span>), <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
-<pre><code>##     1 43 53 101 143 153
-## 1   0  0  0   1   1   1
-## 101 0  0  0   1   1   1</code></pre>
-<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="path.html#cb300-1" tabindex="-1"></a>my.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y1 =</span> y1, <span class="at">y2 =</span> y2, <span class="at">id =</span> id[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>], <span class="at">id1 =</span> id1[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>], <span class="at">x =</span> <span class="fu">rnorm</span>(<span class="dv">100</span>))</span>
-<span id="cb300-2"><a href="path.html#cb300-2" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y1 <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id) <span class="sc">+</span> y2, <span class="at">data =</span> my.data)</span></code></pre></div>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="path.html#cb320-1" tabindex="-1"></a>Psi <span class="ot">&lt;-</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id<span class="sc">:</span><span class="fu">at.level</span>(trait, <span class="dv">2</span>))</span>
+<span id="cb320-2"><a href="path.html#cb320-2" tabindex="-1"></a>Psi[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">101</span>), <span class="fu">which</span>(id <span class="sc">==</span> id1[<span class="dv">1</span>])]</span></code></pre></div>
+<pre><code>##     78 178
+## 1    0   1
+## 101  0   1</code></pre>
+<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="path.html#cb322-1" tabindex="-1"></a>my.data <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">y1 =</span> y1, <span class="at">y2 =</span> y2, <span class="at">id =</span> id[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>], <span class="at">id1 =</span> id1[<span class="dv">1</span><span class="sc">:</span><span class="dv">100</span>], <span class="at">x =</span> <span class="fu">rnorm</span>(<span class="dv">100</span>))</span>
+<span id="cb322-2"><a href="path.html#cb322-2" tabindex="-1"></a>m1 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y1 <span class="sc">~</span> x <span class="sc">+</span> <span class="fu">sir</span>(<span class="sc">~</span>id1, <span class="sc">~</span>id) <span class="sc">+</span> y2, <span class="at">data =</span> my.data)</span></code></pre></div>
 <p>One problem is that <span class="math inline">\({\bf e}^{\star}\)</span> the residual vector that appears in the likelihood for the latent variable does not have a simple (block) diagonal structure when (as in the case above) the elements of the response vector that are regressed on each other are not grouped in the R-structure:</p>
 <p><span class="math display">\[{\bf e}^{\star} \sim N\left({\boldsymbol{\mathbf{0}}}, \boldsymbol{\Lambda}^{-1}{\bf R}\boldsymbol{\Lambda}^{-\top}\right)\]</span></p>
 <p>Consequently, analyses that involve latent variables (i.e. non-Gaussian data, or analyses that have incomplete records for determining the R-structure) are currently not implemented in MCMCglmm.</p>

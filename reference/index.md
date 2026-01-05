@@ -13,6 +13,8 @@
   fitness with respect to linear predictors.
 - [`Dtensor()`](https://jarrodhadfield.github.io/MCMCglmm/reference/Dtensor.md)
   : Tensor of (mixed) partial derivatives
+- [`Grumpy`](https://jarrodhadfield.github.io/MCMCglmm/reference/Grumpy.md)
+  : Grumpy Scores of Academics
 - [`KPPM()`](https://jarrodhadfield.github.io/MCMCglmm/reference/KPPM.md)
   : Kronecker Product Permutation Matrix
 - [`MCMCglmm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/MCMCglmm.md)
