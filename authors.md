@@ -2,7 +2,7 @@
 
 ## Authors
 
-- **Jarrod Hadfield**. Maintainer.
+- **Jarrod Hadfield**. Author, maintainer.
 
 ## Citation
 

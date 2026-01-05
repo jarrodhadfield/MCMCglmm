@@ -32,6 +32,7 @@ fig:DandC
 fig:bernoulli
 fig:bernoulli-pred
 fig:bernoulli-rescale
+fig:bernoulli-glm
 fig:Bin1
 fig:Bin2
 fig:IC
@@ -122,6 +123,7 @@ binomial-and-bernoulli-glm
 overdispersion-1
 prediction
 bernoulli-glm
+probit-link
 complete-separation
 ranef
 pred-sec
