@@ -424,14 +424,13 @@ and if we compare the MCMC traces for the coefficients we can see that we are sa
 plot(mcmc.list(mbinom.2$Sol, mbinom.3$Sol), density=FALSE)
 ```
 
-Should we worry? Not really. The two models give almost identical predictions (Figure \@ref(fig:bernoulli-pred)). We just have to be careful about how we express the results. Stating that the `typehappy` coefficient is `r round(mean(mbinom.2$Sol[,"typehappy"]),3)` (the posterior mean estimate from `mbinom.2`) is meaningless without putting it in the context of the assumed residual variance (one). The two models give almost identical predictions (Figure \@ref(fig:bernoulli-pred)).
+Should we worry? Not really. The two models give almost identical predictions (Figure \@ref(fig:bernoulli-pred)).
 
 ```{r bernoulli-pred, fig.width=7, fig.height=5, fig.cap="Predicted probabilities from a Bernoulli GLM from two models. The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance."}
 plot(predict(mbinom.2), predict(mbinom.3))
 abline(0,1)
 ```
-
-Although the @Diggle.2004 approximation is less accurate than that in @McCulloch.2004 we can use it rescale the estimates by the estimated residual variance ($\sigma^{2}_{\texttt{units}}$) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance ($\sigma^{2}_{e}$) is equal to some other value. For location effects the posterior distribution needs to be multiplied by $\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}$ where $c=16\sqrt{3}/15\pi$. We can obtain estimates under the assumption that $\sigma^{2}_{e}=0$ and we see the posterior distributions of the coefficients are very similar from the two models \@ref(fig:bernoulli-rescale). 
+We just have to be careful about how we express the results. Stating that the `typehappy` coefficient is `r round(mean(mbinom.2$Sol[,"typehappy"]),3)` (the posterior mean estimate from `mbinom.2`) is meaningless without putting it in the context of the assumed residual variance (one). Although the @Diggle.2004 approximation is less accurate than that in @McCulloch.2001 we can use it rescale the estimates by the assumed residual variance (we'll call it $\sigma^{2}_{\texttt{units}}$) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance (we'll call it $\sigma^{2}_{e}$) is equal to some other value. For location effects the posterior distribution needs to be multiplied by $\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}$ where $c=16\sqrt{3}/15\pi$. If obtain estimates under the assumption that $\sigma^{2}_{e}=0$ and we see the posterior distributions of the coefficients are very similar from the two models (Figure \@ref(fig:bernoulli-rescale)).
 
 ```{r bernoulli-rescale, echo=TRUE, include=TRUE, fig.cap="MCMC trace for rescaled coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. However, the coefficients have been rescaled using the @Diggle.2004 approximation such that they represent what the coefficients would be if the residual variance was zero. The data provide no information about the residual variance.", fig.width=7, fig.height=8}
 c2 <- ((16*sqrt(3))/(15*pi))^2
@@ -439,9 +438,9 @@ rescale.2 <- mbinom.2$Sol*sqrt(1/(1+c2*1))
 rescale.3 <- mbinom.3$Sol*sqrt(1/(1+c2*3))
 plot(mcmc.list(as.mcmc(rescale.2), as.mcmc(rescale.3)), density=FALSE)
 ```
+In addition, the posterior distributions are centred on the ML estimates obtained by `glm` which implicitly assumes $\sigma^2_e=0$ (Figure \@ref(fig:bernoulli-glm)).
 
-
-```{r bernoulli-glm, echo=TRUE, include=TRUE, fig.cap="", fig.width=7, fig.height=8}
+```{r bernoulli-glm, echo=TRUE, include=TRUE, fig.width=7, fig.height=8, fig.cap="Posterior distributions for rescaled coefficients of a Bernoulli GLM (`mbinom.3`). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from `glm` that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means."}
 par(mfrow=c(3,1))
 m.binom.2.glm<-glm(majority~type+ypub, family="binomial", data=Grumpy)
 mbinom.3.plot<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3, nitt=13000*10)
@@ -449,23 +448,34 @@ rescale.3.plot<-mbinom.3.plot$Sol*sqrt(1/(1+c2*3))
 
 hist(rescale.3.plot[,1], breaks=50, main=NULL, xlab="(Intercept)")
 abline(v=coef(m.binom.2.glm)[1], col="red", lwd=2)
+abline(v=mean(mbinom.3.plot$Sol[,1]), col="blue", lwd=2)
 hist(rescale.3.plot[,2], breaks=50, main=NULL, xlab="typehappy")
 abline(v=coef(m.binom.2.glm)[2], col="red", lwd=2)
+abline(v=mean(mbinom.3.plot$Sol[,2]), col="blue", lwd=2)
 hist(rescale.3.plot[,3], breaks=50, main=NULL, xlab="ypub")
 abline(v=coef(m.binom.2.glm)[3], col="red", lwd=2)
+abline(v=mean(mbinom.3.plot$Sol[,3]), col="blue", lwd=2)
 ```
 
+### Probit link
+
+The inverse-logit function is the cumulative distribution function for the logistic distribution. It makes sense that a cumulative distribution function for a continuous distribution that can take any value would serve as a good inverse link function for a probability: it takes any value between plus and minus infinity and squeezes it to be between zero and one. While the logit is the most common link function for binomial data, the probit link and complementary log-log link are also widely used. They are the cumulative distribution functions for the unit normal and extreme value distributions respectively. In Figure \@ref(fig:link) we can see how the probability changes as a function of the input ($l$) for the different links. 
 
 
+```{r link, echo=TRUE, include=TRUE, fig.width=7, fig.height=5, fig.cap=""}
 
+pos.l<-seq(-3, 3, length=100)
+
+plot(plogis(pos.l)~pos.l, type="l")
+lines(pnorm(pos.l)~pos.l, col="red")
+lines(1-exp(-exp(pos.l))~pos.l, col="blue")
+```
 
 ## Complete Separation
 
 
 
 
-
-It makes sense that a cumulative distribution function for a continuous distribution that can take any value would serve as a good inverse link function: 
 
 
 
