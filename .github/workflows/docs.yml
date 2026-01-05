@@ -46,7 +46,7 @@ jobs:
             gdata
             kableExtra
             rgl
-            local::./MCMCglmm
+            local::.
           needs: website
 
       - name: Cache bookdown and knitr cache
