@@ -5,10 +5,6 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 documentclass: book
 description: "Extended documentation and course notes for the MCMCglmm R package."
-Imports:
-    MCMCglmm     
-Remotes:
-    github::jarrodhadfield/MCMCglmm   
 output:
   bookdown::gitbook
 bibliography: CourseNotes.bib
