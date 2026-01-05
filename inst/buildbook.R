@@ -21,9 +21,3 @@ dir.create("docs/course-notes", recursive = TRUE, showWarnings = FALSE)
 fs::dir_copy("bookdown/_book", "docs/course-notes", overwrite = TRUE)
 # moves book to doc
 }
-
-
-
-
-
-
