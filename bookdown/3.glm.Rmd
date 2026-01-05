@@ -88,7 +88,7 @@ $$E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}})$$
 
 where $\textrm{exp}$ is the inverse of the log link function- exponentiating. The second difference is that many distributions are single parameter distributions for which a variance does not need to be estimated because it can be inferred from the mean. For example, we could assume that the number of accidents are Poisson distributed, in which case we also make the assumption that the variance is equal to the expected value. Technically, GLM's only apply to a restricted set of distributions (those in the exponential family) but $\texttt{MCMCglmm}$ can accommodate a range of GLM-like models for other distributions (see Table \@ref(tab:dist)). 
 
-### Poisson GLM
+## Poisson GLM
 
 For now we will concentrate on a Poisson GLM with log link (the default link function for the Poisson distribution):
 
@@ -280,49 +280,200 @@ predict(m2a.5, interval="confidence")[92,]
 
 ### Posterior Predictive Distribution
 
-
-```{r }
-predict(m2a.5, interval="prediction")[92,]
-```
-
-When `interval="prediction"` `predict` is calling `simulate` with `nsim` set to the number of posterior samples saved: 
+In some cases we would like to visualise or summarise aspects of the predictive distribution other than the mean. The complete predictive distribution is hard to work with, but the `simulate` function allows you to draw samples from the predictive distribution. The default is to generate a sample using a random draw from the posterior distribution, resulting in a draw from what is known as the posterior predictive distribution:  
 
 ```{r }
 ypred<-simulate(m2a.5)
 ```
 
-Useful diagnostics...
-
+We can use these simulated values to characterise any aspect of the predictive distribution we want. For example, we can obtain quantiles and compare them to the quantiles of the actual data to see how well the model captures aspects of the observed marginal distribution: 
 
 ```{r marginal-qq, fig.width=7, fig.height=5, fig.cap="qq-plot of the posterior predictive distribution and the data distribution"}
 qqplot(ypred, Traffic$y)
 abline(0,1)
 ```
 
+Not too bad, although the predictive distribution perhaps has greater support for extreme values than are observed. If we merely wish to know the interval in which some specified percentage of the data are predicted to lie, we can also use the predict function but with `interval="prediction"`. By default the 95\% (highest posterior density) interval is calculated using as many simulated samples as there are saved posterior samples. For the 92nd observation the prediction interval is
 
-## Bernoulli and Binomial GLM
-
-Response variables consisting of levels of some categorical factor are best analysed using `family="categorical"` if the levels have no natural ordering, or `family="ordinal"` if the levels do have a natural ordering, such as never $<$ sometimes $<$ always. The simplest variable of this type is binary data where the response variable is either a zero or a one, and can be analysed as `family="categorical"` (logit link) or `family="ordinal"` (probit link). A binary distribution is a special case of the binomial distribution where the number of trials (`size`) is equal to 1. One way of interpreting a binomial response is to expand it into a series of binary variables and treat the zero's and ones as repeated measures. For example, we could generate two binomial variates each with 5 trials:
-
-``` {r echo=TRUE}
-success<-rbinom(2, size=5, prob=c(0.4, 0.6))
-failure<-5-success
-binom<-rbind(success, failure)
-colnames(binom)<-c("u.1", "u.2")
-binom
+```{r }
+predict(m2a.5, interval="prediction")[92,]
 ```
 
-and then expand them into success or failure:
+Note that the reported mean (`fit`) differs from that returned by `interval="confidence"` due to Monte Carol error only.
 
-``` {r echo=TRUE}
-binary<-matrix(rep(c(1,0,1,0), binom), 1,10)
-colnames(binary)<-rep(c("u.1", "u.2"), each=5)
-binary
+## Binomial and Bernoulli GLM
+
+The general concepts introduced for the Poisson GLM extend naturally to Binomial data, albeit with a different link function. However, it is worth spending a little time exploring a Binomial GLM as I think overdispersion, and how we deal with it, is easier to understand with binomial data. However, we'll also see how the 'residuals' defined earlier for capturing overdispersion complicate the analysis of Bernoulli data and result in MCMcglmm using a non-standard parameterisation.
+
+The Binomial distribution has two parameters - the number of trials $n$ and the probability of success, $p$. In a Binomial GLM the number of trials is assumed known leaving only $p$ to be estimated from the number of trials that are 'successes' or 'failures'. When `family="binomial"` is specified (or equivalently `family="multinomial2"`) MCMCglmm uses the standard link function for the Binomial - the logit link - and the logit probability of success is modelled as
+
+$$log\left(\frac{p}{1-p}\right)  = l = \eta+e$$
+
+The logit transform takes a probability and turns it into a log odds ratio. If we want to get back to the probability we use the 
+inverse of the logit transform:
+
+$$p = \frac{exp(l)}{1+exp(l)}$$
+
+The logit link is actually the quantile function for the logistic distribution and so is available as the function `qlogis`. The inverse of a quantile function is a cumulative distribution function and so the inverse-logit transform  is `plogis`. 
+
+
+To introduce the Binomial GLM we will analyse some data I collected on how grumpy my colleagues look. I took two photos ($\texttt{photo}$) of 22 people ($\texttt{person}$) working in the Institute of Evolution and Ecology, Edinburgh. In one photo the person was happy and in the other they were grumpy ($\texttt{type}$). 122 respondents gave a score between 1 and 10 indicating how grumpy they thought each person looked in each photo (with 10 being the most grumpy). 
+
+```{r }
+data(Grumpy)
+Grumpy[c(1:3, 44),]
+```     
+
+$\texttt{y}$ gives the average score given by the 122 respondents.  The number of respondents giving a photo a score of five or less ($\texttt{l5}$) or more than five ($\texttt{g5}$) is also recorded in addition to the person's age ($\texttt{age}$) and a proxy for how long they had been academia - the number of years since they published their first academic paper ($\texttt{ypub}$). Here, we will model the probability of getting a grumpy score greater than five as a function of whether the person was happy or grumpy and how long they had been in academia. As with `glm`, successes should be in the first column of the response, and failures in the second:
+
+
+``` {r mbinom}
+mbinom.1<-MCMCglmm(cbind(g5, l5)~type+ypub, data=Grumpy, family="multinomial2", pl=TRUE)
+summary(mbinom.1)
 ```
 
-We can then interpret the `units` variance in a binomial GLMM as accounting for any similarity between repeated measurements made within the same observational unit. If the binary variables within the binomial observation are correlated, this means that the underlying probability for each binomial response differs to a greater degree than can be predicted from the linear predictor. In this example the two probabilities were 0.4 and 0.6 which means that the repeated binary measures would be correlated if we only fitted the intercept (0.5).
+The model coefficients are most easily interpreted after exponentiating as they then give the proportional change in the odds ratio.  The odds of having a score greater than five is `r paste0("exp(", round(mean(mbinom.1$Sol[,"typehappy"]),3), ")=", round(exp(mean(mbinom.1$Sol[,"typehappy"])),3))` times lower when happy, as expected. The odds increases by a factor `r paste0("exp(", round(mean(mbinom.1$Sol[,"ypub"]),3), ")=", round(exp(mean(mbinom.1$Sol[,"ypub"])),3))` for each year in academia. When the coefficient is small in magnitude like this, you can get a rough estimate by looking directly at the coefficient: `r round(mean(mbinom.1$Sol[,"ypub"]),3)` roughly translates into a `r round(mean(mbinom.1$Sol[,"ypub"])*100,1)`% increase and `r -round(mean(mbinom.1$Sol[,"ypub"]),3)` would translate into a `r round(mean(mbinom.1$Sol[,"ypub"])*100,1)`% decrease[^3.3]. The $\texttt{units}$ (residual) variance is also large with credible intervals that are far from zero. 
 
-If the original data are already binary then there is no information to measure how repeatable trials are within a binomial unit because we only have a single trial per observation. This does not necessarily mean that heterogeneity in the underlying probabilities does not exist, only that we can't estimate it. Imagine we are in a room of 100 people and we are told that 5% of the people will be dead the following day. If the people in the room were a random sample from the UK population I would worry - *I* probably have a 5% chance of dying. If on the other hand the room was a hospital ward and I was a visitor, I may not worry too much for *my* safety. The point is that in the absence of information, the binary data look the same if each person has a 5% chance of dying or if 5 people have a 100% chance of dying. Most programs set the residual variance to zero and assume the former, but it is important to understand that this is a convenient but arbitrary choice. Given this, it is desirable that any conclusions drawn from the model do not depend on this arbitrary choice. Worryingly, both the location effects (fixed and random) and variance components are completely dependent on the magnitude of the residual variance.
+### Overdispersion
+
+As with overdispersion in the Poisson model, this excess variation can be attributed to predictors that are not included in the model but cause the probability of success to vary over observations (photos in this case). For example, the 3rd and 25th observation have the same values for every predictor
+
+```{r }
+Grumpy[c(3,25),]
+```
+
+and so in the absence of overdispersion these parameters would result in a predicted probability of success of
+
+```{r echo=FALSE}
+p<-plogis(predict(mbinom.1, posterior="mean", type="terms")[3])
+```
+
+$$p = \textrm{plogis}(\beta_{\texttt{(Intercept)}}+\beta_{\texttt{typehappy}}\times0+\beta_{\texttt{ypub}}\times16)=`r round(p,3)`
+\label{plogis-eq}   (\#eq:plogis)$$
+
+Given there were 122 respondents (trials) we can calculate the two values between which the number of successes is expected to fall 95 % of the time.
+
+
+```{r }
+qbinom(c(0.025, 0.975), size=122, prob=p)
+```
+
+While photo $\texttt{4527}$ is well within the range with `r Grumpy[25,"g5"]` successes, the number of respondents giving photo $\texttt{4521}$ is substantially higher (`r Grumpy[3,"g5"]`) - it's an outlier. In Figure \@ref(fig:DandC) the two photos are shown and it is clear why their underlying probabilities may deviate from that predicted. Most obviously the two photos are of different people and people vary in how grumpy they look. Since we have two photos per person we could (and should) estimate $\texttt{person}$ effects, however this is best done by treating these effects as random, which we will cover later, in Chapter \@ref(ranef). Even if $\texttt{person}$ effects were fitted there's also likely to be a whole host of observation-level (photo-specific) effects that are not captured in the model such as whether the person had their eyes closed or was wearing a dreary grey fleece.
+
+```{r DandC, echo=FALSE,out.width="40%", fig.show='hold',fig.align='center', out.extra = 'style="display:inline-block; vertical-align:middle; margin-right:2%;"', fig.cap="Photo 4521 (left) and photo 4527 (right). For the predictors fitted in model `mbinom.1`, these photos have the same values ($\\texttt{type}=\\texttt{grumpy}$ and $\\texttt{ypub}=16$ years)"}
+knitr::include_graphics(c("Figures/IMG_4521.JPG","Figures/IMG_4527.JPG"))
+```
+
+If we include the 'residuals' when calculating the predicted probability for these two photos we can see that indeed their probabilities are quite different:
+
+```{r }
+mean(plogis(mbinom.1$Liab[,3]))
+# predicted probability for photo 4521
+mean(plogis(mbinom.1$Liab[,25]))
+# predicted probability for photo 4527
+``` 
+
+### Prediction
+
+
+When calculating the predicted probability in the absence of the residuals in Equation \@ref(eq:plogis) I was careful to say that the prediction assumed an absence of overdispersion. However, when overdispersion is present we need to average over the distribution of the residuals in order to get an average. As we saw in the log-linear Poisson model, because the inverse-link function (`plogis`) is non-linear the average of $E_e[\texttt{plogis}(\eta+e)]$ is different from $\texttt{plogis}(E_e[\eta+e])=\texttt{plogis}(\eta)$. Unlike the Poisson log-linear model this expectation cannot be calculated analytically and the predict function by default numerically evaluates the integral:
+
+$$\int_l \texttt{plogis}(l)f_N(l, \eta, \sigma^2_e)dl$$
+
+where $f_N$ is the probability density function of the normal. For each of the 44 observations this is done 1,000 times (the number of saved posterior samples) to get the posterior mean prediction and can be very slow (it is actually faster to fit the model). The number reported by `predict` is $np$ rather than $p$ and so to get the predicted probability for a photo of someone who has grumpy and had been publishing for 16 years we can get the prediction for the 3rd observation and divide by the number of trials (122):
+
+
+```{r }
+predict(mbinom.1)[3]/122
+```
+
+A little different from $\texttt{plogis}(\eta)=$ `r round(p,3)`. For the binomial with logit link, analytical approximations have been developed in @Diggle.2004 and @McCulloch.2001 which are considerably faster and reasonably accurate:
+
+```{r }
+predict(mbinom.1, approx="diggle")[3]/122
+predict(mbinom.1, approx="mcculloch")[3]/122
+```
+
+
+### Bernoulli GLM
+
+Bernoulli data are a special case of the Binomial in which the number of trials is equal to one and so either a success or a failure is observed. To explore a Brenoulli model we can take our *average* Grumpy scores and simply dichotomise them into whether the average score was five or less or more than five:
+
+```{r }
+Grumpy$majority<-Grumpy$y>5
+``` 
+
+If we fit a binomial model to these data in `MCMCglmm` it has exactly the same form as before (although a single column of outcomes can be passed). But importantly, for Bernoulli data there is no information to estimate the residual variance. This does not necessarily mean that variation in the probability of success across observations is absent, only that we can't estimate it. For example, imagine we took 100 people who had been publishing for 16 years and took a photograph of them when they were grumpy. Let's say the probability that the mean score for such photos exceeded 5 was 0.5. If the probability for all photos was exactly 0.5 (i.e. the probability of success did not vary over observations) then we expect 50 success and 50 failures across our observations. However, imagine the case where the probability of success was 100% for 50 photos and 0% for 50 photos (i.e. the probability of success varies considerably over observations). We would also expect 50 success and 50 failures, and so the distribution of successes with and without variation in the underlying probability would be identical. In the absence of information most software sets the 'residual' variance to zero (i.e. the probability of success dose not vary over observations), but it is important to understand that this is a convenient but arbitrary choice. Given this, it is desirable that any conclusions drawn from the model do not depend on this arbitrary choice. Worryingly, both the location effects (fixed and random) and variance components are completely dependent on the magnitude of the residual variance. `MCMCglmm` allows the user to fix the residual variance at a value of their choice, but unfortunately a value of zero results in a chain that will not mix and so I usually fix the residual variance to one[^3.4]:
+
+```{r mbinom.2}
+prior.mbinom.2=list(R=list(V=1, fix=1))
+mbinom.2<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.2)
+```
+
+However, it would have been equally valid to fixed the residual variance at three:
+
+```{r mbinom.3}
+prior.mbinom.3=list(R=list(V=3, fix=1))
+mbinom.3<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3)
+```
+
+and if we compare the MCMC traces for the coefficients we can see that we are sampling different posterior distributions (Figure \@ref(fig:bernoulli)).
+
+
+```{r bernoulli, fig.width=7, fig.height=8, fig.cap="MCMC trace for coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance"}
+plot(mcmc.list(mbinom.2$Sol, mbinom.3$Sol), density=FALSE)
+```
+
+Should we worry? Not really. We just have to be careful about how we express the results. Stating that the `typehappy` coefficient is `r round(mean(mbinom.2$Sol[,"typehappy"]),3)` (the posterior mean estimate from `mbinom.2`) is meaningless without putting it in the context of the assumed residual variance (one). The two models give almost identical predictions (Figure \@ref(bernoulli-pred)).
+
+```{r bernoulli-pred, fig.width=7, fig.height=5, fig.cap="Predicted probabilities from a Bernoulli GLM from two models. The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance."}
+plot(predict(mbinom.2), predict(mbinom.3))
+abline(0,1)
+```
+
+Although the @Diggle.2004 approximation is less accurate than that in @McCulloch.2004 we can use it rescale the estimates by the estimated residual variance ($\sigma^{2}_{\texttt{units}}$) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance ($\sigma^{2}_{e}$) is equal to some other value. For location effects the posterior distribution needs to be multiplied by $\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}$ where $c=16\sqrt{3}/15\pi$. We can obtain estimates under the assumption that $\sigma^{2}_{e}=0$ and we see the posterior distributions of the coefficients are very similar from the two models \@ref(fig:bernoulli-rescale). 
+
+```{r bernoulli-rescale, echo=TRUE, include=TRUE, fig.cap="MCMC trace for rescaled coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. However, the coefficients have been rescaled using the @Diggle.2004 approximation such that they represent what the coefficients would be if the residual variance was zero. The data provide no information about the residual variance.", fig.width=7, fig.height=8}
+c2 <- ((16*sqrt(3))/(15*pi))^2
+rescale.2 <- mbinom.2$Sol*sqrt(1/(1+c2*1))
+rescale.3 <- mbinom.3$Sol*sqrt(1/(1+c2*3))
+plot(mcmc.list(as.mcmc(rescale.2), as.mcmc(rescale.3)), density=FALSE)
+```
+
+
+```{r bernoulli-glm, echo=TRUE, include=TRUE, fig.cap="", fig.width=7, fig.height=8}
+par(mfrow=c(3,1))
+m.binom.2.glm<-glm(majority~type+ypub, family="binomial", data=Grumpy)
+mbinom.3.plot<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3, nitt=13000*10)
+rescale.3.plot<-mbinom.3.plot$Sol*sqrt(1/(1+c2*3))
+
+hist(rescale.3.plot[,1], breaks=50, main=NULL, xlab="(Intercept)")
+abline(v=coef(m.binom.2.glm)[1], col="red", lwd=2)
+hist(rescale.3.plot[,2], breaks=50, main=NULL, xlab="typehappy")
+abline(v=coef(m.binom.2.glm)[2], col="red", lwd=2)
+hist(rescale.3.plot[,3], breaks=50, main=NULL, xlab="ypub")
+abline(v=coef(m.binom.2.glm)[3], col="red", lwd=2)
+```
+
+
+
+
+
+## Complete Separation
+
+
+
+
+
+It makes sense that a cumulative distribution function for a continuous distribution that can take any value would serve as a good inverse link function: 
+
+
+
+
+
+
+
+
 
 To demonstrate we will use some data from a pilot study on the Indian meal moth (*Plodia interpunctella*) and its granulosis virus (PiGV) collected by Hannah Tidbury & Mike Boots at the University of Sheffield.
 
@@ -377,8 +528,7 @@ IC.2<-m2b.2$VCV[,1]/(rowSums(m2b.2$VCV)+pi^2/3)
 plot(mcmc.list(IC.1,IC.2))
 ```
 
-Using the approximation due to @Diggle.2004 described earlier we can also rescale the estimates by the estimated residual variance ($\sigma^{2}_{\texttt{units}}$) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance ($\sigma^{2}_{e}$) is equal to some other value. For location effects the posterior distribution needs to be multiplied by $\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}$ and for the variance components the posterior distribution needs to be multiplied by $\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}$ where $c$ is some constant that depends on the link function. For the probit $c=1$ and for the logit $c=16\sqrt{3}/15\pi$. We can obtain estimates
-under the assumption that $\sigma^{2}_{e}=0$:
+Using the approximation due to @Diggle.2004 described earlier we can also rescale the estimates by the estimated residual variance ($\sigma^{2}_{\texttt{units}}$) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance ($\sigma^{2}_{e}$) is equal to some other value. For location effects the posterior distribution needs to be multiplied by $\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}$ and for the variance components the posterior distribution needs to be multiplied by $\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}$ where $c$ is some constant that depends on the link function. For the probit $c=1$ and for the logit $c=16\sqrt{3}/15\pi$. We can obtain estimates under the assumption that $\sigma^{2}_{e}=0$:
 
 ``` {r label=ICI, echo=TRUE, include=TRUE, fig.cap="MCMC summary plots for the expected proportion of caterpillars pupating from  a binary GLMM where the residual variance was fixed at one (black) and two (red).", fig.width=7, fig.height=5}
 c2 <- ((16 * sqrt(3))/(15 * pi))^2
@@ -466,4 +616,6 @@ predict(m2c.4, interval = "confidence")[26, ]
 
 [^3.2]: Since the residuals are assumed normal the exponentiated residuals are log-normal, and so this model is often referred to as the Poisson log-normal [@Hinde.1982]. The Negative Binomial distribution is a commonly used alternative for overdispersed count data. The Negative Binomial is conceptually identical to the Poisson log-normal except the exponentiated residuals are assumed to be gamma distributed. The log-normal and gamma distributions are so similar that for most data sets it would be hard to distinguish between the Negative Binomial and the Poisson log-normal.  
 
+[^3.3]: When $x$ is small $\textrm{exp}(x)\approx 1+x$.
 
+[^3.4]: For more complicated models a (co)variance matrix may be estimated for a particular random component rather than just a single variance as here. In such cases, `V` is a matrix.  The value at which (part of) the (co)variance matrix is fixed at is determined by `V`. Any elements of the covariance matrix in rows and/or columns equal to or greater than `fix` are fixed. In the case of a single variance `fix=1` simply fixes the variance (element 1,1 of the (co)variance matrix) at whatever is specified in `V` (one in this example).

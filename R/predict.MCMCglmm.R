@@ -245,10 +245,22 @@
           for(i in 1:length(mu)){
             res[i]<-cubature::adaptIntegrate(int.foo, qnorm(0.0001, mu,sqrt(v)), qnorm(0.9999, mu,sqrt(v)), mu=mu, v=v, i=i)[[1]]
           }
-          return(res)
         }else{
-          stop(paste(approx, "approximation not implemented for this response"))
+          if(length(mu)==1){
+            if(approx=="diggle"){
+              res<-plogis(mu/sqrt(1+v*(16*sqrt(3)/(15*pi))^2))
+            }
+            if(approx=="mcculloch"){
+              res<-plogis(mu-0.5*v*tanh(mu*(1+2*exp(-0.5*v))/6))
+            }
+            if(approx=="taylor2"){
+              res<-plogis(mu)-0.5*v*exp(mu)*(exp(mu)-1)/(1+exp(mu))^3
+            }
+          }else{
+            stop(paste(approx, "approximation not implemented for this response"))
+          }  
         }
+        return(res)
       } 
 
       if(!is.null(object$Lambda)){
