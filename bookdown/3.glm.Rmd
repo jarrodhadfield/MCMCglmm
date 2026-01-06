@@ -430,6 +430,7 @@ Should we worry? Not really. The two models give almost identical predictions (F
 plot(predict(mbinom.2), predict(mbinom.3))
 abline(0,1)
 ```
+
 We just have to be careful about how we express the results. Stating that the `typehappy` coefficient is `r round(mean(mbinom.2$Sol[,"typehappy"]),3)` (the posterior mean estimate from `mbinom.2`) is meaningless without putting it in the context of the assumed residual variance (one). Although the @Diggle.2004 approximation is less accurate than that in @McCulloch.2001 we can use it rescale the estimates by the assumed residual variance (we'll call it $\sigma^{2}_{\texttt{units}}$) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance (we'll call it $\sigma^{2}_{e}$) is equal to some other value. For location effects the posterior distribution needs to be multiplied by $\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}$ where $c=16\sqrt{3}/15\pi$. If obtain estimates under the assumption that $\sigma^{2}_{e}=0$ and we see the posterior distributions of the coefficients are very similar from the two models (Figure \@ref(fig:bernoulli-rescale)).
 
 ```{r bernoulli-rescale, echo=TRUE, include=TRUE, fig.cap="MCMC trace for rescaled coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. However, the coefficients have been rescaled using the @Diggle.2004 approximation such that they represent what the coefficients would be if the residual variance was zero. The data provide no information about the residual variance.", fig.width=7, fig.height=8}
@@ -438,9 +439,10 @@ rescale.2 <- mbinom.2$Sol*sqrt(1/(1+c2*1))
 rescale.3 <- mbinom.3$Sol*sqrt(1/(1+c2*3))
 plot(mcmc.list(as.mcmc(rescale.2), as.mcmc(rescale.3)), density=FALSE)
 ```
+
 In addition, the posterior distributions are centred on the ML estimates obtained by `glm` which implicitly assumes $\sigma^2_e=0$ (Figure \@ref(fig:bernoulli-glm)).
 
-```{r bernoulli-glm, echo=TRUE, include=TRUE, fig.width=7, fig.height=8, fig.cap="Posterior distributions for rescaled coefficients of a Bernoulli GLM (`mbinom.3`). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from `glm` that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means."}
+```{r bernoulli-glm, echo=FALSE, include=TRUE, fig.width=7, fig.height=8, fig.cap="Posterior distributions for rescaled coefficients of a Bernoulli GLM (`mbinom.3`). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from `glm` that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means."}
 par(mfrow=c(3,1))
 m.binom.2.glm<-glm(majority~type+ypub, family="binomial", data=Grumpy)
 mbinom.3.plot<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3, nitt=13000*10)
@@ -459,16 +461,141 @@ abline(v=mean(mbinom.3.plot$Sol[,3]), col="blue", lwd=2)
 
 ### Probit link
 
-The inverse-logit function is the cumulative distribution function for the logistic distribution. It makes sense that a cumulative distribution function for a continuous distribution that can take any value would serve as a good inverse link function for a probability: it takes any value between plus and minus infinity and squeezes it to be between zero and one. While the logit is the most common link function for binomial data, the probit link and complementary log-log link are also widely used. They are the cumulative distribution functions for the unit normal and extreme value distributions respectively. In Figure \@ref(fig:link) we can see how the probability changes as a function of the input ($l$) for the different links. 
+The inverse-logit function is the cumulative distribution function for the logistic distribution. It makes sense that a cumulative distribution function for a continuous distribution that can take any value would serve as a good inverse link function for a probability: it takes any value between plus and minus infinity and squeezes it to be between zero and one. While the logit is the most common link function for binomial data, the probit link and complementary log-log (cloglog) link are also widely used. They are the cumulative distribution functions for the unit normal and standard Gumbel distributions respectively. In Figure \@ref(fig:link) we can see how the probability changes as a function of a covariate ($x$) for the different links (with intercepts and slopes chosen so that the functions are matched at the origin). 
 
 
-```{r link, echo=TRUE, include=TRUE, fig.width=7, fig.height=5, fig.cap=""}
-
+```{r link, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap="Predicted probabilities as a function of covariate $x$ using the inverse logit (black), inverse probit (red) and inverse complementary log-log link functions. For each link the intercept and slope were chosen such that when $x= 0$ the function equals 0.5 and has a derivative of one."}
 pos.l<-seq(-3, 3, length=100)
+plot(plogis(pos.l/dlogis(0))~pos.l, type="l", xlab="x", ylab="Probability", lwd=1.5)
+lines(pnorm(pos.l/dnorm(0))~pos.l, col="red", lwd=1.5)
+lines(1-exp(-exp(pos.l/exp(-1)+log(-log(1/2))))~pos.l, col="blue", lwd=1.5)
+legend(-2.5,0.9, legend=c("logit", "probit", "cloglog"), fill=c("black", "red", "blue"))
+```
 
-plot(plogis(pos.l)~pos.l, type="l")
-lines(pnorm(pos.l)~pos.l, col="red")
-lines(1-exp(-exp(pos.l))~pos.l, col="blue")
+We can see that the link functions generate rather similar predicted probabilities, particularly the logit and probit links. For Bernoulli data, another way to conceptualise these link functions is in terms of threshold models. Imagine the case where we have managed to set the non-identifiable residual variance to zero and all residuals $e$ are zero and can be omitted. The probability of success is then given by the inverse-link of $\eta$. For probit link this would be the probability of getting a value less than $\eta$ from the unit normal (the grey area in the left panel of Figure \@ref(fig:thresh)). Equivalently, it is the probability of getting a value greater than 0 from a normal with a mean equal to $\eta$ and a standard deviation of one (the grey area in the right panel of Figure \@ref(fig:thresh)). 
+
+```{r thresh, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap="Probability density function for $\\epsilon$ (left) or  $\\eta+\\epsilon$ (right) where $\\epsilon$ is normal with mean zero and a standard deviation of one. Applying `pnorm` to $\\eta$ gives the shaded area on the left and is the probability of success using probit link. The shaded area on the right gives the same probability and is the chance of getting a value greater than zero from a normal with mean $\\eta$ and a standard deviation of one."}
+
+par(mfrow=c(1,2))
+eta<-1
+pos.l<-seq(-4, 4, length=1000)
+
+plot(dnorm(pos.l)~pos.l, lwd=1.5, type="l", ylim=c(0.0165, 0.45), ylab="Probability", xlab=expression(epsilon))
+
+xshade <- pos.l[pos.l >= -4 & pos.l <= eta]   
+yshade <- dnorm(xshade)                  
+
+polygon( c(min(xshade), xshade,max(xshade)),   # x: down left, along curve, down right
+         c(0,yshade,0),             # y: x-axis up, along curve, back to axis
+         col = "grey")
+
+abline(v=eta, lwd=1.5)
+abline(v=0, lwd=1.5, lty=2)
+
+text(eta+0.5, 0.42, expression(eta), cex=1.2)
+
+plot(dnorm(pos.l, eta)~pos.l, lwd=1.5, type="l", ylim=c(0.0165, 0.45), ylab="Probability", xlab=expression(eta+epsilon))
+
+xshade <- pos.l[pos.l >= 0 & pos.l <= 4]   
+yshade <- dnorm(xshade, eta)                  
+
+polygon( c(min(xshade), xshade,max(xshade)),   # x: down left, along curve, down right
+         c(0,yshade,0),             # y: x-axis up, along curve, back to axis
+         col = "grey")
+
+abline(v=eta, lwd=1.5)
+abline(v=0, lwd=1.5, lty=2)
+
+text(eta+0.5, 0.42, expression(eta), cex=1.2)
+```
+
+
+If we think explicitly about the normal deviates that underpin these probability calculations (we'll call them $\epsilon$), then in the left panel $\epsilon$ falls below the 'threshold' $\eta$ with the required probability or in the right panel, $\eta+\epsilon$ falls above the 'threshold' zero with the required probability. Since $\epsilon$ is unit-normal we can equate  $\eta$ with $e$ and $\eta+\epsilon$ with $l$ and apply the inverse link function $\mathbf{1}_{\{l>0\}}$. This function outputs 1 (a success) if $l>0$ and a failure otherwise (as in the right panel of Figure \@ref(fig:thresh)). This is implemented as `family=threshold` in MCMCglmm, and if the residual variance (i.e. the variance of $\epsilon$ or $e$) is fixed at one corresponds exactly to standard probit regression[^3.5]. 
+
+
+```{r mbinom.4}
+prior.mbinom.4=list(R=list(V=1, fix=1))
+mbinom.4<-MCMCglmm(majority~type+ypub, family="threshold", data=Grumpy, prior=prior.mbinom.4)
+```
+
+
+Unfortunately the same trick can't be used for other link functions because the $\epsilon$'s' cannot be equated with $e$'s because they come from different distributions. In some ways the probit link is a natural link function for models that contain random effects, which are also usually assumed to be normal. However, the downside is that the coefficients in a probit model do not have a direct interpretation like they do in a logit model. Nevertheless, both models give very similar predictions and are unlikely to be statistically distinguishable in the vast majority of cases (Figure \@ref(fig:thresh-logit)).
+
+
+```{r thresh-logit, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap="Predicted probabilities from a Bernoulli GLM from two models with the same model structure. However, `mbinom.2` uses a logit link with a residual variance set to one and in `mbinom.4` uses a standard probit link."}
+ plot(predict(mbinom.4), predict(mbinom.2))
+ abline(0,1)
+```
+
+
+## Ordinal Data  
+
+Thinking about Bernoulli GLM's in terms of thresholds provides a natural way of thinking about how we could model categorical data that falls into a natural ordering. For example, rather than dichotomising our outcome into those that had a mean score greater than, or less than, five, lets place the observations into three categories: (1, 4], (4, 6], (6, 10]. 
+
+```{r}
+Grumpy$categories<-as.numeric(cut(Grumpy$y, c(1,4,6,10)))
+```
+
+Rather than just having a single threshold at zero, we can imagine adding another threshold that chops the distribution of $\eta+e=l$ into three regions, and hence probabilities. To make things simple we will just fit an intercept only model (so all observations have the same value of $\eta$) as this will be easier to visualise:
+
+```{r mordinal}
+prior.mordinal=list(R=list(V=1, fix=1))
+mordinal<-MCMCglmm(categories~1, data=Grumpy, family="threshold", prior=prior.mordinal)
+```
+
+The output of `mordinal` gives the intercept ($\eta$ in this case) as before but also the additional threshold (cutpoint - stored as `CP` in the model object):
+
+```{r }
+summary(mordinal)
+```
+
+As we did in the right panel of Figure \@ref(fig:thresh)) we can draw this model with the estimated threshold ($\gamma$) included (Figure \@ref(fig:ordinal)). 
+
+
+```{r ordinal, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap=paste0("Probability density function for  $l=\\eta+e$ where $e$ is normal with mean zero and a standard deviation of one. $\\eta=$ ", round(colMeans(mordinal$Sol), 3), " and was obtained from the model `mordinal`. The distribution is 'cut' into three regions by the fixed threshold at zero and the estimated threshold ($\\gamma$) at ", round(colMeans(mordinal$CP), 3), ". The shaded areas correspond to the probabilities of observing the three (ordered) outcomes.")}
+
+
+eta<-colMeans(mordinal$Sol)
+thresh<-colMeans(mordinal$CP)
+
+pos.l<-seq(-4, 4, length=1000)
+
+plot(dnorm(pos.l, eta)~pos.l, lwd=1.5, type="l", ylim=c(0.0165, 0.45), ylab="Probability", xlab=expression(eta+epsilon))
+
+xshade <- pos.l[pos.l >= 0 & pos.l <= thresh]   
+yshade <- dnorm(xshade, eta)                  
+
+polygon( c(min(xshade), xshade,max(xshade)),   # x: down left, along curve, down right
+         c(0,yshade,0),             # y: x-axis up, along curve, back to axis
+         col = "grey")
+
+
+xshade <- pos.l[pos.l >= thresh & pos.l <= 4]   
+yshade <- dnorm(xshade, eta)                  
+
+polygon( c(min(xshade), xshade,max(xshade)),   # x: down left, along curve, down right
+         c(0,yshade,0),             # y: x-axis up, along curve, back to axis
+         col = "skyblue")
+
+abline(v=eta, lwd=1.5)
+abline(v=0, lwd=1.5, lty=2)
+abline(v=thresh, lwd=1.5, lty=2)
+text(eta+0.25, 0.42, expression(eta), cex=1.2)
+text(thresh+0.25, 0.42, expression(gamma), cex=1.2)
+```
+
+The shaded areas give the probability for each category and the posterior mean probabilities can be easily calculated:
+
+```{r }
+mean(pnorm(0, mordinal$Sol))
+mean(pnorm(mordinal$CP, mordinal$Sol)-pnorm(0, mordinal$Sol))
+mean(1-pnorm(mordinal$CP, mordinal$Sol))
+```
+
+These correspond closely to the observed frequencies in the data:
+
+```{r }
+table(Grumpy$categories)/44
 ```
 
 ## Complete Separation
@@ -629,3 +756,5 @@ predict(m2c.4, interval = "confidence")[26, ]
 [^3.3]: When $x$ is small $\textrm{exp}(x)\approx 1+x$.
 
 [^3.4]: For more complicated models a (co)variance matrix may be estimated for a particular random component rather than just a single variance as here. In such cases, `V` is a matrix.  The value at which (part of) the (co)variance matrix is fixed at is determined by `V`. Any elements of the covariance matrix in rows and/or columns equal to or greater than `fix` are fixed. In the case of a single variance `fix=1` simply fixes the variance (element 1,1 of the (co)variance matrix) at whatever is specified in `V` (one in this example).
+
+[^3.5]: `family="ordinal"` is also available but it is only retained to ensure back compatibility: it is equivalent to `family="threshold"` with the variance fixed at the specified value plus one. When `family="ordinal"` was implemented I had misunderstood the paper by @Albert.1993 and didn't realise the latent variable could be Gibbs sampled with a threshold link ($\mathbf{1}_{\{l>0\}}$).
