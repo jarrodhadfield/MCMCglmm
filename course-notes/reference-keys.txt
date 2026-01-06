@@ -33,6 +33,10 @@ fig:bernoulli
 fig:bernoulli-pred
 fig:bernoulli-rescale
 fig:bernoulli-glm
+fig:link
+fig:thresh
+fig:thresh-logit
+fig:ordinal
 fig:Bin1
 fig:Bin2
 fig:IC
@@ -124,6 +128,7 @@ overdispersion-1
 prediction
 bernoulli-glm
 probit-link
+ordinal-data
 complete-separation
 ranef
 pred-sec
