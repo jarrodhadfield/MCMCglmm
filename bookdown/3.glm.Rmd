@@ -395,26 +395,26 @@ predict(mbinom.1, approx="mcculloch")[3]/122
 ```
 
 
-### Bernoulli GLM
+### Bernoulli GLM {#bernoulli-sec}
 
 Bernoulli data are a special case of the Binomial in which the number of trials is equal to one and so either a success or a failure is observed. To explore a Brenoulli model we can take our *average* Grumpy scores and simply dichotomise them into whether the average score was five or less or more than five:
 
 ```{r }
-Grumpy$majority<-Grumpy$y>5
+Grumpy$mean5<-Grumpy$y>5
 ``` 
 
 If we fit a binomial model to these data in `MCMCglmm` it has exactly the same form as before (although a single column of outcomes can be passed). But importantly, for Bernoulli data there is no information to estimate the residual variance. This does not necessarily mean that variation in the probability of success across observations is absent, only that we can't estimate it. For example, imagine we took 100 people who had been publishing for 16 years and took a photograph of them when they were grumpy. Let's say the probability that the mean score for such photos exceeded 5 was 0.5. If the probability for all photos was exactly 0.5 (i.e. the probability of success did not vary over observations) then we expect 50 success and 50 failures across our observations. However, imagine the case where the probability of success was 100% for 50 photos and 0% for 50 photos (i.e. the probability of success varies considerably over observations). We would also expect 50 success and 50 failures, and so the distribution of successes with and without variation in the underlying probability would be identical. In the absence of information most software sets the 'residual' variance to zero (i.e. the probability of success dose not vary over observations), but it is important to understand that this is a convenient but arbitrary choice. Given this, it is desirable that any conclusions drawn from the model do not depend on this arbitrary choice. Worryingly, both the location effects (fixed and random) and variance components are completely dependent on the magnitude of the residual variance. `MCMCglmm` allows the user to fix the residual variance at a value of their choice, but unfortunately a value of zero results in a chain that will not mix and so I usually fix the residual variance to one[^3.4]:
 
 ```{r mbinom.2}
 prior.mbinom.2=list(R=list(V=1, fix=1))
-mbinom.2<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.2)
+mbinom.2<-MCMCglmm(mean5~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.2)
 ```
 
 However, it would have been equally valid to fixed the residual variance at three:
 
 ```{r mbinom.3}
 prior.mbinom.3=list(R=list(V=3, fix=1))
-mbinom.3<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3)
+mbinom.3<-MCMCglmm(mean5~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3)
 ```
 
 and if we compare the MCMC traces for the coefficients we can see that we are sampling different posterior distributions (Figure \@ref(fig:bernoulli)).
@@ -444,8 +444,8 @@ In addition, the posterior distributions are centred on the ML estimates obtaine
 
 ```{r bernoulli-glm, echo=FALSE, include=TRUE, fig.width=7, fig.height=8, fig.cap="Posterior distributions for rescaled coefficients of a Bernoulli GLM (`mbinom.3`). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from `glm` that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means."}
 par(mfrow=c(3,1))
-m.binom.2.glm<-glm(majority~type+ypub, family="binomial", data=Grumpy)
-mbinom.3.plot<-MCMCglmm(majority~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3, nitt=13000*10)
+m.binom.2.glm<-glm(mean5~type+ypub, family="binomial", data=Grumpy)
+mbinom.3.plot<-MCMCglmm(mean5~type+ypub, family="categorical", data=Grumpy, prior=prior.mbinom.3, nitt=13000*10)
 rescale.3.plot<-mbinom.3.plot$Sol*sqrt(1/(1+c2*3))
 
 hist(rescale.3.plot[,1], breaks=50, main=NULL, xlab="(Intercept)")
@@ -515,11 +515,11 @@ If we think explicitly about the normal deviates that underpin these probability
 
 ```{r mbinom.4}
 prior.mbinom.4=list(R=list(V=1, fix=1))
-mbinom.4<-MCMCglmm(majority~type+ypub, family="threshold", data=Grumpy, prior=prior.mbinom.4)
+mbinom.4<-MCMCglmm(mean5~type+ypub, family="threshold", data=Grumpy, prior=prior.mbinom.4)
 ```
 
 
-Unfortunately the same trick can't be used for other link functions because the $\epsilon$'s' cannot be equated with $e$'s because they come from different distributions. In some ways the probit link is a natural link function for models that contain random effects, which are also usually assumed to be normal. However, the downside is that the coefficients in a probit model do not have a direct interpretation like they do in a logit model. Nevertheless, both models give very similar predictions and are unlikely to be statistically distinguishable in the vast majority of cases (Figure \@ref(fig:thresh-logit)).
+Unfortunately the same trick can't be used for other link functions because the $\epsilon$'s' cannot be equated with $e$'s because they come from different distributions. In some ways the probit link is a natural link function for models that contain random effects, which are also usually assumed to be normal. However, the downside is that the coefficients in a probit model do not have a direct interpretation like they do in a logit model. Nevertheless, both models give very similar predictions and are unlikely to be statistically distinguishable in the vast mean5 of cases (Figure \@ref(fig:thresh-logit)).
 
 
 ```{r thresh-logit, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap="Predicted probabilities from a Bernoulli GLM from two models with the same model structure. However, `mbinom.2` uses a logit link with a residual variance set to one and in `mbinom.4` uses a standard probit link."}
@@ -599,45 +599,81 @@ table(Grumpy$categories)/44
 
 ## Non-zero Binomial Data
 
-The final distribution that we will cover in this Chapter is something I have called the Non-zero Binomial which can be fitted using `family="nzbinom"`. It was implemented for a specific application in which $n$ ($\texttt{Number}$) bees were pooled and assayed for the presence of the Acute bee paralysis virus [@Pascall.2018]. If the assay came back positive then at least one bee in the pool was infected and the outcome was recorded as a 'success' - otherwise non of the bees in the pool were infected and we have a 'failure'. 
+The final distribution that we will cover in this Chapter is something I have called the Non-zero Binomial which can be fitted using `family="nzbinom"`. It was implemented for a specific application in which $n$ ($\texttt{number}$) bumblebees were pooled and assayed for the presence of the Acute Bee Paralysis virus [@Pascall.2018]. If the assay came back positive then at least one bee in the pool was infected and the outcome was recorded as a 'success' - otherwise non of the bees in the pool were infected and we have a 'failure' ($\texttt{infected}$). 
 
 ```{r }
-ABPvirus<-read.csv("~/Desktop/ABPvirus.csv")
+data(ABPvirus)
 ABPvirus[c(1:2,98:99),]
 ```
 
-The observations are essentially censored, and while we cover censoring more generally in Chapter \@ref(measurement), the Non-zero Binomial is perhaps best covered here. The probability of a success for the Non-zero Binomial is  $1-(1-p)^n$ where $p$ is the probability that an *individual* bee was infected. If the number of bees in a pool varies over observations, `family="nzbinom"` is a useful tool and the linear model is defined for the logit transform of $p$, as in the standard binomial.  In the standard Bernoulli model the residual variance could not be estimated and was fixed at some value. Perhaps surprisingly, there is some information to estimate the residual variance (overdispersion) in a Non-zero Binomial model as long as $n$ varies over pools. However, the amount of information is so small that it is probably safest to fix the residual variance at some non-zero value (I use one as a convention) rather than risk sampling very high values of the residual variance that can cause numerical issues. We will ignore which species of bee the observations were made on, as these are best treated as random effects \@ref(ranef)
+The observations are essentially censored, and while we cover censoring more generally in Chapter \@ref(measurement), the Non-zero Binomial is perhaps best covered here. The probability of a success for the Non-zero Binomial (which we will designate as $P$) is  $1-(1-p)^n$ where $p$ is the probability that an *individual* bumblebee was infected. If the number of bumblebees in a pool varies over observations, `family="nzbinom"` is a useful tool and the linear model is defined for the logit transform of $p$, as in the standard binomial.  In the standard Bernoulli model the residual variance could not be estimated and was fixed at some value. Perhaps surprisingly, there is some information to estimate the residual variance (overdispersion) in a Non-zero Binomial model as long as $n$ varies over pools. However, the amount of information is so small that it is probably safest to fix the residual variance at some non-zero value (I use one as a convention) rather than risk sampling very high values of the residual variance that can cause numerical issues. We will ignore which species of bumblebee the observations were made on, as these are best treated as random effects \@ref(ranef)
 
 ```{r mnzbinom}
-mnzbinom<-MCMCglmm(cbind(Infected, Number)~1, family="nzbinom", data=ABPvirus, prior=list(R=list(V=1, fix=1)))
+mnzbinom<-MCMCglmm(cbind(infected, number)~1, family="nzbinom", data=ABPvirus, prior=list(R=list(V=1, fix=1)))
 summary(mnzbinom)
 ```
 
 ```{r echo=FALSE}
-newdata<-data.frame(Infected=c(0, rep(1, 10)), Number=1:11)
+newdata<-data.frame(infected=c(0, rep(1, 10)), number=1:11)
 pnzbinom<-predict(mnzbinom, newdata=newdata, interval="confidence")
 ```
 
-The median probability of an individual bee being infected is low: $\texttt{plogis}(eta)=$ `r round(mean(plogis(mnzbinom$Sol)))` such that the expected probability of at least one infection is small for the lowest pool-size ($\texttt{Number}=$ `r min(ABPvirus$Number)`) and is still well below one in the largest pool size ($\texttt{Number}$ `r max(ABPvirus$Number)`) - see Figure \@ref(fig:nzbinom). 
+The median probability of an individual bumblebee being infected is low: $\texttt{plogis}(eta)=$ `r round(mean(plogis(mnzbinom$Sol)))` such that the expected probability of at least one infection is small for the lowest pool-size ($\texttt{number}=$ `r min(ABPvirus$number)`) and is still well below one in the largest pool size ($\texttt{number}=$ `r max(ABPvirus$number)`) - see Figure \@ref(fig:nzbinom). 
 
-```{r nzbinom, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap=paste0("Probability of seeing at least one infection in pools of varying size when the probability of an individual being infected is constant. The solid black line is the posterior mean and the shaded area is the 95\\% credible interval. The estimated median probability of an individual bee being infected is", round(mean(plogis(mnzbinom$Sol)), 3),  "and the mean probability is", round(pnzbinom[1], 3), ".")}
+```{r nzbinom, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap=paste0("Probability of seeing at least one infection ($P$) in pools of varying size when the probability of an individual bumblebee being infected ($p$) is constant. The solid black line is the posterior mean and the shaded area is the 95\\% credible interval. The estimated median probability of an individual bumblebee being infected is", round(mean(plogis(mnzbinom$Sol)), 3),  "and the mean probability is", round(pnzbinom[1], 3), ".")}
 
 plot(pnzbinom[,"fit"]~I(1:11), type="l", lwd=1.5, ylab="Probability of Success (at least one infection)", xlab="Pool size (Number)", xlim=c(2+0.33,11-0.33), ylim=c(0, 0.5))
 
 polygon(x = c(1:11, 11:1), y = c(pnzbinom[,"lwr"],rev(pnzbinom[,"upr"])), col =  adjustcolor("dodgerblue", alpha.f = 0.10), lty=2)
 ```
 
-
-
-
-
-
-In an earlier email I said that overdispersion (between pool variation in the probability) could not be estimated as in standard binary models. If the pool size is constant this is true: the model is no different from a binary model. However, if pool size varies then there is some (little) information. To see where the information comes from first imagine that you have information on a large number of pooled samples all with a pool-size of 1. You know E[p] with certainty, where p is the probability of success for a sample within a pool. You can then move to pool sizes of 2. If there is no variation in p, P (the probability of one success in the pool) is 1-(1-p)^2. However, because this is a non-linear function of p it is not true that E[1-(1-p)^2]=1-(1-E[p])^2 when there is variation in p. Jensen's inequality tells us that E[f(x)]<f(E[x]) when f(x) is convex, which 1-(1-p)^2 is: we expect the the number of successful pools of size 2 to be less than that predicted from estimating p from pools of size 1 if between-pool variation in p exists. This also implies that estimates from large pools underestimate p when there is between pool variation in p.
-
-
-
+If the data set was larger and/or variation in the pool size was greater, there may be sufficient information to justify trying to estimate the residual variance, rather than fixing it to one.  To see where the information comes from first imagine that you have information on samples all with a pool-size of 1. You could jut average you the resulting zeros and ones to get an estimate of $P_1$ where the subscript designates the size of the pool for which the probability of at least one infection is calculated. Even if the probability of infection varied over individuals, the average probability $E[p]$ is equal to $P_1$, as we saw when we determined why variation in the probability cannot be estimated with standard Bernoulli data. Let's then imagine we move to pool sizes of 2. $P_2$ (the probability of at least one success in a pool of 2) is then $E[1-(1-p)^2]$. If there is no variation in $p$ then $P_2=1-(1-P_1)^2$ since $p$ is a constant and equal to $P_1$. However, when there is variation in $p$ the non-linearity in the function (i.e. $(1-p)^2$) means that $E[1-(1-p)^2]$ will deviate from $1-(1-E[p])^2=1-(1-P_1)^2$: we expect the the number of successful pools of size 2 to be less than that predicted from estimating $p$ from pools of size 1[^3.6]. Consequently, the rate at which $P$ asymptotes with increasing pool-size (as seen in Figure \@ref(fig:nzbinom)) provides information about how much variation in $p$ exists.
 
 ## Complete Separation
+
+One potential issue that can occur in GLM is something known as complete separation or the extreme category problem. While it can occur for any distribution which is discrete, it is most commonly seen when the response is Bernoulli. It occurs when the predictors perfectly predict the outcome. For example,  in Section \@ref(bernoulli-sec) we generated Bernoulli data for each photo by assessing whether the mean score was greater than or less than 5. Photo $\texttt{type}$ is a very good predictor of the outcome, but not perfect:
+
+
+```{r }
+table(mean5=Grumpy$mean5, type=Grumpy$type)
+```
+
+However, if we removed the three observations for which the mean grumpy score was greater than five despite the person being happy, then $\texttt{type}$ perfectly predicts the outcome. If we fit a probit model to these data, but using `glm` a very strange thing happens:
+
+```{r }
+data.cs<-subset(Grumpy, !(mean5==TRUE & type=="happy"))
+
+mcs<-glm(mean5~type, family=binomial(link=probit), data=data.cs)
+summary(mcs)
+```
+
+The coefficient for $\texttt{type}$ now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. If we assess significance using Fisher's exact test we get:
+
+```{r }
+fisher.test(table(data.cs$mean5, data.cs$type))
+```
+
+we get a very significant result, as expected. 
+
+The model fitted using $\texttt{MCMCglmm}$ with default priors also behaves oddly (see Figure \@ref(fig:separation1)):
+
+``` {r label=separation1, include=TRUE, fig.cap="MCMC summary plots for the intercept and $\\texttt{type}$ effect in a binary GLM (`mcs.2`) with probit link. For $\\texttt{happy}$ photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with large variance was used for the model coefficients."}
+prior.mcs.2=list(R=list(V=1, fix=1))
+mcs.2<-MCMCglmm(mean5~type, family="threshold", data=data.cs, prior=prior.mcs.2)
+plot(mcs.2$Sol)
+```
+
+This strange behaviour occurs because the ML estimate for the probability of success is zero for $\texttt{happy}$ photos. On the probit scale this translates into $-\infty$ and so the ML estimate of the difference between $\texttt{happy}$ and $\texttt{grumpy}$ photos (the $\texttt{typehappy}$ effect) will also be $-\infty$. Consequently, with a flat prior on the $\texttt{typehappy}$ effect the posterior distribution is improper. The default prior for model coefficients is not flat - they are normal with a large variance ($10^8$), but even so this diffuse prior can cause problems if there is complete (or near complete) separation. To see this, think about an intercept-only model. A diffuse prior on the probit scale puts a lot of density on very large positive or negative values and so puts a lot of density close to zero and one on the probability scale (see Figure \@ref(fig:link)). If the likelihood prevents the posterior from reaching these extremes then the prior has little influence because its largely flat outside of the extremes (it's U shaped). However, with complete separation the likelihood is indeed placing a lot of density at these extreme values and the prior holds the posterior at these values. If, on the other hand we had specified the prior on the intercept to be normal with a mean of zero and a variance of one then the prior on the probability scale would be flat (since the inverse-link function is the cumulative density function for the unit normal).  If a logit-link had been used then there is no normal prior that would result in flatness on the probability scale, and having a mean of zero and a variance of $\pi^2/3$ (the variance of a logistic distribution) is a close as you can get.        
+
+
+
+
+``` {r label=separation1, include=TRUE, fig.cap=""}
+x<-seq(-7, 7, length=100)
+jacob.plogis<-eval(D(expression(exp(x)/(1+exp(x))), "x"), list(x=x))
+plot(I(dnorm(x, 0, sqrt(pi^2/3))/jacob.plogis)~plogis(x), type="l", xlim=c(0+0.05,1-0.05), ylab="Prior Density", xlab="Probability of Success")
+abline(h=1)
+```
 
 
 
@@ -797,3 +833,6 @@ predict(m2c.4, interval = "confidence")[26, ]
 [^3.4]: For more complicated models a (co)variance matrix may be estimated for a particular random component rather than just a single variance as here. In such cases, `V` is a matrix.  The value at which (part of) the (co)variance matrix is fixed at is determined by `V`. Any elements of the covariance matrix in rows and/or columns equal to or greater than `fix` are fixed. In the case of a single variance `fix=1` simply fixes the variance (element 1,1 of the (co)variance matrix) at whatever is specified in `V` (one in this example).
 
 [^3.5]: `family="ordinal"` is also available but it is only retained to ensure back compatibility: it is equivalent to `family="threshold"` with the variance fixed at the specified value plus one. When `family="ordinal"` was implemented I had misunderstood the paper by @Albert.1993 and didn't realise the latent variable could be Gibbs sampled with a threshold link ($\mathbf{1}_{\{l>0\}}$).
+
+[^3.6]: I can confidently say that $E[1-(1-p)^2]$ will be less than $1-(1-E[p])^2$ because of Jensen's inequality. Jensen's inequality tells us that $E[f(x)]$ will be less than $f(E[x])$ if $f$ is convex, or greater than than $f(E[x])$ if $f$ is concave. In the current example, $f(x) = (1-x)^2=1-2x+x^2$, which is a quadratic with a positive quadratic coefficient and so convex. 
+

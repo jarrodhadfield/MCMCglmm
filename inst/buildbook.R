@@ -1,12 +1,12 @@
 rm(list=ls())
 #source("/Users/jhadfiel/Work/MCMCglmm/inst/buildbook.R")
 build_site<-FALSE
-rm.cache<-FALSE
+rm.cache<-TRUE
 
 setwd("/Users/jhadfiel/Work/MCMCglmm/bookdown")
 
 if(rm.cache){
- system("rm -r /Users/jhadfiel/Work/MCMCglmm/bookdown/_bookdown_files/MCMC*")
+ system("rm -r /Users/jhadfiel/Work/MCMCglmm/bookdown/_bookdown_files")
 }
 
 bookdown::render_book("1.intro.Rmd", "bookdown::gitbook")
