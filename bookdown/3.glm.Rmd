@@ -667,8 +667,7 @@ This strange behaviour occurs because the ML estimate for the probability of suc
 
 
 
-
-``` {r label=separation1, include=TRUE, fig.cap=""}
+``` {r label=gelman-prior, include=TRUE, fig.cap="Prior density on the probability of success in an intercept-only Bernoulli GLM. In black a probit link was used and the prior on the intercept is normal with zero mean and a variance of one.  In red a logit link was used and the prior on the intercept is normal with zero mean and a variance of $\\pi^2/3$."}
 x<-seq(-7, 7, length=100)
 jacob.plogis<-eval(D(expression(exp(x)/(1+exp(x))), "x"), list(x=x))
 plot(I(dnorm(x, 0, sqrt(pi^2/3))/jacob.plogis)~plogis(x), type="l", xlim=c(0+0.05,1-0.05), ylab="Prior Density", xlab="Probability of Success")
