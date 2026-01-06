@@ -638,7 +638,7 @@ One potential issue that can occur in GLM is something known as complete separat
 table(mean5=Grumpy$mean5, type=Grumpy$type)
 ```
 
-However, if we removed the three observations for which the mean grumpy score was greater than five despite the person being happy, then $\texttt{type}$ perfectly predicts the outcome. If we fit a probit model to these data, but using `glm` a very strange thing happens:
+However, if we removed the three observations for which the mean grumpy score was greater than five despite the person being happy, then $\texttt{type}$ perfectly predicts the outcome. If we fit a probit model to these data, but using `glm`, a very strange thing happens:
 
 ```{r }
 data.cs<-subset(Grumpy, !(mean5==TRUE & type=="happy"))
@@ -647,15 +647,15 @@ mcs<-glm(mean5~type, family=binomial(link=probit), data=data.cs)
 summary(mcs)
 ```
 
-The coefficient for $\texttt{type}$ now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. If we assess significance using Fisher's exact test we get:
+The coefficient for $\texttt{typehappy}$ now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. If we assess significance using Fisher's exact test we get:
 
 ```{r }
 fisher.test(table(data.cs$mean5, data.cs$type))
 ```
 
-we get a very significant result, as expected. 
+A very significant result, as expected. 
 
-The model fitted using $\texttt{MCMCglmm}$ with default priors also behaves oddly (see Figure \@ref(fig:separation1)):
+The model fitted using $\texttt{MCMCglmm}$ with default priors also behaves oddly with very poor mixing (Figure \@ref(fig:separation1)).
 
 ``` {r label=separation1, include=TRUE, fig.cap="MCMC summary plots for the intercept and $\\texttt{type}$ effect in a binary GLM (`mcs.2`) with probit link. For $\\texttt{happy}$ photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with large variance was used for the model coefficients."}
 prior.mcs.2=list(R=list(V=1, fix=1))
@@ -663,15 +663,17 @@ mcs.2<-MCMCglmm(mean5~type, family="threshold", data=data.cs, prior=prior.mcs.2)
 plot(mcs.2$Sol)
 ```
 
-This strange behaviour occurs because the ML estimate for the probability of success is zero for $\texttt{happy}$ photos. On the probit scale this translates into $-\infty$ and so the ML estimate of the difference between $\texttt{happy}$ and $\texttt{grumpy}$ photos (the $\texttt{typehappy}$ effect) will also be $-\infty$. Consequently, with a flat prior on the $\texttt{typehappy}$ effect the posterior distribution is improper. The default prior for model coefficients is not flat - they are normal with a large variance ($10^8$), but even so this diffuse prior can cause problems if there is complete (or near complete) separation. To see this, think about an intercept-only model. A diffuse prior on the probit scale puts a lot of density on very large positive or negative values and so puts a lot of density close to zero and one on the probability scale (see Figure \@ref(fig:link)). If the likelihood prevents the posterior from reaching these extremes then the prior has little influence because its largely flat outside of the extremes (it's U shaped). However, with complete separation the likelihood is indeed placing a lot of density at these extreme values and the prior holds the posterior at these values. If, on the other hand we had specified the prior on the intercept to be normal with a mean of zero and a variance of one then the prior on the probability scale would be flat (since the inverse-link function is the cumulative density function for the unit normal).  If a logit-link had been used then there is no normal prior that would result in flatness on the probability scale, and having a mean of zero and a variance of $\pi^2/3$ (the variance of a logistic distribution) is a close as you can get.        
+This strange behaviour occurs because the ML estimate for the probability of success is zero for $\texttt{happy}$ photos. On the probit scale this translates into $-\infty$ and so the ML estimate of the difference between $\texttt{happy}$ and $\texttt{grumpy}$ photos (the $\texttt{typehappy}$ effect) will also be $-\infty$. Consequently, with a flat prior on the $\texttt{typehappy}$ effect the posterior distribution is improper. The default prior for model coefficients in $\texttt{MCMCglmm}$ is not flat - they are normal with a large variance ($10^8$), but even so this diffuse prior can cause problems if there is complete (or near complete) separation. To see this, think about an intercept-only model. A diffuse prior on the probit scale puts a lot of density on very large positive or negative values and so puts a lot of density close to zero and one on the probability scale (see Figure \@ref(fig:link)). If the likelihood prevents the posterior from reaching these extremes then the prior has little influence because it's largely flat outside of the extremes (it's U shaped). However, with complete separation the likelihood is indeed placing a lot of density at these extreme values and the prior holds the posterior at these values. If, on the other hand we had specified the prior on the intercept to be normal with a mean of zero and a variance of one then the prior on the probability scale would be flat (since the inverse-link function is the cumulative density function for the unit normal).  If a logit-link had been used then there is no normal prior that would result in flatness on the probability scale, and having a mean of zero and a variance of $\pi^2/3$ (the variance of a logistic distribution) is a close as you can get.        
 
 
-``` {r label=gelman-prior, include=TRUE, fig.cap="Prior density on the probability of success in an intercept-only Bernoulli GLM. In black a probit link was used and the prior on the intercept is normal with zero mean and a variance of one.  In red a logit link was used and the prior on the intercept is normal with zero mean and a variance of $\\pi^2/3$."}
+``` {r label=gelman-prior, echo=FALSE, include=TRUE, fig.cap="Prior density on the probability of success in an intercept-only Bernoulli GLM. In black a probit link was used and the prior on the intercept is normal with zero mean and a variance of one.  In red a logit link was used and the prior on the intercept is normal with zero mean and a variance of $\\pi^2/3$."}
 x<-seq(-7, 7, length=100)
 jacob.plogis<-eval(D(expression(exp(x)/(1+exp(x))), "x"), list(x=x))
-plot(I(dnorm(x, 0, sqrt(pi^2/3))/jacob.plogis)~plogis(x), type="l", xlim=c(0+0.05,1-0.05), ylab="Prior Density", xlab="Probability of Success")
-abline(h=1)
+plot(I(dnorm(x, 0, sqrt(pi^2/3))/jacob.plogis)~plogis(x), type="l", xlim=c(0+0.05,1-0.05), ylab="Prior Density", xlab="Probability of Success", lwd=1.5, col="red")
+abline(h=1, lwd=1.5)
 ```
+
+ How to extend to models that have categorical and continuous predictors or models with random effects and/or the residual varinace is not set to one (in threshold models) or zero (logit models)....
 
 Fitting a flat prior on the probability results in a better mixing chain.
 
@@ -683,48 +685,7 @@ plot(mcs.3$Sol)
 ```
 
 
-
-
-
-
-
-
-
-To demonstrate we will use some data from a pilot study on the Indian meal moth (*Plodia interpunctella*) and its granulosis virus (PiGV) collected by Hannah Tidbury & Mike Boots at the University of Sheffield.
-
-``` {r echo=TRUE}
-data(PlodiaRB)
-```
-
-The data are taken from 874 moth pupae for which the `Pupated` variable is zero if they failed to pupate (because they were infected with the virus) or one if they successfully pupated. The 874 individuals are spread across 49 full-sib families, with family sizes ranging from 6 to 38.
-
-To start we will fix the residual variance at 1:
-
-``` {r echo=TRUE, cache=TRUE}
-prior.m2b.1=list(R=list(V=1, fix=1), G=list(G1=list(V=1, nu=0.002)))
-m2b.1<-MCMCglmm(Pupated~1, random=~FSfamily, family="categorical", data=PlodiaRB, prior=prior.m2b.1)
-```
-
-and then fit a second model where the residual variance is fixed at 2:
-
-``` {r echo=TRUE, cache=TRUE}
-prior.m2b.2=list(R=list(V=2, fix=1), G=list(G1=list(V=1, nu=0.002)))
-m2b.2<-MCMCglmm(Pupated~1, random=~FSfamily, family="categorical", data=PlodiaRB, prior=prior.m2b.2)
-```
-
-The posterior distribution for the intercept differs between the two models (see Figure \@ref(fig:Bin1)):
-
-``` {r label=Bin1, echo=TRUE, include=TRUE, fig.cap="MCMC summary plots for the intercept of a binary GLMM where the residual variance was fixed at one (black) and two (red)."}
-plot(mcmc.list(m2b.1$Sol,m2b.2$Sol))
-```
-
-as do the variance components (see Figure \@ref(fig:Bin2)):
-
-``` {r label=Bin2, echo=TRUE, include=TRUE, fig.width=7, fig.height=5, fig.cap="MCMC summary plots for the between family variance component of a binary GLMM where the residual variance was fixed at one (black) and two (red)."}
-plot(mcmc.list(m2b.1$VCV,m2b.2$VCV))
-```
-
-Should we worry? Not really. We just have to be careful about how we express the results. Stating that the family variance is `r formatC(posterior.mode(m2b.1$VCV[,1]), 3, format="f")` is meaningless without putting it in the context of the assumed residual variance. It is therefore more appropriate to report the intraclass correlation which in this context is the expected correlation between the state Pupated/Not Pupated, for members of the same family. It can be
+Stating that the family variance is x is meaningless without putting it in the context of the assumed residual variance. It is therefore more appropriate to report the intraclass correlation which in this context is the expected correlation between the state Pupated/Not Pupated, for members of the same family. It can be
 calculated as:
 
 $$\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+\pi^{2}/3}$$
@@ -735,45 +696,13 @@ $$\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfam
 
 for the probit link, which is used if `family=ordinal` was specified.
 
-Obtaining the posterior distribution of the intra-class correlation for each model shows that they are sampling very similar posterior distributions (see Figure \@ref(fig:IC))
-
-``` {r label=IC, echo=TRUE, include=TRUE, fig.cap="MCMC summary plots for the intra-family correlation from  a binary GLMM where the residual variance was fixed at one (black) and two (red).", fig.width=7, fig.height=5}
-IC.1<-m2b.1$VCV[,1]/(rowSums(m2b.1$VCV)+pi^2/3)
-IC.2<-m2b.2$VCV[,1]/(rowSums(m2b.2$VCV)+pi^2/3)
-plot(mcmc.list(IC.1,IC.2))
-```
-
-Using the approximation due to @Diggle.2004 described earlier we can also rescale the estimates by the estimated residual variance ($\sigma^{2}_{\texttt{units}}$) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance ($\sigma^{2}_{e}$) is equal to some other value. For location effects the posterior distribution needs to be multiplied by $\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}$ and for the variance components the posterior distribution needs to be multiplied by $\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}$ where $c$ is some constant that depends on the link function. For the probit $c=1$ and for the logit $c=16\sqrt{3}/15\pi$. We can obtain estimates under the assumption that $\sigma^{2}_{e}=0$:
-
-``` {r label=ICI, echo=TRUE, include=TRUE, fig.cap="MCMC summary plots for the expected proportion of caterpillars pupating from  a binary GLMM where the residual variance was fixed at one (black) and two (red).", fig.width=7, fig.height=5}
-c2 <- ((16 * sqrt(3))/(15 * pi))^2
-Int.1 <- m2b.1$Sol/sqrt(1 + c2 * m2b.1$VCV[, 2])
-Int.2 <- m2b.2$Sol/sqrt(1 + c2 * m2b.2$VCV[, 2])
-plot(mcmc.list(as.mcmc(Int.1), as.mcmc(Int.2)))
-```
-
-The posteriors should be virtually identical under a flat prior (See Figure \@ref(fig:ICI)) although with different priors this is not always the case. Remarkably, @vanDyk.2001 show that leaving a diffuse prior on
+Remarkably, @vanDyk.2001 show that leaving a diffuse prior on
 $\sigma^{2}_{\texttt{units}}$ and rescaling the estimates each iteration, a Markov chain with superior mixing and convergence properties can be obtained (See section \@ref(parameter-expansion)).
 
+For these types of problems, I usually remove the global intercept (`-1`) and use the prior $N(0, \sigma^{2}_{\texttt{units}}+\pi^2/3)$ because this is reasonably flat on the probability scale when a logit link is used. 
 
-For these types of problems, I usually remove the global intercept (`-1`) and use the prior $N(0, \sigma^{2}_{\texttt{units}}+\pi^2/3)$ because this is reasonably flat on the probability scale when a logit link is used. For example,
+The probability of success in treatment 2 is consistent with the exact binomial test for which the 95% CI were (xxxx). With such a simple model, the prediction for observation 26 is equal to the treatment 2 effect and so we can get the the credible interval (on the data scale) for treatment 2 using the predict function:
 
-``` {r echo=TRUE, eval=FALSE}
-prior.m2c.4=list(B=list(mu=c(0,0), V=diag(2)*(1+pi^2/3)), R=list(V=1, fix=1))
-m2c.4<-MCMCglmm(y~treatment-1, data=data.bin, family="categorical", prior=prior.m2c.4)
-plot(m2c.4$Sol)
-```
-
-looks a little better (see Figure \@ref(fig:separation1)), and the posterior distribution for the probability of success in treatment 2 is consistent with the exact binomial test for which the 95% CI were (`r formatC(m2c.2$conf.int[1], 3, format="f")` -`r formatC(m2c.2$conf.int[2], 3, format="f")`). With such a simple model, the prediction for observation 26 is equal to the treatment 2 effect and so we can get the the credible interval (on the data scale) for treatment 2 using the predict function:
-
-``` {r echo=FALSE, cache=TRUE}
-prior.m2c.4=list(B=list(mu=c(0,0), V=diag(2)*(pi^2/3+1)), R=list(V=1, fix=1))
-m2c.4<-MCMCglmm(y~treatment-1, data=data.bin, family="categorical", prior=prior.m2c.4)
-```
-
-``` {r echo=TRUE}
-predict(m2c.4, interval = "confidence")[26, ]
-```
 
 [^3.1]: This is a bit disingenuous. The MCMC algorithm implemented in \texttt{MCMcglmm} depends on a non-zero residual variance to ensure mixing  -  if the residual variance was set to zero (i.e. no overdispersion in GLM(M)) then the Markov chain would be reducible.
 
