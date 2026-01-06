@@ -4,8 +4,6 @@ src/*.so
 src/symbols.rds
 bookdown/_book/
 bookdown/_bookdown_files/
-bookdown/_main_cache/
-bookdown/*_cache/
 docs/
 *.html
 *.pdf

@@ -6,7 +6,7 @@ rm.cache<-FALSE
 setwd("/Users/jhadfiel/Work/MCMCglmm/bookdown")
 
 if(rm.cache){
- system("rm -r /Users/jhadfiel/Work/MCMCglmm/bookdown/MCMCglmm-course-notes_cache/html/*")
+ system("rm -r /Users/jhadfiel/Work/MCMCglmm/bookdown/_bookdown_files/MCMC*")
 }
 
 bookdown::render_book("1.intro.Rmd", "bookdown::gitbook")

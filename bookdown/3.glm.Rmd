@@ -527,7 +527,6 @@ Unfortunately the same trick can't be used for other link functions because the 
  abline(0,1)
 ```
 
-
 ## Ordinal Data  
 
 Thinking about Bernoulli GLM's in terms of thresholds provides a natural way of thinking about how we could model categorical data that falls into a natural ordering. For example, rather than dichotomising our outcome into those that had a mean score greater than, or less than, five, lets place the observations into three categories: (1, 4], (4, 6], (6, 10]. 
@@ -597,6 +596,46 @@ These correspond closely to the observed frequencies in the data:
 ```{r }
 table(Grumpy$categories)/44
 ```
+
+## Non-zero Binomial Data
+
+The final distribution that we will cover in this Chapter is something I have called the Non-zero Binomial which can be fitted using `family="nzbinom"`. It was implemented for a specific application in which $n$ ($\texttt{Number}$) bees were pooled and assayed for the presence of the Acute bee paralysis virus [@Pascall.2018]. If the assay came back positive then at least one bee in the pool was infected and the outcome was recorded as a 'success' - otherwise non of the bees in the pool were infected and we have a 'failure'. 
+
+```{r }
+ABPvirus<-read.csv("~/Desktop/ABPvirus.csv")
+ABPvirus[c(1:2,98:99),]
+```
+
+The observations are essentially censored, and while we cover censoring more generally in Chapter \@ref(measurement), the Non-zero Binomial is perhaps best covered here. The probability of a success for the Non-zero Binomial is  $1-(1-p)^n$ where $p$ is the probability that an *individual* bee was infected. If the number of bees in a pool varies over observations, `family="nzbinom"` is a useful tool and the linear model is defined for the logit transform of $p$, as in the standard binomial.  In the standard Bernoulli model the residual variance could not be estimated and was fixed at some value. Perhaps surprisingly, there is some information to estimate the residual variance (overdispersion) in a Non-zero Binomial model as long as $n$ varies over pools. However, the amount of information is so small that it is probably safest to fix the residual variance at some non-zero value (I use one as a convention) rather than risk sampling very high values of the residual variance that can cause numerical issues. We will ignore which species of bee the observations were made on, as these are best treated as random effects \@ref(ranef)
+
+```{r mnzbinom}
+mnzbinom<-MCMCglmm(cbind(Infected, Number)~1, family="nzbinom", data=ABPvirus, prior=list(R=list(V=1, fix=1)))
+summary(mnzbinom)
+```
+
+```{r echo=FALSE}
+newdata<-data.frame(Infected=c(0, rep(1, 10)), Number=1:11)
+pnzbinom<-predict(mnzbinom, newdata=newdata, interval="confidence")
+```
+
+The median probability of an individual bee being infected is low: $\texttt{plogis}(eta)=$ `r round(mean(plogis(mnzbinom$Sol)))` such that the expected probability of at least one infection is small for the lowest pool-size ($\texttt{Number}=$ `r min(ABPvirus$Number)`) and is still well below one in the largest pool size ($\texttt{Number}$ `r max(ABPvirus$Number)`) - see Figure \@ref(fig:nzbinom). 
+
+```{r nzbinom, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap=paste0("Probability of seeing at least one infection in pools of varying size when the probability of an individual being infected is constant. The solid black line is the posterior mean and the shaded area is the 95\\% credible interval. The estimated median probability of an individual bee being infected is", round(mean(plogis(mnzbinom$Sol)), 3),  "and the mean probability is", round(pnzbinom[1], 3), ".")}
+
+plot(pnzbinom[,"fit"]~I(1:11), type="l", lwd=1.5, ylab="Probability of Success (at least one infection)", xlab="Pool size (Number)", xlim=c(2+0.33,11-0.33), ylim=c(0, 0.5))
+
+polygon(x = c(1:11, 11:1), y = c(pnzbinom[,"lwr"],rev(pnzbinom[,"upr"])), col =  adjustcolor("dodgerblue", alpha.f = 0.10), lty=2)
+```
+
+
+
+
+
+
+In an earlier email I said that overdispersion (between pool variation in the probability) could not be estimated as in standard binary models. If the pool size is constant this is true: the model is no different from a binary model. However, if pool size varies then there is some (little) information. To see where the information comes from first imagine that you have information on a large number of pooled samples all with a pool-size of 1. You know E[p] with certainty, where p is the probability of success for a sample within a pool. You can then move to pool sizes of 2. If there is no variation in p, P (the probability of one success in the pool) is 1-(1-p)^2. However, because this is a non-linear function of p it is not true that E[1-(1-p)^2]=1-(1-E[p])^2 when there is variation in p. Jensen's inequality tells us that E[f(x)]<f(E[x]) when f(x) is convex, which 1-(1-p)^2 is: we expect the the number of successful pools of size 2 to be less than that predicted from estimating p from pools of size 1 if between-pool variation in p exists. This also implies that estimates from large pools underestimate p when there is between pool variation in p.
+
+
+
 
 ## Complete Separation
 

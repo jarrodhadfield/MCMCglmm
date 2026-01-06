@@ -37,6 +37,8 @@ knitr::opts_chunk$set(
   echo = TRUE,
   message = FALSE,
   warning = FALSE,
+  cache.path = "_bookdown_files/cache/",
+  fig.path   = "_bookdown_files/fig/",
   tidy=TRUE
 )
 
