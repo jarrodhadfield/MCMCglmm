@@ -236,11 +236,12 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#overdispersion-1"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
 <li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#prediction"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
-<li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-glm"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
+<li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-sec"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
 <li class="chapter" data-level="3.6.4" data-path="glm.html"><a href="glm.html#probit-link"><i class="fa fa-check"></i><b>3.6.4</b> Probit link</a></li>
 </ul></li>
 <li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#ordinal-data"><i class="fa fa-check"></i><b>3.7</b> Ordinal Data</a></li>
-<li class="chapter" data-level="3.8" data-path="glm.html"><a href="glm.html#complete-separation"><i class="fa fa-check"></i><b>3.8</b> Complete Separation</a></li>
+<li class="chapter" data-level="3.8" data-path="glm.html"><a href="glm.html#non-zero-binomial-data"><i class="fa fa-check"></i><b>3.8</b> Non-zero Binomial Data</a></li>
+<li class="chapter" data-level="3.9" data-path="glm.html"><a href="glm.html#complete-separation"><i class="fa fa-check"></i><b>3.9</b> Complete Separation</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="ranef.html"><a href="ranef.html"><i class="fa fa-check"></i><b>4</b> Random effects</a>
 <ul>
@@ -396,7 +397,7 @@ E[{\bf y}] = {\bf X}{\boldsymbol{\mathbf{\beta}}}
 <p>Because the number of accidents are count data we might worry about the assumption of conditional normality, and indeed the residuals show the typical right skew:</p>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="glm.html#cb44-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">resid</span>(m2a<span class="fl">.1</span>))</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:hist-traffic"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/hist-traffic-1.png" alt="Histogram of residuals from model `m2a.1` which assumed they followed a Normal distribution." width="672" />
+<img src="_bookdown_files/fig/hist-traffic-1.png" alt="Histogram of residuals from model `m2a.1` which assumed they followed a Normal distribution." width="672" />
 <p class="caption">
 Figure 3.1: Histogram of residuals from model <code>m2a.1</code> which assumed they followed a Normal distribution.
 </p>
@@ -516,7 +517,7 @@ Figure 3.1: Histogram of residuals from model <code>m2a.1</code> which assumed t
 <span id="cb59-3"><a href="glm.html#cb59-3" tabindex="-1"></a>    <span class="at">pl =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>The element <code>Sol</code> contains the posterior distribution of the coefficients of the linear model, and we can plot their marginal distributions:</p>
 <div class="figure"><span style="display:block;" id="fig:mcmc-traffic"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/mcmc-traffic-1.png" alt="MCMC summary plot for the coefficients from a Poisson glm (model `m2a.5`)." width="672" />
+<img src="_bookdown_files/fig/mcmc-traffic-1.png" alt="MCMC summary plot for the coefficients from a Poisson glm (model `m2a.5`)." width="672" />
 <p class="caption">
 Figure 3.2: MCMC summary plot for the coefficients from a Poisson glm (model <code>m2a.5</code>).
 </p>
@@ -567,7 +568,7 @@ Figure 3.2: MCMC summary plot for the coefficients from a Poisson glm (model <co
 <p>Like residuals in a standard linear model, the residuals are assumed to be independently and normally distributed with an expectation of zero and an estimated variance. If the residual variance was zero then <span class="math inline">\({\bf e}\)</span> would be a vector of zeros and the model would conform to the standard Poisson GLM. However, the posterior distribution of the residual variance is located well away form zero:</p>
 <div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="glm.html#cb65-1" tabindex="-1"></a><span class="fu">plot</span>(m2a<span class="fl">.5</span><span class="sc">$</span>VCV)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:vcv-traffic"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/vcv-traffic-1.png" alt="MCMC summary plot for the residual (`units`) variance from a Poisson glm (model `m2a.5`). The residual variance models any overdispersion, and a residual variance of zero would imply that the response conforms to a standard Poisson." width="672" />
+<img src="_bookdown_files/fig/vcv-traffic-1.png" alt="MCMC summary plot for the residual (`units`) variance from a Poisson glm (model `m2a.5`). The residual variance models any overdispersion, and a residual variance of zero would imply that the response conforms to a standard Poisson." width="672" />
 <p class="caption">
 Figure 3.3: MCMC summary plot for the residual (<code>units</code>) variance from a Poisson glm (model <code>m2a.5</code>). The residual variance models any overdispersion, and a residual variance of zero would imply that the response conforms to a standard Poisson.
 </p>
@@ -585,7 +586,7 @@ log(E_e[y]) = E_e[l] = E_e[\eta+e] =  \eta+E_e[e]=\eta
 <pre><code>## [1] 3.224037</code></pre>
 <p>which is equal to the posterior mean of <code>eta92</code> obtained earlier. We can see this visually in Figure <a href="glm.html#fig:prediction2">3.4</a> where I have plotted the distribution of the latent variable on a <span class="math inline">\(\texttt{day}\)</span> of type 92 in 1961 without a speed limit.</p>
 <div class="figure"><span style="display:block;" id="fig:prediction2"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/prediction2-1.png" alt="The predicted distribution for the average number of accidents on the log scale for a $\texttt{day}$ of type 92 in 1961 without a speed limit (in red). On the log scale the distribution is assumed to be normal around the linear predictor ($\eta=$) with a variance of $\sigma^{2}_e$. As a consequence the mean, median and mode of the distribution are equal to the linear predictor on the log scale." width="672" />
+<img src="_bookdown_files/fig/prediction2-1.png" alt="The predicted distribution for the average number of accidents on the log scale for a $\texttt{day}$ of type 92 in 1961 without a speed limit (in red). On the log scale the distribution is assumed to be normal around the linear predictor ($\eta=$) with a variance of $\sigma^{2}_e$. As a consequence the mean, median and mode of the distribution are equal to the linear predictor on the log scale." width="672" />
 <p class="caption">
 Figure 3.4: The predicted distribution for the average number of accidents on the log scale for a <span class="math inline">\(\texttt{day}\)</span> of type 92 in 1961 without a speed limit (in red). On the log scale the distribution is assumed to be normal around the linear predictor (<span class="math inline">\(\eta=\)</span>) with a variance of <span class="math inline">\(\sigma^{2}_e\)</span>. As a consequence the mean, median and mode of the distribution are equal to the linear predictor on the log scale.
 </p>
@@ -596,7 +597,7 @@ E_e[y] = E_e[\textrm{exp}(l)] = E_e[\textrm{exp}(\eta+e)]
 \]</span></p>
 <p>and because exponentiation is a non-linear function this average will deviate from <span class="math inline">\(\textrm{exp}(\eta)\)</span> (Figure <a href="glm.html#fig:prediction3">3.5</a>.</p>
 <div class="figure"><span style="display:block;" id="fig:prediction3"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/prediction3-1.png" alt="The predicted distribution for the average number of accidents on the data scale for a $\texttt{day}$ of type 92 in 1961 without a speed limit (in red).  On the log scale the distribution is assumed to be normal around the linear predictor ($\eta$) with a variance of $\sigma^{2}_e$ (see \@ref(fig:prediction2)). However when transforming to the data scale (by exponentiating) the symmetry is lost and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median." width="672" />
+<img src="_bookdown_files/fig/prediction3-1.png" alt="The predicted distribution for the average number of accidents on the data scale for a $\texttt{day}$ of type 92 in 1961 without a speed limit (in red).  On the log scale the distribution is assumed to be normal around the linear predictor ($\eta$) with a variance of $\sigma^{2}_e$ (see \@ref(fig:prediction2)). However when transforming to the data scale (by exponentiating) the symmetry is lost and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median." width="672" />
 <p class="caption">
 Figure 3.5: The predicted distribution for the average number of accidents on the data scale for a <span class="math inline">\(\texttt{day}\)</span> of type 92 in 1961 without a speed limit (in red). On the log scale the distribution is assumed to be normal around the linear predictor (<span class="math inline">\(\eta\)</span>) with a variance of <span class="math inline">\(\sigma^{2}_e\)</span> (see <a href="glm.html#fig:prediction2">3.4</a>). However when transforming to the data scale (by exponentiating) the symmetry is lost and the different measures of central tendency do not coincide. Since the residuals are normal on the log scale, the distribution on the data scale is log-normal and so analytical solutions exist for the mean, mode and median.
 </p>
@@ -617,7 +618,7 @@ Figure 3.5: The predicted distribution for the average number of accidents on th
 <div class="sourceCode" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="glm.html#cb73-1" tabindex="-1"></a><span class="fu">qqplot</span>(ypred, Traffic<span class="sc">$</span>y)</span>
 <span id="cb73-2"><a href="glm.html#cb73-2" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:marginal-qq"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/marginal-qq-1.png" alt="qq-plot of the posterior predictive distribution and the data distribution" width="672" />
+<img src="_bookdown_files/fig/marginal-qq-1.png" alt="qq-plot of the posterior predictive distribution and the data distribution" width="672" />
 <p class="caption">
 Figure 3.6: qq-plot of the posterior predictive distribution and the data distribution
 </p>
@@ -712,22 +713,22 @@ Figure 3.7: Photo 4521 (left) and photo 4527 (right). For the predictors fitted 
 <div class="sourceCode" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="glm.html#cb93-1" tabindex="-1"></a><span class="fu">predict</span>(mbinom<span class="fl">.1</span>, <span class="at">approx =</span> <span class="st">&quot;mcculloch&quot;</span>)[<span class="dv">3</span>]<span class="sc">/</span><span class="dv">122</span></span></code></pre></div>
 <pre><code>## [1] 0.4255396</code></pre>
 </div>
-<div id="bernoulli-glm" class="section level3 hasAnchor" number="3.6.3">
-<h3><span class="header-section-number">3.6.3</span> Bernoulli GLM<a href="glm.html#bernoulli-glm" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="bernoulli-sec" class="section level3 hasAnchor" number="3.6.3">
+<h3><span class="header-section-number">3.6.3</span> Bernoulli GLM<a href="glm.html#bernoulli-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Bernoulli data are a special case of the Binomial in which the number of trials is equal to one and so either a success or a failure is observed. To explore a Brenoulli model we can take our <em>average</em> Grumpy scores and simply dichotomise them into whether the average score was five or less or more than five:</p>
-<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="glm.html#cb95-1" tabindex="-1"></a>Grumpy<span class="sc">$</span>majority <span class="ot">&lt;-</span> Grumpy<span class="sc">$</span>y <span class="sc">&gt;</span> <span class="dv">5</span></span></code></pre></div>
+<div class="sourceCode" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="glm.html#cb95-1" tabindex="-1"></a>Grumpy<span class="sc">$</span>mean5 <span class="ot">&lt;-</span> Grumpy<span class="sc">$</span>y <span class="sc">&gt;</span> <span class="dv">5</span></span></code></pre></div>
 <p>If we fit a binomial model to these data in <code>MCMCglmm</code> it has exactly the same form as before (although a single column of outcomes can be passed). But importantly, for Bernoulli data there is no information to estimate the residual variance. This does not necessarily mean that variation in the probability of success across observations is absent, only that we can’t estimate it. For example, imagine we took 100 people who had been publishing for 16 years and took a photograph of them when they were grumpy. Let’s say the probability that the mean score for such photos exceeded 5 was 0.5. If the probability for all photos was exactly 0.5 (i.e. the probability of success did not vary over observations) then we expect 50 success and 50 failures across our observations. However, imagine the case where the probability of success was 100% for 50 photos and 0% for 50 photos (i.e. the probability of success varies considerably over observations). We would also expect 50 success and 50 failures, and so the distribution of successes with and without variation in the underlying probability would be identical. In the absence of information most software sets the ‘residual’ variance to zero (i.e. the probability of success dose not vary over observations), but it is important to understand that this is a convenient but arbitrary choice. Given this, it is desirable that any conclusions drawn from the model do not depend on this arbitrary choice. Worryingly, both the location effects (fixed and random) and variance components are completely dependent on the magnitude of the residual variance. <code>MCMCglmm</code> allows the user to fix the residual variance at a value of their choice, but unfortunately a value of zero results in a chain that will not mix and so I usually fix the residual variance to one<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>:</p>
 <div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="glm.html#cb96-1" tabindex="-1"></a>prior.mbinom<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>))</span>
-<span id="cb96-2"><a href="glm.html#cb96-2" tabindex="-1"></a>mbinom<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(majority <span class="sc">~</span> type <span class="sc">+</span> ypub, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> Grumpy,</span>
+<span id="cb96-2"><a href="glm.html#cb96-2" tabindex="-1"></a>mbinom<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(mean5 <span class="sc">~</span> type <span class="sc">+</span> ypub, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> Grumpy,</span>
 <span id="cb96-3"><a href="glm.html#cb96-3" tabindex="-1"></a>    <span class="at">prior =</span> prior.mbinom<span class="fl">.2</span>)</span></code></pre></div>
 <p>However, it would have been equally valid to fixed the residual variance at three:</p>
 <div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="glm.html#cb97-1" tabindex="-1"></a>prior.mbinom<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">3</span>, <span class="at">fix =</span> <span class="dv">1</span>))</span>
-<span id="cb97-2"><a href="glm.html#cb97-2" tabindex="-1"></a>mbinom<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(majority <span class="sc">~</span> type <span class="sc">+</span> ypub, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> Grumpy,</span>
+<span id="cb97-2"><a href="glm.html#cb97-2" tabindex="-1"></a>mbinom<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(mean5 <span class="sc">~</span> type <span class="sc">+</span> ypub, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> Grumpy,</span>
 <span id="cb97-3"><a href="glm.html#cb97-3" tabindex="-1"></a>    <span class="at">prior =</span> prior.mbinom<span class="fl">.3</span>)</span></code></pre></div>
 <p>and if we compare the MCMC traces for the coefficients we can see that we are sampling different posterior distributions (Figure <a href="glm.html#fig:bernoulli">3.8</a>).</p>
 <div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="glm.html#cb98-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(mbinom<span class="fl">.2</span><span class="sc">$</span>Sol, mbinom<span class="fl">.3</span><span class="sc">$</span>Sol), <span class="at">density =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:bernoulli"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/bernoulli-1.png" alt="MCMC trace for coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance." width="672" />
+<img src="_bookdown_files/fig/bernoulli-1.png" alt="MCMC trace for coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance." width="672" />
 <p class="caption">
 Figure 3.8: MCMC trace for coefficients of a Bernoulli GLM from two models (<code>mbinom.2</code> in black and <code>mbinom.3</code> in red). The data and model structure are identical but in <code>mbinom.2</code> the residual variance was set to one and in <code>mbinom.3</code> the residual variance was set to three. The data provide no information about the residual variance.
 </p>
@@ -736,7 +737,7 @@ Figure 3.8: MCMC trace for coefficients of a Bernoulli GLM from two models (<cod
 <div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="glm.html#cb99-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">predict</span>(mbinom<span class="fl">.2</span>), <span class="fu">predict</span>(mbinom<span class="fl">.3</span>))</span>
 <span id="cb99-2"><a href="glm.html#cb99-2" tabindex="-1"></a><span class="fu">abline</span>(<span class="dv">0</span>, <span class="dv">1</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:bernoulli-pred"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/bernoulli-pred-1.png" alt="Predicted probabilities from a Bernoulli GLM from two models. The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance." width="672" />
+<img src="_bookdown_files/fig/bernoulli-pred-1.png" alt="Predicted probabilities from a Bernoulli GLM from two models. The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. The data provide no information about the residual variance." width="672" />
 <p class="caption">
 Figure 3.9: Predicted probabilities from a Bernoulli GLM from two models. The data and model structure are identical but in <code>mbinom.2</code> the residual variance was set to one and in <code>mbinom.3</code> the residual variance was set to three. The data provide no information about the residual variance.
 </p>
@@ -747,14 +748,14 @@ Figure 3.9: Predicted probabilities from a Bernoulli GLM from two models. The da
 <span id="cb100-3"><a href="glm.html#cb100-3" tabindex="-1"></a>rescale<span class="fl">.3</span> <span class="ot">&lt;-</span> mbinom<span class="fl">.3</span><span class="sc">$</span>Sol <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">/</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="dv">3</span>))</span>
 <span id="cb100-4"><a href="glm.html#cb100-4" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(<span class="fu">as.mcmc</span>(rescale<span class="fl">.2</span>), <span class="fu">as.mcmc</span>(rescale<span class="fl">.3</span>)), <span class="at">density =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:bernoulli-rescale"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/bernoulli-rescale-1.png" alt="MCMC trace for rescaled coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. However, the coefficients have been rescaled using the @Diggle.2004 approximation such that they represent what the coefficients would be if the residual variance was zero. The data provide no information about the residual variance." width="672" />
+<img src="_bookdown_files/fig/bernoulli-rescale-1.png" alt="MCMC trace for rescaled coefficients of a Bernoulli GLM from two models (`mbinom.2` in black and `mbinom.3` in red). The data and model structure are identical but in `mbinom.2` the residual variance was set to one and in `mbinom.3` the residual variance was set to three. However, the coefficients have been rescaled using the @Diggle.2004 approximation such that they represent what the coefficients would be if the residual variance was zero. The data provide no information about the residual variance." width="672" />
 <p class="caption">
 Figure 3.10: MCMC trace for rescaled coefficients of a Bernoulli GLM from two models (<code>mbinom.2</code> in black and <code>mbinom.3</code> in red). The data and model structure are identical but in <code>mbinom.2</code> the residual variance was set to one and in <code>mbinom.3</code> the residual variance was set to three. However, the coefficients have been rescaled using the <span class="citation">Diggle et al. (<a href="#ref-Diggle.2004">2004</a>)</span> approximation such that they represent what the coefficients would be if the residual variance was zero. The data provide no information about the residual variance.
 </p>
 </div>
 <p>In addition, the posterior distributions are centred on the ML estimates obtained by <code>glm</code> which implicitly assumes <span class="math inline">\(\sigma^2_e=0\)</span> (Figure <a href="glm.html#fig:bernoulli-glm">3.11</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:bernoulli-glm"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/bernoulli-glm-1.png" alt="Posterior distributions for rescaled coefficients of a Bernoulli GLM (`mbinom.3`). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from `glm` that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means." width="672" />
+<img src="_bookdown_files/fig/bernoulli-glm-1.png" alt="Posterior distributions for rescaled coefficients of a Bernoulli GLM (`mbinom.3`). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from `glm` that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means." width="672" />
 <p class="caption">
 Figure 3.11: Posterior distributions for rescaled coefficients of a Bernoulli GLM (<code>mbinom.3</code>). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from <code>glm</code> that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means.
 </p>
@@ -764,25 +765,24 @@ Figure 3.11: Posterior distributions for rescaled coefficients of a Bernoulli GL
 <h3><span class="header-section-number">3.6.4</span> Probit link<a href="glm.html#probit-link" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>The inverse-logit function is the cumulative distribution function for the logistic distribution. It makes sense that a cumulative distribution function for a continuous distribution that can take any value would serve as a good inverse link function for a probability: it takes any value between plus and minus infinity and squeezes it to be between zero and one. While the logit is the most common link function for binomial data, the probit link and complementary log-log (cloglog) link are also widely used. They are the cumulative distribution functions for the unit normal and standard Gumbel distributions respectively. In Figure <a href="glm.html#fig:link">3.12</a> we can see how the probability changes as a function of a covariate (<span class="math inline">\(x\)</span>) for the different links (with intercepts and slopes chosen so that the functions are matched at the origin).</p>
 <div class="figure"><span style="display:block;" id="fig:link"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/link-1.png" alt="Predicted probabilities as a function of covariate $x$ using the inverse logit (black), inverse probit (red) and inverse complementary log-log link functions. For each link the intercept and slope were chosen such that when $x= 0$ the function equals 0.5 and has a derivative of one." width="672" />
+<img src="_bookdown_files/fig/link-1.png" alt="Predicted probabilities as a function of covariate $x$ using the inverse logit (black), inverse probit (red) and inverse complementary log-log link functions. For each link the intercept and slope were chosen such that when $x= 0$ the function equals 0.5 and has a derivative of one." width="672" />
 <p class="caption">
 Figure 3.12: Predicted probabilities as a function of covariate <span class="math inline">\(x\)</span> using the inverse logit (black), inverse probit (red) and inverse complementary log-log link functions. For each link the intercept and slope were chosen such that when <span class="math inline">\(x= 0\)</span> the function equals 0.5 and has a derivative of one.
 </p>
 </div>
 <p>We can see that the link functions generate rather similar predicted probabilities, particularly the logit and probit links. For Bernoulli data, another way to conceptualise these link functions is in terms of threshold models. Imagine the case where we have managed to set the non-identifiable residual variance to zero and all residuals <span class="math inline">\(e\)</span> are zero and can be omitted. The probability of success is then given by the inverse-link of <span class="math inline">\(\eta\)</span>. For probit link this would be the probability of getting a value less than <span class="math inline">\(\eta\)</span> from the unit normal (the grey area in the left panel of Figure <a href="glm.html#fig:thresh">3.13</a>). Equivalently, it is the probability of getting a value greater than 0 from a normal with a mean equal to <span class="math inline">\(\eta\)</span> and a standard deviation of one (the grey area in the right panel of Figure <a href="glm.html#fig:thresh">3.13</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:thresh"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/thresh-1.png" alt="Probability density function for $\epsilon$ (left) or  $\eta+\epsilon$ (right) where $\epsilon$ is normal with mean zero and a standard deviation of one. Applying `pnorm` to $\eta$ gives the shaded area on the left and is the probability of success using probit link. The shaded area on the right gives the same probability and is the chance of getting a value greater than zero from a normal with mean $\eta$ and a standard deviation of one." width="672" />
+<img src="_bookdown_files/fig/thresh-1.png" alt="Probability density function for $\epsilon$ (left) or  $\eta+\epsilon$ (right) where $\epsilon$ is normal with mean zero and a standard deviation of one. Applying `pnorm` to $\eta$ gives the shaded area on the left and is the probability of success using probit link. The shaded area on the right gives the same probability and is the chance of getting a value greater than zero from a normal with mean $\eta$ and a standard deviation of one." width="672" />
 <p class="caption">
 Figure 3.13: Probability density function for <span class="math inline">\(\epsilon\)</span> (left) or <span class="math inline">\(\eta+\epsilon\)</span> (right) where <span class="math inline">\(\epsilon\)</span> is normal with mean zero and a standard deviation of one. Applying <code>pnorm</code> to <span class="math inline">\(\eta\)</span> gives the shaded area on the left and is the probability of success using probit link. The shaded area on the right gives the same probability and is the chance of getting a value greater than zero from a normal with mean <span class="math inline">\(\eta\)</span> and a standard deviation of one.
 </p>
 </div>
 <p>If we think explicitly about the normal deviates that underpin these probability calculations (we’ll call them <span class="math inline">\(\epsilon\)</span>), then in the left panel <span class="math inline">\(\epsilon\)</span> falls below the ‘threshold’ <span class="math inline">\(\eta\)</span> with the required probability or in the right panel, <span class="math inline">\(\eta+\epsilon\)</span> falls above the ‘threshold’ zero with the required probability. Since <span class="math inline">\(\epsilon\)</span> is unit-normal we can equate <span class="math inline">\(\eta\)</span> with <span class="math inline">\(e\)</span> and <span class="math inline">\(\eta+\epsilon\)</span> with <span class="math inline">\(l\)</span> and apply the inverse link function <span class="math inline">\(\mathbf{1}_{\{l&gt;0\}}\)</span>. This function outputs 1 (a success) if <span class="math inline">\(l&gt;0\)</span> and a failure otherwise (as in the right panel of Figure <a href="glm.html#fig:thresh">3.13</a>). This is implemented as <code>family=threshold</code> in MCMCglmm, and if the residual variance (i.e. the variance of <span class="math inline">\(\epsilon\)</span> or <span class="math inline">\(e\)</span>) is fixed at one corresponds exactly to standard probit regression<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
 <div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="glm.html#cb101-1" tabindex="-1"></a>prior.mbinom<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>))</span>
-<span id="cb101-2"><a href="glm.html#cb101-2" tabindex="-1"></a>mbinom<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(majority <span class="sc">~</span> type <span class="sc">+</span> ypub, <span class="at">family =</span> <span class="st">&quot;threshold&quot;</span>, <span class="at">data =</span> Grumpy,</span>
-<span id="cb101-3"><a href="glm.html#cb101-3" tabindex="-1"></a>    <span class="at">prior =</span> prior.mbinom<span class="fl">.4</span>)</span></code></pre></div>
-<p>Unfortunately the same trick can’t be used for other link functions because the <span class="math inline">\(\epsilon\)</span>’s’ cannot be equated with <span class="math inline">\(e\)</span>’s because they come from different distributions. In some ways the probit link is a natural link function for models that contain random effects, which are also usually assumed to be normal. However, the downside is that the coefficients in a probit model do not have a direct interpretation like they do in a logit model. Nevertheless, both models give very similar predictions and are unlikely to be statistically distinguishable in the vast majority of cases (Figure <a href="glm.html#fig:thresh-logit">3.14</a>).</p>
+<span id="cb101-2"><a href="glm.html#cb101-2" tabindex="-1"></a>mbinom<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(mean5 <span class="sc">~</span> type <span class="sc">+</span> ypub, <span class="at">family =</span> <span class="st">&quot;threshold&quot;</span>, <span class="at">data =</span> Grumpy, <span class="at">prior =</span> prior.mbinom<span class="fl">.4</span>)</span></code></pre></div>
+<p>Unfortunately the same trick can’t be used for other link functions because the <span class="math inline">\(\epsilon\)</span>’s’ cannot be equated with <span class="math inline">\(e\)</span>’s because they come from different distributions. In some ways the probit link is a natural link function for models that contain random effects, which are also usually assumed to be normal. However, the downside is that the coefficients in a probit model do not have a direct interpretation like they do in a logit model. Nevertheless, both models give very similar predictions and are unlikely to be statistically distinguishable in the vast mean5 of cases (Figure <a href="glm.html#fig:thresh-logit">3.14</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:thresh-logit"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/thresh-logit-1.png" alt="Predicted probabilities from a Bernoulli GLM from two models with the same model structure. However, `mbinom.2` uses a logit link with a residual variance set to one and in `mbinom.4` uses a standard probit link." width="672" />
+<img src="_bookdown_files/fig/thresh-logit-1.png" alt="Predicted probabilities from a Bernoulli GLM from two models with the same model structure. However, `mbinom.2` uses a logit link with a residual variance set to one and in `mbinom.4` uses a standard probit link." width="672" />
 <p class="caption">
 Figure 3.14: Predicted probabilities from a Bernoulli GLM from two models with the same model structure. However, <code>mbinom.2</code> uses a logit link with a residual variance set to one and in <code>mbinom.4</code> uses a standard probit link.
 </p>
@@ -823,7 +823,7 @@ Figure 3.14: Predicted probabilities from a Bernoulli GLM from two models with t
 ## cutpoint.traitcategories.1     1.322   0.8801    1.775    435.8</code></pre>
 <p>As we did in the right panel of Figure <a href="glm.html#fig:thresh">3.13</a>) we can draw this model with the estimated threshold (<span class="math inline">\(\gamma\)</span>) included (Figure <a href="glm.html#fig:ordinal">3.15</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:ordinal"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/ordinal-1.png" alt="Probability density function for  $l=\eta+e$ where $e$ is normal with mean zero and a standard deviation of one. $\eta=$ 0.489 and was obtained from the model `mordinal`. The distribution is 'cut' into three regions by the fixed threshold at zero and the estimated threshold ($\gamma$) at 1.322. The shaded areas correspond to the probabilities of observing the three (ordered) outcomes." width="672" />
+<img src="_bookdown_files/fig/ordinal-1.png" alt="Probability density function for  $l=\eta+e$ where $e$ is normal with mean zero and a standard deviation of one. $\eta=$ 0.489 and was obtained from the model `mordinal`. The distribution is 'cut' into three regions by the fixed threshold at zero and the estimated threshold ($\gamma$) at 1.322. The shaded areas correspond to the probabilities of observing the three (ordered) outcomes." width="672" />
 <p class="caption">
 Figure 3.15: Probability density function for <span class="math inline">\(l=\eta+e\)</span> where <span class="math inline">\(e\)</span> is normal with mean zero and a standard deviation of one. <span class="math inline">\(\eta=\)</span> 0.489 and was obtained from the model <code>mordinal</code>. The distribution is ‘cut’ into three regions by the fixed threshold at zero and the estimated threshold (<span class="math inline">\(\gamma\)</span>) at 1.322. The shaded areas correspond to the probabilities of observing the three (ordered) outcomes.
 </p>
@@ -841,141 +841,130 @@ Figure 3.15: Probability density function for <span class="math inline">\(l=\eta
 ##         1         2         3 
 ## 0.3181818 0.4772727 0.2045455</code></pre>
 </div>
-<div id="complete-separation" class="section level2 hasAnchor" number="3.8">
-<h2><span class="header-section-number">3.8</span> Complete Separation<a href="glm.html#complete-separation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To demonstrate we will use some data from a pilot study on the Indian meal moth (<em>Plodia interpunctella</em>) and its granulosis virus (PiGV) collected by Hannah Tidbury &amp; Mike Boots at the University of Sheffield.</p>
-<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="glm.html#cb114-1" tabindex="-1"></a><span class="fu">data</span>(PlodiaRB)</span></code></pre></div>
-<p>The data are taken from 874 moth pupae for which the <code>Pupated</code> variable is zero if they failed to pupate (because they were infected with the virus) or one if they successfully pupated. The 874 individuals are spread across 49 full-sib families, with family sizes ranging from 6 to 38.</p>
-<p>To start we will fix the residual variance at 1:</p>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="glm.html#cb115-1" tabindex="-1"></a>prior.m2b<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
-<span id="cb115-2"><a href="glm.html#cb115-2" tabindex="-1"></a>m2b<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(Pupated <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>FSfamily, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> PlodiaRB,</span>
-<span id="cb115-3"><a href="glm.html#cb115-3" tabindex="-1"></a>    <span class="at">prior =</span> prior.m2b<span class="fl">.1</span>)</span></code></pre></div>
-<p>and then fit a second model where the residual variance is fixed at 2:</p>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="glm.html#cb116-1" tabindex="-1"></a>prior.m2b<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">2</span>, <span class="at">fix =</span> <span class="dv">1</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>)))</span>
-<span id="cb116-2"><a href="glm.html#cb116-2" tabindex="-1"></a>m2b<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(Pupated <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>FSfamily, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">data =</span> PlodiaRB,</span>
-<span id="cb116-3"><a href="glm.html#cb116-3" tabindex="-1"></a>    <span class="at">prior =</span> prior.m2b<span class="fl">.2</span>)</span></code></pre></div>
-<p>The posterior distribution for the intercept differs between the two models (see Figure <a href="glm.html#fig:Bin1">3.16</a>):</p>
-<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="glm.html#cb117-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m2b<span class="fl">.1</span><span class="sc">$</span>Sol, m2b<span class="fl">.2</span><span class="sc">$</span>Sol))</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:Bin1"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/Bin1-1.png" alt="MCMC summary plots for the intercept of a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
+<div id="non-zero-binomial-data" class="section level2 hasAnchor" number="3.8">
+<h2><span class="header-section-number">3.8</span> Non-zero Binomial Data<a href="glm.html#non-zero-binomial-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The final distribution that we will cover in this Chapter is something I have called the Non-zero Binomial which can be fitted using <code>family="nzbinom"</code>. It was implemented for a specific application in which <span class="math inline">\(n\)</span> (<span class="math inline">\(\texttt{number}\)</span>) bumblebees were pooled and assayed for the presence of the Acute Bee Paralysis virus <span class="citation">(<a href="#ref-Pascall.2018">Pascall et al. 2018</a>)</span>. If the assay came back positive then at least one bee in the pool was infected and the outcome was recorded as a ‘success’ - otherwise non of the bees in the pool were infected and we have a ‘failure’ (<span class="math inline">\(\texttt{infected}\)</span>).</p>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="glm.html#cb114-1" tabindex="-1"></a><span class="fu">data</span>(ABPvirus)</span>
+<span id="cb114-2"><a href="glm.html#cb114-2" tabindex="-1"></a>ABPvirus[<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="dv">98</span><span class="sc">:</span><span class="dv">99</span>), ]</span></code></pre></div>
+<pre><code>##        species number infected
+## 1  B.pascuorum     10        0
+## 2  B.pascuorum     10        0
+## 98   B.lucorum      2        1
+## 99   B.lucorum     10        0</code></pre>
+<p>The observations are essentially censored, and while we cover censoring more generally in Chapter <a href="#measurement"><strong>??</strong></a>, the Non-zero Binomial is perhaps best covered here. The probability of a success for the Non-zero Binomial (which we will designate as <span class="math inline">\(P\)</span>) is <span class="math inline">\(1-(1-p)^n\)</span> where <span class="math inline">\(p\)</span> is the probability that an <em>individual</em> bumblebee was infected. If the number of bumblebees in a pool varies over observations, <code>family="nzbinom"</code> is a useful tool and the linear model is defined for the logit transform of <span class="math inline">\(p\)</span>, as in the standard binomial. In the standard Bernoulli model the residual variance could not be estimated and was fixed at some value. Perhaps surprisingly, there is some information to estimate the residual variance (overdispersion) in a Non-zero Binomial model as long as <span class="math inline">\(n\)</span> varies over pools. However, the amount of information is so small that it is probably safest to fix the residual variance at some non-zero value (I use one as a convention) rather than risk sampling very high values of the residual variance that can cause numerical issues. We will ignore which species of bumblebee the observations were made on, as these are best treated as random effects <a href="ranef.html#ranef">4</a></p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="glm.html#cb116-1" tabindex="-1"></a>mnzbinom <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(infected, number) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">family =</span> <span class="st">&quot;nzbinom&quot;</span>, <span class="at">data =</span> ABPvirus,</span>
+<span id="cb116-2"><a href="glm.html#cb116-2" tabindex="-1"></a>    <span class="at">prior =</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>)))</span>
+<span id="cb116-3"><a href="glm.html#cb116-3" tabindex="-1"></a><span class="fu">summary</span>(mnzbinom)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: 131.4134 
+## 
+##  R-structure:  ~units
+## 
+##       post.mean l-95% CI u-95% CI eff.samp
+## units         1        1        1        0
+## 
+##  Location effects: cbind(infected, number) ~ 1 
+## 
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)    -3.088   -3.489   -2.656      510 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The median probability of an individual bumblebee being infected is low: <span class="math inline">\(\texttt{plogis}(eta)=\)</span> 0 such that the expected probability of at least one infection is small for the lowest pool-size (<span class="math inline">\(\texttt{number}=\)</span> 2) and is still well below one in the largest pool size (<span class="math inline">\(\texttt{number}=\)</span> 11) - see Figure <a href="glm.html#fig:nzbinom">3.16</a>.</p>
+<div class="figure"><span style="display:block;" id="fig:nzbinom"></span>
+<img src="_bookdown_files/fig/nzbinom-1.png" alt="Probability of seeing at least one infection ($P$) in pools of varying size when the probability of an individual bumblebee being infected ($p$) is constant. The solid black line is the posterior mean and the shaded area is the 95\% credible interval. The estimated median probability of an individual bumblebee being infected is0.044and the mean probability is0.044." width="672" />
 <p class="caption">
-Figure 3.16: MCMC summary plots for the intercept of a binary GLMM where the residual variance was fixed at one (black) and two (red).
+Figure 3.16: Probability of seeing at least one infection (<span class="math inline">\(P\)</span>) in pools of varying size when the probability of an individual bumblebee being infected (<span class="math inline">\(p\)</span>) is constant. The solid black line is the posterior mean and the shaded area is the 95% credible interval. The estimated median probability of an individual bumblebee being infected is0.044and the mean probability is0.044.
 </p>
 </div>
-<p>as do the variance components (see Figure <a href="glm.html#fig:Bin2">3.17</a>):</p>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="glm.html#cb118-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m2b<span class="fl">.1</span><span class="sc">$</span>VCV, m2b<span class="fl">.2</span><span class="sc">$</span>VCV))</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:Bin2"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/Bin2-1.png" alt="MCMC summary plots for the between family variance component of a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
+<p>If the data set was larger and/or variation in the pool size was greater, there may be sufficient information to justify trying to estimate the residual variance, rather than fixing it to one. To see where the information comes from first imagine that you have information on samples all with a pool-size of 1. You could jut average you the resulting zeros and ones to get an estimate of <span class="math inline">\(P_1\)</span> where the subscript designates the size of the pool for which the probability of at least one infection is calculated. Even if the probability of infection varied over individuals, the average probability <span class="math inline">\(E[p]\)</span> is equal to <span class="math inline">\(P_1\)</span>, as we saw when we determined why variation in the probability cannot be estimated with standard Bernoulli data. Let’s then imagine we move to pool sizes of 2. <span class="math inline">\(P_2\)</span> (the probability of at least one success in a pool of 2) is then <span class="math inline">\(E[1-(1-p)^2]\)</span>. If there is no variation in <span class="math inline">\(p\)</span> then <span class="math inline">\(P_2=1-(1-P_1)^2\)</span> since <span class="math inline">\(p\)</span> is a constant and equal to <span class="math inline">\(P_1\)</span>. However, when there is variation in <span class="math inline">\(p\)</span> the non-linearity in the function (i.e. <span class="math inline">\((1-p)^2\)</span>) means that <span class="math inline">\(E[1-(1-p)^2]\)</span> will deviate from <span class="math inline">\(1-(1-E[p])^2=1-(1-P_1)^2\)</span>: we expect the the number of successful pools of size 2 to be less than that predicted from estimating <span class="math inline">\(p\)</span> from pools of size 1<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a>. Consequently, the rate at which <span class="math inline">\(P\)</span> asymptotes with increasing pool-size (as seen in Figure <a href="glm.html#fig:nzbinom">3.16</a>) provides information about how much variation in <span class="math inline">\(p\)</span> exists.</p>
+</div>
+<div id="complete-separation" class="section level2 hasAnchor" number="3.9">
+<h2><span class="header-section-number">3.9</span> Complete Separation<a href="glm.html#complete-separation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>One potential issue that can occur in GLM is something known as complete separation or the extreme category problem. While it can occur for any distribution which is discrete, it is most commonly seen when the response is Bernoulli. It occurs when the predictors perfectly predict the outcome. For example, in Section <a href="glm.html#bernoulli-sec">3.6.3</a> we generated Bernoulli data for each photo by assessing whether the mean score was greater than or less than 5. Photo <span class="math inline">\(\texttt{type}\)</span> is a very good predictor of the outcome, but not perfect:</p>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="glm.html#cb118-1" tabindex="-1"></a><span class="fu">table</span>(<span class="at">mean5 =</span> Grumpy<span class="sc">$</span>mean5, <span class="at">type =</span> Grumpy<span class="sc">$</span>type)</span></code></pre></div>
+<pre><code>##        type
+## mean5   grumpy happy
+##   FALSE      9    19
+##   TRUE      13     3</code></pre>
+<p>However, if we removed the three observations for which the mean grumpy score was greater than five despite the person being happy, then <span class="math inline">\(\texttt{type}\)</span> perfectly predicts the outcome. If we fit a probit model to these data, but using <code>glm</code>, a very strange thing happens:</p>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="glm.html#cb120-1" tabindex="-1"></a>data.cs <span class="ot">&lt;-</span> <span class="fu">subset</span>(Grumpy, <span class="sc">!</span>(mean5 <span class="sc">==</span> <span class="cn">TRUE</span> <span class="sc">&amp;</span> type <span class="sc">==</span> <span class="st">&quot;happy&quot;</span>))</span>
+<span id="cb120-2"><a href="glm.html#cb120-2" tabindex="-1"></a></span>
+<span id="cb120-3"><a href="glm.html#cb120-3" tabindex="-1"></a>mcs <span class="ot">&lt;-</span> <span class="fu">glm</span>(mean5 <span class="sc">~</span> type, <span class="at">family =</span> <span class="fu">binomial</span>(<span class="at">link =</span> probit), <span class="at">data =</span> data.cs)</span>
+<span id="cb120-4"><a href="glm.html#cb120-4" tabindex="-1"></a><span class="fu">summary</span>(mcs)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = mean5 ~ type, family = binomial(link = probit), 
+##     data = data.cs)
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept)   0.2299     0.2698   0.852    0.394
+## typehappy    -5.9798   359.8415  -0.017    0.987
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 51.221  on 40  degrees of freedom
+## Residual deviance: 29.767  on 39  degrees of freedom
+## AIC: 33.767
+## 
+## Number of Fisher Scoring iterations: 17</code></pre>
+<p>The coefficient for <span class="math inline">\(\texttt{typehappy}\)</span> now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. If we assess significance using Fisher’s exact test we get:</p>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="glm.html#cb122-1" tabindex="-1"></a><span class="fu">fisher.test</span>(<span class="fu">table</span>(data.cs<span class="sc">$</span>mean5, data.cs<span class="sc">$</span>type))</span></code></pre></div>
+<pre><code>## 
+##  Fisher&#39;s Exact Test for Count Data
+## 
+## data:  table(data.cs$mean5, data.cs$type)
+## p-value = 2.977e-05
+## alternative hypothesis: true odds ratio is not equal to 1
+## 95 percent confidence interval:
+##  0.0000000 0.2098429
+## sample estimates:
+## odds ratio 
+##          0</code></pre>
+<p>A very significant result, as expected.</p>
+<p>The model fitted using <span class="math inline">\(\texttt{MCMCglmm}\)</span> with default priors also behaves oddly with very poor mixing (Figure <a href="glm.html#fig:separation1">3.17</a>).</p>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="glm.html#cb124-1" tabindex="-1"></a>prior.mcs<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>))</span>
+<span id="cb124-2"><a href="glm.html#cb124-2" tabindex="-1"></a>mcs<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(mean5 <span class="sc">~</span> type, <span class="at">family =</span> <span class="st">&quot;threshold&quot;</span>, <span class="at">data =</span> data.cs, <span class="at">prior =</span> prior.mcs<span class="fl">.2</span>)</span>
+<span id="cb124-3"><a href="glm.html#cb124-3" tabindex="-1"></a><span class="fu">plot</span>(mcs<span class="fl">.2</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:separation1"></span>
+<img src="_bookdown_files/fig/separation1-1.png" alt="MCMC summary plots for the intercept and $\texttt{type}$ effect in a binary GLM (`mcs.2`) with probit link. For $\texttt{happy}$ photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with large variance was used for the model coefficients." width="672" />
 <p class="caption">
-Figure 3.17: MCMC summary plots for the between family variance component of a binary GLMM where the residual variance was fixed at one (black) and two (red).
+Figure 3.17: MCMC summary plots for the intercept and <span class="math inline">\(\texttt{type}\)</span> effect in a binary GLM (<code>mcs.2</code>) with probit link. For <span class="math inline">\(\texttt{happy}\)</span> photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with large variance was used for the model coefficients.
 </p>
 </div>
-<p>Should we worry? Not really. We just have to be careful about how we express the results. Stating that the family variance is 0.809 is meaningless without putting it in the context of the assumed residual variance. It is therefore more appropriate to report the intraclass correlation which in this context is the expected correlation between the state Pupated/Not Pupated, for members of the same family. It can be
+<p>This strange behaviour occurs because the ML estimate for the probability of success is zero for <span class="math inline">\(\texttt{happy}\)</span> photos. On the probit scale this translates into <span class="math inline">\(-\infty\)</span> and so the ML estimate of the difference between <span class="math inline">\(\texttt{happy}\)</span> and <span class="math inline">\(\texttt{grumpy}\)</span> photos (the <span class="math inline">\(\texttt{typehappy}\)</span> effect) will also be <span class="math inline">\(-\infty\)</span>. Consequently, with a flat prior on the <span class="math inline">\(\texttt{typehappy}\)</span> effect the posterior distribution is improper. The default prior for model coefficients in <span class="math inline">\(\texttt{MCMCglmm}\)</span> is not flat - they are normal with a large variance (<span class="math inline">\(10^8\)</span>), but even so this diffuse prior can cause problems if there is complete (or near complete) separation. To see this, think about an intercept-only model. A diffuse prior on the probit scale puts a lot of density on very large positive or negative values and so puts a lot of density close to zero and one on the probability scale (see Figure <a href="glm.html#fig:link">3.12</a>). If the likelihood prevents the posterior from reaching these extremes then the prior has little influence because it’s largely flat outside of the extremes (it’s U shaped). However, with complete separation the likelihood is indeed placing a lot of density at these extreme values and the prior holds the posterior at these values. If, on the other hand we had specified the prior on the intercept to be normal with a mean of zero and a variance of one then the prior on the probability scale would be flat (since the inverse-link function is the cumulative density function for the unit normal). If a logit-link had been used then there is no normal prior that would result in flatness on the probability scale, and having a mean of zero and a variance of <span class="math inline">\(\pi^2/3\)</span> (the variance of a logistic distribution) is a close as you can get.</p>
+<div class="figure"><span style="display:block;" id="fig:gelman-prior"></span>
+<img src="_bookdown_files/fig/gelman-prior-1.png" alt="Prior density on the probability of success in an intercept-only Bernoulli GLM. In black a probit link was used and the prior on the intercept is normal with zero mean and a variance of one.  In red a logit link was used and the prior on the intercept is normal with zero mean and a variance of $\pi^2/3$." width="672" />
+<p class="caption">
+Figure 3.18: Prior density on the probability of success in an intercept-only Bernoulli GLM. In black a probit link was used and the prior on the intercept is normal with zero mean and a variance of one. In red a logit link was used and the prior on the intercept is normal with zero mean and a variance of <span class="math inline">\(\pi^2/3\)</span>.
+</p>
+</div>
+<p>How to extend to models that have categorical and continuous predictors or models with random effects and/or the residual varinace is not set to one (in threshold models) or zero (logit models)….</p>
+<p>Fitting a flat prior on the probability results in a better mixing chain.</p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="glm.html#cb125-1" tabindex="-1"></a>prior.mcs<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="at">V =</span> <span class="fu">gelman.prior</span>(<span class="sc">~</span>type, <span class="at">data =</span> data.cs)),</span>
+<span id="cb125-2"><a href="glm.html#cb125-2" tabindex="-1"></a>    <span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>))</span>
+<span id="cb125-3"><a href="glm.html#cb125-3" tabindex="-1"></a>mcs<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(mean5 <span class="sc">~</span> type, <span class="at">family =</span> <span class="st">&quot;threshold&quot;</span>, <span class="at">data =</span> data.cs, <span class="at">prior =</span> prior.mcs<span class="fl">.3</span>)</span>
+<span id="cb125-4"><a href="glm.html#cb125-4" tabindex="-1"></a><span class="fu">plot</span>(mcs<span class="fl">.3</span><span class="sc">$</span>Sol)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:separation2"></span>
+<img src="_bookdown_files/fig/separation2-1.png" alt="MCMC summary plots for the intercept and $\texttt{type}$ effect in a binary GLM (`mcs.2`) with probit link. For $\texttt{happy}$ photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with a variance of one was used for the model coefficients." width="672" />
+<p class="caption">
+Figure 3.19: MCMC summary plots for the intercept and <span class="math inline">\(\texttt{type}\)</span> effect in a binary GLM (<code>mcs.2</code>) with probit link. For <span class="math inline">\(\texttt{happy}\)</span> photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with a variance of one was used for the model coefficients.
+</p>
+</div>
+<p>Stating that the family variance is x is meaningless without putting it in the context of the assumed residual variance. It is therefore more appropriate to report the intraclass correlation which in this context is the expected correlation between the state Pupated/Not Pupated, for members of the same family. It can be
 calculated as:</p>
 <p><span class="math display">\[\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+\pi^{2}/3}\]</span></p>
 <p>for the logit link, which is used when <code>family=categorical</code>, or</p>
 <p><span class="math display">\[\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+1}\]</span></p>
 <p>for the probit link, which is used if <code>family=ordinal</code> was specified.</p>
-<p>Obtaining the posterior distribution of the intra-class correlation for each model shows that they are sampling very similar posterior distributions (see Figure <a href="glm.html#fig:IC">3.18</a>)</p>
-<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="glm.html#cb119-1" tabindex="-1"></a>IC<span class="fl">.1</span> <span class="ot">&lt;-</span> m2b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="fu">rowSums</span>(m2b<span class="fl">.1</span><span class="sc">$</span>VCV) <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)</span>
-<span id="cb119-2"><a href="glm.html#cb119-2" tabindex="-1"></a>IC<span class="fl">.2</span> <span class="ot">&lt;-</span> m2b<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]<span class="sc">/</span>(<span class="fu">rowSums</span>(m2b<span class="fl">.2</span><span class="sc">$</span>VCV) <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)</span>
-<span id="cb119-3"><a href="glm.html#cb119-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(IC<span class="fl">.1</span>, IC<span class="fl">.2</span>))</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:IC"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/IC-1.png" alt="MCMC summary plots for the intra-family correlation from  a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
-<p class="caption">
-Figure 3.18: MCMC summary plots for the intra-family correlation from a binary GLMM where the residual variance was fixed at one (black) and two (red).
-</p>
-</div>
-<p>Using the approximation due to <span class="citation">Diggle et al. (<a href="#ref-Diggle.2004">2004</a>)</span> described earlier we can also rescale the estimates by the estimated residual variance (<span class="math inline">\(\sigma^{2}_{\texttt{units}}\)</span>) in order to obtain the posterior distributions of the parameters under the assumption that the actual residual variance (<span class="math inline">\(\sigma^{2}_{e}\)</span>) is equal to some other value. For location effects the posterior distribution needs to be multiplied by <span class="math inline">\(\sqrt{\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}}\)</span> and for the variance components the posterior distribution needs to be multiplied by <span class="math inline">\(\frac{1+c^{2}\sigma^{2}_{e}}{1+c^{2}\sigma^{2}_{\texttt{units}}}\)</span> where <span class="math inline">\(c\)</span> is some constant that depends on the link function. For the probit <span class="math inline">\(c=1\)</span> and for the logit <span class="math inline">\(c=16\sqrt{3}/15\pi\)</span>. We can obtain estimates under the assumption that <span class="math inline">\(\sigma^{2}_{e}=0\)</span>:</p>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="glm.html#cb120-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> ((<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>))<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb120-2"><a href="glm.html#cb120-2" tabindex="-1"></a>Int<span class="fl">.1</span> <span class="ot">&lt;-</span> m2b<span class="fl">.1</span><span class="sc">$</span>Sol<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m2b<span class="fl">.1</span><span class="sc">$</span>VCV[, <span class="dv">2</span>])</span>
-<span id="cb120-3"><a href="glm.html#cb120-3" tabindex="-1"></a>Int<span class="fl">.2</span> <span class="ot">&lt;-</span> m2b<span class="fl">.2</span><span class="sc">$</span>Sol<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> m2b<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">2</span>])</span>
-<span id="cb120-4"><a href="glm.html#cb120-4" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(<span class="fu">as.mcmc</span>(Int<span class="fl">.1</span>), <span class="fu">as.mcmc</span>(Int<span class="fl">.2</span>)))</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:ICI"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/ICI-1.png" alt="MCMC summary plots for the expected proportion of caterpillars pupating from  a binary GLMM where the residual variance was fixed at one (black) and two (red)." width="672" />
-<p class="caption">
-Figure 3.19: MCMC summary plots for the expected proportion of caterpillars pupating from a binary GLMM where the residual variance was fixed at one (black) and two (red).
-</p>
-</div>
-<p>The posteriors should be virtually identical under a flat prior (See Figure <a href="glm.html#fig:ICI">3.19</a>) although with different priors this is not always the case. Remarkably, <span class="citation">Dyk and Meng (<a href="#ref-vanDyk.2001">2001</a>)</span> show that leaving a diffuse prior on
+<p>Remarkably, <span class="citation">Dyk and Meng (<a href="#ref-vanDyk.2001">2001</a>)</span> show that leaving a diffuse prior on
 <span class="math inline">\(\sigma^{2}_{\texttt{units}}\)</span> and rescaling the estimates each iteration, a Markov chain with superior mixing and convergence properties can be obtained (See section <a href="parameter-expansion.html#parameter-expansion">9</a>).</p>
-<p>It should also be noted that a diffuse prior on the logit scale is not necessarily weakly informative on the probability scale. For example, the default setting for the prior on the intercept is <span class="math inline">\(N(0, 10^{8})\)</span> on the logit scale, which although relatively flat across most of the probability scale, has a lot of density close to zero and one:</p>
-<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="glm.html#cb121-1" tabindex="-1"></a><span class="fu">hist</span>(<span class="fu">plogis</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="fl">1e+08</span>))))</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:invlogit"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/invlogit-1.png" alt="Histogram of 1000 random deviates from a normal distribution with a mean of zero and a large variance ($10^8$) after undergoing an inverse logit transformation." width="672" />
-<p class="caption">
-Figure 3.20: Histogram of 1000 random deviates from a normal distribution with a mean of zero and a large variance (<span class="math inline">\(10^8\)</span>) after undergoing an inverse logit transformation.
-</p>
-</div>
-<p>This diffuse prior can cause problems if there is complete (or near complete) separation. Generally this happens when the binary data associated with some level of a categorical predictor are all success or all failures. For example, imagine we had 50 binary observations from an experiment with two treatments, for the first treatment the probability of success is 0.5 but in the second it is only one in a thousand:</p>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="glm.html#cb122-1" tabindex="-1"></a>treatment <span class="ot">&lt;-</span> <span class="fu">gl</span>(<span class="dv">2</span>, <span class="dv">25</span>)</span>
-<span id="cb122-2"><a href="glm.html#cb122-2" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">rbinom</span>(<span class="dv">50</span>, <span class="dv">1</span>, <span class="fu">c</span>(<span class="fl">0.5</span>, <span class="fl">0.001</span>)[treatment])</span>
-<span id="cb122-3"><a href="glm.html#cb122-3" tabindex="-1"></a>data.bin <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">treatment =</span> treatment, <span class="at">y =</span> y)</span>
-<span id="cb122-4"><a href="glm.html#cb122-4" tabindex="-1"></a><span class="fu">table</span>(data.bin)</span></code></pre></div>
-<pre><code>##          y
-## treatment  0  1
-##         1 12 13
-##         2 25  0</code></pre>
-<p>if we analyse using <code>glm</code> we see some odd behaviour:</p>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="glm.html#cb124-1" tabindex="-1"></a>m2c<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> treatment, <span class="at">data =</span> data.bin, <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>)</span>
-<span id="cb124-2"><a href="glm.html#cb124-2" tabindex="-1"></a><span class="fu">summary</span>(m2c<span class="fl">.1</span>)</span></code></pre></div>
-<pre><code>## 
-## Call:
-## glm(formula = y ~ treatment, family = &quot;binomial&quot;, data = data.bin)
-## 
-## Coefficients:
-##               Estimate Std. Error z value Pr(&gt;|z|)
-## (Intercept)    0.08004    0.40032   0.200    0.842
-## treatment2   -19.64611 2150.80263  -0.009    0.993
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 57.306  on 49  degrees of freedom
-## Residual deviance: 34.617  on 48  degrees of freedom
-## AIC: 38.617
-## 
-## Number of Fisher Scoring iterations: 18</code></pre>
-<p>the effect of treatment does not appear significant despite the large effect size. This is in direct contrast to an exact binomial test:</p>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="glm.html#cb126-1" tabindex="-1"></a>m2c<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(<span class="fu">table</span>(data.bin)[<span class="dv">2</span>, <span class="dv">2</span>], <span class="dv">25</span>)</span>
-<span id="cb126-2"><a href="glm.html#cb126-2" tabindex="-1"></a>m2c<span class="fl">.2</span></span></code></pre></div>
-<pre><code>## 
-##  Exact binomial test
-## 
-## data:  table(data.bin)[2, 2] and 25
-## number of successes = 0, number of trials = 25, p-value = 5.96e-08
-## alternative hypothesis: true probability of success is not equal to 0.5
-## 95 percent confidence interval:
-##  0.0000000 0.1371852
-## sample estimates:
-## probability of success 
-##                      0</code></pre>
-<p>where the 95% confidence interval for the probability of success is 0.000 to
-0.137.</p>
-<p>The default <span class="math inline">\(\texttt{MCMCglmm}\)</span> model also behaves oddly (see Figure <a href="glm.html#fig:separation1">3.21</a>):</p>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="glm.html#cb128-1" tabindex="-1"></a>prior.m2c<span class="fl">.3</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">fix =</span> <span class="dv">1</span>))</span>
-<span id="cb128-2"><a href="glm.html#cb128-2" tabindex="-1"></a>m2c<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> treatment, <span class="at">data =</span> data.bin, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior.m2c<span class="fl">.3</span>)</span>
-<span id="cb128-3"><a href="glm.html#cb128-3" tabindex="-1"></a><span class="fu">plot</span>(m2c<span class="fl">.3</span><span class="sc">$</span>Sol)</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:separation1"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/separation1-1.png" alt="MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and $-\infty$ on the logit scale. With a flat prior on the treatment effect the posterior distribution is improper, and with a diffuse prior (as used here) the posterior is dominated by the high prior densities at extreme values." width="672" />
-<p class="caption">
-Figure 3.21: MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and <span class="math inline">\(-\infty\)</span> on the logit scale. With a flat prior on the treatment effect the posterior distribution is improper, and with a diffuse prior (as used here) the posterior is dominated by the high prior densities at extreme values.
-</p>
-</div>
-<p>For these types of problems, I usually remove the global intercept (<code>-1</code>) and use the prior <span class="math inline">\(N(0, \sigma^{2}_{\texttt{units}}+\pi^2/3)\)</span> because this is reasonably flat on the probability scale when a logit link is used. For example,</p>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="glm.html#cb129-1" tabindex="-1"></a>prior.m2c<span class="fl">.4</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">B =</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>), <span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>)), <span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
-<span id="cb129-2"><a href="glm.html#cb129-2" tabindex="-1"></a>    <span class="at">fix =</span> <span class="dv">1</span>))</span>
-<span id="cb129-3"><a href="glm.html#cb129-3" tabindex="-1"></a>m2c<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> treatment <span class="sc">-</span> <span class="dv">1</span>, <span class="at">data =</span> data.bin, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior.m2c<span class="fl">.4</span>)</span>
-<span id="cb129-4"><a href="glm.html#cb129-4" tabindex="-1"></a><span class="fu">plot</span>(m2c<span class="fl">.4</span><span class="sc">$</span>Sol)</span></code></pre></div>
-<p>looks a little better (see Figure <a href="glm.html#fig:separation1">3.21</a>), and the posterior distribution for the probability of success in treatment 2 is consistent with the exact binomial test for which the 95% CI were (0.000 -0.137). With such a simple model, the prediction for observation 26 is equal to the treatment 2 effect and so we can get the the credible interval (on the data scale) for treatment 2 using the predict function:</p>
-<div class="figure"><span style="display:block;" id="fig:separation2"></span>
-<img src="MCMCglmm-course-notes_files/figure-html/separation2-1.png" alt="MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and $-\infty$ on the logit scale. A flat prior on the probability scale was used and the posterior distribution is better behaved than if a flat prior on the logit scale had been used (see Figure \ref{separation1-fig})." width="672" />
-<p class="caption">
-Figure 3.22: MCMC summary plots for the intercept and treatment effect in a binary GLM. In treatment 2 all 25 observations were failures and so the ML estimator on the probability scale is zero and <span class="math inline">\(-\infty\)</span> on the logit scale. A flat prior on the probability scale was used and the posterior distribution is better behaved than if a flat prior on the logit scale had been used (see Figure <span class="math inline">\(\ref{separation1-fig}\)</span>).
-</p>
-</div>
-<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="glm.html#cb130-1" tabindex="-1"></a><span class="fu">predict</span>(m2c<span class="fl">.4</span>, <span class="at">interval =</span> <span class="st">&quot;confidence&quot;</span>)[<span class="dv">26</span>, ]</span></code></pre></div>
-<pre><code>##          fit          lwr          upr 
-## 0.0303016922 0.0001343459 0.0898198607</code></pre>
+<p>For these types of problems, I usually remove the global intercept (<code>-1</code>) and use the prior <span class="math inline">\(N(0, \sigma^{2}_{\texttt{units}}+\pi^2/3)\)</span> because this is reasonably flat on the probability scale when a logit link is used.</p>
+<p>The probability of success in treatment 2 is consistent with the exact binomial test for which the 95% CI were (xxxx). With such a simple model, the prediction for observation 26 is equal to the treatment 2 effect and so we can get the the credible interval (on the data scale) for treatment 2 using the predict function:</p>
 
 </div>
 </div>
@@ -996,6 +985,9 @@ Hinde, John. 1982. <span>“Compound <span>Poisson</span> Regression Models.”<
 <div id="ref-McCulloch.2001" class="csl-entry">
 McCulloch, C. E., and S. R. Searle. 2001. <em>Generalized, Linear and Mixed Models</em>. Wiley Series in Probability and Statistics. New York: John Wiley &amp; Sons.
 </div>
+<div id="ref-Pascall.2018" class="csl-entry">
+Pascall, David J, Matthew C Tinsley, Darren J Obbard, and Lena Wilfert. 2018. <span>“Host Evolutionary History Predicts Virus Prevalence Across Bumblebee Species.”</span> <em>BioRxiv</em>, 498717.
+</div>
 </div>
 <div class="footnotes">
 <hr />
@@ -1005,6 +997,7 @@ McCulloch, C. E., and S. R. Searle. 2001. <em>Generalized, Linear and Mixed Mode
 <li id="fn6"><p>When <span class="math inline">\(x\)</span> is small <span class="math inline">\(\textrm{exp}(x)\approx 1+x\)</span>.<a href="glm.html#fnref6" class="footnote-back">↩︎</a></p></li>
 <li id="fn7"><p>For more complicated models a (co)variance matrix may be estimated for a particular random component rather than just a single variance as here. In such cases, <code>V</code> is a matrix. The value at which (part of) the (co)variance matrix is fixed at is determined by <code>V</code>. Any elements of the covariance matrix in rows and/or columns equal to or greater than <code>fix</code> are fixed. In the case of a single variance <code>fix=1</code> simply fixes the variance (element 1,1 of the (co)variance matrix) at whatever is specified in <code>V</code> (one in this example).<a href="glm.html#fnref7" class="footnote-back">↩︎</a></p></li>
 <li id="fn8"><p><code>family="ordinal"</code> is also available but it is only retained to ensure back compatibility: it is equivalent to <code>family="threshold"</code> with the variance fixed at the specified value plus one. When <code>family="ordinal"</code> was implemented I had misunderstood the paper by <span class="citation">Albert and Chib (<a href="#ref-Albert.1993">1993</a>)</span> and didn’t realise the latent variable could be Gibbs sampled with a threshold link (<span class="math inline">\(\mathbf{1}_{\{l&gt;0\}}\)</span>).<a href="glm.html#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p>I can confidently say that <span class="math inline">\(E[1-(1-p)^2]\)</span> will be less than <span class="math inline">\(1-(1-E[p])^2\)</span> because of Jensen’s inequality. Jensen’s inequality tells us that <span class="math inline">\(E[f(x)]\)</span> will be less than <span class="math inline">\(f(E[x])\)</span> if <span class="math inline">\(f\)</span> is convex, or greater than than <span class="math inline">\(f(E[x])\)</span> if <span class="math inline">\(f\)</span> is concave. In the current example, <span class="math inline">\(f(x) = (1-x)^2=1-2x+x^2\)</span>, which is a quadratic with a positive quadratic coefficient and so convex.<a href="glm.html#fnref9" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

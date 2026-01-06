@@ -2,6 +2,9 @@
 
 ## All functions
 
+- [`ABPvirus`](https://jarrodhadfield.github.io/MCMCglmm/reference/ABPvirus.md)
+  : Data on Acute Bee Paralysis Virus Infections in Bumblebees from
+  Pascall et al. (2018).
 - [`BTdata`](https://jarrodhadfield.github.io/MCMCglmm/reference/BTdata.md)
   : Blue Tit Data for a Quantitative Genetic Experiment
 - [`BTped`](https://jarrodhadfield.github.io/MCMCglmm/reference/BTped.md)

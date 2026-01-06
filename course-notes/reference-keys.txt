@@ -37,12 +37,9 @@ fig:link
 fig:thresh
 fig:thresh-logit
 fig:ordinal
-fig:Bin1
-fig:Bin2
-fig:IC
-fig:ICI
-fig:invlogit
+fig:nzbinom
 fig:separation1
+fig:gelman-prior
 fig:separation2
 eq:MM-eq
 fig:yrandom
@@ -126,9 +123,10 @@ posterior-predictive-distribution
 binomial-and-bernoulli-glm
 overdispersion-1
 prediction
-bernoulli-glm
+bernoulli-sec
 probit-link
 ordinal-data
+non-zero-binomial-data
 complete-separation
 ranef
 pred-sec
