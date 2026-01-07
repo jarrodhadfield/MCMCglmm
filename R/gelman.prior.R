@@ -1,4 +1,19 @@
-gelman.prior<-function(formula, data, scale=1, intercept=scale, singular.ok=FALSE){
+gelman.prior<-function(formula, data, coef.scale=1, intercept.scale=coef.scale, singular.ok=FALSE, ...){
+
+  mc <- match.call(expand.dots = FALSE) # ensure back compatibility with previous arguments
+  dots<- mc[["..."]]
+
+  if(!is.null(dots)){
+    if(any(!names(dots)%in%c("scale", "intercept"))){
+       stop(paste("unused argument", paste(names(dots), collapse=" ")))
+    }else{
+      stop("Sorry, the gelman.prior function has changed. To achieve back compatibility what was 'scale' should be 'coef.scale' and what was 'intercept' should be 'intercept.scale'. In addition a list is now returned and the prior covariance matrix is in element 'V'")
+    }
+  }  
+
+  if(any(names(mc)=="scale")){coef.scale=scale}
+  if(any(names(mc)=="intercept")){intercept.scale=intercept}
+
   X1<-model.matrix(formula, data)
   if(singular.ok==FALSE){
      sing.rm<-lm(rnorm(nrow(X1))~X1-1)
@@ -21,8 +36,8 @@ gelman.prior<-function(formula, data, scale=1, intercept=scale, singular.ok=FALS
     X2<-X2[,-sing.rm]
   }
   P<-solve(t(X1)%*%X1, t(X1)%*%X2)
-  I<-diag(nrow(P))*scale^2
-  I[1,1]<-intercept^2
-  P%*%I%*%t(P)
-}
+  I<-diag(nrow(P))*coef.scale^2
+  I[1,1]<-intercept.scale^2
+  return(list(mu=rep(0, nrow(P)), V=P%*%I%*%t(P)))
 
+}

@@ -1,18 +1,111 @@
 # Random effects {#ranef}
 
-In some cases we may have measured variables whose effects we would like to treat as random. Often the distinction between fixed and random is given by example; things like population, species, individual and vial are random, but sex, treatment and age are not. Or the distinction is made using rules of thumb; if there are few factor levels and they are
-interesting to other people they are fixed. However, this doesn't really confer any understanding about what it means to treat something as fixed or random, and doesn't really allow judgements to be made regarding ambiguous variables (for example year) or give any insight into the fact that in a Bayesian analysis all effects are technically random.
+In some cases we may have measured variables whose effects we would like to treat as random. Often the distinction between fixed and random is given by example: things like city, species, individual and vial are random, but sex, treatment and age are not. Or the distinction is made using rules of thumb: if there are few factor levels and they are interesting to other people they are fixed. However, this doesn't really confer any understanding about what it means to treat something as fixed or random, and doesn't really allow judgements to be made for variables in which the rules of thumb seem to contradict each other. Similarly, these 'explanations' don't give any insight into the fact that all effects are technically random in a Bayesian analysis.
 
-When we treat an effect as fixed we believe that the only information regarding its value comes from data associated with that particular level. If we treat an effect as random we also use this information, but we weight it by what other data tell us about the likely values that the effects could take. In a Bayesian analysis this additional information could come from data not formally included in the analysis, in which case it would be called a prior. In hierarchical models this additional information comes from data associated with other factor levels of the
-same type.
+Random effect models are often expressed as an extension of Equation \@ref(eq:lm):
 
-The degree to which this additional information is important depends on the variability of the effects, as measured by the estimated variance component, and the degree of replication within a particular level. If variability is high then most of the information must come from data associated with an individual effect, particularly if replication within
-that effect is high. However, if variability and replication are low then extreme mean values of the response for a given level are more likely to be due to sampling error alone, and so the estimates are shrunk towards zero.
+$$E[{\bf y}] = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}
+ \label{MM}   (\#eq:MM)$$
 
-It is common to hear things like 'year is a random effect' as if you just have to estimate *a* single effect for all years. It is also common to hear things like 'years is random' as if years were sampled at random. Better to say year effects are random and understand that it is the effects that are random not the years, and that we're trying to
-estimate as many effects as there are years. In this sense they're the same as fixed effects, and we can easily treat the year effects as random to see what difference it makes.
+where ${\bf Z}$ is a design matrix like ${\bf X}$, and ${\bf u}$ is a vector of parameters like ${\boldsymbol{\mathbf{\beta}}}$. However, at this stage there is simply no distinction between fixed and random effects. We could combine the design matrices (${\bf W} = [{\bf X}, {\bf Z}]$) and combine the vectors of parameters ($\boldsymbol{\theta} = [{\boldsymbol{\mathbf{\beta}}}^{'}, {\bf u}^{'}]^{'}$) to get:
 
-Random effect models are often expressed as:
+$$E[{\bf y}] = {\bf W}\boldsymbol{\theta}
+ \label{MM2}   (\#eq:MM2)$$
+
+which is **identical** to Equation \@ref(eq:MM).  So if we don't need to distinguish between fixed and random effects at this stage, when should we distinguish between them, and what distinguishes them?  
+
+When we treat an effect as random we believe that the coefficients have some distribution around a mean of zero; often we assume they are normal[^ranef.1] and that they are independent (represented by an identity matrix) and identically distributed with variance $\sigma^{2}_{u}$:
+
+$${\bf u} \sim N({\bf 0}, {\bf I}\sigma^{2}_{u})$$
+
+$\sigma^{2}_{u}$ is a parameter of the model which we estimate, in addition to ${\bf u}$. In a Bayesian analysis we would also assign $\sigma^{2}_{u}$ a prior, and $\sigma^{2}_{u}$ is often called a hyper-parameter with an associated hyper-prior. 
+
+Fixed effects in a frequentist analysis are not assigned a distribution, but we can understand this in terms of the limit to the normal distribution
+
+$$\boldsymbol{\beta} \sim N({\bf 0}, {\bf I}\sigma^{2}_{\beta})$$
+
+as $\sigma^{2}_{\beta}$ tends to infinity. In a Bayesian setting we would call this a flat improper prior. In practice, we often use diffuse proper priors in Bayesian analyses. For example, the default in $\texttt{MCMCglmm}$ is to set $\sigma^{2}_{\beta}=10^8$. Then, $\boldsymbol{\beta}$ are technically random - they are assigned a distribution - but I find it useful to retain the frequentist terminology 'fixed'. The only difference then is that the 'fixed' effects are assigned a prior distribution with a variance that is defined by the user-specified prior ($\sigma^{2}_{\beta}$ - which is often set to be large) and the 'random' effects are assigned a prior distribution with a variance that is estimated ($\sigma^{2}_{u}$ - which could be large, but also zero). 
+
+That is the distinction between fixed and random effects. The difference really is that simple, but it takes a long time and a lot of practice to understand what this means in practical terms, and why working with random effects can be a very powerful way of modelling data.  To get a feel for why we might want to fit an effect as random or not, lets work through an example before moving on to model fitting. In Section \@ref(binom-sec) we analysed binomial data where 122 respondents had looked at 44 photographs of people and given them a 'grumpy score' of more than five (a success) or less than five (a failure). If, instead of 122 respondents, there had been a zillion respondents, we could use the average proportion of success for each photo as a nearly perfect estimates of their probabilities of success. The variance of these near-perfect estimates could serve as a reasonable estimate of the variance in photo effects. If the probabilities were all clustered tightly around 0.5: 0.505, 0.501, 0.499 and so on, then variance would be estimated to be small. Let's then imagine that we obtained a $45^\textrm{th}$ photograph but by this point the respondents were so bored I managed to only recruit a single person who gave the photo a score greater than five - a success. Since we only have one observation for this photo the average proportion of success would be one. Do you think the best estimate of the probability of success for the $45^\textrm{th}$ photograph is then 1.000? I think you wouldn't: you would use the knowledge that you have gained from the other photos and say that it is more likely that if you had managed to recruit more respondents you would have got a roughly even split of success and failures. You have used common sense, treated the photo effects as random, and *shrunk* photo 45's effect towards the average because the variance ($\sigma^2_u$) was small and we have a strong prior. If we had treated the photo effects as fixed, we believe that the only information regarding a photo's value comes from data associated with that particular photo, and the estimate of photo 45's probability would have been one. When we treat an effect as random, we also use the information that comes from data associated with that particular photo (obviously), but we weight that information by what the data associated with other photos tell us about the likely values that the effect could take - through the parameter $\sigma^2_u$. What if the probabilities weren't all clustered tightly around 0.5, but took on values 0.500, 0.998, 0.002, 0.327 ...?  The variance $\sigma^2_u$ would be larger and the prior information for our $45^\textrm{th}$ photo would be weaker: perhaps we got a success because the underlying probability was 0.998, but a single success would also not be very surprising if the underlying probability was 0.500, or even 0.327. We might then be happy that our best estimate of the probability of success for the $45^\textrm{th}$ photograph was close to one, although with such weak prior information (large $\sigma^2_u$) the uncertainty would remain large.   
+
+When the motivation for treating an effect as random is explained this way, it is hard to come up with a reason why you wouldn't treat all effects as random. However, you have to consider how much information is in a given data set to estimate $\sigma^2_u$, which we will cover in Section \@ref(fixed-or-random-sec)
+
+## GLMM {#GLMM}
+
+In Section \@ref(binom-sec), the binomial model we fitted only contained fixed effects, as specified in the `fixed` argument to `MCMCglmm` (`fixed=cbind(g5,l5)~type+ypub`). No random effects were fitted, although 'residuals' were fitted as default to absorb any overdispersion. Residuals are random effects for which we estimate a variance - the hyperparameter, $\sigma^2_e$ - and when used with Binomial or Poisson responses are commonly referred to as observation-level random effects. Since there is a one-to-one correspondence between observation and photo in this data set, $\sigma^2_e$ is equivalent to the $\sigma^2_u$ discussed above (although $\sigma^2_e$ refers to the variance on the logit scale rather the probability scale used implicitly above). We saw that the probability of success varied greatly across photos (model `mbinom.1`) but we also noted that some of this variation may be due to the person being photographed and we could tease apart the effect of person from the specifics of the photo since each person was photographed twice - once when happy and once when grumpy. \texttt{person} has 22 levels and you are probably not interested in knowing the grumpy score of someone you didn't know - \texttt{person} effects seem to satisfy the rule of thumb often used to decide that they should be treated as random. The random effect model is specified through the argument `random` and has a simple form in this case:
+
+
+``` {r mbinom2}
+mbinom.2<-MCMCglmm(cbind(g5, l5)~type+ypub, random=~person, data=Grumpy, family="multinomial2", pr=TRUE)
+summary(mbinom.2)
+```   
+
+We can see that the between-person variance is comparable to the residual (across-photo within-person) variance although the credible intervals on both variances is wide. $\texttt{MCMCglmm}$ does not store the posterior distribution of the random effects by default, as there may be a lot of them and they are often not of interest. However, since I specified `pr=TRUE`, the whole of $\boldsymbol{\theta}$ is stored rather than just ${\boldsymbol{\mathbf{\beta}}}$. In Section \@ref(binom-sec) we saw that photo 4521 and photo 4527, despite having the same fixed effect prediction ($\texttt{type}$ = $\texttt{grumpy}$, $\texttt{ypub}$ = 16 years),  had quite different probabilities of success, with the posterior mean probabilities being `r formatC(round(mean(plogis(mbinom.1$Liab[,3])),3), format="f", digits=3)` and `r formatC(round(mean(plogis(mbinom.1$Liab[,25])),3), format="f", digits=3)` respectively. What we didn't know is whether this divergence in probability was due to the person being photographed or some property of the photo. 
+
+## Prediction with Random Effects
+
+If we use the $\texttt{predict}$ method on our model the default is to not only marginalise the residuals, but also to marginalise any other random effects.  If we predict the probability of success for these two photos they are identical, because we are calculating the expectation based on ${\bf X}{\boldsymbol{\beta}}$ only: 
+
+``` {r }
+predict(mbinom.2)[c(3,25),]/122
+```   
+
+The $\texttt{predict}$ method (and $\texttt{simulate}$ method) for $\texttt{MCMCglmm}$ includes the argument $\texttt{marginal}$ which by default takes the $\texttt{random}$ argument used to fit the model. If we want to obtain a prediction that includes (some of) the random effects we can remove the corresponding term from the formula passed to  $\texttt{marginal}$. Since we only have one random term, which we like to include in the prediction, $\texttt{marginal}$ is empty:
+
+``` {r }
+predict(mbinom.2, marginal=NULL, interval="confidence")[c(3,25),]/122
+```  
+
+It seems that some of the divergence in probability is due to the person being photographed: our best estimate is that if we had taken many photos of $\texttt{darren_o}$ when grumpy  `r round(100*predict(mbinom.2, marginal=NULL)[3]/122,1)` \% of people would have scored him above five on the grumpy scale, but for $\texttt{craig_w}$ it would be lower (`r round(100*predict(mbinom.2, marginal=NULL)[3]/122,1)` \%). The 95\% credible (confidence) intervals on each are wide however, and a formal comparison (on the logit scale) gives a 95\% credible interval that overlaps zero:
+
+``` {r }
+HPDinterval(mbinom.2$Sol[,"person.darren_o"]-mbinom.2$Sol[,"person.craig_w"])
+``` 
+
+## Binomial versus Bernoulli
+
+The $\texttt{Grumpy}$ data set aggregates the scores of the 122 respondents into a single binomial response for each photograph. However, we could imagine disaggregating the data such that each respondent for each photograph gets a Bernoulli response with a success if they gave a particular photo a score greater than five. The disaggregated data (`FullGrumpy`) have $122\times 44 = 5,368$ observations (although a few respondents did not assess all photos).  
+
+```{r }
+data(FullGrumpy)
+head(FullGrumpy, 3)
+```
+
+$\texttt{y}$ is now the score each respondent $\texttt{respondent}$ gave each $\texttt{photo}$ (rather than the average score for each $\texttt{photo}$ in `Grumpy`). In addition, we have the respondent-level information $\texttt{student}$ which can be either $\texttt{YES}$ or $\texttt{NO}$. We will turn each persons score into the Bernoulli response
+
+``` {r }
+FullGrumpy$g5<-FullGrumpy$y>5
+```   
+
+and fit the model
+
+``` {r mbinom3}
+prior.mbinom.3=list(R=list(V=1, fix=1), G=list(G1=list(V=1, nu=0.002), G2=list(V=1, nu=0.002)))
+
+mbinom.3<-MCMCglmm(g5~type+ypub, random=~person+photo, data=FullGrumpy, family="categorical", prior=prior.mbinom.3)
+summary(mbinom.3)
+```   
+
+Stating that the person variance is x is meaningless without putting it in the context of the assumed residual variance. It is therefore more appropriate to report the intraclass correlation which in this context is the expected correlation between the state Pupated/Not Pupated, for members of the same family. It can be
+calculated as:
+
+$$\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+\pi^{2}/3}$$
+
+for the logit link, which is used when `family=categorical`, or
+
+$$\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+1}$$
+
+for the probit link, which is used if `family=ordinal` was specified.
+
+
+
+
+
+
+
+It is common to hear things like 'year is a random effect' as if you just have to estimate *a* single effect for all years. It is also common to hear things like 'years are random' as if years were sampled at random. Better to say year effects are random and understand that it is the effects that are random not the years, and that we're trying testimate as many effects as there are years. In this sense they're the same as fixed effects, and we can easily treat the year effects as random to see what difference it makes.
+
+Random effect models are often expressed as: \@ref(eq:lm)
 
 $$E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})$$
 
@@ -119,53 +212,20 @@ In fact it explains so much that the residual variance is close to zero and mixi
 
 ## Prediction with Random effects {#pred-sec}
 
-In section [3.2](#addod-sec){reference-type="ref" reference="addod-sec"} we showed that for non-Gaussian data the expectation of the response variable $y$ is different from the linear predictor if we wish to average over the residuals. Often it is important to get the expectation after marginalising residuals, and indeed after marginalising other random effects. For example we may not be so interested in knowing the expected number of injuries on the average day, but knowing the expected number of injuries on any random day.
 
-For the Poisson mixed model:
 
-$$E[y] = \texttt{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})$$
+Stating that the family variance is x is meaningless without putting it in the context of the assumed residual variance. It is therefore more appropriate to report the intraclass correlation which in this context is the expected correlation between the state Pupated/Not Pupated, for members of the same family. It can be
+calculated as:
 
-we can marginalise with respect to the random effects, including the overdispersion residual:
+$$\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+\pi^{2}/3}$$
 
-$$E_{{u,e}}[y] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}}+0.5\sigma^{2})$$
+for the logit link, which is used when `family=categorical`, or
 
-where $\sigma^{2}$ is the sum of the variance components.
+$$\texttt{IC} =  \frac{\sigma^{2}_{\texttt{FSfamily}}}{\sigma^{2}_{\texttt{FSfamily}}+\sigma^{2}_{\texttt{units}}+1}$$
 
-For the Binomial mixed model with logit link
+for the probit link, which is used if `family=ordinal` was specified.
 
-$$E[y] = \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}{\bf u}+{\bf e})$$
 
-it is not possible to marginilse with respect to the random effects analytically, but two approximations exist. The first
-
-$$E_{{u,e}}[y] \approx \textrm{logit}^{-1}({\bf X}{\boldsymbol{\mathbf{\beta}}}-0.5\sigma^{2}\textrm{tanh}({\bf X}{\boldsymbol{\mathbf{\beta}}}(1+2\textrm{exp}(-0.5\sigma^{2}))/6)))$$
-
-can be found on p452 in @McCulloch.2001 and the second (and possibly less accurate) approximation in @Diggle.2004:
-
-$$E_{{u,e}}[y] \approx \textrm{logit}^{-1}\left(\frac{{\bf X}{\boldsymbol{\mathbf{\beta}}}}{\sqrt{1+(\frac{16\sqrt{3}}{15\pi})^{2}\sigma^{2}}}\right)$$
-
-The predict function for $\texttt{MCMCglmm}$ object allows us to predict the laibality on the latent scale after marginalising the random effects in model `m2a.7`:
-
-``` {r echo=TRUE}
-predict(m2a.7, marginal = ~day, type = "terms")[1:5]
-```
-
-or we can predict on the data scale:
-
-``` {r echo=TRUE}
-predict(m2a.7, marginal = ~day, type = "response")[1:5]
-```
-
-In addition, credible intervals can be obtained
-
-``` {r echo=TRUE}
-predict(m2a.7, marginal = ~day, type = "response", interval = "confidence")[1:5,] 
-```
-
-as can prediction intervals through posterior predictive simulation:
-
-``` {r echo=TRUE}
-predict(m2a.7, marginal = ~day, type = "response", interval = "prediction")[1:5, ]
-```
 
 ## A note on fixed effect priors and covariances {#PriorContr-sec}
 
@@ -320,4 +380,4 @@ m2a.6.1<-MCMCglmm(y ~ 1, random=~year, family="poisson", data=Traffic, prior=pri
 
 is therefore sampling from the same posterior distribution as model `m2a.5.1`.
 
-
+[^ranef.1]: If we assumed the distribution was Laplace (back to back exponentials) we have the LASSO. If we assumed the distribution was a mixture of normal and Laplace we have the elastic net. 
