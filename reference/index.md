@@ -16,6 +16,8 @@
   fitness with respect to linear predictors.
 - [`Dtensor()`](https://jarrodhadfield.github.io/MCMCglmm/reference/Dtensor.md)
   : Tensor of (mixed) partial derivatives
+- [`FullGrumpy`](https://jarrodhadfield.github.io/MCMCglmm/reference/FullGrumpy.md)
+  : Full Grumpy Scores of Academics
 - [`Grumpy`](https://jarrodhadfield.github.io/MCMCglmm/reference/Grumpy.md)
   : Grumpy Scores of Academics
 - [`KPPM()`](https://jarrodhadfield.github.io/MCMCglmm/reference/KPPM.md)

@@ -35,5 +35,5 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 ``` r
 p<-runif(4)
 pkk(p, 10)
-#> [1] 0.240965
+#> [1] 0.3185863
 ```

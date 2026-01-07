@@ -41,6 +41,9 @@ fig:nzbinom
 fig:separation1
 fig:flat-prob-prior
 fig:separation2
+fig:separation3
+eq:MM
+eq:MM2
 eq:MM-eq
 fig:yrandom
 fig:ypred
@@ -120,7 +123,7 @@ multiplicative-overdispersion
 addod-sec
 prediction-in-glm
 posterior-predictive-distribution
-binomial-and-bernoulli-glm
+binom-sec
 overdispersion-1
 prediction
 bernoulli-sec
@@ -130,6 +133,9 @@ non-zero-binomial-data
 complete-separation
 gelman-prior-sec
 ranef
+GLMM
+prediction-with-random-effects
+binomial-versus-bernoulli
 pred-sec
 PriorContr-sec
 cat-int
