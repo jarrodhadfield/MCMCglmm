@@ -474,7 +474,7 @@ legend(-2.5,0.9, legend=c("logit", "probit", "cloglog"), fill=c("black", "red", 
 
 We can see that the link functions generate rather similar predicted probabilities, particularly the logit and probit links. For Bernoulli data, another way to conceptualise these link functions is in terms of threshold models. Imagine the case where we have managed to set the non-identifiable residual variance to zero and all residuals $e$ are zero and can be omitted. The probability of success is then given by the inverse-link of $\eta$. For probit link this would be the probability of getting a value less than $\eta$ from the unit normal (the grey area in the left panel of Figure \@ref(fig:thresh)). Equivalently, it is the probability of getting a value greater than 0 from a normal with a mean equal to $\eta$ and a standard deviation of one (the grey area in the right panel of Figure \@ref(fig:thresh)). 
 
-```{r thresh, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap="Probability density function for $\\epsilon$ (left) or  $\\eta+\\epsilon$ (right) where $\\epsilon$ is normal with mean zero and a standard deviation of one. Applying `pnorm` to $\\eta$ gives the shaded area on the left and is the probability of success using probit link. The shaded area on the right gives the same probability and is the chance of getting a value greater than zero from a normal with mean $\\eta$ and a standard deviation of one."}
+```{r thresh, echo=FALSE, include=TRUE, fig.width=8, fig.height=5, fig.cap="Probability density function for $\\epsilon$ (left) or  $\\eta+\\epsilon$ (right) where $\\epsilon$ is normal with mean zero and a standard deviation of one. Applying `pnorm` to $\\eta$ gives the shaded area on the left and is the probability of success using probit link. The shaded area on the right gives the same probability and is the chance of getting a value greater than zero from a normal with mean $\\eta$ and a standard deviation of one."}
 
 par(mfrow=c(1,2))
 eta<-1
@@ -548,7 +548,7 @@ The output of `mordinal` gives the intercept ($\eta$ in this case) as before but
 summary(mordinal)
 ```
 
-As we did in the right panel of Figure \@ref(fig:thresh)) we can draw this model with the estimated threshold ($\gamma$) included (Figure \@ref(fig:ordinal)). 
+As we did in the right panel of Figure \@ref(fig:thresh), we can draw this model with the estimated threshold ($\gamma$) included (Figure \@ref(fig:ordinal)). 
 
 
 ```{r ordinal, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap=paste0("Probability density function for  $l=\\eta+e$ where $e$ is normal with mean zero and a standard deviation of one. $\\eta=$ ", round(colMeans(mordinal$Sol), 3), " and was obtained from the model `mordinal`. The distribution is 'cut' into three regions by the fixed threshold at zero and the estimated threshold ($\\gamma$) at ", round(colMeans(mordinal$CP), 3), ". The shaded areas correspond to the probabilities of observing the three (ordered) outcomes.")}
@@ -631,7 +631,7 @@ If the data set was larger and/or variation in the pool size was greater, there 
 
 ## Complete Separation
 
-One potential issue that can occur in GLM is something known as complete separation or the extreme category problem. While it can occur for any distribution which is discrete, it is most commonly seen when the response is Bernoulli. It occurs when the predictors perfectly predict the outcome. For example,  in Section \@ref(bernoulli-sec) we generated Bernoulli data for each photo by assessing whether the mean score was greater than or less than 5. Photo $\texttt{type}$ is a very good predictor of the outcome, but not perfect:
+One potential issue that can occur in GLM is something known as complete separation or the extreme category problem. While it can occur for any distribution which is discrete, it is most commonly seen when the response is Bernoulli. It occurs when the predictors perfectly predict the outcome. For example, in Section \@ref(bernoulli-sec) we generated Bernoulli data for each photo by assessing whether the mean score was greater than or less than five. Photo $\texttt{type}$ is a very good predictor of the outcome, but not perfect:
 
 
 ```{r }
@@ -655,31 +655,57 @@ fisher.test(table(data.cs$mean5, data.cs$type))
 
 A very significant result, as expected. 
 
-The model fitted using $\texttt{MCMCglmm}$ with default priors also behaves oddly with very poor mixing (Figure \@ref(fig:separation1)).
+The model fitted using $\texttt{MCMCglmm}$ also behaves oddly with very poor mixing (Figure \@ref(fig:separation1)).
 
-``` {r label=separation1, include=TRUE, fig.cap="MCMC summary plots for the intercept and $\\texttt{type}$ effect in a binary GLM (`mcs.2`) with probit link. For $\\texttt{happy}$ photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with large variance was used for the model coefficients."}
+``` {r label=separation1, include=TRUE, fig.cap="MCMC summary plots for the intercept and $\\texttt{typehappy}$ effect in a binary GLM (`mcs.2`) with probit link. For $\\texttt{happy}$ photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with large variance was used for the model coefficients."}
 prior.mcs.2=list(R=list(V=1, fix=1))
 mcs.2<-MCMCglmm(mean5~type, family="threshold", data=data.cs, prior=prior.mcs.2)
 plot(mcs.2$Sol)
 ```
 
-This strange behaviour occurs because the ML estimate for the probability of success is zero for $\texttt{happy}$ photos. On the probit scale this translates into $-\infty$ and so the ML estimate of the difference between $\texttt{happy}$ and $\texttt{grumpy}$ photos (the $\texttt{typehappy}$ effect) will also be $-\infty$. Consequently, with a flat prior on the $\texttt{typehappy}$ effect the posterior distribution is improper. The default prior for model coefficients in $\texttt{MCMCglmm}$ is not flat - they are normal with a large variance ($10^8$), but even so this diffuse prior can cause problems if there is complete (or near complete) separation. To see this, think about an intercept-only model. A diffuse prior on the probit scale puts a lot of density on very large positive or negative values and so puts a lot of density close to zero and one on the probability scale (see Figure \@ref(fig:link)). If the likelihood prevents the posterior from reaching these extremes then the prior has little influence because it's largely flat outside of the extremes (it's U shaped). However, with complete separation the likelihood is indeed placing a lot of density at these extreme values and the prior holds the posterior at these values. If, on the other hand we had specified the prior on the intercept to be normal with a mean of zero and a variance of one then the prior on the probability scale would be flat (since the inverse-link function is the cumulative density function for the unit normal).  If a logit-link had been used then there is no normal prior that would result in flatness on the probability scale, and having a mean of zero and a variance of $\pi^2/3$ (the variance of a logistic distribution) is a close as you can get.        
+This strange behaviour occurs because the ML estimate for the probability of success is zero for $\texttt{happy}$ photos. On the probit scale this translates into $-\infty$ and so the ML estimate of the difference between $\texttt{happy}$ and $\texttt{grumpy}$ photos (the $\texttt{typehappy}$ effect) will also be $-\infty$. Consequently, with a flat prior on the $\texttt{typehappy}$ effect the posterior distribution is improper. The default prior for model coefficients in $\texttt{MCMCglmm}$ is not flat - they are normal with a large variance ($10^8$), but even so this diffuse prior can cause problems if there is complete (or near complete) separation. To see this, think about an intercept-only model. A diffuse prior on the probit scale puts a lot of density on very large positive or negative values and so puts a lot of density close to zero and one on the probability scale (see Figure \@ref(fig:link)). If the likelihood prevents the posterior from reaching these extremes then the prior has little influence because it is largely flat outside of the extremes (it is U-shaped). However, with complete separation the likelihood is indeed placing a lot of density at these extreme values and the prior holds the posterior at these values. If, on the other hand, we had specified the prior on the intercept to be normal with a mean of zero and a variance of one then the prior on the probability scale would be flat (since the inverse-link function is the cumulative density function for the unit normal).  If a logit-link had been used then there is no normal prior that would result in flatness on the probability scale, and having a mean of zero and a variance of $\pi^2/3$ (the variance of a logistic distribution) is a close as you can get if the residual variance had been zero (\@ref(fig:flat-prob-prior)).        
 
 
-``` {r label=gelman-prior, echo=FALSE, include=TRUE, fig.cap="Prior density on the probability of success in an intercept-only Bernoulli GLM. In black a probit link was used and the prior on the intercept is normal with zero mean and a variance of one.  In red a logit link was used and the prior on the intercept is normal with zero mean and a variance of $\\pi^2/3$."}
+``` {r label=flat-prob-prior, echo=FALSE, include=TRUE, fig.cap=paste0("Prior density on the probability of success in an intercept-only Bernoulli GLM. The solid black line is for a standard probit link and a normal prior on the intercept with zero mean and a variance of one.  The solid red line is for a standard logit link (with the residual variance set to zero) and a normal prior on the intercept with zero mean and a variance of one $\\pi^2/3$. The dashed lines are for when the variance is set to 100 (logit-link) or $g^2 100\\approx$ ", round((10*dlogis(0)/dnorm(0))^2,1), " (probit link) - see Section \\@ref(gelman-prior-sec)." )}
+
 x<-seq(-7, 7, length=100)
 jacob.plogis<-eval(D(expression(exp(x)/(1+exp(x))), "x"), list(x=x))
-plot(I(dnorm(x, 0, sqrt(pi^2/3))/jacob.plogis)~plogis(x), type="l", xlim=c(0+0.05,1-0.05), ylab="Prior Density", xlab="Probability of Success", lwd=1.5, col="red")
+jacob.pnorm<-eval(D(expression(pnorm(x)), "x"), list(x=x))
+
+plot(I(dnorm(x, 0, sqrt(pi^2/3))/jacob.plogis)~plogis(x), type="l", xlim=c(0+0.037,1-0.037), ylab="Prior Density", xlab="Probability of Success", lwd=1.5, col="red")
 abline(h=1, lwd=1.5)
+
+lines(I(dnorm(x, 0, 10)/jacob.plogis)~plogis(x), lty=2, col="red")
+lines(I(dnorm(x, 0, 10*dlogis(0)/dnorm(0))/jacob.pnorm)~pnorm(x), lty=2)
+
 ```
 
- How to extend to models that have categorical and continuous predictors or models with random effects and/or the residual varinace is not set to one (in threshold models) or zero (logit models)....
 
-Fitting a flat prior on the probability results in a better mixing chain.
+### The @Gelman.2008a prior {#gelman-prior-sec}
+
+Ideally we would like to extend this idea so that we can define priors for coefficients associated with categorical and continuous predictors, not just the intercept. We would also like these priors to work well in the presence of variation caused by the addition of random effects (Chapter \@ref(ranef)) and (in the case of logit-link) a non-zero residual variance. For accommodating additional variance in the intercept-only model we can use a prior variance that is the sum of the link variance and the model-defined variance $v$.  In the Bernoulli models we've fitted $v$ is just the residual variance which has been fixed at one. For the logit-link, the link variance is $\pi^2/3$ which would result in a prior variance of $1+\pi^2/3$. For the threshold link, the link variance is zero resulting in a prior variance of $1$ (i.e. the standard probit where the residual variance is set to zero and the link variance is one). With random effects $v$ may not be known *a priori* and a judicious choice about it's magnitude would need to be made. 
+
+For models that contain predictors, @Gelman.2008a suggested a prior for logit-link models where $v=0$. They suggested that the input variables should be standardised prior to model fitting and that the the associated coefficients should have independent Cauchy priors with a scale of 10 for the (new) intercept and a scale of 2.5 for the remaining coefficients. The motivation behind this prior is that the average probability, defined by the new intercept, can have a wide range ($10^{-9}$ $-$ 1-$10^{-9}$). This is still rather U-shaped on the probability scale and in many applications a lower scale may perform better (Figure \@ref(fig:flat-prob-prior)). The prior on the remaining coefficients imply that very large changes in probability (changes greater than 10 on the logit scale) between categorical predictors or per 0.5 standard deviations of a continuous predictor have low probability. This combination of standardisation and prior naturally penalises higher order interactions, but it's properties when random effects were fitted (or the residual variance was non-zero) were not explored. 
+
+Personally, I don't like generic rescaling of inputs - I like my coefficients to have meaningful units. I would like to know how much my pot-belly is expected to grow per pistachio nut, not per standard deviation of pistachio nut consumption in the data set the dietician happened to have analysed. However, rather than standardising the inputs prior to model fitting we can fit them in their original form and place a prior on the coefficients that is equivalent to that recommended by @Gelman.2008a had we rescaled the inputs. Although the Cauchy prior can probably be specified by treating the coefficients as random, here we will use a normal distribution with the same scales. This will penalise large coefficients more than the Cauchy prior.
+
+To accommodate non-zero $v$, we can multiply the scales recommended by @Gelman.2008a by $\sqrt{1/(1+c^2\texttt{v})}$ such that the same prior interpretation can be given (approximately) to the marginal effects of the predictors (see earlier). A change of one logit is neither equivalent or proportional to a change of one probit. For example, going from -1 to -2 on the logit scale we move from a probability of `r round(plogis(-1),2)` to `r round(plogis(-2),2)` but on the probit scale a change from -1 to -2 results in a change of probability from `r round(pnorm(-1),2)` to `r round(pnorm(-2),2)`. Around zero (i.e a probability of 0.5 in both cases) the change in probability per logit is `r round(dlogis(0),3)` and the change in probability per probit is `r round(dnorm(0),3)`. Consequently, we can multiply the scales recommended by @Gelman.2008a by $g=$ `r round(dlogis(0),3)` / `r round(dnorm(0),3)`=`dlogis(0)/dnorm(0)` to achieve approximate equivalence. Note this was done when determining the regression coefficients to produce Figure \@ref(fig:link) and the two prior densities diverge as the probability moves away from 0.5 (see Figure \@ref(fig:flat-prob-prior) also). When additional variance is present we can multiply the original scales by $\sqrt{g^2/\texttt{v}}$ when `family="threshold"` is used.
+
+
+This is all very fiddly!
+
+
+
+
+
 
 ``` {r label=separation2, include=TRUE, fig.cap="MCMC summary plots for the intercept and $\\texttt{type}$ effect in a binary GLM (`mcs.2`) with probit link. For $\\texttt{happy}$ photos all 19 observations are failures (the mean grumpy score is less than 5) and we have complete separation. A normal prior with a variance of one was used for the model coefficients."}
 
-prior.mcs.3=list(B=list(mu=rep(0,2), V=gelman.prior(~type, data=data.cs)), R=list(V=1, fix=1))
+g<-dlogis(0)/dnorm(0)
+
+prior.mcs.3=list(B=list(mu=rep(0,2), V=gelman.prior(~type, scale=g*2.5, intercept=g*10, data=data.cs)), 
+                 R=list(V=1, fix=1))
+
 mcs.3<-MCMCglmm(mean5~type, family="threshold", data=data.cs, prior=prior.mcs.3)
 plot(mcs.3$Sol)
 ```
