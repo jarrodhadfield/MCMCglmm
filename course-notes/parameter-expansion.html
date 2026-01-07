@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-06" />
+<meta name="date" content="2026-01-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -241,7 +241,10 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#ordinal-data"><i class="fa fa-check"></i><b>3.7</b> Ordinal Data</a></li>
 <li class="chapter" data-level="3.8" data-path="glm.html"><a href="glm.html#non-zero-binomial-data"><i class="fa fa-check"></i><b>3.8</b> Non-zero Binomial Data</a></li>
-<li class="chapter" data-level="3.9" data-path="glm.html"><a href="glm.html#complete-separation"><i class="fa fa-check"></i><b>3.9</b> Complete Separation</a></li>
+<li class="chapter" data-level="3.9" data-path="glm.html"><a href="glm.html#complete-separation"><i class="fa fa-check"></i><b>3.9</b> Complete Separation</a>
+<ul>
+<li class="chapter" data-level="3.9.1" data-path="glm.html"><a href="glm.html#gelman-prior-sec"><i class="fa fa-check"></i><b>3.9.1</b> The <span class="citation">Gelman, Jakulin, et al. (2008)</span> prior</a></li>
+</ul></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="ranef.html"><a href="ranef.html"><i class="fa fa-check"></i><b>4</b> Random effects</a>
 <ul>
@@ -335,7 +338,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="parameter-expansion" class="section level1 hasAnchor" number="9">
 <h1><span class="header-section-number">9</span> Parameter Expansion<a href="parameter-expansion.html#parameter-expansion" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>As the covariance matrix approaches a singularity the mixing of the chain becomes notoriously slow. This problem is often encountered in single-response models when a variance component is small and the chain becomes stuck at values close to zero. Similar problems occur for the EM algorithm and <span class="citation">C. H. Liu, Rubin, and Wu (<a href="#ref-Liu.1998">1998</a>)</span> introduced parameter expansion to speed up the rate of convergence. The idea was quickly applied to Gibbs sampling problems <span class="citation">(<a href="#ref-Liu.1999">J. S. Liu and Wu 1999</a>)</span> and has now been extensively used to develop more efficient mixed-model samplers <span class="citation">(e.g. <a href="#ref-vanDyk.2001">Dyk and Meng 2001</a>; <a href="#ref-Gelman.2008b">Gelman et al. 2008</a>; <a href="#ref-Browne.2009">Browne et al. 2009</a>)</span>.</p>
+<p>As the covariance matrix approaches a singularity the mixing of the chain becomes notoriously slow. This problem is often encountered in single-response models when a variance component is small and the chain becomes stuck at values close to zero. Similar problems occur for the EM algorithm and <span class="citation">C. H. Liu, Rubin, and Wu (<a href="#ref-Liu.1998">1998</a>)</span> introduced parameter expansion to speed up the rate of convergence. The idea was quickly applied to Gibbs sampling problems <span class="citation">(<a href="#ref-Liu.1999">J. S. Liu and Wu 1999</a>)</span> and has now been extensively used to develop more efficient mixed-model samplers <span class="citation">(e.g. <a href="#ref-vanDyk.2001">Dyk and Meng 2001</a>; <a href="#ref-Gelman.2008b">Gelman, Dyk, et al. 2008</a>; <a href="#ref-Browne.2009">Browne et al. 2009</a>)</span>.</p>
 <p>The columns of the design matrix (<span class="math inline">\({\bf W}\)</span>) can be multiplied by the non-identified working parameters <span class="math inline">\({\boldsymbol{\mathbf{\alpha}}} = \left[1,\ \alpha_{1},\ \alpha_{2},\ \dots \alpha_{k}\right]^{&#39;}\)</span>:</p>
 <p><span class="math display" id="eq:wstar">\[{\bf W}_{\alpha} = \left[{\bf X}\ {\bf Z}_{1}\alpha_{1}\ {\bf Z}_{2}\alpha_{2}\ \dots\ {\bf Z}_{k}\alpha_{k}\right]
 \label{wstar}   \tag{9.1}\]</span></p>

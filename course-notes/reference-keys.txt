@@ -39,7 +39,7 @@ fig:thresh-logit
 fig:ordinal
 fig:nzbinom
 fig:separation1
-fig:gelman-prior
+fig:flat-prob-prior
 fig:separation2
 eq:MM-eq
 fig:yrandom
@@ -128,6 +128,7 @@ probit-link
 ordinal-data
 non-zero-binomial-data
 complete-separation
+gelman-prior-sec
 ranef
 pred-sec
 PriorContr-sec

@@ -58,10 +58,12 @@ for the regression parameters without input standardisation that
 corresponds to a diagonal prior \\{\bf D}\\ for the regression
 parameters had the inputs been standardised. The diagonal elements of
 \\{\bf D}\\ are set to `scale^2` except the first which is set to
-`intercept^2`. With logistic regression \\D=\pi^{2}/3+\sigma^{2}\\ gives
-a prior that is approximately flat on the probability scale, where
-\\\sigma^{2}\\ is the total variance due to the random effects. For
-probit regression it is \\D=1+\sigma^{2}\\.
+`intercept^2`. With `family="binomial"`, \\D=\pi^{2}/3+\sigma^{2}\\
+gives a prior that is approximately flat on the probability scale, where
+\\\sigma^{2}\\ is the total variance due to the random effects and
+residuals. With `family="threshold"` it is \\D=\sigma^{2}\\ and for
+`family="ordinal"` (now superseded by `"threshold"`) it is
+\\D=1+\sigma^{2}\\.
 
 ## Examples
 
@@ -69,24 +71,23 @@ probit regression it is \\D=1+\sigma^{2}\\.
 dat<-data.frame(y=c(0,0,1,1), x=gl(2,2))
 # data with complete separation
 
-#####################
-# probit regression #
-#####################
+##############################
+# standard probit regression #
+##############################
 
 prior1<-list(
-  B=list(mu=c(0,0), V=gelman.prior(~x, data=dat, scale=sqrt(1+1))), 
+  B=list(mu=c(0,0), V=gelman.prior(~x, data=dat, scale=1)), 
   R=list(V=1,fix=1))
 
-m1<-MCMCglmm(y~x, prior=prior1, data=dat, family="ordinal", verbose=FALSE)
+m1<-MCMCglmm(y~x, prior=prior1, data=dat, family="threshold", verbose=FALSE)
 
-c2<-1
-p1<-pnorm(m1$Sol[,1]/sqrt(1+c2)) # marginal probability when x=1
+p1<-pnorm(m1$Sol[,1]) # marginal probability when x=1
 
-#######################
-# logistic regression #
-#######################
+##################################################
+# logistic regression with residual variance = 1 #
+##################################################
 
-prior2<-list(B=list(mu=c(0,0), V=gelman.prior(~x, data=dat, scale=sqrt(pi^2/3+1))),
+prior2<-list(B=list(mu=c(0,0), V=gelman.prior(~x, data=dat, scale=sqrt(1+pi^2/3))),
              R=list(V=1,fix=1))
 
 m2<-MCMCglmm(y~x, prior=prior2, data=dat, family="categorical", verbose=FALSE)
