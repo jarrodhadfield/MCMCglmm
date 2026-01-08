@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-07" />
+<meta name="date" content="2026-01-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -202,14 +202,14 @@ div.csl-indent {
 <li class="chapter" data-level="2.4.1" data-path="bayesian.html"><a href="bayesian.html#marginal-posterior-distribution"><i class="fa fa-check"></i><b>2.4.1</b> Marginal Posterior Distribution</a></li>
 <li class="chapter" data-level="2.4.2" data-path="bayesian.html"><a href="bayesian.html#intervals-sec"><i class="fa fa-check"></i><b>2.4.2</b> Credible Intervals</a></li>
 </ul></li>
-<li class="chapter" data-level="2.5" data-path="bayesian.html"><a href="bayesian.html#mcmc"><i class="fa fa-check"></i><b>2.5</b> MCMC</a>
+<li class="chapter" data-level="2.5" data-path="bayesian.html"><a href="bayesian.html#MCMC"><i class="fa fa-check"></i><b>2.5</b> MCMC</a>
 <ul>
 <li class="chapter" data-level="2.5.1" data-path="bayesian.html"><a href="bayesian.html#starting-values"><i class="fa fa-check"></i><b>2.5.1</b> Starting values</a></li>
 <li class="chapter" data-level="2.5.2" data-path="bayesian.html"><a href="bayesian.html#metropolis-hastings-updates"><i class="fa fa-check"></i><b>2.5.2</b> Metropolis-Hastings updates</a></li>
 <li class="chapter" data-level="2.5.3" data-path="bayesian.html"><a href="bayesian.html#gibbs-sampling"><i class="fa fa-check"></i><b>2.5.3</b> Gibbs Sampling</a></li>
-<li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#mcmc-diagnostics"><i class="fa fa-check"></i><b>2.5.4</b> MCMC Diagnostics</a></li>
+<li class="chapter" data-level="2.5.4" data-path="bayesian.html"><a href="bayesian.html#diagnostics-sec"><i class="fa fa-check"></i><b>2.5.4</b> MCMC Diagnostics</a></li>
 </ul></li>
-<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#Vprior-sec"><i class="fa fa-check"></i><b>2.6</b> Prior for Residual Variances</a>
+<li class="chapter" data-level="2.6" data-path="bayesian.html"><a href="bayesian.html#Vprior-sec"><i class="fa fa-check"></i><b>2.6</b> Priors for Residual Variances</a>
 <ul>
 <li class="chapter" data-level="2.6.1" data-path="bayesian.html"><a href="bayesian.html#IP-sec"><i class="fa fa-check"></i><b>2.6.1</b> Improper Priors</a></li>
 </ul></li>
@@ -248,11 +248,12 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="4" data-path="ranef.html"><a href="ranef.html"><i class="fa fa-check"></i><b>4</b> Random effects</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="ranef.html"><a href="ranef.html#GLMM"><i class="fa fa-check"></i><b>4.1</b> GLMM</a></li>
-<li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#prediction-with-random-effects"><i class="fa fa-check"></i><b>4.2</b> Prediction with Random Effects</a></li>
-<li class="chapter" data-level="4.3" data-path="ranef.html"><a href="ranef.html#binomial-versus-bernoulli"><i class="fa fa-check"></i><b>4.3</b> Binomial versus Bernoulli</a></li>
-<li class="chapter" data-level="4.4" data-path="ranef.html"><a href="ranef.html#pred-sec"><i class="fa fa-check"></i><b>4.4</b> Prediction with Random effects</a></li>
-<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#PriorContr-sec"><i class="fa fa-check"></i><b>4.5</b> A note on fixed effect priors and covariances</a></li>
+<li class="chapter" data-level="4.1" data-path="ranef.html"><a href="ranef.html#GLMM"><i class="fa fa-check"></i><b>4.1</b> Generalised Linear Mixed Model (GLMM)</a></li>
+<li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#ranpred-sec"><i class="fa fa-check"></i><b>4.2</b> Prediction with Random Effects</a></li>
+<li class="chapter" data-level="4.3" data-path="ranef.html"><a href="ranef.html#overdispersed-binomial-as-a-bernoulli-glmm"><i class="fa fa-check"></i><b>4.3</b> Overdispersed Binomial as a Bernoulli GLMM</a></li>
+<li class="chapter" data-level="4.4" data-path="ranef.html"><a href="ranef.html#intra-class-correlations"><i class="fa fa-check"></i><b>4.4</b> Intra-class Correlations</a></li>
+<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.5</b> Parameter Expansion and <span class="math inline">\(F\)</span> priors</a></li>
+<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#fixed-or-random"><i class="fa fa-check"></i><b>4.6</b> Fixed or Random?</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
 <ul>
@@ -583,7 +584,7 @@ Figure 3.3: MCMC summary plot for the residual (<code>units</code>) variance fro
 </div>
 <div id="prediction-in-glm" class="section level2 hasAnchor" number="3.5">
 <h2><span class="header-section-number">3.5</span> Prediction in GLM<a href="glm.html#prediction-in-glm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>To get the expected number of accidents for the 92nd observation we simply exponentiated the latent variable: exp(<code>lat92</code>). However, it is important to realise that this is the expected number had the residual been exactly equal to the observed residual for that observation (<code>resid92</code>): we are calculating the expected number conditional on the set of unmeasured variables that affected that <em>particular</em> realisation of <span class="math inline">\(\texttt{day}\)</span> 92 in 1961 without a speed limit. When calculating a prediction we usually aim to average over these residuals (or random effects - see <a href="#ranpred-sec"><strong>??</strong></a>) since we would like to know what the average response would be for observations made on a <span class="math inline">\(\texttt{day}\)</span> of <em>type</em> 92 in 1961 without a speed limit. On the log-scale the expectation is simply the linear predictor (<span class="math inline">\(\eta\)</span>):</p>
+<p>To get the expected number of accidents for the 92nd observation we simply exponentiated the latent variable: exp(<code>lat92</code>). However, it is important to realise that this is the expected number had the residual been exactly equal to the observed residual for that observation (<code>resid92</code>): we are calculating the expected number conditional on the set of unmeasured variables that affected that <em>particular</em> realisation of <span class="math inline">\(\texttt{day}\)</span> 92 in 1961 without a speed limit. When calculating a prediction we usually aim to average over these residuals (or random effects - see <a href="ranef.html#ranpred-sec">4.2</a>) since we would like to know what the average response would be for observations made on a <span class="math inline">\(\texttt{day}\)</span> of <em>type</em> 92 in 1961 without a speed limit. On the log-scale the expectation is simply the linear predictor (<span class="math inline">\(\eta\)</span>):</p>
 <p><span class="math display">\[
 log(E_e[y]) = E_e[l] = E_e[\eta+e] =  \eta+E_e[e]=\eta
 \]</span></p>
