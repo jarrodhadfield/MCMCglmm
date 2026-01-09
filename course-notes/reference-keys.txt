@@ -47,6 +47,9 @@ eq:MM2
 fig:bernoulli-rescale2
 fig:ICC
 fig:bernoulli-trace
+fig:mschool-1
+fig:mschool-2
+fig:prior-compare
 fig:mBTVCV
 fig:BTidh
 fig:BTcor
@@ -136,6 +139,7 @@ ranpred-sec
 overdispersed-binomial-as-a-bernoulli-glmm
 intra-class-correlations
 PXprior-sec
+f-and-half-t-priors
 fixed-or-random
 cat-int
 idh-variance-structure
