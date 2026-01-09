@@ -34,7 +34,7 @@ When the motivation for treating an effect as random is explained this way, it i
 
 In Section \@ref(binom-sec), the binomial model we fitted only contained fixed effects, as specified in the `fixed` argument to `MCMCglmm` (`fixed=cbind(g5,l5)~type+ypub`). No random effects were fitted, although 'residuals' were fitted as default to absorb any overdispersion. Residuals are random effects for which we estimate a variance - the hyperparameter, $\sigma^2_e$ - and when used with Binomial or Poisson responses are commonly referred to as observation-level random effects. Since there is a one-to-one correspondence between observation and photo in this data set, $\sigma^2_e$ is equivalent to the $\sigma^2_u$ discussed above (although $\sigma^2_e$ refers to the variance on the logit scale rather the probability scale used implicitly above). We saw that the probability of success varied greatly across photos (model `mbinom.1`) but we also noted that some of this variation may be due to the person being photographed and we could tease apart the effect of person from the specifics of the photo since each person was photographed twice - once when happy and once when grumpy. $\texttt{person}$ has 22 levels and you are probably not interested in knowing the grumpy score of someone you didn't know - $\texttt{person}$ effects seem to satisfy the rule of thumb often used to decide that they should be treated as random. The random effect model is specified through the argument `random` and for simple effects as these we simply put the name of the corresponding column ($\texttt{person}$) in the model formula. We will also specify inverse-Wishart priors for both the residual variance and the variance of the $\texttt{person}$ effects (see Section \@ref(Vprior-sec)) although scaled non-central $F$-distribution priors are recommended for random-effect variances (see Section \@ref(PXprior-sec)):
 
-``` {r mbinom2}
+```{r mbinom2}
 prior.mbinom.2=list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=0.002)))
 
 mbinom.2<-MCMCglmm(cbind(g5, l5)~type+ypub, random=~person, data=Grumpy, family="multinomial2", pr=TRUE, prior=prior.mbinom.2)
@@ -47,7 +47,7 @@ We can see that the between-person variance is comparable to the residual (acros
 
 If we use the $\texttt{predict}$ method on our model the default is to not only marginalise the residuals, but also to marginalise any other random effects.  If we predict the probability of success for these two photos they are identical, because we are calculating the expectation based on ${\bf X}{\boldsymbol{\beta}}$ only: 
 
-``` {r predict-mbinom2}
+```{r predict-mbinom2}
 predict(mbinom.2)[c(3,25),]/122
 ```   
 
@@ -58,13 +58,13 @@ p.mbinom.2<-predict(mbinom.2, marginal=NULL)
 ```
 
 
-``` {r predict-mbinom2-b}
+```{r predict-mbinom2-b}
 predict(mbinom.2, marginal=NULL, interval="confidence")[c(3,25),]/122
 ```  
 
 It seems that some of the divergence in probability is due to the person being photographed: our best estimate is that if we had taken many photos of $\texttt{darren_o}$ when grumpy  `r round(100*p.mbinom.2[3]/122,1)` \% of people would have scored him above five on the grumpy scale, but for $\texttt{craig_w}$ it would be lower (`r round(100*p.mbinom.2[25]/122,1)` \%). The 95\% credible (confidence) intervals on each are wide however, and a formal comparison (on the logit scale) gives a 95\% credible interval that overlaps zero:
 
-``` {r }
+```{r }
 HPDinterval(mbinom.2$Sol[,"person.darren_o"]-mbinom.2$Sol[,"person.craig_w"])
 ``` 
 
@@ -79,16 +79,17 @@ head(FullGrumpy, 3)
 
 $\texttt{y}$ is now the score each respondent $\texttt{respondent}$ gave each $\texttt{photo}$ (rather than the average score for each $\texttt{photo}$ in `Grumpy`). In addition, we have the respondent-level information $\texttt{student}$ which can be either $\texttt{YES}$ or $\texttt{NO}$. We will turn each persons score into the Bernoulli response
 
-``` {r }
+```{r }
 FullGrumpy$g5<-FullGrumpy$y>5
 ```   
 
 and fit the model
 
-``` {r mbinom3}
+```{r mbinom3}
 prior.mbinom.3=list(R=list(V=1, fix=1), G=list(G1=list(V=1, nu=0.002), G2=list(V=1, nu=0.002)))
 
 mbinom.3<-MCMCglmm(g5~type+ypub, random=~person+photo, data=FullGrumpy, family="categorical", prior=prior.mbinom.3)
+
 summary(mbinom.3)
 ```   
 
@@ -136,7 +137,172 @@ plot(mbinom.3$VCV[,c("person", "photo")], density=FALSE)
 
 Two things are apparent from Figure \@ref(fig:bernoulli-trace). Autocorrelation is present - this is not surprising: for each iteration of the MCMC chain the random effects are Gibbs sampled conditional on their variance in the previous iteration, and then conditional on the updated random effects the variances are then Gibbs sampled (Section \@ref(MCMC)). This will invariably lead to autocorrelation. Second, the trace for the variance in $\texttt{person}$ effects appears to intermittently get 'stuck' at values close to zero. In part, this reflects the mechanics of the Gibbs sampling, but it is also a consequence of the inverse-Wishart prior used which has a sharp peak in density at small values (Section \@ref(Vprior-sec)).  When the variance in $\texttt{person}$ effects gets 'stuck' at zero, the variance in $\texttt{photo}$ effects appears to get 'stuck' at high values. This is because the data provide strong support for the combined effect of $\texttt{photo}$ and $\texttt{person}$ being large, but contain less information about their separate effects. Consequently, if the $\texttt{person}$ variance drops to zero, the $\texttt{photo}$ variance increases to compensate. In this example, the effects described above are quite subtle, and simply running the chain for longer would probably suffice. However, a better general strategy would be to employ parameter expansion and use scaled non-central $F$ priors.
 
-## Parameter Expansion and $F$ priors {#PXprior-sec}
+## Priors for Random Effect Variances {#PXprior-sec}
+
+Parameter expansion is an algorithmic trick for speeding up the mixing and convergence of the MCMC chain. An unintended but - as it turns out - useful side-effect of parameter expansion is that it can allow a wider class of prior distributions that are conjugate and therefore still permit Gibbs sampling (Chapter \@ref(bayesian)). In order to explore parameter expansion, and the associated $F$ prior for random-effect (co)variances,  we will work with a model and data-set where the issues noted for model `mbinom.3` are much more obvious - the Schools example discussed in @Gelman.2006. 
+
+``` {r }
+schools<-data.frame(school= letters[1:8], 
+                    estimate= c(28.39, 7.94, -2.75 , 6.82, -0.64, 0.63, 18.01, 12.16),
+                    ve = c(14.9, 10.2, 16.3, 11.0, 9.4, 11.4, 10.4, 17.6)^2)
+head(schools)
+```
+
+The response variable `estimate` is the relative effect of Scholastic Aptitude Test coaching programs in 8 schools and @Gelman.2006 focusses on the variance in school effects. Since we only have a single estimate per school there will be a one-to-one mapping between $\texttt{school}$ effects and the residual. In most cases this would result in the variance in school effects being confounded with the residual variance. Here, however, we have been gifted the residual (within school) variance ($\texttt{ve}$) which varies from school to school. In reality, these residual variances are actually estimates and we might wish to factor in this additional complication, but for now we will ignore this complexity and comeback to it in Chapter \@ref(measurement). First, lets fit the inverse-Wishart prior we have been using up to now with $\texttt{V}=1$ and $\texttt{nu}=0.002$. This prior is equivalent to an inverse-gamma prior with a shape and scale of 0.001 (Section \@ref(Vprior-sec)): 
+
+``` {r }
+prior.mschool.1<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=0.002)))
+
+mschool.1<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.1)
+```
+
+The model contains an argument we haven't seen before: $\texttt{rcov}$. In all previous analyses we used the default `~units` which fits a set of independent and identically distributed residuals with a single variance ($\sigma^2_{\texttt{units}}$) to be estimated. $\texttt{MCMCglmm}$ allows this assumption to be relaxed, and Chapter \@ref(cat-int) is dedicated to this subject. Here, we will simply note that we have assigned each school a residual variance (the corresponding element of $\texttt{ve}$) and fixed it at this value, leaving only the intercept and the variance in school effects ($\sigma^2_{\texttt{school}}$) to be estimated.  The MCMC trace for $\sigma^2_{\texttt{school}}$ looks dreadful (Figure \@ref(fig:mschool-1)).
+
+```{r mschool-1, echo=FALSE, include=TRUE, fig.cap="MCMC trace for the variance in $\\texttt{school}$ effects from model `mschool.1` in which an inverse-Wishart prior was used with $\\texttt{V=1}$ and $\\texttt{nu=0.002}.$", fig.width=7, fig.height=5}
+plot(mschool.1$VCV[,"school", drop=FALSE], density=FALSE)
+```
+
+The autocorrelation in the chain is evident and there appears to be a lot of posterior density at zero. These are separate issues. Autocorrelation in the chain is due to algorithmic inefficiencies in sampling the posterior distribution, whereas a lot of posterior density near zero reflects the combined information coming from the data and coming from the prior (Chapter \@ref(bayesian)). Certainly, some posterior distributions are harder to sample from than others, and the efficiency of the MCMC algorithm may decrease when the posterior is close to zero. But if the chain can be run long enough that these inefficiencies are not consequential, situations where the posterior has 'too much' density near zero indicates potential problems with the prior, not algorithmic problems.
+
+### $F$ and half-$t$ priors
+
+For the inverse-Wishart prior we specified the parameters $\texttt{V}$ and $\texttt{nu}$. The parameters $\texttt{alpha.mu}$ and $\texttt{alpha.V}$ can also be specified in the prior, and if $\texttt{alpha.V}$ is non-zero then parameter expansion is used. These additional parameters specify a prior for the variance, $\sigma^2_{\texttt{school}}$, that is a non-central scaled F-distribution with the numerator degrees-of-freedom set to one. The scale is set by $\texttt{alpha.V}*\texttt{V}$ and the normalised variance $\sigma^2_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ follows a non-central F distribution with $\texttt{df1}=1$,  $\texttt{df2}=\texttt{nu}$ and  $\texttt{ncp}=\texttt{alpha.mu}^2/\texttt{alpha.V}$. The density of $\sigma^2_{\texttt{school}}$ is therefore the density of the $F$ multiplied by $\texttt{alpha.V}*\texttt{V}$ (Section \@ref(transform-sec)). 
+
+We can also think about this prior in terms of the standard deviation, $\sigma_{\texttt{school}}$, which in some ways is more natural, since it is in the same units as the response.  The prior distribution for the standard deviation is a scaled non-central half-$t$ (the negative values of the $t$ are ignored) with $\texttt{nu}$ degrees of freedom, non-centrality parameter $\texttt{alpha.mu}/\sqrt{\texttt{alpha.V}}$ and scale $\sqrt{\texttt{alpha.V}*\texttt{V}}$. The density of $\sigma_{\texttt{school}}$ is therefore the density of the $t$ multiplied by $\sqrt{\texttt{alpha.V}*\texttt{V}}$.
+
+```{r echo=FALSE, eval=FALSE}
+# Better check these claims!
+V<-runif(1, 1, 10)
+nu<-sample(10:100, 1)
+alpha.mu<-runif(1, 1, 10)
+alpha.V<-runif(1, 1, 10)
+alpha.V<-runif(1, 1, 10)
+
+scale<-alpha.V*V
+
+pxdat<-data.frame(y=c(NA,NA), fac=1:2)
+prior<-list(B=list(mu=0, V=1e-16), R=list(V=1, fix=1), G=list(G1=list(V=V, nu=nu, alpha.mu=alpha.mu, alpha.V=alpha.V)))
+pxm<-MCMCglmm(y~1, random=~fac, dat=pxdat, pr=TRUE, singular=TRUE, prior=prior, nitt=13000*10, thin=5*10, burnin=3000*10)
+
+par(mfrow=c(1,2))
+vf<-rf(2000, df1=1, df2=nu, ncp=(alpha.mu^2)/alpha.V)
+qqplot(pxm$VCV[,"fac"]/scale, vf)
+
+abline(0,1)
+
+h<-hist(pxm$VCV[,"fac"], breaks=100, prob=TRUE)
+dv<-df(h$mids/scale, df1=1, df2=nu, ncp=(alpha.mu^2)/alpha.V)*scale
+c<-max(h$density)/max(dv)
+lines((c*dv)~h$mids, col="red")
+
+
+par(mfrow=c(1,2))
+sdt<-rt(2000, df=nu, ncp=alpha.mu/sqrt(alpha.V))
+qqplot(sqrt(pxm$VCV[,"fac"])/sqrt(scale), sdt)
+
+abline(0,1)
+
+h<-hist(sqrt(pxm$VCV[,"fac"]), breaks=100, prob=TRUE)
+dsd<-dt(h$mids/sqrt(scale), df=nu, ncp=alpha.mu/sqrt(alpha.V))*sqrt(scale)
+c<-max(h$density)/max(dsd)
+lines((c*dsd)~h$mids, col="red")
+```
+
+Before discussing the properties of $F$ and half-$t$ priors on the posterior distributions of variances and standard deviation, respectively, let's confirm that parameter expansion does indeed increase efficiency independent of the prior being used. Since these distributions only have three effective parameters we will specify $\texttt{V}=1$ throughout, without loss of generality. With $\texttt{nu=1}$ and a non-zero $\texttt{alpha.V}$ the prior on the standard deviation is a scaled half-$t$ distribution with one degree-of-freedom: a half-Cauchy distribution. If we set $\texttt{alpha.mu}=0$ we have a central half-Cauchy distribution and as we up the scale ($\sqrt{\texttt{alpha.V}}$) of this distribution it tends to a flat prior for the standard deviation. In Section \@ref(Vprior-sec) was also that an improper inverse-Wishart distribution with $\texttt{V}=0$ and $\texttt{nu}=-1$ is also flat for the standard deviation. Let's fit the improper inverse-Wishart and the central half-Cauchy with a scale that is large (relative to the data) - $\sqrt{\texttt{alpha.V}}=1000$.
+
+``` {r }
+prior.mschool.2<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1e-16, nu=-1)))
+
+mschool.2<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.2)
+
+
+prior.mschool.3<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000^2)))
+
+mschool.3<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.3)
+
+```
+
+We can see that these two models are sampling from the almost the same posterior (Figure \@ref(fig:mschool-2)) but the efficiency of the algorithm is greater when parameter expansion is used with an effective posterior sample size of `r round(effectiveSize(mschool.3$VCV[,"school"]))` rather than `r round(effectiveSize(mschool.2$VCV[,"school"]))`. Indeed, with `r round(effectiveSize(mschool.3$VCV[,"school"]))` effective samples from 1,000 stored samples we could have ran the chain for less than the default number of iterations and reduced the thinning interval (Section \@ref(diagnostics-sec)). 
+
+
+```{r mschool-2, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the standard deviation in $\\texttt{school}$ effects. In black is the trace for model `mschool.2` in which an improper inverse-Wishart prior was used for the variance with $\\texttt{V=1}$ and $\\texttt{nu=-1}$. In red is the trace for model `mschool.3` in which a scaled $F_{1,1}$ prior for the variance was used with a scale of $10^6$. The inverse-Wishart prior is flat for the standard deviation. The $F_{1,1}$ prior on the variance places a half-Cauchy prior on the standard deviation with a large scale ($10^3$). This prior is essentially flat for the standard deviation but by switching to the half-Cauchy, parameter expansion is used.", fig.width=7, fig.height=5}
+plot(mcmc.list(sqrt(mschool.2$VCV[,"school", drop=FALSE]), sqrt(mschool.3$VCV[,"school", drop=FALSE])), density=FALSE, main=expression(sigma[school]), cex.main=1.5)
+```
+
+We have seen that for closely matched priors, parameter expansion is more efficient at sampling from the posterior. However, to justify its use, it is important that it also allows us to specify priors with sensible properties. Is a flat(ish) prior on the standard deviation more sensible than the inverse-Wishart prior we have been using previously ($\texttt{V}=1$ and $\texttt{nu}$=0.002) and covered in detail in Section \@ref(Vprior-sec)? The short answer is yes. Setting $\texttt{nu}$ to be small in the inverse-Wishart is motivated by the idea that having few prior degrees of freedom provides a diffuse prior on the variance. However, as $\texttt{nu}$ becomes smaller the prior only becomes flat for the *log* of the variance, and for the variance there is a nasty spike at small values. 
+
+
+In some cases, as in the Schools example, the amount of information provided by the data may be so small that a flat prior on the standard deviation might be to vague. In such cases, reducing the scale has been advised, and indeed over time the default prior for variances has moved from the inverse-gamma with shape=scale=0.001 (i.e. $\texttt{V}=1$ to $\texttt{nu}=0.002$) to a Cauchy with a scale of ~5. 
+
+``` {r }
+prior.mschool.4<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=5^2)))
+
+mschool.4<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.4)
+```
+
+
+However, care has to be taken that these scales are calibrated with the scale of the data, and in the Schools example where the standard deviation ofthe data exceeds one by some margin, a scale of 25 was used.
+
+``` {r }
+prior.mschool.5<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=25^2)))
+
+mschool.5<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.5)
+```
+
+The default in brms is to use a half-t with 3 degrees of freedom and scale of 2.5 for the standard deviation. This is less 'tailed' than the Cauchy:length
+
+
+``` {r }
+prior.mschool.6<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=3, alpha.mu=0, alpha.V=2.5^2)))
+
+mschool.6<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.6)
+```
+
+
+
+``` {r prior-compare, echo=FALSE, include=TRUE, fig.cap="Kernel density plots for different priors", fig.width=7, fig.height=5}
+samples <- list(sqrt(mschool.1$VCV[,"school"]), sqrt(mschool.2$VCV[,"school"]), sqrt(mschool.3$VCV[,"school"]), sqrt(mschool.4$VCV[,"school"]), sqrt(mschool.5$VCV[,"school"]), sqrt(mschool.6$VCV[,"school"]))
+cols    <- palette()[1:6]  # nice colours
+
+plot(density(samples[[1]]),                      # first density sets up the axes
+     main = "Overlaid kernel densities",
+     xlab = "value", ylab = "density",
+     col  = cols[1], lwd = 2)
+
+for (i in 2:length(samples))                    # add the rest
+  lines(density(samples[[i]]), col = cols[i], lwd = 2)
+
+legend("topright", lwd = 2, col = cols,
+       legend = paste0("sample ", 1:6), bty = "n")
+```
+
+The default in brms is to use a half-t with 3 degrees of freedom and scale of 2.5 for the standard deviation. This is less 'tailed' than the Cauchy:length
+
+
+``` {r }
+prior.mschool.6<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=3, alpha.mu=0, alpha.V=2.5^2)))
+
+mschool.6<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.6)
+```
+
+
+
+
+
+student_t(3, 0, 2.5)
+
+
+
+
+
+
 
 
 ## Fixed or Random?
