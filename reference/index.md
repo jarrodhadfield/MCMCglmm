@@ -50,6 +50,8 @@
   : Commutation Matrix
 - [`dcmvnorm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/dcmvnorm.md)
   : Density of a (conditional) multivariate normal variate
+- [`dprior()`](https://jarrodhadfield.github.io/MCMCglmm/reference/dprior.md)
+  : Prior Density of Variance or Standard Deviation
 - [`evalDtensor()`](https://jarrodhadfield.github.io/MCMCglmm/reference/evalDtensor.md)
   : Evaluates a list of (mixed) partial derivatives
 - [`gelman.prior()`](https://jarrodhadfield.github.io/MCMCglmm/reference/gelman.prior.md)

@@ -6,7 +6,8 @@ as suggested in Gelman et al. (2008).
 ## Usage
 
 ``` r
-gelman.prior(formula, data, coef.scale=1, intercept.scale=coef.scale, singular.ok=FALSE)
+gelman.prior(formula, data, coef.scale=1, intercept.scale=coef.scale, 
+  singular.ok=FALSE, ...)
 ```
 
 ## Arguments
