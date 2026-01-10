@@ -1,7 +1,7 @@
 rm(list=ls())
 #source("/Users/jhadfiel/Work/MCMCglmm/inst/buildbook.R")
 build_site<-FALSE
-rm.cache<-FALSE
+rm.cache<-TRUE
 
 setwd("/Users/jhadfiel/Work/MCMCglmm/bookdown")
 

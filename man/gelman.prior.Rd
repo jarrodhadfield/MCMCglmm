@@ -3,7 +3,8 @@
 \title{Prior Covariance Matrix for Fixed Effects.}
 \description{Prior covariance matrix for fixed effects had inputs been standardised as suggested in Gelman et al. (2008).}
 \usage{
-gelman.prior(formula, data, coef.scale=1, intercept.scale=coef.scale, singular.ok=FALSE)
+gelman.prior(formula, data, coef.scale=1, intercept.scale=coef.scale, 
+  singular.ok=FALSE, \dots)
 }
 \arguments{
  \item{formula}{\code{\link{formula}} for the fixed effects.}

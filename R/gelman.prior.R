@@ -6,13 +6,11 @@ gelman.prior<-function(formula, data, coef.scale=1, intercept.scale=coef.scale, 
   if(!is.null(dots)){
     if(any(!names(dots)%in%c("scale", "intercept"))){
        stop(paste("unused argument", paste(names(dots), collapse=" ")))
-    }else{
-      stop("Sorry, the gelman.prior function has changed. To achieve back compatibility what was 'scale' should be 'coef.scale' and what was 'intercept' should be 'intercept.scale'. In addition a list is now returned and the prior covariance matrix is in element 'V'")
     }
   }  
-
-  if(any(names(mc)=="scale")){coef.scale=scale}
-  if(any(names(mc)=="intercept")){intercept.scale=intercept}
+  
+  if(any(names(mc)=="scale")){coef.scale=mc[["scale"]]}
+  if(any(names(mc)=="intercept")){intercept.scale=mc[["intercept"]]}
 
   X1<-model.matrix(formula, data)
   if(singular.ok==FALSE){

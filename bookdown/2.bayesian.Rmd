@@ -163,7 +163,7 @@ $\texttt{MCMCglmm}$ uses a normal prior for the fixed effects and an inverse-Wis
 
 ``` {r label=dinvgamma1, echo=FALSE, include=TRUE, fig.cap="Probability density function for a univariate inverse-Wishart with the variance at the limit set to 1 ($\\texttt{V}=1$) and a degree of belief parameter set to 0.002 ($\\texttt{nu}=0.002$)."}
 xv<-seq(1e-16,5,length=1000)
-plot(I(dgamma(1/xv, shape=0.002/2, rate=(0.002)/2)/(xv^2))~xv, xlab=expression(sigma^2), ylab="Density", cex.lab=1.25, type="l")
+plot(dprior(xv, prior=list(V=1, nu=0.002))~xv, xlab=expression(sigma^2), ylab="Density", cex.lab=1.25, type="l")
 ```
 
 As before we can write a function for calculating the (log) prior probability:
@@ -171,9 +171,9 @@ As before we can write a function for calculating the (log) prior probability:
 ``` {r prior-p, echo=TRUE}
 prior.p<-function(par, priorB, priorR, log=FALSE){
     if(log){
-      d<-dnorm(par[1], mean=priorB$mu, sd=sqrt(priorB$V), log=TRUE)+dgamma(1/par[2],shape=priorR$nu/2, rate=(priorR$nu*priorR$V)/2, log=TRUE)-2*log(par[2])
+      d<-dnorm(par[1], mean=priorB$mu, sd=sqrt(priorB$V), log=TRUE)+dprior(par[2], priorR, log=TRUE)
     }else{
-      d<-dnorm(par[1], mean=priorB$mu, sd=sqrt(priorB$V))*dgamma(1/par[2],shape=priorR$nu/2, rate=(priorR$nu*priorR$V)/2)/par[2]^2
+      d<-dnorm(par[1], mean=priorB$mu, sd=sqrt(priorB$V))*dprior(par[2], priorR)
     } 
     return(d) 
 }
@@ -411,7 +411,7 @@ plot(log(m1a.2$VCV))
 
 $\texttt{MCMCglmm}$ uses an inverse-Wishart prior for the residual variance and so here will cover the properties of the scalar inverse-Wishart distribution and prior. Section \@ref(VCVprior-sec) can be consulted for inverse-Wishart covariance matrices. For random effect (co)variances it is possible to use scaled non-central $F$-distribution priors which is strongly recommended (see Section \@ref(PXprior-sec)). 
 
-For a single variance, the inverse-Wishart prior is parameterised through the parameters $\texttt{V}$ and $\texttt{nu}$ in MCMCglmm. The MCMCglmm parameterisation of the inverse-Wishart is not standard but I find it intuitive: the prior information is equivalent to observing $\texttt{nu}$ residuals with variance $\texttt{V}$. Consequently, the distribution concentrates on $\texttt{V}$ as the degree of belief parameter, $\texttt{nu}$ increases. The distribution tends to be right skewed when $\texttt{nu}$ is not very large, with a mode of $\texttt{V}\frac{\texttt{nu}}{\texttt{nu}+2}$ but a mean of $\texttt{V}\frac{\texttt{nu}}{\texttt{nu}-2}$ (which is not defined for $\texttt{nu}<2$). Figure \@ref(fig:dinvgamma) plots the probability density functions holding $\texttt{V}$ equal to one but with $\texttt{nu}$ varying.
+For a single variance, the inverse-Wishart prior is parameterised through the parameters $\texttt{V}$ and $\texttt{nu}$ in MCMCglmm. The MCMCglmm parameterisation of the inverse-Wishart is not standard but I find it intuitive: the prior information is equivalent to observing $\texttt{nu}$ residuals with variance $\texttt{V}$. Consequently, the distribution concentrates on $\texttt{V}$ as the degree of belief parameter, $\texttt{nu}$ increases. The distribution tends to be right skewed when $\texttt{nu}$ is not very large, with a mode of $\texttt{V}\frac{\texttt{nu}}{\texttt{nu}+2}$ but a mean of $\texttt{V}\frac{\texttt{nu}}{\texttt{nu}-2}$ (which is not defined for $\texttt{nu}<2$). Figure \@ref(fig:dinvgamma) plots the probability density functions holding $\texttt{V}$ equal to one but with $\texttt{nu}$ varying. The function `dprior` can be used to obtain the prior density for a variance (or standard deviation) given a MCMCglmm specification.
 
 ``` {r label=dinvgamma, echo=FALSE, include=TRUE, fig.cap="Probability density function for a univariate inverse-Wishart with the variance at the limit set to 1 ($\\texttt{V}=1$) and varying degree of belief parameter ($\\texttt{nu}$). With $\\texttt{V}=1$ these distributions are equivalent to inverse gamma distributions with shape and scale parameters set to $\\texttt{nu}$/2."}
 xv<-seq(1e-16,5,length=1000)
@@ -419,7 +419,7 @@ plot(0, type="n", ylim=c(0,0.45), xlim=c(0,5), xlab=expression(sigma^2), ylab="D
 nu<-c(1,0.2,0.02, 0.002)
 V<-1
 for(i in 1:4){
-dv<-dgamma(1/xv, shape=nu[i]/2, rate=(nu[i]*V)/2)/(xv^2)
+dv<-dprior(xv, prior=list(V=1, nu=nu[i]))
 lines(dv~xv, type="l", col=paste("gray", 100-i*25), lwd=2)
 text(xv[which.min(abs(log(dv)-log(0.1*xv))[-1])+1],dv[which.min(abs(log(dv)-log(0.1*xv))[-1])+1], paste("nu=", nu[i]), pos=4, cex=1.5)
 }
@@ -509,8 +509,8 @@ contour(kda.3, add=TRUE, col="red", drawlabels = FALSE)
 
 [^1.1]: The double `t` is because I cannot spell.
 
-[^1.2]: The inverse gamma is a special case of the inverse-Wishart, although it is parametrised using $\texttt{shape}$ and $\texttt{scale}$, where $\texttt{nu}=2\ast\texttt{shape}$ and $\texttt{V} = \frac{\texttt{scale}}{\texttt{shape}}$ (or $\texttt{shape} = \frac{\texttt{nu}}{2}$ and $\texttt{scale} = \texttt{V}\frac{\texttt{nu}}{2}$). There is no density function for the inverse-gamma in base R. However, it can be obtained using the density function for the gamma. Using $\texttt{shape_g}$ and $\texttt{scale_g}$ to designate the shape and scale parameters of a gamma distribution then the density of $\texttt{x}$ under the inverse-gamma is the density of $1/\texttt{x}$ under a gamma distribution with $\texttt{shape_g}=\texttt{shape}$ and $\texttt{scale_g}=1/\texttt{scale}$ multiplied by the Jacobian, $1/\texttt{x}^{2}$. Consequently, we can implement the function `dinvgamma<-function(x, shape, scale, ...){dgamma(1/x, shape=shape, rate=scale, ...)/(x^2)}`. Note $\texttt{rate}=1/\texttt{scale}$
-
+[^1.2]: The inverse gamma is a special case of the inverse-Wishart, although it is parametrised using $\texttt{shape}$ and $\texttt{scale}$, where $\texttt{nu}=2\ast\texttt{shape}$ and $\texttt{V} = \frac{\texttt{scale}}{\texttt{shape}}$ (or $\texttt{shape} = \frac{\texttt{nu}}{2}$ and $\texttt{scale} = \texttt{V}\frac{\texttt{nu}}{2}$). There is no density function for the inverse-gamma in base R. However, the prior specification can be passed to the function $\texttt{dprior}$ to obtain the density: for example, `dprior(1, prior=list(V=1, nu=0.002))`.
+ 
 [^1.3]: Embarrassingly, I claimed that $\texttt{V=1}$ and $\texttt{nu=0}$ was flat in the original CourseNotes and I had forgotten to rescale the posterior density by the Jacobian when generating the equivalent contour plot to Figure \@ref(fig:Psurface-nu0) (which is computed on values of $\textrm{log}(\sigma^2)$ for better results, and then transformed).  
 
 

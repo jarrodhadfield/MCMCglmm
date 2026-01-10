@@ -9,7 +9,7 @@ importFrom(stats, simulate)
 importFrom(grDevices, devAskNewPage)
 importFrom(graphics, plot)
 importFrom(methods, as, is)
-importFrom(stats, D, as.formula, density, get_all_vars, glm, lm, model.frame, model.matrix, na.omit, plogis, pnorm, printCoefmat, qnorm, quantile, reshape, rnorm, runif, sd, terms, update.formula, var, dnorm, dpois, integrate, pexp, qpois, rbinom, dbinom, qbinom, rexp, rgeom, rmultinom, rpois, rt)
+importFrom(stats, D, as.formula, density, get_all_vars, glm, lm, model.frame, model.matrix, na.omit, plogis, pnorm, printCoefmat, qnorm, quantile, reshape, rnorm, runif, sd, terms, update.formula, var, dnorm, dpois, integrate, pexp, qpois, rbinom, dbinom, qbinom, rexp, rgeom, rmultinom, rpois, rt, df, dgamma, dt)
 export(
 #  buildZ,
 #  find.components,
@@ -60,7 +60,8 @@ export(
 # rante,
 # close.bracket,
    me,
-   pkk
+   pkk,
+   dprior
 ) 
 S3method(summary, MCMCglmm)
 S3method(print, summary.MCMCglmm)

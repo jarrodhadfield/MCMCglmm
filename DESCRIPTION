@@ -1,6 +1,6 @@
 Package: MCMCglmm
-Version: 2.36
-Date: 2024-05-06
+Version: 2.37
+Date: 2026-01-10
 Title: MCMC Generalised Linear Mixed Models
 Depends: Matrix, coda, ape
 Imports: corpcor, tensorA, cubature, methods

@@ -165,14 +165,15 @@ plot(mschool.1$VCV[,"school", drop=FALSE], density=FALSE)
 
 The autocorrelation in the chain is evident and there appears to be a lot of posterior density at zero. These are separate issues. Autocorrelation in the chain is due to algorithmic inefficiencies in sampling the posterior distribution, whereas a lot of posterior density near zero reflects the combined information coming from the data and coming from the prior (Chapter \@ref(bayesian)). Certainly, some posterior distributions are harder to sample from than others, and the efficiency of the MCMC algorithm may decrease when the posterior is close to zero. But if the chain can be run long enough that these inefficiencies are not consequential, situations where the posterior has 'too much' density near zero indicates potential problems with the prior, not algorithmic problems.
 
-### $F$ and half-$t$ priors
+### $F$ and folded-$t$ priors
 
-For the inverse-Wishart prior we specified the parameters $\texttt{V}$ and $\texttt{nu}$. The parameters $\texttt{alpha.mu}$ and $\texttt{alpha.V}$ can also be specified in the prior, and if $\texttt{alpha.V}$ is non-zero then parameter expansion is used. These additional parameters specify a prior for the variance, $\sigma^2_{\texttt{school}}$, that is a non-central scaled F-distribution with the numerator degrees-of-freedom set to one. The scale is set by $\texttt{alpha.V}*\texttt{V}$ and the normalised variance $\sigma^2_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ follows a non-central F distribution with $\texttt{df1}=1$,  $\texttt{df2}=\texttt{nu}$ and  $\texttt{ncp}=\texttt{alpha.mu}^2/\texttt{alpha.V}$. The density of $\sigma^2_{\texttt{school}}$ is therefore the density of the $F$ multiplied by $\texttt{alpha.V}*\texttt{V}$ (Section \@ref(transform-sec)). 
+For the inverse-Wishart prior we specified the parameters $\texttt{V}$ and $\texttt{nu}$. The parameters $\texttt{alpha.mu}$ and $\texttt{alpha.V}$ can also be specified in the prior, and if $\texttt{alpha.V}$ is non-zero then parameter expansion is used. These additional parameters specify a prior for the variance, $\sigma^2_{\texttt{school}}$, that is a non-central scaled F-distribution with the numerator degrees-of-freedom set to one. The scale is set by $\texttt{alpha.V}*\texttt{V}$ and the normalised variance $\sigma^2_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ follows a non-central F distribution with $\texttt{df1}=1$,  $\texttt{df2}=\texttt{nu}$ and  $\texttt{ncp}=\texttt{alpha.mu}^2/\texttt{alpha.V}$. The density of $\sigma^2_{\texttt{school}}$ is therefore its density in the $F$ distribution divided by $\texttt{alpha.V}*\texttt{V}$ (Section \@ref(transform-sec)). 
 
-We can also think about this prior in terms of the standard deviation, $\sigma_{\texttt{school}}$, which in some ways is more natural, since it is in the same units as the response.  The prior distribution for the standard deviation is a scaled non-central half-$t$ (the negative values of the $t$ are ignored) with $\texttt{nu}$ degrees of freedom, non-centrality parameter $\texttt{alpha.mu}/\sqrt{\texttt{alpha.V}}$ and scale $\sqrt{\texttt{alpha.V}*\texttt{V}}$. The density of $\sigma_{\texttt{school}}$ is therefore the density of the $t$ multiplied by $\sqrt{\texttt{alpha.V}*\texttt{V}}$.
+We can also think about this prior in terms of the standard deviation, $\sigma_{\texttt{school}}$, which in some ways is more natural, since it is in the same units as the response.  The prior distribution for the standard deviation is a folded scaled non-central $t$. The folding is because we are working with the absolute value of the $t$ variable and so the density for negative values is reflected onto positive values. The distribution has $\texttt{nu}$ degrees of freedom, non-centrality parameter $\texttt{alpha.mu}/\sqrt{\texttt{alpha.V}}$ and scale $\sqrt{\texttt{alpha.V}*\texttt{V}}$. The density of $\sigma_{\texttt{school}}$ is therefore the summed density of $\sigma_{\texttt{school}}$ and $-\sigma_{\texttt{school}}$ in the $t$ distribution divided by $\sqrt{\texttt{alpha.V}*\texttt{V}}$. If $\texttt{alpha.mu}=0$, such that the non-centrality parameter is zero, then the folding results in a half-$t$ such that the density of $\sigma_{\texttt{school}}$ is its density in the $t$ distribution divided by $\sqrt{\texttt{alpha.V}*\texttt{V}}/2$. 
+
 
 ```{r echo=FALSE, eval=FALSE}
-# Better check these claims!
+# Better check new dprior function!
 V<-runif(1, 1, 10)
 nu<-sample(10:100, 1)
 alpha.mu<-runif(1, 1, 10)
@@ -184,48 +185,74 @@ scale<-alpha.V*V
 pxdat<-data.frame(y=c(NA,NA), fac=1:2)
 prior<-list(B=list(mu=0, V=1e-16), R=list(V=1, fix=1), G=list(G1=list(V=V, nu=nu, alpha.mu=alpha.mu, alpha.V=alpha.V)))
 pxm<-MCMCglmm(y~1, random=~fac, dat=pxdat, pr=TRUE, singular=TRUE, prior=prior, nitt=13000*10, thin=5*10, burnin=3000*10)
+# simulate from prior by having completely missing observations and fixed intercept/residual variance
 
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
 vf<-rf(2000, df1=1, df2=nu, ncp=(alpha.mu^2)/alpha.V)
-qqplot(pxm$VCV[,"fac"]/scale, vf)
+qqplot(vf, pxm$VCV[,"fac"]/scale, main="qq-plot of variances", ylab="MCMCglmm", xlab="rf")
 
 abline(0,1)
 
-h<-hist(pxm$VCV[,"fac"], breaks=100, prob=TRUE)
-dv<-df(h$mids/scale, df1=1, df2=nu, ncp=(alpha.mu^2)/alpha.V)*scale
-c<-max(h$density)/max(dv)
-lines((c*dv)~h$mids, col="red")
+h<-hist(pxm$VCV[,"fac"], breaks=100, prob=TRUE, main="", xlab="Variance")
+dv<-dprior(h$mids, prior=prior$G$G1)
+lines(dv~h$mids, col="red")
 
-
-par(mfrow=c(1,2))
-sdt<-rt(2000, df=nu, ncp=alpha.mu/sqrt(alpha.V))
-qqplot(sqrt(pxm$VCV[,"fac"])/sqrt(scale), sdt)
+sdt<-abs(rt(2000, df=nu, ncp=alpha.mu/sqrt(alpha.V)))
+qqplot(sdt, sqrt(pxm$VCV[,"fac"])/sqrt(scale), main="qq-plot of standard deviation", ylab="MCMCglmm", xlab="rt")
 
 abline(0,1)
 
-h<-hist(sqrt(pxm$VCV[,"fac"]), breaks=100, prob=TRUE)
-dsd<-dt(h$mids/sqrt(scale), df=nu, ncp=alpha.mu/sqrt(alpha.V))*sqrt(scale)
-c<-max(h$density)/max(dsd)
-lines((c*dsd)~h$mids, col="red")
+h<-hist(sqrt(pxm$VCV[,"fac"]), breaks=100, prob=TRUE, main="", xlab="Standard deviation")
+dsd<-dprior(h$mids, prior=prior$G$G1, sd=TRUE)
+
+lines(dsd~h$mids, col="red")
+
+V<-as.matrix(runif(1, 1, 10))
+nu<-sample(3:10, 1)
+
+pxdat<-data.frame(y=c(NA,NA), fac=1:2)
+prior<-list(B=list(mu=0, V=1e-16), R=list(V=1, fix=1), G=list(G1=list(V=V, nu=nu)))
+iwm<-MCMCglmm(y~1, random=~fac, dat=pxdat, pr=TRUE, singular=TRUE, prior=prior, nitt=13000*10, thin=5*10, burnin=3000*10)
+# simulate from prior by having completely missing observations and fixed intercept/residual variance
+
+par(mfrow=c(2,2))
+vIW<-rIW(V=V, nu=nu, n=2000)
+qqplot(vIW, iwm$VCV[,"fac"], main="qq-plot of variances", ylab="MCMCglmm", xlab="rf")
+
+abline(0,1)
+
+h<-hist(iwm$VCV[,"fac"], breaks=100, prob=TRUE, main="", xlab="Variance")
+dv<-dprior(h$mids, prior=prior$G$G1)
+lines(dv~h$mids, col="red")
+
+sdIW<-sqrt(rIW(V=V, nu=nu, n=2000))
+qqplot(sdIW, sqrt(iwm$VCV[,"fac"]), main="qq-plot of standard deviation", ylab="MCMCglmm", xlab="rt")
+
+abline(0,1)
+
+h<-hist(sqrt(iwm$VCV[,"fac"]), breaks=100, prob=TRUE, main="", xlab="Standard deviation")
+dsd<-dprior(h$mids, prior=prior$G$G1, sd=TRUE)
+
+lines(dsd~h$mids, col="red")
 ```
 
-Before discussing the properties of $F$ and half-$t$ priors on the posterior distributions of variances and standard deviation, respectively, let's confirm that parameter expansion does indeed increase efficiency independent of the prior being used. Since these distributions only have three effective parameters we will specify $\texttt{V}=1$ throughout, without loss of generality. With $\texttt{nu=1}$ and a non-zero $\texttt{alpha.V}$ the prior on the standard deviation is a scaled half-$t$ distribution with one degree-of-freedom: a half-Cauchy distribution. If we set $\texttt{alpha.mu}=0$ we have a central half-Cauchy distribution and as we up the scale ($\sqrt{\texttt{alpha.V}}$) of this distribution it tends to a flat prior for the standard deviation. In Section \@ref(Vprior-sec) was also that an improper inverse-Wishart distribution with $\texttt{V}=0$ and $\texttt{nu}=-1$ is also flat for the standard deviation. Let's fit the improper inverse-Wishart and the central half-Cauchy with a scale that is large (relative to the data) - $\sqrt{\texttt{alpha.V}}=1000$.
+Before discussing the properties of $F$ and half-$t$ priors on the posterior distributions of variances and standard deviation, respectively, let's confirm that parameter expansion does indeed increase efficiency independent of the prior being used. Since these distributions only have three effective parameters we will specify $\texttt{V}=1$ throughout, without loss of generality. With $\texttt{nu=1}$ and $\texttt{alpha.mu}=0$ the prior on the standard deviation is a scaled half-$t$ with one degree-of-freedom: a half-Cauchy distribution. As we increase the scale of this distribution by increasing $\sqrt{\texttt{alpha.V}}$ it tends to a flat prior for the standard deviation. In Section \@ref(Vprior-sec) we saw that an improper inverse-Wishart distribution with $\texttt{V}=0$ and $\texttt{nu}=-1$ is also flat for the standard deviation. Let's fit the improper inverse-Wishart and the proper half-Cauchy with a scale that is large (relative to the data) - $\sqrt{\texttt{alpha.V}}=1000$.
 
 ``` {r }
 prior.mschool.2<-list(R=list(V=diag(schools$ve), fix=1), 
 					  G=list(G1=list(V=1e-16, nu=-1)))
 
 mschool.2<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.2)
-
+# improper inverse-Wishart prior on the school variance 
 
 prior.mschool.3<-list(R=list(V=diag(schools$ve), fix=1), 
 					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000^2)))
 
 mschool.3<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.3)
-
+# proper half-Cauchy prior on the school standard deviation. 
 ```
 
-We can see that these two models are sampling from the almost the same posterior (Figure \@ref(fig:mschool-2)) but the efficiency of the algorithm is greater when parameter expansion is used with an effective posterior sample size of `r round(effectiveSize(mschool.3$VCV[,"school"]))` rather than `r round(effectiveSize(mschool.2$VCV[,"school"]))`. Indeed, with `r round(effectiveSize(mschool.3$VCV[,"school"]))` effective samples from 1,000 stored samples we could have ran the chain for less than the default number of iterations and reduced the thinning interval (Section \@ref(diagnostics-sec)). 
+We can see that these two models are sampling from the almost the same posterior (Figure \@ref(fig:mschool-2)) but the efficiency of the algorithm is greater when parameter expansion is used, with an effective posterior sample size of `r round(effectiveSize(mschool.3$VCV[,"school"]))` rather than `r round(effectiveSize(mschool.2$VCV[,"school"]))`. Indeed, with `r round(effectiveSize(mschool.3$VCV[,"school"]))` effective samples from 1,000 stored samples we could have ran the chain for fewer iterations than the default and reduced the thinning interval (Section \@ref(diagnostics-sec)). 
 
 
 ```{r mschool-2, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the standard deviation in $\\texttt{school}$ effects. In black is the trace for model `mschool.2` in which an improper inverse-Wishart prior was used for the variance with $\\texttt{V=1}$ and $\\texttt{nu=-1}$. In red is the trace for model `mschool.3` in which a scaled $F_{1,1}$ prior for the variance was used with a scale of $10^6$. The inverse-Wishart prior is flat for the standard deviation. The $F_{1,1}$ prior on the variance places a half-Cauchy prior on the standard deviation with a large scale ($10^3$). This prior is essentially flat for the standard deviation but by switching to the half-Cauchy, parameter expansion is used.", fig.width=7, fig.height=5}
@@ -254,7 +281,7 @@ prior.mschool.5<-list(R=list(V=diag(schools$ve), fix=1),
 mschool.5<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.5)
 ```
 
-The default in brms is to use a half-t with 3 degrees of freedom and scale of 2.5 for the standard deviation. This is less 'tailed' than the Cauchy:length
+The default in brms is to use a half-$t$ with 3 degrees of freedom and scale of 2.5 for the standard deviation. This is less 'tailed' than the Cauchy:
 
 
 ``` {r }
@@ -264,39 +291,52 @@ prior.mschool.6<-list(R=list(V=diag(schools$ve), fix=1),
 mschool.6<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.6)
 ```
 
+``` {r prior-compare, echo=FALSE, include=TRUE, fig.cap="Prior density plots for different models", fig.width=7, fig.height=5}
+
+sd.x<-seq(1e-18, max(sqrt(mschool.1$VCV[,"school"])), length=1000)
+
+dsd.x<-as.list(1:6)
+
+dsd.x[[1]]<-dprior(sd.x, prior.mschool.1$G$G1, sd=TRUE)
+dsd.x[[2]]<-rep(0, length(sd.x))
+dsd.x[[3]]<-dprior(sd.x, prior.mschool.3$G$G1, sd=TRUE)
+dsd.x[[4]]<-dprior(sd.x, prior.mschool.4$G$G1, sd=TRUE)
+dsd.x[[5]]<-dprior(sd.x, prior.mschool.5$G$G1, sd=TRUE)
+dsd.x[[6]]<-dprior(sd.x, prior.mschool.6$G$G1, sd=TRUE)
+
+cols    <- palette()[1:6] 
+
+plot(dsd.x[[1]]~sd.x,                     
+     main = "",
+     xlab = expression(sigma[school]), ylab = "Prior density",
+     col  = cols[1], lwd = 2, type="l", ylim=c(0, max(unlist(dsd.x))))
+
+for (i in 2:length(dsd.x))                  
+  lines(dsd.x[[i]]~sd.x, col = cols[i], lwd = 2)
+
+legend("topright", lwd = 2, col = cols,
+       legend = paste0("model ", 1:6), bty = "n")
+```
 
 
-``` {r prior-compare, echo=FALSE, include=TRUE, fig.cap="Kernel density plots for different priors", fig.width=7, fig.height=5}
+
+``` {r posterior-compare, echo=FALSE, include=TRUE, fig.cap="Posterior density plots for different models", fig.width=7, fig.height=5}
+
 samples <- list(sqrt(mschool.1$VCV[,"school"]), sqrt(mschool.2$VCV[,"school"]), sqrt(mschool.3$VCV[,"school"]), sqrt(mschool.4$VCV[,"school"]), sqrt(mschool.5$VCV[,"school"]), sqrt(mschool.6$VCV[,"school"]))
+
 cols    <- palette()[1:6]  # nice colours
 
-plot(density(samples[[1]]),                      # first density sets up the axes
-     main = "Overlaid kernel densities",
-     xlab = "value", ylab = "density",
+plot(density(samples[[1]]),                     
+     main = "",
+     xlab = expression(sigma[school]), ylab = "Posterior density",
      col  = cols[1], lwd = 2)
 
-for (i in 2:length(samples))                    # add the rest
+for (i in 2:length(samples))                  
   lines(density(samples[[i]]), col = cols[i], lwd = 2)
 
 legend("topright", lwd = 2, col = cols,
-       legend = paste0("sample ", 1:6), bty = "n")
+       legend = paste0("model ", 1:6), bty = "n")
 ```
-
-The default in brms is to use a half-t with 3 degrees of freedom and scale of 2.5 for the standard deviation. This is less 'tailed' than the Cauchy:length
-
-
-``` {r }
-prior.mschool.6<-list(R=list(V=diag(schools$ve), fix=1), 
-					  G=list(G1=list(V=1, nu=3, alpha.mu=0, alpha.V=2.5^2)))
-
-mschool.6<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.6)
-```
-
-
-
-
-
-student_t(3, 0, 2.5)
 
 
 
