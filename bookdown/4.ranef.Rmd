@@ -28,7 +28,7 @@ as $\sigma^{2}_{\beta}$ tends to infinity. In a Bayesian setting we would call t
 
 That is the distinction between fixed and random effects. The difference really is that simple, but it takes a long time and a lot of practice to understand what this means in practical terms, and why working with random effects can be a very powerful way of modelling data.  To get a feel for why we might want to fit an effect as random or not, lets work through an example before moving on to model fitting. In Section \@ref(binom-sec) we analysed binomial data where 122 respondents had looked at 44 photographs of people and given them a 'grumpy score' of more than five (a success) or less than five (a failure). If, instead of 122 respondents, there had been a zillion respondents, we could use the average proportion of success for each photo as a nearly perfect estimates of their probabilities of success. The variance of these near-perfect estimates could serve as a reasonable estimate of the variance in photo effects. If the probabilities were all clustered tightly around 0.5: 0.505, 0.501, 0.499 and so on, then variance would be estimated to be small. Let's then imagine that we obtained a $45^\textrm{th}$ photograph but by this point the respondents were so bored I managed to only recruit a single person who gave the photo a score greater than five - a success. Since we only have one observation for this photo the average proportion of success would be one. Do you think the best estimate of the probability of success for the $45^\textrm{th}$ photograph is then 1.000? I think you wouldn't: you would use the knowledge that you have gained from the other photos and say that it is more likely that if you had managed to recruit more respondents you would have got a roughly even split of success and failures. You have used common sense, treated the photo effects as random, and *shrunk* photo 45's effect towards the average because the variance ($\sigma^2_u$) was small and we have a strong prior. If we had treated the photo effects as fixed, we believe that the only information regarding a photo's value comes from data associated with that particular photo, and the estimate of photo 45's probability would have been one. When we treat an effect as random, we also use the information that comes from data associated with that particular photo (obviously), but we weight that information by what the data associated with other photos tell us about the likely values that the effect could take - through the parameter $\sigma^2_u$. What if the probabilities weren't all clustered tightly around 0.5, but took on values 0.500, 0.998, 0.002, 0.327 ...?  The variance $\sigma^2_u$ would be larger and the prior information for our $45^\textrm{th}$ photo would be weaker: perhaps we got a success because the underlying probability was 0.998, but a single success would also not be very surprising if the underlying probability was 0.500, or even 0.327. We might then be happy that our best estimate of the probability of success for the $45^\textrm{th}$ photograph was close to one, although with such weak prior information (large $\sigma^2_u$) the uncertainty would remain large.   
 
-When the motivation for treating an effect as random is explained this way, it is hard to come up with a reason why you wouldn't treat all effects as random. However, you have to consider how much information is in a given data set to estimate $\sigma^2_u$, which we will cover in Section \@ref(fixed-or-random-sec)
+When the motivation for treating an effect as random is explained this way, it is hard to come up with a reason why you wouldn't treat all effects as random. However, you have to consider how much information is in a given data set to estimate $\sigma^2_u$, which we will cover in Section \@ref(fix-or-rand).
 
 ## Generalised Linear Mixed Model (GLMM) {#GLMM}
 
@@ -139,7 +139,7 @@ Two things are apparent from Figure \@ref(fig:bernoulli-trace). Autocorrelation 
 
 ## Priors for Random Effect Variances {#PXprior-sec}
 
-Parameter expansion is an algorithmic trick for speeding up the mixing and convergence of the MCMC chain. An unintended but - as it turns out - useful side-effect of parameter expansion is that it can allow a wider class of prior distributions that are conjugate and therefore still permit Gibbs sampling (Chapter \@ref(bayesian)). In order to explore parameter expansion, and the associated $F$ prior for random-effect (co)variances,  we will work with a model and data-set where the issues noted for model `mbinom.3` are much more obvious - the Schools example discussed in @Gelman.2006. 
+Parameter expansion is an algorithmic trick for speeding up the mixing and convergence of the MCMC chain. An unintended but useful side-effect of parameter expansion is that it can allow a wider class of prior distributions while still permitting Gibbs sampling (Chapter \@ref(bayesian)). In order to explore parameter expansion, and the associated $F$ prior for random-effect variances, we will work with a model and data-set where the issues noted for model `mbinom.3` are much more obvious - the Schools example discussed in @Gelman.2006. 
 
 ``` {r }
 schools<-data.frame(school= letters[1:8], 
@@ -148,7 +148,7 @@ schools<-data.frame(school= letters[1:8],
 head(schools)
 ```
 
-The response variable `estimate` is the relative effect of Scholastic Aptitude Test coaching programs in 8 schools and @Gelman.2006 focusses on the variance in school effects. Since we only have a single estimate per school there will be a one-to-one mapping between $\texttt{school}$ effects and the residual. In most cases this would result in the variance in school effects being confounded with the residual variance. Here, however, we have been gifted the residual (within school) variance ($\texttt{ve}$) which varies from school to school. In reality, these residual variances are actually estimates and we might wish to factor in this additional complication, but for now we will ignore this complexity and comeback to it in Chapter \@ref(measurement). First, lets fit the inverse-Wishart prior we have been using up to now with $\texttt{V}=1$ and $\texttt{nu}=0.002$. This prior is equivalent to an inverse-gamma prior with a shape and scale of 0.001 (Section \@ref(Vprior-sec)): 
+The response variable `estimate` is the relative effect of Scholastic Aptitude Test coaching programs in 8 schools and @Gelman.2006 focusses on the variance in school effects. Since we only have a single estimate per school there will be a one-to-one mapping between $\texttt{school}$ effects and the residual. In most cases this would result in the variance in school effects being confounded with the residual variance. Here, however, we have been gifted the residual (within school) variance ($\texttt{ve}$) which varies from school to school. In reality, these residual variances are actually estimates and we might wish to factor in this additional complication, but for now we will ignore this complexity and come back to it in Chapter \@ref(measurement). First, lets fit the inverse-Wishart prior we have been using up to now with $\texttt{V}=1$ and $\texttt{nu}=0.002$. This prior is equivalent to an inverse-gamma prior with a shape and scale of 0.001 (Section \@ref(Vprior-sec)): 
 
 ``` {r }
 prior.mschool.1<-list(R=list(V=diag(schools$ve), fix=1), 
@@ -163,13 +163,147 @@ The model contains an argument we haven't seen before: $\texttt{rcov}$. In all p
 plot(mschool.1$VCV[,"school", drop=FALSE], density=FALSE)
 ```
 
-The autocorrelation in the chain is evident and there appears to be a lot of posterior density at zero. These are separate issues. Autocorrelation in the chain is due to algorithmic inefficiencies in sampling the posterior distribution, whereas a lot of posterior density near zero reflects the combined information coming from the data and coming from the prior (Chapter \@ref(bayesian)). Certainly, some posterior distributions are harder to sample from than others, and the efficiency of the MCMC algorithm may decrease when the posterior is close to zero. But if the chain can be run long enough that these inefficiencies are not consequential, situations where the posterior has 'too much' density near zero indicates potential problems with the prior, not algorithmic problems.
+The autocorrelation in the chain is evident and there appears to be a lot of posterior density at zero. These are separate issues. Autocorrelation in the chain is due to algorithmic inefficiencies in sampling the posterior distribution, whereas a lot of posterior density near zero reflects the combined information coming from the data and coming from the prior (Chapter \@ref(bayesian)). Certainly, some posterior distributions are harder to sample from than others, and the efficiency of the MCMC algorithm may decrease when the posterior is close to zero. But if the chain can be run long enough that these inefficiencies are not consequential, situations where the posterior has 'too much' density near zero indicate potential problems with the prior, not algorithmic problems.
 
 ### $F$ and folded-$t$ priors
 
-For the inverse-Wishart prior we specified the parameters $\texttt{V}$ and $\texttt{nu}$. The parameters $\texttt{alpha.mu}$ and $\texttt{alpha.V}$ can also be specified in the prior, and if $\texttt{alpha.V}$ is non-zero then parameter expansion is used. These additional parameters specify a prior for the variance, $\sigma^2_{\texttt{school}}$, that is a non-central scaled F-distribution with the numerator degrees-of-freedom set to one. The scale is set by $\texttt{alpha.V}*\texttt{V}$ and the normalised variance $\sigma^2_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ follows a non-central F distribution with $\texttt{df1}=1$,  $\texttt{df2}=\texttt{nu}$ and  $\texttt{ncp}=\texttt{alpha.mu}^2/\texttt{alpha.V}$. The density of $\sigma^2_{\texttt{school}}$ is therefore its density in the $F$ distribution divided by $\texttt{alpha.V}*\texttt{V}$ (Section \@ref(transform-sec)). 
+For the inverse-Wishart prior we specified the parameters $\texttt{V}$ and $\texttt{nu}$. The parameters $\texttt{alpha.mu}$ and $\texttt{alpha.V}$ can also be specified in the prior, and if $\texttt{alpha.V}$ is non-zero then parameter expansion is used. These additional parameters specify a prior for the variance, $\sigma^2_{\texttt{school}}$, that is a non-central scaled F-distribution with the numerator degrees-of-freedom set to one. We can also think about this prior in terms of the standard deviation, $\sigma_{\texttt{school}}$, which in some ways is more natural, since it is in the same units as the response.  The prior distribution for the standard deviation is a folded scaled non-central $t$. As the length of their names suggest, these two distributions are quite complicated. Regrettably, this complication is exacerbated in $\texttt{MCMCglmm}$ by specifying the prior through the distribution of the parameter expansion working parameters (See Section \@ref(px-sec)). I will leave the full relationship between the prior specification and the $F$ and $t$ distributions to the footnote[^ranef.3], and introduce two simplifications here. First, these distributions have three free parameters, yet the prior specification has four. Without loss of generality we will use $\texttt{V}=1$ throughout. Then,  $\texttt{alpha.V}$ specifies the scale of the $F$ prior for the variance and $\sqrt{\texttt{alpha.V}}$ specifies the scale of the $t$ prior for the standard deviation. Second, since the non-central forms of these distributions are rarely - if ever - used as priors, we will set the non-centrality parameter to zero via $\texttt{alpha.mu}=0$. For the standard deviation prior this results in the added simplification that the folded-$t$ becomes the half-$t$ (essentially a $t$ with the negative values missing). We are then left with two-parameter distributions with the scale set by $\texttt{alpha.V}$ and the (denominator) degrees-of-freedom, $\texttt{nu}$. 
 
-We can also think about this prior in terms of the standard deviation, $\sigma_{\texttt{school}}$, which in some ways is more natural, since it is in the same units as the response.  The prior distribution for the standard deviation is a folded scaled non-central $t$. The folding is because we are working with the absolute value of the $t$ variable and so the density for negative values is reflected onto positive values. The distribution has $\texttt{nu}$ degrees of freedom, non-centrality parameter $\texttt{alpha.mu}/\sqrt{\texttt{alpha.V}}$ and scale $\sqrt{\texttt{alpha.V}*\texttt{V}}$. The density of $\sigma_{\texttt{school}}$ is therefore the summed density of $\sigma_{\texttt{school}}$ and $-\sigma_{\texttt{school}}$ in the $t$ distribution divided by $\sqrt{\texttt{alpha.V}*\texttt{V}}$. If $\texttt{alpha.mu}=0$, such that the non-centrality parameter is zero, then the folding results in a half-$t$ such that the density of $\sigma_{\texttt{school}}$ is its density in the $t$ distribution divided by $\sqrt{\texttt{alpha.V}*\texttt{V}}/2$. 
+
+Before discussing the properties of the $F$ and half-$t$ priors on the posterior distributions of variances and standard deviations, respectively, let's confirm that parameter expansion does indeed increase efficiency independent of the prior being used. In Section \@ref(Vprior-sec) we saw that an improper inverse-Wishart distribution with $\texttt{V}=0$ and $\texttt{nu}=-1$ is flat for the standard deviation. A half-$t$ with $\texttt{nu}=-1$ is also an improper flat prior on the standard deviation irrespective of what is specified for the other parameters. Let's fit these flat improper priors with and without parameter expansion:
+
+
+``` {r }
+prior.nopx<-list(R=list(V=diag(schools$ve), fix=1),    
+					  G=list(G1=list(V=1e-16, nu=-1)))
+
+m.nopx<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.nopx)
+# flat prior on the school standard deviation - no parameter expansion
+
+prior.px<-list(R=list(V=diag(schools$ve), fix=1),   
+					  G=list(G1=list(V=1e-16, nu=-1, alpha.mu=0, alpha.V=1000^2)))
+# note I have set V=1e-16 rather than V=1: with nu=-1, V does not influence the prior 
+
+m.px<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.px)
+# flat prior on the school standard deviation - with parameter expansion 
+```
+
+We can see that these two models are sampling from the same posterior (Figure \@ref(fig:mschool-2)) but the efficiency of the algorithm is greater when parameter expansion is used, with an effective posterior sample size of `r round(effectiveSize(m.px$VCV[,"school"]))` rather than `r round(effectiveSize(m.nopx$VCV[,"school"]))`. 
+
+
+```{r mschool-2, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the standard deviation in $\\texttt{school}$ effects. In black is the trace for model `m.nopx` in which an improper inverse-Wishart prior was used for the variance with $\\texttt{V=0}$ and $\\texttt{nu=-1}$. In red is the trace for model `m.px` in which an improper $F_{1,-1}$ prior was used with $\\texttt{nu=-1}$ and $$\\texttt{alpha.V}=1000^2$. Both priors are flat for the standard deviation but `m.px` employs parameter expansion.", fig.width=7, fig.height=5}
+plot(mcmc.list(sqrt(m.nopx$VCV[,"school", drop=FALSE]), sqrt(m.px$VCV[,"school", drop=FALSE])), density=FALSE, main=expression(sigma[school]), cex.main=1.5)
+```
+
+While parameter expansion usually results in more efficient sampling of the posterior, to justify its use, it is important that it also allows us to specify priors with sensible properties. Those with Bayesian scruple may baulk at the use of an improper prior. However, if we specify $\texttt{nu=1}$ (a half-$t_1$ or half-Cauchy) we can specify a proper prior that becomes flat for the standard deviation as we increase the scale. Let's fit a proper half-Cauchy with a scale that is large (relative to the data) - $\sqrt{\texttt{alpha.V}}=1000$.
+
+
+``` {r }
+prior.mschool.2<-list(R=list(V=diag(schools$ve), fix=1),   
+					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000^2)))
+# half-Cauchy prior on the standard-deviation with scale 1000
+
+mschool.2<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.px)
+# flatish prior on the school standard deviation 
+```
+
+Overlaying the trace on those obtained under flat improper priors shows that the posterior distributions for $\sigma_\texttt{school}$ are indistinguishable (Figure \@ref(fig:mschool-3)).
+
+```{r mschool-3, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the standard deviation in $\\texttt{school}$ effects. In black is the trace for model `m.nopx` in which an improper inverse-Wishart prior was used for the variance with $\\texttt{V=0}$ and $\\texttt{nu=-1}$. In red is the trace for model `m.px` in which an improper $t_{-1}$ prior was used for the standard deviation with $\\texttt{alpha.V}$ set to $1000^2$. Both priors are flat for the standard deviation but `m.px` employs parameter expansion. In green is the trace for model `mschool.2` in which a proper half-Cauchy ($t_{1}$) with a scale of $1000$ was used. This prior is almost flat for the standard deviation over the range of values that have reasonable support.", fig.width=7, fig.height=5}
+plot(mcmc.list(sqrt(m.nopx$VCV[,"school", drop=FALSE]), sqrt(m.px$VCV[,"school", drop=FALSE]), sqrt(mschool.2$VCV[,"school", drop=FALSE])), density=FALSE, main=expression(sigma[school]), cex.main=1.5)
+```
+
+Is a flat(ish) prior on the standard deviation more sensible than the inverse-Wishart prior on the variance we have been using previously ($\texttt{V}=1$ and $\texttt{nu}$=0.002)? The short answer is yes. Setting $\texttt{nu}$ to be small in the inverse-Wishart is motivated by the idea that having few prior degrees of freedom provides a diffuse prior on the variance. However, as $\texttt{nu}$ becomes smaller the prior only becomes flat for the *log* of the variance, and there is a nasty spike at small values for both the variance (Section \@ref(Vprior-sec)) and the standard deviation. However, in some cases, as in the Schools example, the amount of information provided by the data may be so small that a flat prior on the standard deviation might be to vague. In such cases, reducing the scale has been advised, and @Gelman.2006 used a scale of 25 for this example:
+
+``` {r }
+prior.mschool.3<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=25^2)))
+
+mschool.3<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.3)
+```
+
+When reducing the scale, some care has to be taken that the scale is aligned with the scale of the data. For example, the common 'default' recommendation of setting the scale to 5 might prove problematic in this example where the standard deviation of the data exceeds one by some margin:
+
+``` {r }
+prior.mschool.4<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=5^2)))
+
+mschool.4<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.4)
+```
+
+The default in brms [@Burkner.2017] is to use a half-$t$ with 3 degrees of freedom and a scale of 2.5. The tails of this distribution are less 'heavy' than the Cauchy and in conjunction with the reduced scale penalise large values more strongly.
+
+``` {r }
+prior.mschool.5<-list(R=list(V=diag(schools$ve), fix=1), 
+					  G=list(G1=list(V=1, nu=3, alpha.mu=0, alpha.V=2.5^2)))
+
+mschool.5<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.5)
+```
+
+When comparing these priors visually we see that they are quite different, despite all having some history as default and/or recommended priors (Figure \@ref(fig:prior-compare)).   
+
+``` {r prior-compare, echo=FALSE, include=TRUE, fig.cap="Prior probability densities for the standard deviation of $\\texttt{school}$ effects used in the $\\texttt{mschool}$ models $\\texttt{1-5}$.  The scale of the half-Cauchy and half-t distributions are given after the colon. Note the inverse-gamma is the prior for the variance - not the standard deviation.", fig.width=7, fig.height=5}
+
+sd.x<-seq(1e-18, max(sqrt(mschool.1$VCV[,"school"])), length=1000)
+
+dsd.x<-as.list(1:5)
+
+dsd.x[[1]]<-dprior(sd.x, prior.mschool.1$G$G1, sd=TRUE)
+dsd.x[[2]]<-dprior(sd.x, prior.mschool.2$G$G1, sd=TRUE)
+dsd.x[[3]]<-dprior(sd.x, prior.mschool.3$G$G1, sd=TRUE)
+dsd.x[[4]]<-dprior(sd.x, prior.mschool.4$G$G1, sd=TRUE)
+dsd.x[[5]]<-dprior(sd.x, prior.mschool.5$G$G1, sd=TRUE)
+
+
+cols    <- palette()[1:5] 
+
+plot(dsd.x[[1]]~sd.x,                     
+     main = "",
+     xlab = expression(sigma[school]), ylab = "Prior density",
+     col  = cols[1], lwd = 2, type="l", ylim=c(0, max(unlist(dsd.x))))
+
+for (i in 2:length(dsd.x))                  
+  lines(dsd.x[[i]]~sd.x, col = cols[i], lwd = 2)
+
+model.names<-c("inverse-gamma(0.001, 0.001)", "half-Cauchy: 1000", "half-Cauchy: 25", "half-Cauchy: 5", expression("half-"~t[3]~": 2.5"))
+
+legend("topright", lwd = 2, col = cols,
+       legend = model.names, bty = "n")
+```
+
+With so little information coming from the data, these priors also have considerable influence on the posterior (Figure \@ref(fig:posterior-compare)). When $\texttt{V}$=1 and $\texttt{nu}$=0.002, small values are strongly favoured, and this is also true to a lesser extent for the half-$t_3$ prior with low scale. As we up the scale and/or reduce the degree-of-freedom to one (the half-Cauchy) the prior becomes flatter and the resulting posteriors are more similar.  
+
+
+``` {r posterior-compare, echo=FALSE, include=TRUE, fig.cap="Posterior probability densities for the standard deviation of $\\texttt{school}$ effects used in the $\\texttt{mschool}$ models $\\texttt{1-5}$.  The priors used in these models are given in the legend with the scale of the half-Cauchy and half-t distributions following the colon. Note the inverse-gamma is the prior for the variance - not the standard deviation.", fig.width=7, fig.height=5}
+
+samples <- list(sqrt(mschool.1$VCV[,"school"]), sqrt(mschool.2$VCV[,"school"]), sqrt(mschool.3$VCV[,"school"]), sqrt(mschool.4$VCV[,"school"]), sqrt(mschool.5$VCV[,"school"]))
+
+cols    <- palette()[1:5]  # nice colours
+
+plot(density(samples[[1]]),                     
+     main = "",
+     xlab = expression(sigma[school]), ylab = "Posterior density",
+     col  = cols[1], lwd = 2)
+
+for (i in 2:length(samples))                  
+  lines(density(samples[[i]]), col = cols[i], lwd = 2)
+
+legend("topright", lwd = 2, col = cols,
+       legend = model.names, bty = "n")
+```
+
+Figure \@ref(fig:posterior-compare) is anxiety-inducing - which prior to use? While I am reluctant to give general advise, in my own work I tend to use a half-Cauchy with a large scale: often $\sqrt{1000}$ (`alpha.V=1000`) depending on the scale of the data. However, I try to avoid collecting and analysing data that contains as little information as seen in this example (but see Section \@ref(fix-or-rand) below). Often the posterior distribution hardly shifts under these different priors in such situations. However, for variances/standard deviations that have support close to zero the spike of the inverse-Wishart/inverse-gamma distribution can cause problems, and for this reason (and the added bonus of faster mixing with parameter expansion) I usually avoid it. While the prior for the residual variance is restricted to the the inverse-Wishart/inverse-gamma distribution in MCMCglmm (Section \@ref(Vprior-sec)) the data usually contains so much information on the residual variance that prior sensitivity is limited. For models where the random-effect specification defines a (co)variance matrix rather than a scalar variance, see Section \@ref(VCVprior-sec).
+
+
+## Fixed or Random? {#fix-or-rand}
+
+Poor information almost always because few levels are available, not because the replication per level is small. 
+
+[^ranef.1]: If we assumed the distribution was Laplace (back to back exponentials) we have the LASSO. If we assumed the distribution was a mixture of normal and Laplace we have the elastic net. 
+
+[^ranef.2]: With the now defunct $\texttt{family="ordinal"}$ the $\pi^2/3$ in the denominator for the intra-class correlation would have be replaced by a one which is the link variance for the probit (the variance of the unit normal).  
+
+[^ranef.3]: For the $F$ prior on the variance, the scale is set by $\texttt{alpha.V}*\texttt{V}$ and the normalised variance $\sigma^2_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ follows a non-central F distribution with one numerator degree-of-freedom ($\texttt{df1}$), $\texttt{nu}$ denominator degrees-of-freedom ($\texttt{df2}$) and a non-centrality parameter ($\texttt{ncp}$) equal to $\texttt{alpha.mu}^2/\texttt{alpha.V}$.  The density of $\sigma^2_{\texttt{school}}$ is therefore the density of $\sigma^2_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ in this $F$ distribution divided by the Jacobian, $\texttt{alpha.V}*\texttt{V}$ (Section \@ref(transform-sec)). For the $t$ prior on the standard deviation, the scale is set by $\sqrt{\texttt{alpha.V}*\texttt{V}}$ and the normalised standard deviation $\sigma_{\texttt{school}}/\sqrt{\texttt{alpha.V}*\texttt{V}}$ follows a folded non-central $t$ distribution with $\texttt{nu}$ degrees-of-freedom and non-centrality parameter $\texttt{alpha.mu}/\sqrt{\texttt{alpha.V}}$. The folding is because we are working with the absolute value of the $t$ variable and so the density for negative values is reflected onto positive values. The density of $\sigma_{\texttt{school}}$ is therefore the summed density of $\sigma_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ and $-\sigma_{\texttt{school}}/(\texttt{alpha.V}*\texttt{V})$ in this $t$ distribution divided by the Jacobian, $\sqrt{\texttt{alpha.V}*\texttt{V}}$. This is all very hard to remember! The density of these distributions can be obtained using the function `dprior` which evaluates $\texttt{x}$ according to the MCMCglmm specification passed as a list to the argument $\texttt{prior}$. The density of the standard deviation ($\texttt{sd=TRUE}$) or the variance (the default - $\texttt{sd=FALSE}$) can be obtained. For example, `dprior(1/2, prior=list(V=1, nu=1, alpha.mu=0, alpha.V=10^2), sd=TRUE)`, returns the density of $\sigma_{\texttt{school}}=1/2$ for a half-$t$ (since $\texttt{alpha.mu}=0$) with one degree-of-freedom and scale 10 (i.e a half-Cauchy with scale 10).
 
 
 ```{r echo=FALSE, eval=FALSE}
@@ -235,120 +369,3 @@ dsd<-dprior(h$mids, prior=prior$G$G1, sd=TRUE)
 
 lines(dsd~h$mids, col="red")
 ```
-
-Before discussing the properties of $F$ and half-$t$ priors on the posterior distributions of variances and standard deviation, respectively, let's confirm that parameter expansion does indeed increase efficiency independent of the prior being used. Since these distributions only have three effective parameters we will specify $\texttt{V}=1$ throughout, without loss of generality. With $\texttt{nu=1}$ and $\texttt{alpha.mu}=0$ the prior on the standard deviation is a scaled half-$t$ with one degree-of-freedom: a half-Cauchy distribution. As we increase the scale of this distribution by increasing $\sqrt{\texttt{alpha.V}}$ it tends to a flat prior for the standard deviation. In Section \@ref(Vprior-sec) we saw that an improper inverse-Wishart distribution with $\texttt{V}=0$ and $\texttt{nu}=-1$ is also flat for the standard deviation. Let's fit the improper inverse-Wishart and the proper half-Cauchy with a scale that is large (relative to the data) - $\sqrt{\texttt{alpha.V}}=1000$.
-
-``` {r }
-prior.mschool.2<-list(R=list(V=diag(schools$ve), fix=1), 
-					  G=list(G1=list(V=1e-16, nu=-1)))
-
-mschool.2<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.2)
-# improper inverse-Wishart prior on the school variance 
-
-prior.mschool.3<-list(R=list(V=diag(schools$ve), fix=1), 
-					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000^2)))
-
-mschool.3<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.3)
-# proper half-Cauchy prior on the school standard deviation. 
-```
-
-We can see that these two models are sampling from the almost the same posterior (Figure \@ref(fig:mschool-2)) but the efficiency of the algorithm is greater when parameter expansion is used, with an effective posterior sample size of `r round(effectiveSize(mschool.3$VCV[,"school"]))` rather than `r round(effectiveSize(mschool.2$VCV[,"school"]))`. Indeed, with `r round(effectiveSize(mschool.3$VCV[,"school"]))` effective samples from 1,000 stored samples we could have ran the chain for fewer iterations than the default and reduced the thinning interval (Section \@ref(diagnostics-sec)). 
-
-
-```{r mschool-2, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the standard deviation in $\\texttt{school}$ effects. In black is the trace for model `mschool.2` in which an improper inverse-Wishart prior was used for the variance with $\\texttt{V=1}$ and $\\texttt{nu=-1}$. In red is the trace for model `mschool.3` in which a scaled $F_{1,1}$ prior for the variance was used with a scale of $10^6$. The inverse-Wishart prior is flat for the standard deviation. The $F_{1,1}$ prior on the variance places a half-Cauchy prior on the standard deviation with a large scale ($10^3$). This prior is essentially flat for the standard deviation but by switching to the half-Cauchy, parameter expansion is used.", fig.width=7, fig.height=5}
-plot(mcmc.list(sqrt(mschool.2$VCV[,"school", drop=FALSE]), sqrt(mschool.3$VCV[,"school", drop=FALSE])), density=FALSE, main=expression(sigma[school]), cex.main=1.5)
-```
-
-We have seen that for closely matched priors, parameter expansion is more efficient at sampling from the posterior. However, to justify its use, it is important that it also allows us to specify priors with sensible properties. Is a flat(ish) prior on the standard deviation more sensible than the inverse-Wishart prior we have been using previously ($\texttt{V}=1$ and $\texttt{nu}$=0.002) and covered in detail in Section \@ref(Vprior-sec)? The short answer is yes. Setting $\texttt{nu}$ to be small in the inverse-Wishart is motivated by the idea that having few prior degrees of freedom provides a diffuse prior on the variance. However, as $\texttt{nu}$ becomes smaller the prior only becomes flat for the *log* of the variance, and for the variance there is a nasty spike at small values. 
-
-
-In some cases, as in the Schools example, the amount of information provided by the data may be so small that a flat prior on the standard deviation might be to vague. In such cases, reducing the scale has been advised, and indeed over time the default prior for variances has moved from the inverse-gamma with shape=scale=0.001 (i.e. $\texttt{V}=1$ to $\texttt{nu}=0.002$) to a Cauchy with a scale of ~5. 
-
-``` {r }
-prior.mschool.4<-list(R=list(V=diag(schools$ve), fix=1), 
-					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=5^2)))
-
-mschool.4<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.4)
-```
-
-
-However, care has to be taken that these scales are calibrated with the scale of the data, and in the Schools example where the standard deviation ofthe data exceeds one by some margin, a scale of 25 was used.
-
-``` {r }
-prior.mschool.5<-list(R=list(V=diag(schools$ve), fix=1), 
-					  G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=25^2)))
-
-mschool.5<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.5)
-```
-
-The default in brms is to use a half-$t$ with 3 degrees of freedom and scale of 2.5 for the standard deviation. This is less 'tailed' than the Cauchy:
-
-
-``` {r }
-prior.mschool.6<-list(R=list(V=diag(schools$ve), fix=1), 
-					  G=list(G1=list(V=1, nu=3, alpha.mu=0, alpha.V=2.5^2)))
-
-mschool.6<-MCMCglmm(estimate~1, random=~school, rcov=~idh(school):units, data=schools, prior=prior.mschool.6)
-```
-
-``` {r prior-compare, echo=FALSE, include=TRUE, fig.cap="Prior density plots for different models", fig.width=7, fig.height=5}
-
-sd.x<-seq(1e-18, max(sqrt(mschool.1$VCV[,"school"])), length=1000)
-
-dsd.x<-as.list(1:6)
-
-dsd.x[[1]]<-dprior(sd.x, prior.mschool.1$G$G1, sd=TRUE)
-dsd.x[[2]]<-rep(0, length(sd.x))
-dsd.x[[3]]<-dprior(sd.x, prior.mschool.3$G$G1, sd=TRUE)
-dsd.x[[4]]<-dprior(sd.x, prior.mschool.4$G$G1, sd=TRUE)
-dsd.x[[5]]<-dprior(sd.x, prior.mschool.5$G$G1, sd=TRUE)
-dsd.x[[6]]<-dprior(sd.x, prior.mschool.6$G$G1, sd=TRUE)
-
-cols    <- palette()[1:6] 
-
-plot(dsd.x[[1]]~sd.x,                     
-     main = "",
-     xlab = expression(sigma[school]), ylab = "Prior density",
-     col  = cols[1], lwd = 2, type="l", ylim=c(0, max(unlist(dsd.x))))
-
-for (i in 2:length(dsd.x))                  
-  lines(dsd.x[[i]]~sd.x, col = cols[i], lwd = 2)
-
-legend("topright", lwd = 2, col = cols,
-       legend = paste0("model ", 1:6), bty = "n")
-```
-
-
-
-``` {r posterior-compare, echo=FALSE, include=TRUE, fig.cap="Posterior density plots for different models", fig.width=7, fig.height=5}
-
-samples <- list(sqrt(mschool.1$VCV[,"school"]), sqrt(mschool.2$VCV[,"school"]), sqrt(mschool.3$VCV[,"school"]), sqrt(mschool.4$VCV[,"school"]), sqrt(mschool.5$VCV[,"school"]), sqrt(mschool.6$VCV[,"school"]))
-
-cols    <- palette()[1:6]  # nice colours
-
-plot(density(samples[[1]]),                     
-     main = "",
-     xlab = expression(sigma[school]), ylab = "Posterior density",
-     col  = cols[1], lwd = 2)
-
-for (i in 2:length(samples))                  
-  lines(density(samples[[i]]), col = cols[i], lwd = 2)
-
-legend("topright", lwd = 2, col = cols,
-       legend = paste0("model ", 1:6), bty = "n")
-```
-
-
-
-
-
-
-
-
-## Fixed or Random?
-
-
-[^ranef.1]: If we assumed the distribution was Laplace (back to back exponentials) we have the LASSO. If we assumed the distribution was a mixture of normal and Laplace we have the elastic net. 
-
-[^ranef.2]: With the now defunct $\texttt{family="ordinal"}$ the $\pi^2/3$ in the denominator for the intra-class correlation would have be replaced by a one which is the link variance for the probit (the variance of the unit normal).  
-
