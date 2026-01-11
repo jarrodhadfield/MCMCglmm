@@ -106,7 +106,7 @@ rescale.VCV.3 <- mbinom.3$VCV[,c("person", "photo")]/(1+c2)
 plot(mcmc.list(as.mcmc(rescale.VCV.2), as.mcmc(rescale.VCV.3)), density=FALSE)
 ```
 
-## Intra-class Correlations
+## Intra-class Correlations {#ICC}
 
 A more common approach, however, is to express the variances as intra-class correlations where we take the variance of interest and express it as a proportion of the total. For example, for the $\texttt{person}$ effects, the intra-class correlation would be
 
@@ -292,12 +292,57 @@ legend("topright", lwd = 2, col = cols,
        legend = model.names, bty = "n")
 ```
 
-Figure \@ref(fig:posterior-compare) is anxiety-inducing - which prior to use? While I am reluctant to give general advise, in my own work I tend to use a half-Cauchy with a large scale: often $\sqrt{1000}$ (`alpha.V=1000`) depending on the scale of the data. However, I try to avoid collecting and analysing data that contains as little information as seen in this example (but see Section \@ref(fix-or-rand) below). Often the posterior distribution hardly shifts under these different priors in such situations. However, for variances/standard deviations that have support close to zero the spike of the inverse-Wishart/inverse-gamma distribution can cause problems, and for this reason (and the added bonus of faster mixing with parameter expansion) I usually avoid it. While the prior for the residual variance is restricted to the the inverse-Wishart/inverse-gamma distribution in MCMCglmm (Section \@ref(Vprior-sec)) the data usually contains so much information on the residual variance that prior sensitivity is limited. For models where the random-effect specification defines a (co)variance matrix rather than a scalar variance, see Section \@ref(VCVprior-sec).
+Figure \@ref(fig:posterior-compare) is anxiety-inducing - which prior to use? While I am reluctant to give general advise, in my own work I tend to use a half-Cauchy with a large scale: often $\sqrt{1000}$ (`alpha.V=1000`) depending on the scale of the data. However, I try to avoid collecting and analysing data that contains as little information as seen in this example (but see Section \@ref(fix-or-rand)). When this is the case, shifts in the posterior distribution under different priors are often subtle. However, for variances or standard deviations that have support close to zero the spike of the inverse-Wishart/inverse-gamma distribution can cause problems, and for this reason I usually avoid it. The added bonus is faster mixing under parameter expansion. While the prior for the residual variance is restricted to the the inverse-Wishart/inverse-gamma distribution in MCMCglmm (Section \@ref(Vprior-sec)) the data usually contains so much information for the residual variance that prior sensitivity is limited. For models where the random-effect specification defines a (co)variance matrix rather than a scalar variance, see Section \@ref(VCVprior-sec).
+
+## Priors on Functions of Variances 
+
+### Intra-class Correlation
 
 
 ## Fixed or Random? {#fix-or-rand}
 
-Poor information almost always because few levels are available, not because the replication per level is small. 
+At the start of this Chapter I highlighted the central decision that needs to be made when deciding if an effect should be random or fixed: should a vague prior for the effect (or flat prior in a frequentist analysis) be specified entirely by the analyst (fixed) or should the prior be updated using all data that has relevant information (random)?  When put this way, treating something as random would always seem preferable. However, sometimes there is so little relevant information that the benefit of treating an effect as random is outweighed by the cost of the increased complexity. In my experience, when there is a lack of relevant information - the information required to estimate the random-effect variance, $\sigma^2_u$ - it is almost always because there are only a few levels of the predictor, not because the replication per level is small. This is why people often use the rule-of-thumb that if there are few factor levels ($<5$) then we should treat the effects as fixed. In this scenario, even if we had infinite replication at each level, we would still only have fewer than five observations from which to estimate the variance. In such cases a second rule-of-thumb is often satisfied: if the levels are interesting to other people, they are fixed. However, when the two rules-of-thumb are in conflict, people often agonise about the choice.  If your data set is of an admirable size, I would argue that it often doesn't matter what you choose. If you have few levels of a predictor, that probably means you have a lot of replication per level.  In these situations, the amount of information coming from observations from that level overwhelm any prior information and so it doesn't matter whether you say the prior information is vague (fixed) or try and update the prior information from all observations (random). 
+
+In my own field, year is often a good example. A field project has ran for less than five years but each year a lot data is collected. Should the year effects be treated as fixed or random? Well there are few levels, suggesting fixed, but the effect of year 2014 (for example) isn't particularly interesting, suggesting random. People sometimes claim fixed because years haven't been sampled at random, but this argument shows a deep misunderstanding of what a random effect is. 'random' isn't referring to *years* being *sampled at random*, but referring to the fact that we would like to treat year *effects* as *random variables* coming from a distribution. If I had observations from many years I would certainly fit year effects as random. However, with few years and a lot of data per year I would treat them as fixed. Let's consider a data-set I collected and that I use for teaching:
+
+```{r }
+load(url("https://github.com/jarrodhadfield/sda/raw/master/data/BTtarsus.rda"))
+head(BTtarsus)
+```
+
+$\texttt{tarsus_mm}$ are the lengths of the tarsus bone in Blue Tit chicks and $\texttt{year}$ is the year (2011-2014) in which the chicks hatched and I measured them. The remaining variables will not be relevant here. The key point is that $\texttt{year}$ only has four levels but the number of birds with tarsus measurements is high in each year (between 593 and 854). Let's fit two models, one where year effects are fixed and one where they are random:
+
+```{r }
+BTtarsus$year<-as.factor(BTtarsus$year)
+
+prior.myear.fixed=list(R=list(V=1, nu=0.002))
+myear.fixed<-MCMCglmm(tarsus_mm~year, data=BTtarsus, prior=prior.myear.fixed)
+
+prior.myear.random=list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000)))
+myear.random<-MCMCglmm(tarsus_mm~1, random=~year, data=BTtarsus, pr=TRUE, prior=prior.myear.random)
+```
+
+If we plot the posterior distribution for the estimated year means we can see that they are extremely similar (Figure \@ref(fig:year)). 
+
+
+``` {r year, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the estimated year means when year effects are treated as fixed (black) or random (red). Because the amount of replication per year is high the posterior distributions are very similar", fig.width=7, fig.height=8}
+
+fixed.year<-cbind(myear.fixed$Sol[,"(Intercept)"], myear.fixed$Sol[,"(Intercept)"]+myear.fixed$Sol[,c("year2012", "year2013", "year2014")])
+
+fixed.random<-myear.random$Sol[,"(Intercept)"]+myear.random$Sol[,c("year.2011", "year.2012", "year.2013", "year.2014")]
+colnames(fixed.year)<-colnames(fixed.random)
+
+plot(mcmc.list(mcmc(fixed.year), mcmc(fixed.random)))
+```
+
+With a flatish prior on the standard deviation of year effects (half-Cauchy with scale $\sqrt{1000}$) the posterior distribution is, for those familiar with Blue Tit tarsus lengths, hopeless uncertain (Figure \@ref(fig:year-sd)). A standard deviation of 0.5 has some support. This implies that some years we expect some seriously stumpy Blue Tits and in other years we expect some seriously leggy Blue Tits. But a standard deviation of 0.05 also has some support and this implies that tarsus length hardly varies from year-to-year.  In such cases we might as well admit that we cannot estimate the between year variability with sufficient precision even though we can infer with precision the effect of the handful of years we have measurements for. When this is the case, we may as well treat the effects as fixed.
+
+
+```{r year-sd, echo=FALSE, include=TRUE, fig.cap="Posterior distribution for the standard deviation of year effects from model `prior.myear.random`."}
+
+hist(sqrt(myear.random$VCV[,"year"]), prob=TRUE, breaks=50, main="", xlab=expression(sigma[year]))
+```
+
 
 [^ranef.1]: If we assumed the distribution was Laplace (back to back exponentials) we have the LASSO. If we assumed the distribution was a mixture of normal and Laplace we have the elastic net. 
 
