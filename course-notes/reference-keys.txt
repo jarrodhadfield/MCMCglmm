@@ -52,6 +52,8 @@ fig:mschool-2
 fig:mschool-3
 fig:prior-compare
 fig:posterior-compare
+fig:year
+fig:year-sd
 fig:mBTVCV
 fig:BTidh
 fig:BTcor
@@ -139,9 +141,11 @@ ranef
 GLMM
 ranpred-sec
 overdispersed-binomial-as-a-bernoulli-glmm
-intra-class-correlations
+ICC
 PXprior-sec
 f-and-folded-t-priors
+priors-on-functions-of-variances
+intra-class-correlation
 fix-or-rand
 cat-int
 idh-variance-structure
