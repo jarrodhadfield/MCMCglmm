@@ -9,113 +9,170 @@ Soft.).
 - [`ABPvirus`](https://jarrodhadfield.github.io/MCMCglmm/reference/ABPvirus.md)
   : Data on Acute Bee Paralysis Virus Infections in Bumblebees from
   Pascall et al. (2018).
+
 - [`BTdata`](https://jarrodhadfield.github.io/MCMCglmm/reference/BTdata.md)
   : Blue Tit Data for a Quantitative Genetic Experiment
+
 - [`BTped`](https://jarrodhadfield.github.io/MCMCglmm/reference/BTped.md)
   : Blue Tit Pedigree
+
 - [`Ddivergence()`](https://jarrodhadfield.github.io/MCMCglmm/reference/Ddivergence.md)
   : d-divergence
+
 - [`Dexpressions`](https://jarrodhadfield.github.io/MCMCglmm/reference/Dexpressions.md)
   : List of unevaluated expressions for (mixed) partial derivatives of
   fitness with respect to linear predictors.
+
 - [`Dtensor()`](https://jarrodhadfield.github.io/MCMCglmm/reference/Dtensor.md)
   : Tensor of (mixed) partial derivatives
+
 - [`FullGrumpy`](https://jarrodhadfield.github.io/MCMCglmm/reference/FullGrumpy.md)
   : Full Grumpy Scores of Academics
+
 - [`Grumpy`](https://jarrodhadfield.github.io/MCMCglmm/reference/Grumpy.md)
   : Grumpy Scores of Academics
+
 - [`KPPM()`](https://jarrodhadfield.github.io/MCMCglmm/reference/KPPM.md)
   : Kronecker Product Permutation Matrix
+
 - [`MCMCglmm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/MCMCglmm.md)
   : Multivariate Generalised Linear Mixed Models
+
 - [`MCMCglmm-package`](https://jarrodhadfield.github.io/MCMCglmm/reference/MCMCglmmPackage.md)
   : Multivariate Generalised Linear Mixed Models
+
 - [`PlodiaPO`](https://jarrodhadfield.github.io/MCMCglmm/reference/PlodiaPO.md)
   : Phenoloxidase measures on caterpillars of the Indian meal moth.
+
 - [`PlodiaR`](https://jarrodhadfield.github.io/MCMCglmm/reference/PlodiaR.md)
   : Resistance of Indian meal moth caterpillars to the granulosis virus
   PiGV.
+
 - [`PlodiaRB`](https://jarrodhadfield.github.io/MCMCglmm/reference/PlodiaRB.md)
   : Resistance (as a binary trait) of Indian meal moth caterpillars to
   the granulosis virus PiGV.
+
 - [`Ptensor()`](https://jarrodhadfield.github.io/MCMCglmm/reference/Ptensor.md)
   : Tensor of Sample (Mixed) Central Moments
+
 - [`SShorns`](https://jarrodhadfield.github.io/MCMCglmm/reference/SShorns.md)
   : Horn type and genders of Soay Sheep
+
 - [`Tri2M()`](https://jarrodhadfield.github.io/MCMCglmm/reference/Tri2M.md)
   : Lower/Upper Triangle Elements of a Matrix
+
 - [`at.level()`](https://jarrodhadfield.github.io/MCMCglmm/reference/at.level.md)
   : Incidence Matrix of Levels within a Factor
+
 - [`at.set()`](https://jarrodhadfield.github.io/MCMCglmm/reference/at.set.md)
   : Incidence Matrix of Combined Levels within a Factor
+
 - [`buildV()`](https://jarrodhadfield.github.io/MCMCglmm/reference/buildV.md)
   : Forms expected (co)variances for GLMMs fitted with MCMCglmm
+
 - [`commutation()`](https://jarrodhadfield.github.io/MCMCglmm/reference/commutation.md)
   : Commutation Matrix
+
 - [`dcmvnorm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/dcmvnorm.md)
   : Density of a (conditional) multivariate normal variate
+
 - [`dprior()`](https://jarrodhadfield.github.io/MCMCglmm/reference/dprior.md)
   : Prior Density of Variance or Standard Deviation
+
 - [`evalDtensor()`](https://jarrodhadfield.github.io/MCMCglmm/reference/evalDtensor.md)
   : Evaluates a list of (mixed) partial derivatives
+
 - [`gelman.prior()`](https://jarrodhadfield.github.io/MCMCglmm/reference/gelman.prior.md)
   : Prior Covariance Matrix for Fixed Effects.
+
 - [`inverseA()`](https://jarrodhadfield.github.io/MCMCglmm/reference/inverseA.md)
   : Inverse Relatedness Matrix and Phylogenetic Covariance Matrix
+
 - [`knorm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/knorm.md)
   : (Mixed) Central Moments of a Multivariate Normal Distribution
+
 - [`krzanowski.test()`](https://jarrodhadfield.github.io/MCMCglmm/reference/krzanowski.test.md)
   : Krzanowski's Comparison of Subspaces
+
 - [`kunif()`](https://jarrodhadfield.github.io/MCMCglmm/reference/kunif.md)
   : Central Moments of a Uniform Distribution
+
 - [`list2bdiag()`](https://jarrodhadfield.github.io/MCMCglmm/reference/list2bdiag.md)
   : Forms the direct sum from a list of matrices
+
 - [`me()`](https://jarrodhadfield.github.io/MCMCglmm/reference/me.md) :
   Design Matrix for Measurement Error Model
+
 - [`mult.memb()`](https://jarrodhadfield.github.io/MCMCglmm/reference/mult.memb.md)
   : Design Matrices for Multiple Membership Models
+
 - [`path()`](https://jarrodhadfield.github.io/MCMCglmm/reference/path.md)
   : Design Matrix for Path Analyses
+
 - [`pkk()`](https://jarrodhadfield.github.io/MCMCglmm/reference/pkk.md)
   : Probability that all multinomial categories have a non-zero count.
+
 - [`plot(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/plot.MCMCglmm.md)
   : Plots MCMC chains from MCMCglmm using plot.mcmc
+
 - [`plotsubspace()`](https://jarrodhadfield.github.io/MCMCglmm/reference/plotsubspace.md)
   : Plots covariance matrices
+
 - [`posterior.ante()`](https://jarrodhadfield.github.io/MCMCglmm/reference/posterior.ante.md)
   : Posterior distribution of ante-dependence parameters
+
 - [`posterior.cor()`](https://jarrodhadfield.github.io/MCMCglmm/reference/posterior.cor.md)
   : Transforms posterior distribution of covariances into correlations
+
 - [`posterior.evals()`](https://jarrodhadfield.github.io/MCMCglmm/reference/posterior.evals.md)
   : Posterior distribution of eigenvalues
+
 - [`posterior.inverse()`](https://jarrodhadfield.github.io/MCMCglmm/reference/posterior.inverse.md)
   : Posterior distribution of matrix inverse
+
 - [`posterior.mode()`](https://jarrodhadfield.github.io/MCMCglmm/reference/posterior.mode.md)
   : Estimates the marginal parameter modes using kernel density
   estimation
+
 - [`predict(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/predict.MCMCglmm.md)
   : Predict method for GLMMs fitted with MCMCglmm
+
 - [`prunePed()`](https://jarrodhadfield.github.io/MCMCglmm/reference/prunePed.md)
   : Pedigree pruning
+
 - [`rIW()`](https://jarrodhadfield.github.io/MCMCglmm/reference/rIW.md)
   : Random Generation from the Conditional Inverse Wishart Distribution
+
 - [`rbv()`](https://jarrodhadfield.github.io/MCMCglmm/reference/rbv.md)
   : Random Generation of MVN Breeding Values and Phylogenetic Effects
+
 - [`residuals(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/residuals.MCMCglmm.md)
   : Residuals form a GLMM fitted with MCMCglmm
+
 - [`rtcmvnorm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/rtcmvnorm.md)
   : Random Generation from a Truncated Conditional Normal Distribution
+
 - [`rtnorm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/rtnorm.md)
   : Random Generation from a Truncated Normal Distribution
+
+- [`sigma`](https://jarrodhadfield.github.io/MCMCglmm/reference/sigma.md)
+  :
+
+  Infection Data for Sigma Virus in *Drosophila melanogaster*
+
 - [`simulate(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/simulate.MCMCglmm.md)
   : Simulate method for GLMMs fitted with MCMCglmm
+
 - [`sir()`](https://jarrodhadfield.github.io/MCMCglmm/reference/sir.md)
   : Design Matrix for Simultaneous and Recursive Relationships between
   Responses
+
 - [`sm2asreml()`](https://jarrodhadfield.github.io/MCMCglmm/reference/sm2asreml.md)
   : Converts sparseMatrix to asreml's giv format
+
 - [`spl()`](https://jarrodhadfield.github.io/MCMCglmm/reference/spl.md)
   : Orthogonal Spline Design Matrix
+
 - [`summary(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/summary.MCMCglmm.md)
   : Summarising GLMM Fits from MCMCglmm
 

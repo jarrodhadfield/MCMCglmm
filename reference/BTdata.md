@@ -20,7 +20,7 @@ with the sex (`sex`) of the individuals.
 
 ## References
 
-Hadfield, J.D. et. al. 2007 Journal of Evolutionary Biology 20 549-557
+Hadfield, J.D. et al. 2007 Journal of Evolutionary Biology 20 549-557
 
 ## See also
 
