@@ -395,7 +395,7 @@ random=~...+...+us(at.level(response, "repeat")):individual
 where $\dots$ indicate additional random terms and the rather complicated final random term is simply fitting $\texttt{individual}$ effects but for the repeat-measure response only. We could then specify the residual model as:
 
 ```{r }
-rcov=~us(at.level(response, "single")):individual+us(at.level(response, "repeat")):units`
+rcov=~us(at.level(response, "single")):individual+us(at.level(response, "repeat")):units
 ```
 
 The first term, which again looks rather complicated, is simply fitting residuals for the single-measure response only. This can be achieved by using $\texttt{individual}$ effects since each individual only has one observation for this response. The second term fits residuals for the repeat-measure response and here we use $\texttt{units}$ to specify a residual for each of an individual's repeat measure observations. Note we could also have used $\texttt{units}$ in place of $\texttt{individual}$ for the first term, but then the levels of $\texttt{units}$ would not agree with the levels of $\texttt{individual}$ appearing in the random term and so, as with $\texttt{str}$ linking functions, the two sets of effects could not be linked. The prior specification for the residual term would then look something like:
