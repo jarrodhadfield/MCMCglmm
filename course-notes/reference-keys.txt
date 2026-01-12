@@ -130,7 +130,7 @@ prediction-in-glm
 posterior-predictive-distribution
 binom-sec
 overdispersion-1
-prediction
+binom-pred-sec
 bernoulli-sec
 probit-link
 ordinal-data

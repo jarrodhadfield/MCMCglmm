@@ -235,7 +235,7 @@ div.csl-indent {
 <li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#binom-sec"><i class="fa fa-check"></i><b>3.6</b> Binomial and Bernoulli GLM</a>
 <ul>
 <li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#overdispersion-1"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
-<li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#prediction"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
+<li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#binom-pred-sec"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
 <li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-sec"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
 <li class="chapter" data-level="3.6.4" data-path="glm.html"><a href="glm.html#probit-link"><i class="fa fa-check"></i><b>3.6.4</b> Probit link</a></li>
 </ul></li>
@@ -716,8 +716,8 @@ Figure 3.7: Photo 4521 (left) and photo 4527 (right). For the predictors fitted 
 <pre><code>## [1] 0.4001446</code></pre>
 <div class="sourceCode" id="cb88"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb88-1"><a href="glm.html#cb88-1" tabindex="-1"></a><span class="co"># predicted probability for photo 4527</span></span></code></pre></div>
 </div>
-<div id="prediction" class="section level3 hasAnchor" number="3.6.2">
-<h3><span class="header-section-number">3.6.2</span> Prediction<a href="glm.html#prediction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="binom-pred-sec" class="section level3 hasAnchor" number="3.6.2">
+<h3><span class="header-section-number">3.6.2</span> Prediction<a href="glm.html#binom-pred-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>When calculating the predicted probability in the absence of the residuals in Equation <a href="glm.html#eq:plogis">(3.3)</a> I was careful to say that the prediction assumed an absence of overdispersion. However, when overdispersion is present we need to average over the distribution of the residuals in order to get an average. As we saw in the log-linear Poisson model, because the inverse-link function (<code>plogis</code>) is non-linear the average of <span class="math inline">\(E_e[\texttt{plogis}(\eta+e)]\)</span> is different from <span class="math inline">\(\texttt{plogis}(E_e[\eta+e])=\texttt{plogis}(\eta)\)</span>. Unlike the Poisson log-linear model this expectation cannot be calculated analytically and the predict function by default numerically evaluates the integral:</p>
 <p><span class="math display">\[\int_l \texttt{plogis}(l)f_N(l | \eta, \sigma^2_e)dl\]</span></p>
 <p>where <span class="math inline">\(f_N\)</span> is the probability density function of the normal. For each of the 44 observations this is done 1,000 times (the number of saved posterior samples) to get the posterior mean prediction and can be very slow (it is actually faster to fit the model). The number reported by <code>predict</code> is <span class="math inline">\(np\)</span> rather than <span class="math inline">\(p\)</span> and so to get the predicted probability for a photo of someone who has grumpy and had been publishing for 16 years we can get the prediction for the 3rd observation and divide by the number of trials (122):</p>
