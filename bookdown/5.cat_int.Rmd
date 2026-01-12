@@ -402,7 +402,7 @@ The first term, which again looks rather complicated, is simply fitting residual
 
 ```{r }
 R=list(R1=list(V=diag(2), nu=2, alpha.mu=c(0,0), alpha.V=diag(2)*1000, covu=TRUE), 
-       R2=list(V=1, nu=1, alpha.mu=0, alpha.V=1000)
+       R2=list(V=1, nu=1, alpha.mu=0, alpha.V=1000))
 ```
 
 The first prior specifies a $2\times 2$ covariance matrix for the two sets of $\texttt{individual}$ effects. Since the prior for the last set of random effects is absorbed into the residual prior specification, it should be omitted from the random-effect (G-structure) prior specification. The covariance matrix inherits the variance function of the first residual term, in this case $\texttt{us}$.   
