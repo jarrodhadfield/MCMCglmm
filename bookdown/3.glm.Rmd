@@ -375,7 +375,7 @@ mean(plogis(mbinom.1$Liab[,25]))
 # predicted probability for photo 4527
 ``` 
 
-### Prediction
+### Prediction {#binom-pred-sec}
 
 
 When calculating the predicted probability in the absence of the residuals in Equation \@ref(eq:plogis) I was careful to say that the prediction assumed an absence of overdispersion. However, when overdispersion is present we need to average over the distribution of the residuals in order to get an average. As we saw in the log-linear Poisson model, because the inverse-link function (`plogis`) is non-linear the average of $E_e[\texttt{plogis}(\eta+e)]$ is different from $\texttt{plogis}(E_e[\eta+e])=\texttt{plogis}(\eta)$. Unlike the Poisson log-linear model this expectation cannot be calculated analytically and the predict function by default numerically evaluates the integral:
