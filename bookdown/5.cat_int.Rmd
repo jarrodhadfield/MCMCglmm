@@ -1,5 +1,65 @@
 # Categorical Random Interactions {#cat-int}
 
+In Chapter \@ref(ranef) we looked at a simple random-effect specification where a single effect is associated with each level of a categorical predictor and the effects are assumed to be identically and independently distributed. In the next three chapters we will cover more complicated random-effect specifications. In this Chapter we will start by exploring models where an interaction is formed between two categorical predictors, one which (usually) has few levels with main effects fitted as fixed and the other which (usually) has many levels and would normally be fitted as random. We will also cover related models where the random effects associated with two or more sets of categorical predictors (including residual effects) are correlated. This includes multi-membership models as a special case. 
+
+It is probably easiest to start with an example. The data set $\texttt{sigma}$ contains data on how well fruit flies (*Drosophila melanogaster*) transmit sigma virus to their offspring [@Carpenter.2012]. 
+
+```{r }
+data(sigma)
+head(sigma)
+```
+
+The number of flies in a vial that are infected with the virus ($\texttt{infected}$) or not ($\texttt{not_infected}$) are recorded. The mean number of flies per vial is `r round(mean(sigma$infected+sigma$not_infected))` although the range is large (`r min(sigma$infected+sigma$not_infected)` - `r max(sigma$infected+sigma$not_infected)` ). All the flies in a vial are the offspring of parents infected with one of five strains of sigma virus named after their country of origin ($\texttt{virus}$). The parents also belong to one of 67 genetically distinct lines ($\texttt{line}$).    
+
+Let's start with a simple binomial GLMM that we covered in Chapter \@ref(ranef), but to keep things manageable we'll only analyse data from three strains of virus ($\texttt{France}$, $\texttt{Greece}$ and  $\texttt{Spain}$):
+
+```{r sigma-1}
+sigma_small<-subset(sigma, virus%in%c("France","Greece", "Spain"))
+
+prior.sigma.1=list(R=list(V=1, nu=0.002), 
+           G=list(
+              G1=list(V=1, nu=1, aplha.mu=0, aplha.V=1000)
+           ))
+
+m.sigma.1<-MCMCglmm(cbind(infected, not_infected)~virus, random=~line, data=sigma_small, family="multinomial2", prior=prior.sigma.1)
+
+summary(m.sigma.1)
+```
+
+For the base-line virus, $\texttt{France}$, the estimate of the median probability of infection is `r round(mean(plogis(m.sigma.1$Sol[,"(Intercept)"])),2)`, obtained by applying the `plogis` function to the intercept (Section \@ref(binom-pred-sec)). However, the viruses have substantially different infection rates with the median *odds* of infection for $\texttt{Greece}$ only being `r round(mean(exp(m.sigma.1$Sol[,"virusGreece"])),2)` times that off $\texttt{France}$, whereas $\texttt{Spain}$ has an odds of infection `r round(mean(exp(m.sigma.1$Sol[,"virusSpain"])),2)` times greater (obtained by exponentiating the coefficients). 
+
+There is also substantial variation across lines in how well they transmit the virus and substantial overdispersion. However, this model contains the implicit assumption that the increased odds of infection associated with a line is constant over viruses. For example, if line $\texttt{391A}$'s effect is $u_1$ then the linear predictor for all observations of that line will include $u_1$ and the odds of infection is expected to change by a factor $\textrm{exp}(u_1)$. However, we may expect there to be genetic interactions between the virus and the fly such that the infectivity of a line differs depending on the virus.  We could add a simple interaction
+
+
+```{r sigma-2}
+prior.sigma.2=list(R=list(V=1, nu=0.002), 
+           G=list(
+              G1=list(V=1, nu=1, aplha.mu=0, aplha.V=1000),
+              G2=list(V=1, nu=1, aplha.mu=0, aplha.V=1000)
+           ))
+
+m.sigma.2<-MCMCglmm(cbind(infected, not_infected)~virus, random=~line+line:virus, data=sigma_small, family="multinomial2", prior=prior.sigma.2)
+
+summary(m.sigma.2)
+```
+
+While the variance in the interaction effects is substantially smaller than the main $\texttt{line}$ effects, the lower 95\% credible interval is well removed from zero suggesting that interactions are present.  
+
+
+```{r sigma-3}
+prior.sigma.3=list(R=list(V=diag(3), nu=0.002), 
+           G=list(
+              G1=list(V=diag(3), nu=3, aplha.mu=c(0,0,0), aplha.V=diag(3)*1000)
+           ))
+
+m.sigma.3<-MCMCglmm(cbind(infected, not_infected)~virus, random=~us(virus):line, data=sigma_small, rcov=~idh(virus):units, family="multinomial2", prior=prior.sigma.3)
+
+```
+
+
+
+
+
 Random effect specification is a common cause of confusion, especially when we want to form interactions in the random terms. To illustrate the possibilities we'll use data collected on Blue tits.
 
 ``` {r echo=TRUE, cache=FALSE}
@@ -208,7 +268,7 @@ There are also ways of specifying models that lie somewhere between the simple m
 df <- data.frame(
   MCMCglmm = c("`dam`", "`us(sex):dam`", "`sex:dam`", "`dam+sex:dam`", "`idh(sex):dam`", "`corg(sex):dam`", "`corgh(sex):dam`", "`cors(sex):dam`"),
   lmer = c("`(1|dam)`", "`(sex|dam)`", "`(1|sex:dam)`", "`(1|dam)+(1|sex:dam)`", "", "", "", ""),
-  nparameters = c(1,6,1,2,3,3,3, 5),
+  nparameters = c(1,6,1,2,3,3,3, 4),
   Variance      = c("$\\left[\\begin{array}{ccc}V&V&V\\\\V&V&V\\\\V&V&V\\\\ \\end{array}\\right]$",
                     "$\\left[\\begin{array}{ccc}V_{1,1}&C_{1,2}&C_{1,3}\\\\C_{2,1}&V_{2,2}&C_{2,3}\\\\C_{3,1}&C_{3,2}&V_{3,3}\\\\ \\end{array}\\right]$",
                     "$\\left[\\begin{array}{ccc}V&{\\color{red}{0}}&{\\color{red}{0}}\\\\{\\color{red}{0}}&V&{\\color{red}{0}}\\\\{\\color{red}{0}}&{\\color{red}{0}}&V\\\\ \\end{array}\\right]$",
