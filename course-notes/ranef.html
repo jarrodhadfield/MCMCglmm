@@ -629,11 +629,11 @@ Figure 4.8: Posterior probability densities for the standard deviation of <span 
 </div>
 <div id="Vprior-gen-sec" class="section level2 hasAnchor" number="4.6">
 <h2><span class="header-section-number">4.6</span> Prior Generators<a href="ranef.html#Vprior-gen-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Even when a user knows which prior they would like to use, it can be rather fiddly generating the prior list, especially when there are many random terms, some of which define (co)variance matrices. In order to simplify the process of prior specification a set of prior generator functions are available in versions &gt;4.0. These functions <span class="math inline">\(\texttt{IW}\)</span> (inverse-Wishart), <span class="math inline">\(\texttt{IG}\)</span> (inverse-gamma) and <span class="math inline">\(\texttt{F}\)</span> (central <span class="math inline">\(F\)</span> with 1 numerator degree of freedom) take two arguments specifying the parameters of the prior distribution to be used for the variances. The function <span class="math inline">\(\texttt{tSD} can also be used which specifies a half-\)</span>t$-distribution for the standard deviation. Note that a set parameters can always be chosen such that <span class="math inline">\(\texttt{IW}=\)</span>$ and <span class="math inline">\(\texttt{F}=\texttt{tSD}\)</span>. The difficult topic of prior specification for (co)variance matrices is covered in Section <a href="cat-int.html#VCVprior-sec">5.3</a> and I’ll leave the documentation of the prior generator functions in this context to then.</p>
+<p>Even when a user knows which prior they would like to use, it can be rather fiddly generating the prior list, especially when there are many random terms, some of which define (co)variance matrices. In order to simplify the process of prior specification a set of prior generator functions are available in versions &gt;4.0. These functions <span class="math inline">\(\texttt{IW}\)</span> (inverse-Wishart), <span class="math inline">\(\texttt{IG}\)</span> (inverse-gamma) and <span class="math inline">\(\texttt{F}\)</span> (central <span class="math inline">\(F\)</span> with 1 numerator degree of freedom) take two arguments specifying the parameters of the prior distribution to be used for the variances. The function <span class="math inline">\(\texttt{tSD}\)</span> can also be used which specifies a half-<span class="math inline">\(t\)</span>-distribution for the standard deviation. Note that a set parameters can always be chosen such that <span class="math inline">\(\texttt{IW}=\texttt{IG}\)</span> and <span class="math inline">\(\texttt{F}=\texttt{tSD}\)</span>. The difficult topic of prior specification for (co)variance matrices is covered in Section <a href="cat-int.html#VCVprior-sec">5.3</a> and I’ll leave the documentation of the prior generator functions in this context to then.</p>
 <div style="border: 0px;overflow-x: scroll; width:100%; ">
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
-<span id="tab:prior-functions">Table 4.1: </span>
+<span id="tab:prior-functions">Table 4.1: </span>Table of prior generator functions for specifying the (marginal) prior of a variance (<span class="math inline">\(\texttt{IW}\)</span>, <span class="math inline">\(\texttt{IG}\)</span> and <span class="math inline">\(\texttt{F}\)</span>) or a standard deviation (<span class="math inline">\(\texttt{tSD}\)</span>). The two parameters for each distribution are given together with their defaults.
 </caption>
 <thead>
 <tr>
@@ -668,7 +668,7 @@ nu=0.002
 </tr>
 <tr>
 <td style="text-align:left;">
-IF
+IG
 </td>
 <td style="text-align:left;">
 Inverse-gamma
@@ -685,10 +685,10 @@ scale=0.001
 F
 </td>
 <td style="text-align:left;">
-F with ndf=1
+F with df1=1
 </td>
 <td style="text-align:left;">
-ddf=1
+df2=1
 </td>
 <td style="text-align:left;">
 scale=1000

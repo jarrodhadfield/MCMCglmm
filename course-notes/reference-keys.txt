@@ -56,7 +56,6 @@ tab:prior-functions
 fig:year
 fig:year-sd
 tab:vfunction
-fig:NIc
 fig:ChickWeight
 fig:parallel
 fig:CWpred-1
