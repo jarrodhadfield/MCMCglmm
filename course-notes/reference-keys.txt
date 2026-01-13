@@ -55,6 +55,7 @@ fig:posterior-compare
 fig:year
 fig:year-sd
 tab:vfunction
+tab:prior-functions
 fig:NIc
 fig:ChickWeight
 fig:parallel
@@ -151,12 +152,12 @@ other-variance-structures
 linking-functions
 textttstr-covariances-between-random-terms
 textttmm-multi-membership-models
-bradley-terry-models
 textttcovu-covariances-between-random-and-residual-terms
 texttttheta_scale-scaled-linear-predictor
 VCVprior-sec
-priors-for-us-structures
-priors-for-idh-structures
+marginal-priors-for-variances
+marginal-priors-for-covariances
+marginal-priors-for-correlations
 priors-for-corg-and-corgh-structures
 cont-int
 random-regression
@@ -166,6 +167,8 @@ meta-sec
 splines
 multi
 relaxing-the-univariate-assumptions-of-causality
+textttcovu-covariances-between-random-and-residual-terms-1
+texttttheta_scale-scaled-linear-predictor-1
 multinomial-models
 zero-inflated-models
 posterior-predictive-checks
