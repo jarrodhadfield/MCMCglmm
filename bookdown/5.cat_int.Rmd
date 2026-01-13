@@ -426,24 +426,7 @@ Before continuing, it should be pointed out that what follows does **not** hold 
 
 For structures where a full covariance matrix is to be inferred (for example by using a $\texttt{us}$ structure) a useful result is that the prior for the $i^\textrm{th}$ variance has parameters $\texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{V[i,i]}$, $\texttt{nu}^{\ast}=\texttt{nu}-k+1$, $\texttt{alpha.mu}^\ast=\texttt{alpha.mu[i]}$ and $\texttt{alpha.V}^\ast=\texttt{alpha.V[i,i]}$. Consequently, we can choose a $\texttt{V}$ and $\texttt{nu}$ that allows us to specify one of the priors discussed in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec) for a single variance.  For example, in Section \@ref(Vprior-sec) we saw that an inverse-gamma prior with a shape and scale of 0.001 is equivalent to the scalar inverse-Wishart with $\texttt{V}^{\ast}=1$ and $\texttt{nu}^{\ast}=0.002$. Consequently, we can place this prior on the $i^\textrm{th}$ variance by setting $\texttt{nu}$ to be $k-1+0.002$ such that $\texttt{nu}^{\ast}=0.002$. Having $\texttt{V[i,i]}=\texttt{nu}^{\ast}/\texttt{nu}=0.002/(k-1+0.002)$ then results in  $\texttt{V}^{\ast}=1$. An improper prior that is flat for the variance requires $\texttt{V}^{\ast}=0$ and $\texttt{nu}^{\ast}=-2$ which can be achieved by setting $\texttt{nu}=k-3$ and $\texttt{V[i,i]}=0$. In Section \@ref(PXprior-sec) we noted that scaled $F$ priors for variances (scaled folded-$t$ priors for standard deviations) can have better properties than the inverse-Wishart. As in Section \@ref(PXprior-sec) we can set $\texttt{alpha.mu}$ to be a vector of zeros and work with the scaled central $F$ and scaled half-$t$. The marginal distribution for the $i^\textrm{th}$ variance then follows a $F_{1, \texttt{nu}^{\ast}}$ distribution with scale equal to $\texttt{V}^{\ast}\texttt{alpha.V[i,i]}$. We can therefore chose $\texttt{V}$, $\texttt{nu}$ and $\texttt{alpha.V}$ to specify one of the priors discussed in Section \@ref(Vprior-sec) for a single variance or standard deviation. For example, by setting $\texttt{nu}=k$ we have $\texttt{nu}^{\ast}=1$ generating a scaled $F_{1,1}$ prior for the variance (or half-Cauchy for the standard deviation). We noted in Section \@ref(PXprior-sec) that the prior specification in $\texttt{MCMCglmm}$ is redundant and we can set the scale by setting $\texttt{V}$ to one and controlling the scale through $\texttt{alpha.V}$. This can be achieved in the multivariate case by setting $\texttt{V[i,i]}=1/k$ such that $$\texttt{V}^{\ast}=1$ and then altering $\texttt{alpha.V[i,i]}$ as before.
 
-The rules for rescaling can be hard to remember and fiddly to implement. In order to simplify the process of prior specification, priors can also be specified by the functions $\texttt{IW}$ (inverse-Wishart), $\texttt{IG}$ (inverse-gamma) and $\texttt{F}$ (central $F$ with 1 numerator degree of freedom) which take two arguments specifying the parameters of the *marginal* prior distribution to be used for the variances. The function $\texttt{tSD} can also be used which specifies a half-$t$-distribution for the standard deviation. Note that as set parameters can always be chosen such that $\texttt{IW}=$\texttt{IG}$ and $\texttt{F}=\texttt{tSD}$. In all cases, the off-diagonal elements of $\texttt{V}$ (and $\texttt{alpha.V}$ if $\texttt{F}$ is used) are set to zero. 
-
-
-
-``` {r echo=FALSE, results='asis'}
-prior.functions <- data.frame(
-  Function = c("IW", "IF", "F", "tSD"),
-  Distribution = c("Inverse-Wishart", "Inverse-gamma", "F with ndf=1", "Half-t (for SD)"),
-  Parameter1 = c("V=1", "shape=0.001", "ddf=1", "df=1"),
-  Parameter2 = c("nu=0.002", "scale=0.001", "scale=1000", "scale=$\\sqrt{1000}$"),
-  stringsAsFactors = FALSE
-)
-
-kable(prior.functions, "html", escape = FALSE, caption = "", label="prior-functions") |>
-  kable_styling(full_width = FALSE)%>%
-  scroll_box(width = "100%", box_css = "border: 0px;")
-```
-
+The rules for rescaling can be hard to remember and fiddly to implement. In order to simplify the process of prior specification, priors can also be specified using the prior generator functions detailed in Section \@ref(Vprior-gen-sec). When the random term define a (co)variance matrix these prior generators specify a prior for which the *marginal* prior distributions for the variance has the specified distribution. In all cases the off-diagonal elements of $\texttt{V}$ and $\texttt{alpha.V}$ are set to zero.
 
 
 ### Marginal Priors for Covariances

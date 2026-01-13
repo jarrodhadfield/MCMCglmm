@@ -33,18 +33,44 @@
 
   if(!is.null(prior) & !all(names(prior)%in%c("R", "G", "B", "S"))){stop("prior list should contain elements R, G, and/or B and/or S only")}
 
-  if(!is.null(prior)){ # reformat old-style prior 
-    if(!is.list(prior$R[[1]])){
-      prior$R<-list(R1=prior$R)
+  if(!is.null(prior$R)){ 
+    if(inherits(prior$R, "prior_generator")){
+       if(length(split.direct.sum(as.character(rcov)[2]))==1){
+         prior$R<-list(R1=prior$R)
+       }else{  
+        prior$R<-replicate(prior$R, length(split.direct.sum(as.character(rcov)[2])))
+       } 
     }
   }
-  if(!is.null(prior$R[[1]]$covu)){
-    if(prior$R[[1]]$covu){
-      covu<-1
-      prior$G<-c(prior$G, list(prior$R[[1]]))
-      prior$G[[length(prior$G)]]$covu<-NULL
-      prior$G[[length(prior$G)]]$fix<-NULL
+  if(!is.null(prior$G)){ 
+    if(inherits(prior$G, "prior_generator")){
+       if(length(split.direct.sum(as.character(random)[2]))==1){
+         prior$G<-list(G1=prior$G)
+       }else{  
+        prior$G<-replicate(prior$G, length(split.direct.sum(as.character(random)[2])))
+       } 
     }
+  }
+
+  if(!is.null(prior)){ # reformat old-style prior 
+    if(!is.list(prior$R[[1]]) & !inherits(prior$R[[1]], "prior_generator")){
+      prior$R<-list(R1=prior$R)
+    }  
+  }
+
+  if(!inherits(prior$R[[1]], "prior_generator")){
+    if(!is.null(prior$R[[1]]$covu)){
+      if(prior$R[[1]]$covu){
+        covu<-1
+        prior$G<-c(prior$G, list(prior$R[[1]]))
+        if(inherits(prior$G[[length(prior$G)]], "prior_generator")){
+          stop("prior_generator cannot be used with covu model - specify prior in full")
+        }else{  
+          prior$G[[length(prior$G)]]$covu<-NULL
+          prior$G[[length(prior$G)]]$fix<-NULL
+        }
+      }
+    }  
   }
   if(!is.null(start$R)){
     if(!is.list(start$R)){

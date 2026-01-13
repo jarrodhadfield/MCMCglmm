@@ -294,6 +294,28 @@ legend("topright", lwd = 2, col = cols,
 
 Figure \@ref(fig:posterior-compare) is anxiety-inducing - which prior to use? While I am reluctant to give general advise, in my own work I tend to use a half-Cauchy with a large scale: often $\sqrt{1000}$ (`alpha.V=1000`) depending on the scale of the data. However, I try to avoid collecting and analysing data that contains as little information as seen in this example (but see Section \@ref(fix-or-rand)). When this is the case, shifts in the posterior distribution under different priors are often subtle. However, for variances or standard deviations that have support close to zero the spike of the inverse-Wishart/inverse-gamma distribution can cause problems, and for this reason I usually avoid it. The added bonus is faster mixing under parameter expansion. While the prior for the residual variance is restricted to the the inverse-Wishart/inverse-gamma distribution in MCMCglmm (Section \@ref(Vprior-sec)) the data usually contains so much information for the residual variance that prior sensitivity is limited. For models where the random-effect specification defines a (co)variance matrix rather than a scalar variance, see Section \@ref(VCVprior-sec).
 
+## Prior Generators {#Vprior-gen-sec}
+
+Even when a user knows which prior they would like to use, it can be rather fiddly generating the prior list, especially when there are many random terms, some of which define (co)variance matrices. In order to simplify the process of prior specification a set of prior generator functions are available in versions >4.0.  These functions $\texttt{IW}$ (inverse-Wishart), $\texttt{IG}$ (inverse-gamma) and $\texttt{F}$ (central $F$ with 1 numerator degree of freedom) take two arguments specifying the parameters of the prior distribution to be used for the variances. The function $\texttt{tSD} can also be used which specifies a half-$t$-distribution for the standard deviation. Note that a set parameters can always be chosen such that $\texttt{IW}=$\texttt{IG}$ and $\texttt{F}=\texttt{tSD}$. The difficult topic of prior specification for (co)variance matrices is covered in Section \@ref(VCVprior-sec) and I'll leave the documentation of the prior generator functions in this context to then.  
+
+
+
+``` {r echo=FALSE, results='asis'}
+prior.functions <- data.frame(
+  Function = c("IW", "IF", "F", "tSD"),
+  Distribution = c("Inverse-Wishart", "Inverse-gamma", "F with ndf=1", "Half-t (for SD)"),
+  Parameter1 = c("V=1", "shape=0.001", "ddf=1", "df=1"),
+  Parameter2 = c("nu=0.002", "scale=0.001", "scale=1000", "scale=$\\sqrt{1000}$"),
+  stringsAsFactors = FALSE
+)
+
+kable(prior.functions, "html", escape = FALSE, caption = "", label="prior-functions") |>
+  kable_styling(full_width = FALSE)%>%
+  scroll_box(width = "100%", box_css = "border: 0px;")
+```
+
+
+
 ## Priors on Functions of Variances 
 
 ### Intra-class Correlation

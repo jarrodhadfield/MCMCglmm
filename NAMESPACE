@@ -61,7 +61,12 @@ export(
 # close.bracket,
    me,
    pkk,
-   dprior
+   dprior,
+   resolve_prior, 
+   IW,
+   F,
+   IG,
+   tSD
 ) 
 S3method(summary, MCMCglmm)
 S3method(print, summary.MCMCglmm)
