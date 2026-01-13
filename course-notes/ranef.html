@@ -52,6 +52,10 @@
 <link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
 <link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
+<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 <script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <script src="libs/rglWebGL-binding-1.3.31/rglWebGL.js"></script>
 <link href="libs/rglwidgetClass-1.3.31/rgl.css" rel="stylesheet" />
@@ -74,10 +78,6 @@
 <script src="libs/rglwidgetClass-1.3.31/axes.src.js"></script>
 <script src="libs/rglwidgetClass-1.3.31/animation.src.js"></script>
 <script src="libs/CanvasMatrix4-1.3.31/CanvasMatrix.src.js"></script>
-<script src="libs/kePrint-0.0.1/kePrint.js"></script>
-<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
-<link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
-<script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 
 
 <style type="text/css">
@@ -256,11 +256,12 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="4.5.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.5.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
 </ul></li>
-<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.6</b> Priors on Functions of Variances</a>
+<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.6</b> Prior Generators</a></li>
+<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.7</b> Priors on Functions of Variances</a>
 <ul>
-<li class="chapter" data-level="4.6.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.6.1</b> Intra-class Correlation</a></li>
+<li class="chapter" data-level="4.7.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.7.1</b> Intra-class Correlation</a></li>
 </ul></li>
-<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.7</b> Fixed or Random?</a></li>
+<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.8</b> Fixed or Random?</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
 <ul>
@@ -377,7 +378,7 @@ div.csl-indent {
 <p><span class="math display">\[\boldsymbol{\beta} \sim N({\bf 0}, {\bf I}\sigma^{2}_{\beta})\]</span></p>
 <p>as <span class="math inline">\(\sigma^{2}_{\beta}\)</span> tends to infinity. In a Bayesian setting we would call this a flat improper prior. In practice, we often use diffuse proper priors in Bayesian analyses. For example, the default in <span class="math inline">\(\texttt{MCMCglmm}\)</span> is to set <span class="math inline">\(\sigma^{2}_{\beta}=10^8\)</span>. Then, <span class="math inline">\(\boldsymbol{\beta}\)</span> are technically random - they are assigned a distribution - but I find it useful to retain the frequentist terminology ‘fixed’. The only difference then is that the ‘fixed’ effects are assigned a prior distribution with a variance that is defined by the user-specified prior (<span class="math inline">\(\sigma^{2}_{\beta}\)</span> - which is often set to be large) and the ‘random’ effects are assigned a prior distribution with a variance that is estimated (<span class="math inline">\(\sigma^{2}_{u}\)</span> - which could be large, but also zero).</p>
 <p>That is the distinction between fixed and random effects. The difference really is that simple, but it takes a long time and a lot of practice to understand what this means in practical terms, and why working with random effects can be a very powerful way of modelling data. To get a feel for why we might want to fit an effect as random or not, lets work through an example before moving on to model fitting. In Section <a href="glm.html#binom-sec">3.6</a> we analysed binomial data where 122 respondents had looked at 44 photographs of people and given them a ‘grumpy score’ of more than five (a success) or less than five (a failure). If, instead of 122 respondents, there had been a zillion respondents, we could use the average proportion of success for each photo as a nearly perfect estimates of their probabilities of success. The variance of these near-perfect estimates could serve as a reasonable estimate of the variance in photo effects. If the probabilities were all clustered tightly around 0.5: 0.505, 0.501, 0.499 and so on, then variance would be estimated to be small. Let’s then imagine that we obtained a <span class="math inline">\(45^\textrm{th}\)</span> photograph but by this point the respondents were so bored I managed to only recruit a single person who gave the photo a score greater than five - a success. Since we only have one observation for this photo the average proportion of success would be one. Do you think the best estimate of the probability of success for the <span class="math inline">\(45^\textrm{th}\)</span> photograph is then 1.000? I think you wouldn’t: you would use the knowledge that you have gained from the other photos and say that it is more likely that if you had managed to recruit more respondents you would have got a roughly even split of success and failures. You have used common sense, treated the photo effects as random, and <em>shrunk</em> photo 45’s effect towards the average because the variance (<span class="math inline">\(\sigma^2_u\)</span>) was small and we have a strong prior. If we had treated the photo effects as fixed, we believe that the only information regarding a photo’s value comes from data associated with that particular photo, and the estimate of photo 45’s probability would have been one. When we treat an effect as random, we also use the information that comes from data associated with that particular photo (obviously), but we weight that information by what the data associated with other photos tell us about the likely values that the effect could take - through the parameter <span class="math inline">\(\sigma^2_u\)</span>. What if the probabilities weren’t all clustered tightly around 0.5, but took on values 0.500, 0.998, 0.002, 0.327 …? The variance <span class="math inline">\(\sigma^2_u\)</span> would be larger and the prior information for our <span class="math inline">\(45^\textrm{th}\)</span> photo would be weaker: perhaps we got a success because the underlying probability was 0.998, but a single success would also not be very surprising if the underlying probability was 0.500, or even 0.327. We might then be happy that our best estimate of the probability of success for the <span class="math inline">\(45^\textrm{th}\)</span> photograph was close to one, although with such weak prior information (large <span class="math inline">\(\sigma^2_u\)</span>) the uncertainty would remain large.</p>
-<p>When the motivation for treating an effect as random is explained this way, it is hard to come up with a reason why you wouldn’t treat all effects as random. However, you have to consider how much information is in a given data set to estimate <span class="math inline">\(\sigma^2_u\)</span>, which we will cover in Section <a href="ranef.html#fix-or-rand">4.7</a>.</p>
+<p>When the motivation for treating an effect as random is explained this way, it is hard to come up with a reason why you wouldn’t treat all effects as random. However, you have to consider how much information is in a given data set to estimate <span class="math inline">\(\sigma^2_u\)</span>, which we will cover in Section <a href="ranef.html#fix-or-rand">4.8</a>.</p>
 <div id="GLMM" class="section level2 hasAnchor" number="4.1">
 <h2><span class="header-section-number">4.1</span> Generalised Linear Mixed Model (GLMM)<a href="ranef.html#GLMM" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In Section <a href="glm.html#binom-sec">3.6</a>, the binomial model we fitted only contained fixed effects, as specified in the <code>fixed</code> argument to <code>MCMCglmm</code> (<code>fixed=cbind(g5,l5)~type+ypub</code>). No random effects were fitted, although ‘residuals’ were fitted as default to absorb any overdispersion. Residuals are random effects for which we estimate a variance - the hyperparameter, <span class="math inline">\(\sigma^2_e\)</span> - and when used with Binomial or Poisson responses are commonly referred to as observation-level random effects. Since there is a one-to-one correspondence between observation and photo in this data set, <span class="math inline">\(\sigma^2_e\)</span> is equivalent to the <span class="math inline">\(\sigma^2_u\)</span> discussed above (although <span class="math inline">\(\sigma^2_e\)</span> refers to the variance on the logit scale rather the probability scale used implicitly above). We saw that the probability of success varied greatly across photos (model <code>mbinom.1</code>) but we also noted that some of this variation may be due to the person being photographed and we could tease apart the effect of person from the specifics of the photo since each person was photographed twice - once when happy and once when grumpy. <span class="math inline">\(\texttt{person}\)</span> has 22 levels and you are probably not interested in knowing the grumpy score of someone you didn’t know - <span class="math inline">\(\texttt{person}\)</span> effects seem to satisfy the rule of thumb often used to decide that they should be treated as random. The random effect model is specified through the argument <code>random</code> and for simple effects as these we simply put the name of the corresponding column (<span class="math inline">\(\texttt{person}\)</span>) in the model formula. We will also specify inverse-Wishart priors for both the residual variance and the variance of the <span class="math inline">\(\texttt{person}\)</span> effects (see Section <a href="bayesian.html#Vprior-sec">2.6</a>) although scaled non-central <span class="math inline">\(F\)</span>-distribution priors are recommended for random-effect variances (see Section <a href="ranef.html#PXprior-sec">4.5</a>):</p>
@@ -623,17 +624,102 @@ Figure 4.7: Prior probability densities for the standard deviation of <span clas
 Figure 4.8: Posterior probability densities for the standard deviation of <span class="math inline">\(\texttt{school}\)</span> effects used in the <span class="math inline">\(\texttt{mschool}\)</span> models <span class="math inline">\(\texttt{1-5}\)</span>. The priors used in these models are given in the legend with the scale of the half-Cauchy and half-t distributions following the colon. Note the inverse-gamma is the prior for the variance - not the standard deviation.
 </p>
 </div>
-<p>Figure <a href="ranef.html#fig:posterior-compare">4.8</a> is anxiety-inducing - which prior to use? While I am reluctant to give general advise, in my own work I tend to use a half-Cauchy with a large scale: often <span class="math inline">\(\sqrt{1000}\)</span> (<code>alpha.V=1000</code>) depending on the scale of the data. However, I try to avoid collecting and analysing data that contains as little information as seen in this example (but see Section <a href="ranef.html#fix-or-rand">4.7</a>). When this is the case, shifts in the posterior distribution under different priors are often subtle. However, for variances or standard deviations that have support close to zero the spike of the inverse-Wishart/inverse-gamma distribution can cause problems, and for this reason I usually avoid it. The added bonus is faster mixing under parameter expansion. While the prior for the residual variance is restricted to the the inverse-Wishart/inverse-gamma distribution in MCMCglmm (Section <a href="bayesian.html#Vprior-sec">2.6</a>) the data usually contains so much information for the residual variance that prior sensitivity is limited. For models where the random-effect specification defines a (co)variance matrix rather than a scalar variance, see Section <a href="cat-int.html#VCVprior-sec">5.3</a>.</p>
+<p>Figure <a href="ranef.html#fig:posterior-compare">4.8</a> is anxiety-inducing - which prior to use? While I am reluctant to give general advise, in my own work I tend to use a half-Cauchy with a large scale: often <span class="math inline">\(\sqrt{1000}\)</span> (<code>alpha.V=1000</code>) depending on the scale of the data. However, I try to avoid collecting and analysing data that contains as little information as seen in this example (but see Section <a href="ranef.html#fix-or-rand">4.8</a>). When this is the case, shifts in the posterior distribution under different priors are often subtle. However, for variances or standard deviations that have support close to zero the spike of the inverse-Wishart/inverse-gamma distribution can cause problems, and for this reason I usually avoid it. The added bonus is faster mixing under parameter expansion. While the prior for the residual variance is restricted to the the inverse-Wishart/inverse-gamma distribution in MCMCglmm (Section <a href="bayesian.html#Vprior-sec">2.6</a>) the data usually contains so much information for the residual variance that prior sensitivity is limited. For models where the random-effect specification defines a (co)variance matrix rather than a scalar variance, see Section <a href="cat-int.html#VCVprior-sec">5.3</a>.</p>
 </div>
 </div>
-<div id="priors-on-functions-of-variances" class="section level2 hasAnchor" number="4.6">
-<h2><span class="header-section-number">4.6</span> Priors on Functions of Variances<a href="ranef.html#priors-on-functions-of-variances" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div id="intra-class-correlation" class="section level3 hasAnchor" number="4.6.1">
-<h3><span class="header-section-number">4.6.1</span> Intra-class Correlation<a href="ranef.html#intra-class-correlation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="Vprior-gen-sec" class="section level2 hasAnchor" number="4.6">
+<h2><span class="header-section-number">4.6</span> Prior Generators<a href="ranef.html#Vprior-gen-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Even when a user knows which prior they would like to use, it can be rather fiddly generating the prior list, especially when there are many random terms, some of which define (co)variance matrices. In order to simplify the process of prior specification a set of prior generator functions are available in versions &gt;4.0. These functions <span class="math inline">\(\texttt{IW}\)</span> (inverse-Wishart), <span class="math inline">\(\texttt{IG}\)</span> (inverse-gamma) and <span class="math inline">\(\texttt{F}\)</span> (central <span class="math inline">\(F\)</span> with 1 numerator degree of freedom) take two arguments specifying the parameters of the prior distribution to be used for the variances. The function <span class="math inline">\(\texttt{tSD} can also be used which specifies a half-\)</span>t$-distribution for the standard deviation. Note that a set parameters can always be chosen such that <span class="math inline">\(\texttt{IW}=\)</span>$ and <span class="math inline">\(\texttt{F}=\texttt{tSD}\)</span>. The difficult topic of prior specification for (co)variance matrices is covered in Section <a href="cat-int.html#VCVprior-sec">5.3</a> and I’ll leave the documentation of the prior generator functions in this context to then.</p>
+<div style="border: 0px;overflow-x: scroll; width:100%; ">
+<table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:prior-functions">Table 4.1: </span>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Function
+</th>
+<th style="text-align:left;">
+Distribution
+</th>
+<th style="text-align:left;">
+Parameter1
+</th>
+<th style="text-align:left;">
+Parameter2
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+IW
+</td>
+<td style="text-align:left;">
+Inverse-Wishart
+</td>
+<td style="text-align:left;">
+V=1
+</td>
+<td style="text-align:left;">
+nu=0.002
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+IF
+</td>
+<td style="text-align:left;">
+Inverse-gamma
+</td>
+<td style="text-align:left;">
+shape=0.001
+</td>
+<td style="text-align:left;">
+scale=0.001
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+F
+</td>
+<td style="text-align:left;">
+F with ndf=1
+</td>
+<td style="text-align:left;">
+ddf=1
+</td>
+<td style="text-align:left;">
+scale=1000
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+tSD
+</td>
+<td style="text-align:left;">
+Half-t (for SD)
+</td>
+<td style="text-align:left;">
+df=1
+</td>
+<td style="text-align:left;">
+scale=<span class="math inline">\(\sqrt{1000}\)</span>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
-<div id="fix-or-rand" class="section level2 hasAnchor" number="4.7">
-<h2><span class="header-section-number">4.7</span> Fixed or Random?<a href="ranef.html#fix-or-rand" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="priors-on-functions-of-variances" class="section level2 hasAnchor" number="4.7">
+<h2><span class="header-section-number">4.7</span> Priors on Functions of Variances<a href="ranef.html#priors-on-functions-of-variances" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="intra-class-correlation" class="section level3 hasAnchor" number="4.7.1">
+<h3><span class="header-section-number">4.7.1</span> Intra-class Correlation<a href="ranef.html#intra-class-correlation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+</div>
+<div id="fix-or-rand" class="section level2 hasAnchor" number="4.8">
+<h2><span class="header-section-number">4.8</span> Fixed or Random?<a href="ranef.html#fix-or-rand" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>At the start of this Chapter I highlighted the central decision that needs to be made when deciding if an effect should be random or fixed: should a vague prior for the effect (or flat prior in a frequentist analysis) be specified entirely by the analyst (fixed) or should the prior be updated using all data that has relevant information (random)? When put this way, treating something as random would always seem preferable. However, sometimes there is so little relevant information that the benefit of treating an effect as random is outweighed by the cost of the increased complexity. In my experience, when there is a lack of relevant information - the information required to estimate the random-effect variance, <span class="math inline">\(\sigma^2_u\)</span> - it is almost always because there are only a few levels of the predictor, not because the replication per level is small. This is why people often use the rule-of-thumb that if there are few factor levels (<span class="math inline">\(&lt;5\)</span>) then we should treat the effects as fixed. In this scenario, even if we had infinite replication at each level, we would still only have fewer than five observations from which to estimate the variance. In such cases a second rule-of-thumb is often satisfied: if the levels are interesting to other people, they are fixed. However, when the two rules-of-thumb are in conflict, people often agonise about the choice. If your data set is of an admirable size, I would argue that it often doesn’t matter what you choose. If you have few levels of a predictor, that probably means you have a lot of replication per level. In these situations, the amount of information coming from observations from that level overwhelm any prior information and so it doesn’t matter whether you say the prior information is vague (fixed) or try and update the prior information from all observations (random).</p>
 <p>In my own field, year is often a good example. A field project has ran for less than five years but each year a lot data is collected. Should the year effects be treated as fixed or random? Well there are few levels, suggesting fixed, but the effect of year 2014 (for example) isn’t particularly interesting, suggesting random. People sometimes claim fixed because years haven’t been sampled at random, but this argument shows a deep misunderstanding of what a random effect is. ‘random’ isn’t referring to <em>years</em> being <em>sampled at random</em>, but referring to the fact that we would like to treat year <em>effects</em> as <em>random variables</em> coming from a distribution. If I had observations from many years I would certainly fit year effects as random. However, with few years and a lot of data per year I would treat them as fixed. Let’s consider a data-set I collected and that I use for teaching:</p>
 <div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="ranef.html#cb149-1" tabindex="-1"></a><span class="fu">load</span>(<span class="fu">url</span>(<span class="st">&quot;https://github.com/jarrodhadfield/sda/raw/master/data/BTtarsus.rda&quot;</span>))</span>

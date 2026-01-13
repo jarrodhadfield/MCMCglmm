@@ -52,10 +52,10 @@ fig:mschool-2
 fig:mschool-3
 fig:prior-compare
 fig:posterior-compare
+tab:prior-functions
 fig:year
 fig:year-sd
 tab:vfunction
-tab:prior-functions
 fig:NIc
 fig:ChickWeight
 fig:parallel
@@ -141,6 +141,7 @@ overdispersed-binomial-as-a-bernoulli-glmm
 ICC
 PXprior-sec
 f-and-folded-t-priors
+Vprior-gen-sec
 priors-on-functions-of-variances
 intra-class-correlation
 fix-or-rand

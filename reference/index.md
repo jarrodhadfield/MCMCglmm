@@ -133,6 +133,12 @@
 - [`predict(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/predict.MCMCglmm.md)
   : Predict method for GLMMs fitted with MCMCglmm
 
+- [`IW()`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md)
+  [`IG()`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md)
+  [`F()`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md)
+  [`tSD()`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md)
+  : Generator Functions for Priors in MCMCglmm
+
 - [`prunePed()`](https://jarrodhadfield.github.io/MCMCglmm/reference/prunePed.md)
   : Pedigree pruning
 
@@ -144,6 +150,9 @@
 
 - [`residuals(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/residuals.MCMCglmm.md)
   : Residuals form a GLMM fitted with MCMCglmm
+
+- [`resolve_prior()`](https://jarrodhadfield.github.io/MCMCglmm/reference/resolve_prior.md)
+  : Resolves a Prior Specification in MCMCglmm
 
 - [`rtcmvnorm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/rtcmvnorm.md)
   : Random Generation from a Truncated Conditional Normal Distribution

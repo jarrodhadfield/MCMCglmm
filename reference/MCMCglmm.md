@@ -343,30 +343,9 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 data(PlodiaPO)  
 model1<-MCMCglmm(PO~1, random=~FSfamily, data=PlodiaPO, verbose=FALSE,
  nitt=1300, burnin=300, thin=1)
+#> Error in priorformat(prior = if (NOpriorG) {    NULL} else {    prior$G[[r]]}, start = if (NOstartG) {    NULL} else {    start$G[[r]]}, nfl = Zlist$nfl, meta = any(grepl("MCMC_meta", rmodel.terms[r])),     residual = 0, vtype = Zlist$vtype): covu is only an argument for the first residual structures
 summary(model1)
-#> 
-#>  Iterations = 301:1300
-#>  Thinning interval  = 1
-#>  Sample size  = 1000 
-#> 
-#>  DIC: -239.78 
-#> 
-#>  G-structure:  ~FSfamily
-#> 
-#>          post.mean l-95% CI u-95% CI eff.samp
-#> FSfamily   0.01027 0.005385  0.01579    414.1
-#> 
-#>  R-structure:  ~units
-#> 
-#>       post.mean l-95% CI u-95% CI eff.samp
-#> units    0.0341  0.02966  0.03843    826.9
-#> 
-#>  Location effects: PO ~ 1 
-#> 
-#>             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-#> (Intercept)     1.163    1.132    1.195     1463 <0.001 ***
-#> ---
-#> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#> Error in h(simpleError(msg, call)): error in evaluating the argument 'object' in selecting a method for function 'summary': object 'model1' not found
 
 # Example 2: univariate Gaussian model with phylogenetically correlated
 # random effect

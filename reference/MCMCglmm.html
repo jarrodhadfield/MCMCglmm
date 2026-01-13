@@ -246,30 +246,9 @@ saved?</p></dd>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">PlodiaPO</span><span class="op">)</span>  </span></span>
 <span class="r-in"><span><span class="va">model1</span><span class="op">&lt;-</span><span class="fu">MCMCglmm</span><span class="op">(</span><span class="va">PO</span><span class="op">~</span><span class="fl">1</span>, random<span class="op">=</span><span class="op">~</span><span class="va">FSfamily</span>, data<span class="op">=</span><span class="va">PlodiaPO</span>, verbose<span class="op">=</span><span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span> nitt<span class="op">=</span><span class="fl">1300</span>, burnin<span class="op">=</span><span class="fl">300</span>, thin<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in priorformat(prior = if (NOpriorG) {    NULL} else {    prior$G[[r]]}, start = if (NOstartG) {    NULL} else {    start$G[[r]]}, nfl = Zlist$nfl, meta = any(grepl("MCMC_meta", rmodel.terms[r])),     residual = 0, vtype = Zlist$vtype):</span> covu is only an argument for the first residual structures</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">model1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Iterations = 301:1300</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Thinning interval  = 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Sample size  = 1000 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  DIC: -239.78 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  G-structure:  ~FSfamily</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>          post.mean l-95% CI u-95% CI eff.samp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> FSfamily   0.01027 0.005385  0.01579    414.1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  R-structure:  ~units</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       post.mean l-95% CI u-95% CI eff.samp</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> units    0.0341  0.02966  0.03843    826.9</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Location effects: PO ~ 1 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>             post.mean l-95% CI u-95% CI eff.samp  pMCMC    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)     1.163    1.132    1.195     1463 &lt;0.001 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in h(simpleError(msg, call)):</span> error in evaluating the argument 'object' in selecting a method for function 'summary': object 'model1' not found</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Example 2: univariate Gaussian model with phylogenetically correlated</span></span></span>
 <span class="r-in"><span><span class="co"># random effect</span></span></span>
