@@ -38,7 +38,7 @@
        if(length(split.direct.sum(as.character(rcov)[2]))==1){
          prior$R<-list(R1=prior$R)
        }else{  
-        prior$R<-replicate(prior$R, length(split.direct.sum(as.character(rcov)[2])))
+         prior$R<-replicate(prior$R, length(split.direct.sum(as.character(rcov)[2])))
        } 
     }
   }
@@ -72,6 +72,7 @@
       }
     }  
   }
+
   if(!is.null(start$R)){
     if(!is.list(start$R)){
       start$R<-list(R1=start$R)

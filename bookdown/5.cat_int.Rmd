@@ -438,13 +438,6 @@ The rules for rescaling can be hard to remember and fiddly to implement. In orde
 
 An uninformative prior for the correlations is an improper prior with `V=diag(dim(V))`$\ast$`0` and `nu=dim(V)+1`. For the $3\times3$ virus by line covariance matrix in model `m3a.4` we used a proper prior with `V=diag(3)`$\ast$`0.02` and `nu=4` in the hope that this would be relatively uninformative for the correlations. We can plot the marginal density of the variances for this distribution as we did in Chapter \@ref(bayesian):
 
-``` {r label=NIc, echo=TRUE, include=TRUE, fig.cap="Marginal prior distribution of a variance using an inverse Wishart prior for the covariance matrix with \\texttt{V=diag(3)*0.02} and \\texttt{nu=4}.", fig.width=7, fig.height=5}
-nu.ast<-prior.m3a.4$G$G1$nu-dim(prior.m3a.4$G$G1$V)[1]+1
-V.ast<-prior.m3a.4$G$G1$V[1,1]*(prior.m3a.4$G$G1$nu/nu.ast)
-xv<-seq(1e-16,1,length=100)
-dv<-dgamma(1/xv, shape=nu.ast/2, rate=(nu.ast*V.ast)/2)/(xv^2)
-plot(dv~xv, type="l")
-```
 
 
 ### Priors for `corg` and `corgh` structures

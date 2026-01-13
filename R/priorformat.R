@@ -1,7 +1,7 @@
 priorformat<-function(prior, start, nfl, meta, residual, vtype){
 
        if(is.null(prior)){
-          prior<-list(V=diag(sum(nfl)), nu=0, fix=as.numeric(meta), alpha.mu=rep(0,sum(nfl)), alpha.V=diag(sum(nfl))*0, beta.mu=NULL, beta.V=NULL, covu=FALSE)
+          prior<-list(V=diag(sum(nfl)), nu=0, fix=as.numeric(meta))
           if(grepl("ante", vtype[1])){
             nk<-as.numeric(gsub("[a-z]", "", vtype[1]))
             if(!grepl("antec", vtype[1])){
@@ -11,6 +11,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
             prior$beta.V<-diag(nk)*1e+10
           }
        }
+
        if(inherits(prior, "prior_generator")){
          prior<-resolve_prior(prior, k=nfl, vtype=vtype)
        }
