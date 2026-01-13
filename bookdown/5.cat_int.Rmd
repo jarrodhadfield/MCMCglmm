@@ -310,7 +310,17 @@ data.nana<-data.frame(y=y, mother=mother, grandmother=grandmother)
 head(data.nana)
 ```
 
-I have ensured that the $\texttt{mother}$ and $\texttt{grandmother}$ columns have the same factor levels using the $\texttt{levels}$ argument of the function $\texttt{as.factor}$. It is not necessary that *all* mothers appear as grandmothers, or vice versa, but of course *some* mothers must appear as grandmothers if we wish to estimate the correlation in their effects on a child's well-being. The linking function $\texttt{str}$ links two or more sets of random effects and assumes a fully unstructured covariance matrix for their distribution, as seen with a $\texttt{us}$ structure  (Section \@ref(us-sec)).  
+with $\texttt{y}$ being the children's well-being score and the letters being the names of the child's mother and grandmother. I have ensured that the $\texttt{mother}$ and $\texttt{grandmother}$ columns have the same factor levels using the $\texttt{levels}$ argument of the function $\texttt{as.factor}$. It is not necessary that *all* mothers appear as grandmothers, or vice versa, but of course *some* mothers must appear as grandmothers if we wish to estimate the correlation in their effects on a child's well-being. The linking function $\texttt{str}$ links two or more sets of random effects and assumes a fully unstructured covariance matrix for their distribution. It may help to visualise the random effects that the term `str(mother+grandmother)` is specifying:
+
+
+$$\begin{array}{c|rrrrc}
+&{\color{red}{\texttt{a}}}&{\color{red}{\texttt{b}}}&{\color{red}{\texttt{c}}}&{\color{red}{\texttt{d}}}&\dots\\
+\hline
+{\color{blue}{\texttt{mother}}}&{\color{blue}{\texttt{mother}}}.{\color{red}{\texttt{a}}}&{\color{blue}{\texttt{mother}}}.{\color{red}{\texttt{b}}}&{\color{blue}{\texttt{mother}}}.{\color{red}{\texttt{c}}}&{\color{blue}{\texttt{mother}}}.{\color{red}{\texttt{d}}}&\dots\\
+{\color{blue}{\texttt{grandmother}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{a}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{b}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{c}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{d}}}&\dots\\
+\end{array}$$
+
+We can seen that this is conceptually identical to our virus-line example but rather than specifying the classifying variable inside $\texttt{idh()}$ or $\texttt{us()}$, as we could for $\texttt{virus}$, the classifying variable is actually the column names of the terms.
 
 
 ```{r }
@@ -330,7 +340,7 @@ summary(m.str)
 
 When simulating the data I assumed the variance in mother effects was 2, the variance in grandmother effects was 1 and the covariance between them was 0.5 (giving a correlation of `r round(0.5/sqrt(2), 2)`). The data set contained few (grand)mothers and so the estimates are uncertain, but the credible intervals overlap the true values. 
 
-### $\texttt{mm}$: Multi-membership Models
+### $\texttt{mm}$: multi-membership Models
 
 Using $\texttt{str}$ allowed us to link random effects associated with categorical predictors appearing in different columns of our data frame. The effects defined by different columns were allowed to have different variances (the variance in mother effects was different from the variance in grandmother effects) and the correlation was estimated. In some cases we would like to treat the effects defined by the different columns as the same effects when their levels agree. In the $\texttt{str}$ example we did not want to do this because being a mother is not the same thing as being a grandmother. However, imagine that each of our children has five friends:
 
@@ -359,8 +369,7 @@ data.friends$y<-data.friends$y+u[as.numeric(data.friends[,i+1])]
 head(data.friends)
 ```
 
-Friend `r names(which.max(table(unlist(data.friends[1:6,-1]))))` appears as a friend to multiple children and we would lie to the model that friend's effect on the focal child's well-being irrespective of whether `r names(which.max(table(unlist(data.friends[1:6,-1]))))` appears as $\texttt{friend.1}$, $\texttt{friend.2}$ ... or $\texttt{friend.5}$ as the numbering is arbitrary.  The linking function $\texttt{mm}$ allows us to specify this:
-
+Friend `r names(which.max(table(unlist(data.friends[1:6,-1]))))` appears as a friend to multiple children and we would like to model that friend's effect on the focal child's well-being irrespective of whether `r names(which.max(table(unlist(data.friends[1:6,-1]))))` appears as $\texttt{friend.1}$, $\texttt{friend.2}$ ... or $\texttt{friend.5}$ as the numbering is arbitrary.  The linking function $\texttt{mm}$ allows us to specify this. 
 
 ```{r }
 prior.mm=list(R=list(V=1, nu=0.002), 
@@ -375,60 +384,74 @@ m.mm<-MCMCglmm(y~1, random=~mm(friend.1+friend.2+friend.3+friend.4+friend.5), da
 summary(m.mm)
 ```
 
-The variance in $\texttt{friend}$ effects was set to 0.1 in the simulated data. While small compared to the simulated residual variance (2) the aggregate effect of all friends if five times this: 0.5. Note that if children varied in how many friends they had, the number of 'friend' columns can be set to the maximum and children with fewer friends than the maximum can have $\texttt{NA}$ in any redundant rows.   
+The variance in $\texttt{friend}$ effects was set to 0.1 in the simulated data. While small compared to the simulated residual variance (2) the aggregate effect of all friends is five times this: 0.5. Note that if children varied in how many friends they had, the number of $\texttt{friend.#}$ columns can be set to the maximum and children with fewer friends than the maximum can have $\texttt{NA}$ in any redundant columns. For example, lets say the second child in our data-frame only had four friends - $\texttt{friend}$ `r data.friends[2,5]` is not, in fact, a friend of this child. We would then just set this cell to $\texttt{NA}$:
 
+```{r echo=FALSE}
+data.friends[2,5]<-NA
+```
 
-#### Bradley-Terry Models
+```{r }
+head(data.friends)
+```
 
-Bradley-Terry Models have similarities with multi-membership models and were designed to analyse the outcomes of dyadic competitions such as chess games. 
+When fitting the model, $\texttt{MCMCglmm}$ will issue the warning:
 
+``` r
+missing values in random predictors
+```
+
+but this can be ignored.
 
 
 ### $\texttt{covu}$: covariances between random and residual terms 
 
-Occasionally, we need to link a set of random effects with a set of residuals. This most commonly occurs in multi-response models (Chapter \@ref(multi)) when we have repeated measures for one response but only single measures for another response, and so I will leave the main discussion of this to then (Section \@ref(covu-sec)). However, as a brief overview, we can link the set of random effects appearing in the final random term of the `random` specification with the residuals appearing in the first residual term of the `rcov` specification.  The linking is specified by adding a `covu=TRUE` to the prior specification for the first residual term. For example, imagine the random effect model specification:
-
-```{r }
-random=~...+...+us(at.level(response, "repeat")):individual
-```
-
-where $\dots$ indicate additional random terms and the rather complicated final random term is simply fitting $\texttt{individual}$ effects but for the repeat-measure response only. We could then specify the residual model as:
-
-```{r }
-rcov=~us(at.level(response, "single")):individual+us(at.level(response, "repeat")):units
-```
-
-The first term, which again looks rather complicated, is simply fitting residuals for the single-measure response only. This can be achieved by using $\texttt{individual}$ effects since each individual only has one observation for this response. The second term fits residuals for the repeat-measure response and here we use $\texttt{units}$ to specify a residual for each of an individual's repeat measure observations. Note we could also have used $\texttt{units}$ in place of $\texttt{individual}$ for the first term, but then the levels of $\texttt{units}$ would not agree with the levels of $\texttt{individual}$ appearing in the random term and so, as with $\texttt{str}$ linking functions, the two sets of effects could not be linked. The prior specification for the residual term would then look something like:
-
-```{r }
-R=list(R1=list(V=diag(2), nu=2, alpha.mu=c(0,0), alpha.V=diag(2)*1000, covu=TRUE), 
-       R2=list(V=1, nu=1, alpha.mu=0, alpha.V=1000))
-```
-
-The first prior specifies a $2\times 2$ covariance matrix for the two sets of $\texttt{individual}$ effects. Since the prior for the last set of random effects is absorbed into the residual prior specification, it should be omitted from the random-effect (G-structure) prior specification. The covariance matrix inherits the variance function of the first residual term, in this case $\texttt{us}$.   
-
-
+Occasionally, we need to link a set of random effects with a set of residuals. This most commonly occurs in multi-response models (Chapter \@ref(multi)) when we have repeated measures for one response but only single measures for another response. I will leave the main discussion of this topic to then (Section \@ref(covu-sec)). However, to give some idea of how this works, imagine that the final random term in the `random` formula defines the set of random effects $[{\bf u}^{(1)}, {\bf u}^{(2)},  {\bf u}^{(3)}]$ (for example the $\texttt{virus}$ by $\texttt{line}$ effects discussed above). Imagine also that the first residual term in the `rcov` formula defines the residuals $[{\bf e}^{(1)}, {\bf e}^{(2)}]$. By specifying $\texttt{covu=TRUE}$ in the prior for the first residual term a $5\times 5$ covariance matrix is estimated rather than a $3\times 3$ covariance matrix for the random effects and a $2\times 2$ covariance matrix for the residuals.
+ 
 ### $\texttt{theta_scale}$: scaled linear predictor 
 
-
-
-
-
-
-
+Occasionally, we need to force a common relationship between two sets of multiple random effects. As with $\texttt{covu}$ models, this most commonly occurs in multi-response models (Chapter \@ref(multi)) and so will be covered in detail there (Section \@ref(theta_sacle-sec)). For now, we can express the idea compactly by imagining two sets of multiple random effects $[{\bf u}^{(1)}, {\bf u}^{(2)}]$ and $[{\bf u}^{(3)}, {\bf u}^{(4)}]$. The $\texttt{theta_scale}$ argument allows the user to force the constraint $[{\bf u}^{(3)}, {\bf u}^{(4)}]$=$b[{\bf u}^{(1)}, {\bf u}^{(2)}]$ with $b$ estimated. 
 
 
 ## Priors for Covariance Matrices {#VCVprior-sec}
 
-Priors for covariance matrices are tricky. What maybe non-informative for a covariance may be informative for a correlation and *vice versa*.
 
-### Priors for `us` structures
+When fitting a $k$ dimensional (co)variance matrix, $\texttt{V}$ and $\texttt{alpha.V}$ must specify $k$ dimensional (co)variance matrices and $\texttt{alpha.mu}$ must specify a vector of length $k$. The degrees-of-freedom, $\texttt{nu}$, however, remains scalar. 
 
-A useful result is that the marginal distribution of a variance is also inverse-Wishart distributed:
+### Marginal Priors for Variances
 
-$$\sigma^{2}_{1} \sim IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{V[1,1]}\right)$$
+The joint distribution of all $k(k-1)/2$ elements of the covariance matrix is hard to characterise or visualise [@Tokuda.2025]. We will start by exploring a simpler problem - given some prior specification for a $k$ dimensional (co)variance matrix what is the marginal distribution of each variance? Luckily, the marginal distributions have the same form as they have in the scalar case but with some rescaling of parameters. We will designate the parameters of the marginal distribution using asterisks. The marginal distribution is characterised by the parameters $\texttt{V}^{\ast}$ and $\texttt{nu}^{\ast}$, and if $F$ priors are used, then $\texttt{alpha.mu}^{\ast}$ and $\texttt{alpha.V}^{\ast}$. The properties of these (marginal) distributions are fully covered in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec), respectively.
 
-using the first variance as an example, and indicating the new parameters with an asterisk.
+
+Before continuing, it should be pointed out that what follows does **not** hold when an $\texttt{idh}$ structure is used. $\texttt{idh}$ structure set all correlations to zero and estimate a set of $k$ variances, where $k$ is the number of parameters specified by the $\texttt{idh}$ model. For example, in the sigma virus example we used `idh(virus):line` and $k=3$ since there were three levels of $\texttt{virus}$. The prior specification still requires $k\times k$ ($3\times 3$) matrices for $\texttt{V}$ and $\texttt{alpha.V}$ but the off-diagonal elements are ignored, and the prior for the $i^\textrm{th}$ variance is simply $\texttt{V}^{\ast}=\texttt{V[i,i]}$, $\texttt{nu}^\ast=\texttt{nu}$,  $\texttt{alpha.mu}^\ast=\texttt{alpha.mu[i]}$ and $\texttt{alpha.V}^\ast=\texttt{alpha.V[i,i]}$[^4.2]. Forcing all variances to have the same degrees-of-freedom might be too restrictive, but at least with $\texttt{idh}$ structures this can be relaxed using an alternative parameterisation[^4.3]. This luxury isn't afforded to other variance structures for which covariances or correlation are estimated.
+
+For structures where a full covariance matrix is to be inferred (for example by using a $\texttt{us}$ structure) a useful result is that the prior for the $i^\textrm{th}$ variance has parameters $\texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{V[i,i]}$, $\texttt{nu}^{\ast}=\texttt{nu}-k+1$, $\texttt{alpha.mu}^\ast=\texttt{alpha.mu[i]}$ and $\texttt{alpha.V}^\ast=\texttt{alpha.V[i,i]}$. Consequently, we can choose a $\texttt{V}$ and $\texttt{nu}$ that allows us to specify one of the priors discussed in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec) for a single variance.  For example, in Section \@ref(Vprior-sec) we saw that an inverse-gamma prior with a shape and scale of 0.001 is equivalent to the scalar inverse-Wishart with $\texttt{V}^{\ast}=1$ and $\texttt{nu}^{\ast}=0.002$. Consequently, we can place this prior on the $i^\textrm{th}$ variance by setting $\texttt{nu}$ to be $k-1+0.002$ such that $\texttt{nu}^{\ast}=0.002$. Having $\texttt{V[i,i]}=\texttt{nu}^{\ast}/\texttt{nu}=0.002/(k-1+0.002)$ then results in  $\texttt{V}^{\ast}=1$. An improper prior that is flat for the variance requires $\texttt{V}^{\ast}=0$ and $\texttt{nu}^{\ast}=-2$ which can be achieved by setting $\texttt{nu}=k-3$ and $\texttt{V[i,i]}=0$. In Section \@ref(PXprior-sec) we noted that scaled $F$ priors for variances (scaled folded-$t$ priors for standard deviations) can have better properties than the inverse-Wishart. As in Section \@ref(PXprior-sec) we can set $\texttt{alpha.mu}$ to be a vector of zeros and work with the scaled central $F$ and scaled half-$t$. The marginal distribution for the $i^\textrm{th}$ variance then follows a $F_{1, \texttt{nu}^{\ast}}$ distribution with scale equal to $\texttt{V}^{\ast}\texttt{alpha.V[i,i]}$. We can therefore chose $\texttt{V}$, $\texttt{nu}$ and $\texttt{alpha.V}$ to specify one of the priors discussed in Section \@ref(Vprior-sec) for a single variance or standard deviation. For example, by setting $\texttt{nu}=k$ we have $\texttt{nu}^{\ast}=1$ generating a scaled $F_{1,1}$ prior for the variance (or half-Cauchy for the standard deviation). We noted in Section \@ref(PXprior-sec) that the prior specification in $\texttt{MCMCglmm}$ is redundant and we can set the scale by setting $\texttt{V}$ to one and controlling the scale through $\texttt{alpha.V}$. This can be achieved in the multivariate case by setting $\texttt{V[i,i]}=1/k$ such that $$\texttt{V}^{\ast}=1$ and then altering $\texttt{alpha.V[i,i]}$ as before.
+
+The rules for rescaling can be hard to remember and fiddly to implement. In order to simplify the process of prior specification, priors can also be specified by the functions $\texttt{IW}$ (inverse-Wishart), $\texttt{IG}$ (inverse-gamma) and $\texttt{F}$ (central $F$ with 1 numerator degree of freedom) which take two arguments specifying the parameters of the *marginal* prior distribution to be used for the variances. The function $\texttt{tSD} can also be used which specifies a half-$t$-distribution for the standard deviation. Note that as set parameters can always be chosen such that $\texttt{IW}=$\texttt{IG}$ and $\texttt{F}=\texttt{tSD}$. In all cases, the off-diagonal elements of $\texttt{V}$ (and $\texttt{alpha.V}$ if $\texttt{F}$ is used) are set to zero. 
+
+
+
+``` {r echo=FALSE, results='asis'}
+prior.functions <- data.frame(
+  Function = c("IW", "IF", "F", "tSD"),
+  Distribution = c("Inverse-Wishart", "Inverse-gamma", "F with ndf=1", "Half-t (for SD)"),
+  Parameter1 = c("V=1", "shape=0.001", "ddf=1", "df=1"),
+  Parameter2 = c("nu=0.002", "scale=0.001", "scale=1000", "scale=$\\sqrt{1000}$"),
+  stringsAsFactors = FALSE
+)
+
+kable(prior.functions, "html", escape = FALSE, caption = "", label="prior-functions") |>
+  kable_styling(full_width = FALSE)%>%
+  scroll_box(width = "100%", box_css = "border: 0px;")
+```
+
+
+
+### Marginal Priors for Covariances
+
+
+### Marginal Priors for Correlations
+
+
 
 An uninformative prior for the correlations is an improper prior with `V=diag(dim(V))`$\ast$`0` and `nu=dim(V)+1`. For the $3\times3$ virus by line covariance matrix in model `m3a.4` we used a proper prior with `V=diag(3)`$\ast$`0.02` and `nu=4` in the hope that this would be relatively uninformative for the correlations. We can plot the marginal density of the variances for this distribution as we did in Chapter \@ref(bayesian):
 
@@ -440,25 +463,10 @@ dv<-dgamma(1/xv, shape=nu.ast/2, rate=(nu.ast*V.ast)/2)/(xv^2)
 plot(dv~xv, type="l")
 ```
 
-In Chapter \@ref(bayesian) we saw that a non-informative prior for a variance component was `V=0` and `nu=-2`. This result generalises to covariance matrices where the improper prior `V=diag(dim(V))`$\ast$`0` and `nu=dim(V)-3` is non-informative for the variances and covariances. This can be verified for the variances using the results derived above for the marginal distribution:
-
-$$
-\begin{array}{rl}
-\sigma^{2}_{1} \sim& IW\left(\texttt{nu}^{\ast}\texttt{=dim(V)-3-dim(V)+1},\ \texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{0}\right)\\
-               \sim& IW\left(\texttt{nu}^{\ast}\texttt{=-2},\ \texttt{V}^{\ast}=\texttt{0}\right)\\
-
-\end{array}
-$$
-
-### Priors for `idh` structures
-
-For `idh` the diagonal elements of the matrix are independent and each variance is distributed as[^4.2]:
-
-$$\sigma^{2}_{1} \sim IW\left(\texttt{nu}^{\ast}\texttt{=nu},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$$
 
 ### Priors for `corg` and `corgh` structures
 
-For `corg` and `corgh` structures[^4.3] the diagonals of `V` define the fixed variances (`corgh`) or are ignored and the variances set to one (`corg`). I use the prior specification in @Barnard.2000 where `nu` controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations ($r$) is given by
+For `corg` and `corgh` structures[^4.4] the diagonals of `V` define the fixed variances (`corgh`) or are ignored and the variances set to one (`corg`). I use the prior specification in @Barnard.2000 where `nu` controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations ($r$) is given by
 @Barnard.2000 [and @Box.1973]:
 
 $$\begin{array}{lr}
@@ -475,6 +483,9 @@ In most cases correlation matrices do not have known form and so cannot be direc
 
 [^cant_int.4]: If anyone has an actual data set that could serve as an example, please get in touch. The code was developed for estimating a direct-maternal genetic correlation in an animal model (Chapter \@ref(pedigree)) but as an example it is too complicated.
 
-[^4.2]: IMPORTANT: In versions $<$ 2.05 priors on each variance of an $\texttt{idh}$ structure were distributed as $IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$ but this was a source of confusion and was changed.
+[^4.2]: In versions $<$ 2.05 priors on each variance of an $\texttt{idh}$ structure were distributed as $IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$ but this was neither intuitive or completely consistent with the marginal prior from a full-covariance matrix (since $\texttt{V}^{\ast}$ should be $\texttt{V[1,1]}\frac{\texttt{nu}}{\texttt{nu}^{\ast}}$). 
 
-[^4.3]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
+[^4.3]: In models `m.sigma.3` (and `m.sigma.4`) we fitted the $\texttt{idh}$ term `idh(virus):line`. We could also have set this model up as the much more ugly `idh(at.level(virus, "France")):line+idh(at.level(virus, "Spain")):line+idh(at.level(virus, "Greece")):line`. The function `at.level` returns a vector with ones where the first term ($\texttt{virus}$) is equal to the second term (e.g. $\texttt{"France"}$) and zero otherwise. In this context, it essentially just fits $\texttt{line}$ effects on observations made on the $\texttt{France}$ virus. The prior specification would require a prior on each of the three variances and a different $\texttt{nu}$ could be specified for each.
+
+
+[^4.4]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
