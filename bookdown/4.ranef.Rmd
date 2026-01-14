@@ -296,7 +296,7 @@ Figure \@ref(fig:posterior-compare) is anxiety-inducing - which prior to use? Wh
 
 ## Prior Generators {#Vprior-gen-sec}
 
-Even when a user knows which prior they would like to use, it can be rather fiddly generating the prior list, especially when there are many random terms, some of which define (co)variance matrices. In order to simplify the process of prior specification a set of prior generator functions are available in versions >4.0.  These functions $\texttt{IW}$ (inverse-Wishart), $\texttt{IG}$ (inverse-gamma) and $\texttt{F}$ (central $F$ with 1 numerator degree of freedom) take two arguments specifying the parameters of the prior distribution to be used for the variances. The function $\texttt{tSD}$ can also be used which specifies a half-$t$-distribution for the standard deviation. Note that a set parameters can always be chosen such that $\texttt{IW}=\texttt{IG}$ and $\texttt{F}=\texttt{tSD}$. The difficult topic of prior specification for (co)variance matrices is covered in Section \@ref(VCVprior-sec) and I'll leave the documentation of the prior generator functions in this context to then.  
+Even when a user knows which prior they would like to use, it can be rather fiddly generating the prior list, especially when there are many random terms, some of which define (co)variance matrices. In order to simplify the process of prior specification a set of prior generator functions are available in versions >4.0.  These functions $\texttt{IW}$ (inverse-Wishart), $\texttt{IG}$ (inverse-gamma) and $\texttt{F}$ (central $F$ with 1 numerator degree of freedom) take two arguments specifying the parameters of the prior distribution to be used for the variances. The function $\texttt{tSD}$ can also be used which specifies a half-$t$-distribution for the standard deviation. The functions come with default values, but these can be overridden (Table \@ref(fig:prior-functions)). Note that a set parameters can always be chosen such that $\texttt{IW}=\texttt{IG}$ and $\texttt{F}=\texttt{tSD}$. The difficult topic of prior specification for (co)variance matrices is covered in Section \@ref(VCVprior-sec) and I'll leave the documentation of the prior generator functions in this context to then.  
 
 
 
@@ -314,6 +314,41 @@ kable(prior.functions, "html", escape = FALSE, caption = "Table of prior generat
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```
 
+The prior generator functions can be used to specify the prior for a particular term, or all $\texttt{G}$ and $\texttt{R}$ terms. For example, for model `mbinom.3` we specified priors for the single residual variance and the two random effect variances:
+
+```{r }
+prior.mbinom.3 = list(R = list(V = 1, fix = 1), G = list(G1 = list(V = 1, nu = 0.002),
+    G2 = list(V = 1, nu = 0.002)))
+```
+
+If we wished to use a central $F_{1,1}$ prior with a scale of a $1000$ for the variance in the first random term, the long-hand prior would look like:
+
+
+```{r }
+prior.mbinom.3 = list(R = list(V = 1, fix = 1), G = list(G1 = list(V = 1, nu = 1, alpha.mu=0, alpha.V=1000),
+    G2 = list(V = 1, nu = 0.002)))
+```
+
+However, we can also specify this prior as
+
+
+```{r }
+prior.mbinom.3 = list(R = list(V = 1, fix = 1), G = list(G1 = F(1,1000), G2 = list(V = 1, nu = 0.002)))
+```
+
+If we wished to also use the $F$ prior for the second random term we could either use
+
+```{r }
+prior.mbinom.3 = list(R = list(V = 1, fix = 1), G = list(G1 = F(1,1000), G2 = F(1,1000)))
+```
+
+or more compactly as:
+
+```{r }
+prior.mbinom.3 = list(R = list(V = 1, fix = 1), G =F(1,1000))
+```
+
+The prior generators can also be used for the residual variance(s) but because we need to specify additional arguments ($\texttt{fix}$ in this case) we have to stick with the long-hand version.
 
 
 ## Priors on Functions of Variances 

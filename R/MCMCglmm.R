@@ -38,7 +38,7 @@
        if(length(split.direct.sum(as.character(rcov)[2]))==1){
          prior$R<-list(R1=prior$R)
        }else{  
-         prior$R<-replicate(prior$R, length(split.direct.sum(as.character(rcov)[2])))
+         prior$R<-replicate(length(split.direct.sum(as.character(rcov)[2])), prior$R)
        } 
     }
   }
@@ -47,7 +47,7 @@
        if(length(split.direct.sum(as.character(random)[2]))==1){
          prior$G<-list(G1=prior$G)
        }else{  
-        prior$G<-replicate(prior$G, length(split.direct.sum(as.character(random)[2])))
+         prior$G<-replicate(length(split.direct.sum(as.character(random)[2])), prior$G)
        } 
     }
   }

@@ -9,50 +9,42 @@ data(sigma)
 head(sigma)
 ```
 
-The number of flies in a vial that are infected with the virus ($\texttt{infected}$) or not ($\texttt{not_infected}$) are recorded. The mean number of flies per vial is `r round(mean(sigma$infected+sigma$not_infected))` although the range is large (`r min(sigma$infected+sigma$not_infected)` - `r max(sigma$infected+sigma$not_infected)` ). All the flies in a vial are the offspring of parents infected with one of five strains ($\texttt{strain}$) of sigma virus, a virus that is transmitted to offspring through eggs and sperm. The parents belong to one of 67 genetically distinct lines ($\texttt{line}$).  Let's start with a simple binomial GLMM that we covered in Chapter \@ref(ranef), but to keep things manageable we'll only analyse data from three strains ($\texttt{France}$, $\texttt{Greece}$ and  $\texttt{Spain}$, named after their country of origin):
+The number of flies in a vial that are infected with the virus ($\texttt{infected}$) or not ($\texttt{not_infected}$) are recorded. The mean number of flies per vial is `r round(mean(sigma$infected+sigma$not_infected))` although the range is large (`r min(sigma$infected+sigma$not_infected)` - `r max(sigma$infected+sigma$not_infected)` ). All the flies in a vial are the offspring of parents infected with one of five strains ($\texttt{strain}$) of sigma virus, a virus that is transmitted to offspring through eggs and sperm. The parents belong to one of 67 genetically distinct lines ($\texttt{line}$).  Let's start with a simple binomial GLMM that we covered in Chapter \@ref(ranef), but to keep things manageable we'll only analyse data from three strains ($\texttt{France}$, $\texttt{Greece}$ and  $\texttt{Spain}$, named after their country of origin). Note that we will specify the prior using prior generator functions (Section \@ref(Vprior-gen-sec)) and so this specification can be recycled in all models:
 
 ```{r sigma-1}
 sigma_small<-subset(sigma, virus%in%c("France","Greece", "Spain"))
 
-prior.sigma.1=list(R=list(V=1, nu=0.002), 
-           G=list(
-              G1=list(V=1, nu=1, aplha.mu=0, aplha.V=1000)
-           ))
+prior.sigma=list(R=IW(1, 0.002), G=F(1, 1000))
 
-m.sigma.1<-MCMCglmm(cbind(infected, not_infected)~virus, random=~line, data=sigma_small, family="multinomial2", prior=prior.sigma.1)
+m.sigma.1<-MCMCglmm(cbind(infected, not_infected)~virus, random=~line, data=sigma_small, family="multinomial2", prior=prior.sigma)
 
 summary(m.sigma.1)
 ```
 
 For the base-line virus, $\texttt{France}$, the estimate of the median probability of infection is `r round(mean(plogis(m.sigma.1$Sol[,"(Intercept)"])),2)`, obtained by applying the `plogis` function to the intercept (Section \@ref(binom-pred-sec)). However, the viruses have substantially different infection rates with the median *odds* of infection for $\texttt{Greece}$ being only `r round(mean(exp(m.sigma.1$Sol[,"virusGreece"])),2)` times that of $\texttt{France}$, whereas $\texttt{Spain}$ has an odds of infection `r round(mean(exp(m.sigma.1$Sol[,"virusSpain"])),2)` times greater (obtained by exponentiating the coefficients). 
 
-There is also substantial variation across lines in how well they transmit the virus (posterior mean for $\sigma^2_\texttt{line}$= `r round(mean(m.sigma.1$VCV[,"line"]), 2)`) and substantial overdispersion (posterior mean for $\sigma^2_\texttt{units}$= `r round(mean(m.sigma.1$VCV[,"units"]), 2)`). However, this model contains the implicit assumption that the increased odds of infection associated with a line is constant over viruses. For example, the first level of $\texttt{line}$ is $\texttt{101A}$. If this line's effect is $u^{(\texttt{line})}_1$ then the linear predictor for all observations of that line will include $u^{(\texttt{line})}_1$ and the odds of infection is expected to change by a factor $\textrm{exp}(u^{(\texttt{line})}_1)$. However, we may expect there to be genetic interactions between the virus and the fly such that the infectivity of a line differs depending on the virus.  We could add a simple interaction between line and variance and treat these ($67\times 3 = 201$) interaction effects as random: 
+There is also substantial variation across lines in how well they transmit the virus (posterior mean for $\sigma^2_\texttt{line}$= `r round(mean(m.sigma.1$VCV[,"line"]), 2)`) and substantial overdispersion ($\sigma^2_\texttt{units}$= `r round(mean(m.sigma.1$VCV[,"units"]), 2)`). However, this model contains the implicit assumption that the increased odds of infection associated with a line is constant over viruses. For example, the first level of $\texttt{line}$ is $\texttt{101A}$. If this line's effect is $u^{(\texttt{line})}_1$ then the linear predictor for all observations of that line will include $u^{(\texttt{line})}_1$ and the odds of infection is expected to change by a factor $\textrm{exp}(u^{(\texttt{line})}_1)$ irrespective of the virus. However, we may expect there to be genetic interactions between the virus and the fly such that the infectivity of a line differs depending on the virus.  We could add a simple interaction between line and variance and treat these ($67\times 3 = 201$) interaction effects as random: 
 
 
 ```{r sigma-2}
-prior.sigma.2=list(R=list(V=1, nu=0.002), 
-           G=list(
-              G1=list(V=1, nu=1, aplha.mu=0, aplha.V=1000),
-              G2=list(V=1, nu=1, aplha.mu=0, aplha.V=1000)
-           ))
-
-m.sigma.2<-MCMCglmm(cbind(infected, not_infected)~virus, random=~line+virus:line, data=sigma_small, family="multinomial2", prior=prior.sigma.2)
+m.sigma.2<-MCMCglmm(cbind(infected, not_infected)~virus, random=~line+virus:line, data=sigma_small, family="multinomial2", prior=prior.sigma)
 
 summary(m.sigma.2)
 ```
 
-While the variance in the interaction effects is substantially smaller than the main $\texttt{line}$ effects (posterior mean $\sigma^2_\texttt{virus:line}=$ `r round(mean(m.sigma.2$VCV[,"virus:line"]),2)`), the lower 95\% credible interval is well removed from zero suggesting that interactions are present.  This model still has implicit assumptions baked into it about how lines vary in their infectivity for a given virus, and how lines covary in their infectivity between viruses. To avoid complications later, I will - with some abuse of notation - call the main $\texttt{line}$ effects in this model $u^{(\texttt{m-line})}$ and their variance $\sigma^2_\texttt{m-line}$, with posterior mean `r round(mean(m.sigma.2$VCV[,"line"]),2)`.  The *aggregate* effect of $\texttt{line}$ $i$ infected with $\texttt{virus}$ $j$ is then given by:
+While the variance in the interaction effects ($\sigma^2_\texttt{virus:line}=$ `r round(mean(m.sigma.2$VCV[,"virus:line"]),2)`) is substantially smaller than the main $\texttt{line}$ effects, the lower 95\% credible interval is well removed from zero suggesting that interactions are present.  This model still has implicit assumptions baked into it about how lines vary in their infectivity for a given virus, and how lines covary in their infectivity between viruses. To avoid complications later, I will - with some abuse of notation - call the main $\texttt{line}$ effects in this model $u^{(\texttt{m-line})}$ and their variance $\sigma^2_\texttt{m-line}$, with a posterior mean of `r round(mean(m.sigma.2$VCV[,"line"]),2)`.  The *aggregate* effect of $\texttt{line}$ $i$ infected with $\texttt{virus}$ $j$ is then given by:
 
 
 $$ u^{(\texttt{line})}_{ij}  = u^{(\texttt{m-line})}_i+u^{(\texttt{virus:line})}_{ij}$$ 
 
-If we took the linear predictor for two observations made on the same line in the same virus they would both share the same two random effects and therefore have the same $u^{(\texttt{line})}_{ij}$. Consequently, the covariance in their linear predictor is the variance of $u^{(\texttt{line})}$: $\sigma^2_\texttt{m-line}+\sigma^2_\texttt{virus:line}$. Since these two variances are assumed constant with with respect to virus, we are implicitly assuming that the variance between-lines is the same for all viruses. If we took the linear predictor for two observations made on the same line but in different viruses they would both share the same $u^{(\texttt{m-line})}$ effect but have different interaction effects ($u^{(\texttt{virus:line})}$). Consequently, the covariance in their linear predictor is the variance of $u^{(\texttt{m-line})}$ only: $\sigma^2_\texttt{m-line}$. Again, $\sigma^2_\texttt{m-line}$ is assumed constant over viruses and so this implies that the between-line covariance is also constant: the covariance between lines infected with $\texttt{France}$ versus $\texttt{Spain}$ is the same as the covariance between lines infected with $\texttt{France}$ versus $\texttt{Greece}$ or $\texttt{Spain}$ versus $\texttt{Greece}$. This constancy is also reflected in the between-line correlation (which has a posterior mean of `r round(mean(m.sigma.2$VCV[,"line"]/rowSums(m.sigma.2$VCV[,c("virus:line", "line")])),2)`) :
+If we took the linear predictor for two observations made on the same line in the same virus they would both share the same two random effects and therefore have the same $u^{(\texttt{line})}_{ij}$. Consequently, the covariance in their linear predictor is the variance of $u^{(\texttt{line})}$: $\sigma^2_\texttt{m-line}+\sigma^2_\texttt{virus:line}$. Since these two variances are assumed constant over viruses, we are implicitly assuming that the variance between-lines is the same for all viruses. If we took the linear predictor for two observations made on the same line but in different viruses they would both share the same $u^{(\texttt{m-line})}$ effect but have different interaction effects ($u^{(\texttt{virus:line})}$). Consequently, the covariance in their linear predictor is the variance of $u^{(\texttt{m-line})}$ only: $\sigma^2_\texttt{m-line}$. Again, $\sigma^2_\texttt{m-line}$ is assumed constant over viruses and so this implies that the between-line covariance is also constant: the covariance between lines infected with $\texttt{France}$ versus $\texttt{Spain}$ is the same as the covariance between lines infected with $\texttt{France}$ versus $\texttt{Greece}$ or $\texttt{Spain}$ versus $\texttt{Greece}$. This constancy is also reflected in the between-line correlation:
 
 
 $$r_{\texttt{line}}= \frac{\sigma^2_\texttt{m-line}}{\sigma^2_\texttt{m-line}+\sigma^2_\texttt{virus:line}}$$
 
+which has a posterior mean of `r round(mean(m.sigma.2$VCV[,"line"]/rowSums(m.sigma.2$VCV[,c("virus:line", "line")])),2)` and a relatively tight 95\% credible interval of `r round(HPDinterval(m.sigma.2$VCV[,"line"]/rowSums(m.sigma.2$VCV[,c("virus:line", "line")]))[1],2)` - `r round(HPDinterval(m.sigma.2$VCV[,"line"]/rowSums(m.sigma.2$VCV[,c("virus:line", "line")]))[2],2)`. Since $\sigma^2_\texttt{m-line}$ is a variance, and therefore constrained to be positive, we are also implicitly assuming that the covariance and correlation are both constant and positive: a line that shows greater infectivity with $\texttt{France}$ is not expected, on average, to have reduced infectivity with $\texttt{Spain}$. 
 
-Since $\sigma^2_\texttt{m-line}$ is a variance, and therefore constrained to be positive, we are also implicitly assuming that the covariance and correlation are both constant and positive: a line that shows greater infectivity with $\texttt{France}$ are not expected, on average, to have reduced infectivity with $\texttt{Spain}$. We can think of summarising this information in a $3\times 3$ between-line covariance matrix (the meaning of the colours will become apparent soon):
+We can think of summarising this information in a $3\times 3$ between-line covariance matrix (the meaning of the colours will become apparent soon):
 
 
 $${\bf V}_{{\color{red}{\texttt{line}}}}=
@@ -64,7 +56,7 @@ $${\bf V}_{{\color{red}{\texttt{line}}}}=
 \end{array}
 \right]$$
 
-The diagonal elements gives us the variance in $\texttt{line}$ effects for each virus and the off-diagonal elements gives us the covariance in $\texttt{line}$ effects between pairs of viruses. This covariance matrix has 6 (co)variances, but in model `m.sigma.2` we assumed that these (co)variances could be parametrised using only two parameters: all diagonal elements are equal to $\sigma^2_\texttt{m-line}+\sigma^2_\texttt{virus:line}$ and all off-diagonal elements are equal to $\sigma^2_\texttt{m-line}$. If we wish to relax this assumption we need to understand how the variance functions, such as `us()` and `idh()`, work.
+The diagonal elements gives us the variance in $\texttt{line}$ effects for each virus and the off-diagonal elements gives us the covariance in $\texttt{line}$ effects between pairs of viruses. This covariance matrix has 6 (co)variances, but in model `m.sigma.2` we assumed that these (co)variances could be parametrised using only two parameters: all diagonal elements are equal to $\sigma^2_\texttt{m-line}+\sigma^2_\texttt{virus:line}$ and all off-diagonal elements are equal to $\sigma^2_\texttt{m-line}$. If we wish to relax this assumption we need to understand how variance functions, such as $\texttt{us}$ and $\texttt{idh}$, work.
 
 ## Variance Structures {#vstruct-sec}
 
@@ -80,7 +72,7 @@ or
 random=~idh(1):line
 ```
 
-and this would give exactly the same answer as the model specified by `~line`. The term inside the brackets is a model formula and is interpreted exactly how you would interpret any R formula expect the intercept is only fitted if it is explicitly defined (as here).  These formula are therefore fitting an intercept which is interacted with the random effects. We can get a representation of the interaction for the first few levels of `line` (`r levels(sigma$line)[1:5]`):
+and this would give exactly the same answer as the model specified by `~line`. The term inside the brackets is a model formula and is interpreted exactly how you would interpret any R formula expect the intercept is only fitted if it is explicitly defined (as here - remember a 1 in a formula stands in for 'intercept').  These formula are therefore fitting an intercept which is interacted with the random effects. We can get a representation of the interaction for the first few levels of `line` (`r levels(sigma$line)[1:5]`):
 
 $$
 \begin{array}{c|rrrrrc}
@@ -90,19 +82,8 @@ $$
 \end{array}
 $$
 
-Across the top, we have the original $\texttt{line}$ effects in red, and along the side we have the term defined by the variance structure formula (just the intercept in this case). The interaction forms a new set of factors. Although they have different names from the original $\texttt{line}$ effects, it is clear that there is a one to one mapping between the original and the new factor levels and the models are therefore equivalent. For more complex interactions this is not the case. For example, if we fit $\texttt{virus}$ in the variance structure model, (i.e. `us(virus):line` or `idh(virus):line`) we get[^4.1]:
+Across the top, we have the original $\texttt{line}$ effects in red, and along the side we have the term defined by the variance structure formula (just the intercept in this case). The interaction forms a new set of factors. Although they have different names from the original $\texttt{line}$ effects, it is clear that there is a one to one mapping between the original and the new factor levels and the models are therefore equivalent. For more complex interactions this is not the case. For example, if we fit $\texttt{virus}$ in the variance structure model (i.e. `us(virus):line` or `idh(virus):line`) we get[^4.1]:
 
-
-$$\begin{array}{c|rrrrrc}
-&{\color{red}{\texttt{101A}}}&{\color{red}{\texttt{109A}}}&{\color{red}{\texttt{129A}}}&{\color{red}{\texttt{142A}}}&{\color{red}{\texttt{153A}}}&\dots\\
-\hline
-{\color{blue}{\texttt{France}}}&{\color{blue}{\texttt{France}}}.{\color{red}{\texttt{101A}}}&{\color{blue}{\texttt{France}}}.{\color{red}{\texttt{109A}}}&{\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}&{\color{blue}{\texttt{France}}}.{\color{red}{\texttt{142A}}}&{\color{blue}{\texttt{France}}}.{\color{red}{\texttt{153A}}}&\dots\\
-{\color{blue}{\texttt{Spain}}}&{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{101A}}}&{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{109A}}}&{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{129A}}}&{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{142A}}}&{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{153A}}}&\dots\\
-{\color{blue}{\texttt{Greece}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{101A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{109A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{142A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{153A}}}&\dots\\
-\end{array}$$
-
-
-Across the top, we have the original $\texttt{line}$ effects in red, and along the side we have the term defined by the variance structure formula (just the intercept in this case). The interaction forms a new set of factors. Although they have different names from the original $\texttt{line}$ effects, it is clear that there is a one to one mapping between the original and the new factor levels and the models are therefore equivalent. For more complex interactions this is not the case. For example, if we fit $\texttt{virus}$ in the variance structure model, (i.e. `us(virus):line` or `idh(virus):line`) we get[^4.1]:
 
 $$\begin{array}{c|rrrrrc}
 &{\color{red}{\texttt{101A}}}&{\color{red}{\texttt{109A}}}&{\color{red}{\texttt{129A}}}&{\color{red}{\texttt{142A}}}&{\color{red}{\texttt{153A}}}&\dots\\
@@ -116,27 +97,22 @@ which creates three times as many random effects, one associated with observatio
 
 ### $\texttt{idh}$ Variance Structure
 
-The different variance functions make different assumptions about how the effects in associated with these different factors are distributed. First, we may want to allow the variance in the effects to be different for each row of factors; i.e. does $\texttt{line}$ explain different amounts of variation depending on the $\texttt{virus}. We can fit this model using the `idh` function:
+The different variance functions make different assumptions about how the effects are distributed within and across rows. First, we may want to allow the variance in the effects to be different for each row of factors; i.e. does $\texttt{line}$ explain different amounts of variation depending on the $\texttt{virus}$. We can fit this model using the `idh` function:
 
 
 ```{r sigma-3}
-prior.sigma.3=list(R=list(V=1, nu=0.002), 
-           G=list(
-              G1=list(V=diag(3), nu=1, aplha.mu=c(0,0,0), aplha.V=diag(3)*1000)
-           ))
-
-m.sigma.3<-MCMCglmm(cbind(infected, not_infected)~virus, random=~idh(virus):line, data=sigma_small, family="multinomial2", prior=prior.sigma.3)
+m.sigma.3<-MCMCglmm(cbind(infected, not_infected)~virus, random=~idh(virus):line, data=sigma_small, family="multinomial2", prior=prior.sigma)
 
 ```
 
 
-In the simpler models we have fitted so far, each random effect term (terms separated by `+` in the `random` formula) specified a single variance (e.g. $\sigma^_{\texttt{virus:line}}$) and the prior specification was relatively simple and covered in Sections \@ref(Vprior-sec) ad \@ref(PXprior-sec). We discuss prior specifications for covariance matrices in Section \@ref(VCVprior-sec), but for now, note that the prior specification for the `idh(virus):line` involves $3\times 3$ matrices. If we take a look at the model summary:
+In the simpler models we have fitted so far, each random effect term (terms separated by `+` in the `random` formula) specified a single variance (e.g. $\sigma^2_\texttt{virus:line}$) and the prior specification was relatively simple and covered in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec). Prior specifications for covariance matrices are much trickier and are covered in Section \@ref(VCVprior-sec). For now, simply note that we have recycled the same prior generator function that we used in the simpler models, despite the the prior specification requiring $3\times 3$ matrices. If we take a look at the model summary:
 
 ```{r }
 summary(m.sigma.3)
 ```
 
-we see that three parameters are summarised for `~idh(virus):line`: the variance in line effects for each virus. While the $\texttt{idh}$ variance function allows the variances to be different across the viruses it assumes that line effects for one virus are independent of the line effects for a different virus. In terms of our coloured table of effects  $\texttt{idh}$ assumes effects in different rows are independently distributed, but it relaxes the assumption that they are identically distributed - they can have different variances.  We can represent this structure in terms of a $3\times3$ covariance matrix:
+we see that three parameters are summarised for `~idh(virus):line`: the variance in line effects for each virus. While the $\texttt{idh}$ variance function allows the variances to be different across the viruses it assumes that $\texttt{line}$ effects for one virus are independent of the $\texttt{line}$ effects for a different virus. In terms of our coloured table of effects  $\texttt{idh}$ assumes effects in different rows are independently distributed, but it relaxes the assumption that they are identically distributed - they can have different variances.  We can represent this structure in terms of a $3\times3$ covariance matrix:
 
 $${\bf V}_{{\color{red}{\texttt{line}}}}=
 \left[
@@ -155,42 +131,34 @@ colnames(Vline.idh)<-rownames(Vline.idh)<-c("France", "Spain", "Greece")
 Vline.idh
 ```
 
-Because the $\texttt{line}$ effects are assumed to be multivariate normal we can also represent their distribution in terms of an ellipsoid: 
+Because the $\texttt{line}$ effects are assumed to be multivariate normal we can also represent their distribution in terms of an ellipsoid (you can rotate the image): 
 
 ```{r label=rgl, echo=TRUE, include=TRUE, webgl=TRUE, cache=FALSE}
 plotsubspace(Vline.idh, axes.lab=TRUE)
 ```
-Widget 4.1: Ellipsoid that circumscribes 95\% of the expected $\texttt{line}$ effects as estimated in model `m.sigma.3`. This can be thought of as a scatter plot of the $\texttt{line}$ effects between each virus$, if the $\texttt{line}$ effects could be directly measured.  Because the covariances of the $\texttt{line}$ effects between each virus were set to zero, and the variance of the line effects are quite similar for each virus, the ellipsoid is almost spherical.
+Widget 4.1: Ellipsoid that circumscribes 95\% of the expected $\texttt{line}$ effects as estimated in model `m.sigma.3`. This can be thought of as a scatter plot of the $\texttt{line}$ effects between each virus, if the $\texttt{line}$ effects could be directly measured.  Because the covariances of the $\texttt{line}$ effects between each virus were set to zero, and the variance of the $\texttt{line}$ effects are quite similar for each virus, the ellipsoid is almost spherical.
 
-Although we have allowed the variance in $\texttt{line}$ effects to be different across the viruses, we have used the default specification for the residual structure (`rcov=~units`). $\texttt{MCMCglmm}$ augments the original data-frame with an additional column called $\texttt{units}$ which is a factor that has unique levels for each row. This is covered in greater depth when discussing multi-response models (Chapter \@ref(multi)) but for the single-response model used here we can simply think of $\texttt{units}$ as indexing residuals. Having a constant residual variance for each virus but allowing the between-line variance to vary is somewhat dangerous: if the residual variances did vary then this may be reflected in the estimates of the between-line variances. Allowing the residual variances to also vary is straightforward:
+Although we have allowed the variance in $\texttt{line}$ effects to be different across the viruses, we have used the default specification for the residual structure (`rcov=~units`). $\texttt{MCMCglmm}$ augments the original data-frame with a column called $\texttt{units}$ which is a factor that has unique levels for each row. This is covered in greater depth when discussing multi-response models (Chapter \@ref(multi)) but for the single-response model used here we can simply think of $\texttt{units}$ as indexing residuals. Having a constant residual variance for each virus but allowing the between-line variance to vary is somewhat dangerous: if the residual variances did vary then this may be reflected to some degree in the estimates of the between-line variances. Allowing the residual variances to also vary overs viruses is straightforward:
 
 ```{r sigma-4}
-prior.sigma.4=list(R=list(V=diag(3), nu=0.002), 
-           G=list(
-              G1=list(V=diag(3), nu=1, aplha.mu=c(0,0,0), aplha.V=diag(3)*1000)
-           ))
-
-m.sigma.4<-MCMCglmm(cbind(infected, not_infected)~virus, random=~idh(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma.4)
+m.sigma.4<-MCMCglmm(cbind(infected, not_infected)~virus, random=~idh(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma)
 
 summary(m.sigma.4)
 ```
 
+As with the variance in $\texttt{line}$ effects, the residual variances don't appear to be dramatically different across viruses.
+
 ### $\texttt{us}$ Variance Structure {#us-sec}
 
-The $\texttt{idh}$ structure allowed the variance in $\texttt{line}$ effects to be different for different viruses, but it assumes that the effect of a line for one virus is uncorrelated with the effect of that line in another virus. However, the strong correlation (`r round(mean(m.sigma.2$VCV[,"line"]/rowSums(m.sigma.2$VCV[,c("virus:line", "line")])),2)`) in $\texttt{line}$ effects estimated from model `m.sigma.2` suggests that this assumption is likely to be unreasonable.  We can relax this assumption by using the `us` function which estimates the fully parameterised matrix seen earlier:
+The $\texttt{idh}$ structure allowed the variance in $\texttt{line}$ effects to be different for different viruses, but it assumed that the effect of a line for one virus is uncorrelated with the effect of that line in another virus. However, the strong correlation (`r round(mean(m.sigma.2$VCV[,"line"]/rowSums(m.sigma.2$VCV[,c("virus:line", "line")])),2)`) in $\texttt{line}$ effects estimated from model `m.sigma.2` suggests that this assumption is unlikely to be reasonable.  We can relax this assumption by using the `us` function which estimates the fully parameterised matrix seen earlier:
 
 ```{r sigma-5}
-prior.sigma.5=list(R=list(V=diag(3), nu=0.002), 
-           G=list(
-              G1=list(V=diag(3), nu=3, aplha.mu=c(0,0,0), aplha.V=diag(3)*1000)
-           ))
-
-m.sigma.5<-MCMCglmm(cbind(infected, not_infected)~virus, random=~us(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma.5)
+m.sigma.5<-MCMCglmm(cbind(infected, not_infected)~virus, random=~us(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma)
 
 summary(m.sigma.5)
 ```
 
-The numbers rows displayed for the line structure correspond to the 9 elements of the $3\times 3$ covariance matrix (displayed column-wise). As before, we can arrange the posterior mean estimates in to a matrix 
+The rows displayed for the G-structure correspond to the 9 elements of the $3\times 3$ covariance matrix (displayed column-wise). As before, we can arrange the posterior mean estimates in to a matrix 
 
 ``` {r echo=TRUE, eval=TRUE}
 Vline.us<-matrix(colMeans(m.sigma.5$VCV)[1:9], 3, 3)
@@ -198,16 +166,15 @@ colnames(Vline.us)<-rownames(Vline.us)<-c("France", "Spain", "Greece")
 Vline.us
 ```
 
-We can see that the covariances are large, and like the variances, relatively constant. If we visualise this distribution we can see it is quite different from that obtained from model $\texttt{m.sigma.3}$ (or model $\texttt{m.sigma.3}$) where the covariances are assumed to be zero.
+We can see that the covariances are large, and like the variances, relatively constant. If we visualise this distribution we can see it is quite different from that obtained from model $\texttt{m.sigma.4}$ (or model $\texttt{m.sigma.3}$) where the covariances are assumed to be zero.
 
 ```{r label=rgl2, fig=-TRUE, echo=TRUE, eval=TRUE, webgl=TRUE, cache=FALSE}
-
 plotsubspace(Vline.us, axes.lab=TRUE)
 ```
 Widget 4.2: Ellipsoid that circumscribes 95% of the expected $\texttt{line}$ effects as estimated in model $\texttt{m.sigma.5}$. This can be thought of as a scatter plot of the $\texttt{line}$ effects between virus, if the $\texttt{line}$ effects could be directly measured.  The correlations of the $\texttt{line}$ effects between viruses are large, and the variance in $\texttt{line}$ effects are roughly equal in magnitude across viruses.  Consequently the orientation of the major axis of the ellipsoid is tending towards $45^{o}$ relative to the figure axes.
 
 
-We can use the function `posterior.cor` to convert the posterior samples of the (co)variance matrix into posterior samples of the correlation matrix. Doing so we can see that the correlation is indeed large and relatively invariant.
+We can use the function `posterior.cor` to convert the posterior samples of the (co)variance matrix into posterior samples of the correlation matrix. Doing so we can see that the estimated correlations are indeed large and relatively invariant.
 
 ``` {r echo=TRUE, eval=TRUE}
 rline.us<-matrix(colMeans(posterior.cor(m.sigma.5$VCV[,1:9])), 3, 3)
@@ -232,7 +199,7 @@ plotsubspace(Vline.us, Vline.2, axes.lab=TRUE, shadeCA=FALSE)
 ```
 Widget 4.3: Ellipsoids that circumscribes 95% of the expected $\texttt{line}$ effects as estimated in model $\texttt{m.sigma.5}$ where all (co)variance parameters are estimated (red wireframe) and model $\texttt{m.sigma.2}$ where the variances across viruses, and the correlations between viruses, are assumed constant (solid blue).
 
-Note that in this model we retained the $\texttt{idh}$ structure for the residuals. Since the flies in each vial (indexed by $\texttt{unit}$ since they correspond to a row of the data-frame) are all exposed to the same virus the residual covariances between viruses cannot be estimated and so can be set to zero. In Chapter \@ref(multi) we will look at multi-response models where this generally isn't the case. 
+Note that when using a $\texttt{us}$ structure for the $\texttt{line}$ effects in model $\texttt{m.sigma.6}$ we retained the $\texttt{idh}$ structure for the residuals. Since the flies in each vial (indexed by $\texttt{units}$ since they correspond to a row of the data-frame) are all exposed to the same virus, the residual covariances between viruses cannot be estimated and so can be set to zero. In Chapter \@ref(multi) we will look at multi-response models where this generally isn't the case. 
 
 ### Other Variance Structures
 
@@ -250,7 +217,9 @@ $$\texttt{V}=
 \end{array}
 \right]$$
 
-If $\texttt{fix}=3$ then the matrix is split into four quardants with the lower right quadrant starting on the 3rd diagonal element. This quadrant will be fixed at the value specified in $\texttt{V}$ but all remaining (co)variance parameters will be estimated (if a $\texttt{us}$ structure is used). Sometimes constraints are required that can not be achieved by using $\texttt{fix}$ and cannot be expressed in terms of the (re)parameterisations discussed above. Table \@ref(tab:vfunction) provides a summary of available variance functions and $\texttt{ante}$ structures - which give the greatest flexibility - are covered in Section \@ref(ante-sec)).
+If $\texttt{fix}=3$ then the matrix is split into four quardants with the lower right quadrant starting on the 3rd diagonal element. This quadrant will be fixed at the value specified in $\texttt{V}$ but all remaining (co)variance parameters will be estimated (if a $\texttt{us}$ structure is used). 
+
+Sometimes constraints are required that can not be achieved by using $\texttt{fix}$ and cannot be expressed in terms of the (re)parameterisations discussed above. Table \@ref(tab:vfunction) provides a summary of available variance functions and $\texttt{ante}$ structures - which give the greatest flexibility - are covered in Section \@ref(ante-sec)).
 
 ``` {r echo=FALSE, results='asis'}
 df <- data.frame(
@@ -278,7 +247,7 @@ df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-kable(df, "html", escape = FALSE, caption = "Different random effect specifications in $\\texttt{MCMCglmm}$ (with equivalent $\\texttt{lmer}$ syntax when possible) with fixed parameters in black and estimated parameters in red. $\\texttt{virus}$ is a factor with three levels so the resulting covariance and correlation matrices are $3\\times3$. For the `cors(virus):line` structure, the prior specification had `fix=2` which forces the last diagonal block (starting from position 2,2) to be a correlation matrix rather than a covariance matrix. `fix` can also be specified for other structures but then it fixes the last diagonal block to what ever is specified in the `V` element of the prior.  `ante` structures are not covered here but in Section \\@ref(ante-sec)", label="vfunction") |>
+kable(df, "html", escape = FALSE, caption = "Different random effect specifications in $\\texttt{MCMCglmm}$ (with equivalent $\\texttt{lmer}$ syntax when possible) with fixed parameters in red and estimated parameters in black. $\\texttt{virus}$ is a factor with three levels so the resulting covariance and correlation matrices are $3\\times 3$. For the `cors(virus):line` structure, the prior specification had `fix=2` which forces the last diagonal block (starting from position 2,2) to be a correlation matrix rather than a covariance matrix. $\\texttt{fix}$ can also be specified for other structures but then it fixes the last diagonal block to what ever is specified in the $\\texttt{V}$ element of the prior.  $\\texttt{ante}$ structures are not covered here but in Section \\@ref(ante-sec)", label="vfunction") |>
   kable_styling(full_width = FALSE)%>%
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```
@@ -289,7 +258,7 @@ In some models we would like to estimate covariances between sets of random effe
 
 ### $\texttt{str}$: covariances between random terms 
 
-My mum is a great mum. She's also a super grandmother to my children, and I wonder whether these two things are correlated[^cant_int.4].  Let's say we could measure the well-being for many children over several generations, and importantly we have multiple children from the same mother so we can estimate $\texttt{mother}$ effects. As importantly, some of these mothers go onto to be grandmothers of their children's children. If we also have measures of well-being for these children we can also estimate $\texttt{grandmother}$ effects. However, it's not clear how we could specify a covariance between these effects in the same way that we did using variance structures. Our hypothetical data-frame may look like this:
+My mum is a great mum. She's also a super grandmother to my children, and I wonder whether these two things are correlated?[^cant_int.4]  Let's say we could measure the well-being for many children over several generations, and importantly we have multiple children from the same mother so we can estimate $\texttt{mother}$ effects. As importantly, some of these mothers go onto to be grandmothers of their children's children. If we also have measures of well-being for these children we can also estimate $\texttt{grandmother}$ effects. However, it's not clear how we could specify a covariance between these effects in the same way that we did using variance structures. Our hypothetical data-frame may look like this:
 
 ```{r echo=FALSE}
 n<-500
@@ -320,14 +289,11 @@ $$\begin{array}{c|rrrrc}
 {\color{blue}{\texttt{grandmother}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{a}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{b}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{c}}}&{\color{blue}{\texttt{grandmother}}}.{\color{red}{\texttt{d}}}&\dots\\
 \end{array}$$
 
-We can seen that this is conceptually identical to our virus-line example but rather than specifying the classifying variable inside $\texttt{idh()}$ or $\texttt{us()}$, as we could for $\texttt{virus}$, the classifying variable is actually the column names of the terms.
+We can seen that this is conceptually identical to our sigma virus example but rather than specifying the classifying variable inside $\texttt{idh()}$ or $\texttt{us()}$, as we could for $\texttt{virus}$, the classifying variable is actually the column names of the terms specified in $\texttt{str()}$ .
 
 
 ```{r }
-prior.str=list(R=list(V=1, nu=0.002), 
-           G=list(
-              G1=list(V=diag(2), nu=2, aplha.mu=c(0,0), aplha.V=diag(2)*1000)
-           ))
+prior.str=list(R=IW(1, 0.002), G=F(1,1000))
 
 m.str<-MCMCglmm(y~1, random=~str(mother+grandmother), data=data.nana, prior=prior.str)
 ```
@@ -372,10 +338,7 @@ head(data.friends)
 Friend `r names(which.max(table(unlist(data.friends[1:6,-1]))))` appears as a friend to multiple children and we would like to model that friend's effect on the focal child's well-being irrespective of whether `r names(which.max(table(unlist(data.friends[1:6,-1]))))` appears as $\texttt{friend.1}$, $\texttt{friend.2}$ ... or $\texttt{friend.5}$ as the numbering is arbitrary.  The linking function $\texttt{mm}$ allows us to specify this. 
 
 ```{r }
-prior.mm=list(R=list(V=1, nu=0.002), 
-           G=list(
-              G1=list(V=1, nu=1, aplha.mu=0, aplha.V=1000)
-           ))
+prior.mm=list(R=IW(1, 0.002), G=F(1,1000))
 
 m.mm<-MCMCglmm(y~1, random=~mm(friend.1+friend.2+friend.3+friend.4+friend.5), data=data.friends, prior=prior.mm)
 ```
@@ -409,27 +372,31 @@ Occasionally, we need to link a set of random effects with a set of residuals. T
  
 ### $\texttt{theta_scale}$: scaled linear predictor 
 
-Occasionally, we need to force a common relationship between two sets of multiple random effects. As with $\texttt{covu}$ models, this most commonly occurs in multi-response models (Chapter \@ref(multi)) and so will be covered in detail there (Section \@ref(theta_sacle-sec)). For now, we can express the idea compactly by imagining two sets of multiple random effects $[{\bf u}^{(1)}, {\bf u}^{(2)}]$ and $[{\bf u}^{(3)}, {\bf u}^{(4)}]$. The $\texttt{theta_scale}$ argument allows the user to force the constraint $[{\bf u}^{(3)}, {\bf u}^{(4)}]$=$b[{\bf u}^{(1)}, {\bf u}^{(2)}]$ with $b$ estimated. 
+Occasionally, we need to force a common relationship between two sets of (multiple) random effects. As with $\texttt{covu}$ models, this most commonly occurs in multi-response models (Chapter \@ref(multi)) and so will be covered in detail there (Section \@ref(theta-scale-sec)). For now, we can express the idea compactly by imagining two sets random effects $\left\{{\bf u}^{(1)}, {\bf u}^{(2)}\right\}$ and $\left\{{\bf u}^{(3)}, {\bf u}^{(4)}\right\}$. The $\texttt{theta_scale}$ argument allows the user to force the constraint $\left\{{\bf u}^{(3)}, {\bf u}^{(4)}\right\}$=$\left\{b{\bf u}^{(1)}, b{\bf u}^{(2)}\right\}$ with $b$ estimated. Fixed effects can also be added to the set to be scaled. for example, $\left\{{\bf \beta}^{(B)}, {\bf u}^{(3)}, {\bf u}^{(4)}\right\}$=$\left\{b{\bf \beta}^{(A)}, b{\bf u}^{(1)}, b{\bf u}^{(2)}\right\}$.
 
 
 ## Priors for Covariance Matrices {#VCVprior-sec}
 
 
-When fitting a $k$ dimensional (co)variance matrix, $\texttt{V}$ and $\texttt{alpha.V}$ must specify $k$ dimensional (co)variance matrices and $\texttt{alpha.mu}$ must specify a vector of length $k$. The degrees-of-freedom, $\texttt{nu}$, however, remains scalar. 
+When fitting a $k$ dimensional (co)variance matrix, $\texttt{V}$ and $\texttt{alpha.V}$ must specify $k$ dimensional (co)variance matrices and $\texttt{alpha.mu}$ must specify a vector of length $k$. The degrees-of-freedom, $\texttt{nu}$, however, remains scalar. By using prior generators to specify the prior (Section \@ref(Vprior-gen-sec)) we hid this complexity. If we want to understand exactly what the prior generators are specifying in this context we cannot avoid this complexity. In addition, if we want to add arguments such as $\texttt{fix}$ or $\texttt{covu}$ to the prior, prior generators cannot be used.
 
 ### Marginal Priors for Variances
 
-The joint distribution of all $k(k-1)/2$ elements of the covariance matrix is hard to characterise or visualise [@Tokuda.2025]. We will start by exploring a simpler problem - given some prior specification for a $k$ dimensional (co)variance matrix what is the marginal distribution of each variance? Luckily, the marginal distributions have the same form as they have in the scalar case but with some rescaling of parameters. We will designate the parameters of the marginal distribution using asterisks. The marginal distribution is characterised by the parameters $\texttt{V}^{\ast}$ and $\texttt{nu}^{\ast}$, and if $F$ priors are used, then $\texttt{alpha.mu}^{\ast}$ and $\texttt{alpha.V}^{\ast}$. The properties of these (marginal) distributions are fully covered in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec), respectively.
+The joint distribution of all $k(k-1)/2$ elements of the covariance matrix is hard to characterise or visualise [@Tokuda.2025]. We will start by exploring a simpler problem - given some prior specification for a $k$ dimensional (co)variance matrix what is the marginal prior distribution of each variance? Luckily, the marginal distributions have the same form as they have in the scalar case but with some rescaling of parameters. We will designate the parameters of the marginal distribution using asterisks. The marginal distribution is characterised by the *scalar* parameters $\texttt{V}^{\ast}$ and $\texttt{nu}^{\ast}$, and if $F$ priors are used, then $\texttt{alpha.mu}^{\ast}$ and $\texttt{alpha.V}^{\ast}$. The properties of these (marginal) distributions are fully covered in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec), respectively.
 
 
-Before continuing, it should be pointed out that what follows does **not** hold when an $\texttt{idh}$ structure is used. $\texttt{idh}$ structure set all correlations to zero and estimate a set of $k$ variances, where $k$ is the number of parameters specified by the $\texttt{idh}$ model. For example, in the sigma virus example we used `idh(virus):line` and $k=3$ since there were three levels of $\texttt{virus}$. The prior specification still requires $k\times k$ ($3\times 3$) matrices for $\texttt{V}$ and $\texttt{alpha.V}$ but the off-diagonal elements are ignored, and the prior for the $i^\textrm{th}$ variance is simply $\texttt{V}^{\ast}=\texttt{V[i,i]}$, $\texttt{nu}^\ast=\texttt{nu}$,  $\texttt{alpha.mu}^\ast=\texttt{alpha.mu[i]}$ and $\texttt{alpha.V}^\ast=\texttt{alpha.V[i,i]}$[^4.2]. Forcing all variances to have the same degrees-of-freedom might be too restrictive, but at least with $\texttt{idh}$ structures this can be relaxed using an alternative parameterisation[^4.3]. This luxury isn't afforded to other variance structures for which covariances or correlation are estimated.
+Before continuing, it should be pointed out that what follows does **not** hold when an $\texttt{idh}$ structure is used. $\texttt{idh}$ structures set all correlations to zero and simply estimate a set of $k$ variances, where $k$ is the number of parameters specified by the $\texttt{idh}$ model. For example, in the sigma virus example we used `idh(virus):line` and $k=3$ since there were three levels of $\texttt{virus}$. The prior specification still requires $k\times k$ ($3\times 3$) matrices for $\texttt{V}$ and $\texttt{alpha.V}$ but the off-diagonal elements are ignored, and the prior for the $i^\textrm{th}$ variance is simply $\texttt{V}^{\ast}=\texttt{V[i,i]}$, $\texttt{nu}^\ast=\texttt{nu}$,  $\texttt{alpha.mu}^\ast=\texttt{alpha.mu[i]}$ and $\texttt{alpha.V}^\ast=\texttt{alpha.V[i,i]}$[^4.2]. Forcing all variances to have the same degrees-of-freedom might be too restrictive, but at least with $\texttt{idh}$ structures this can be relaxed using an alternative parameterisation[^4.3]. This luxury isn't afforded to other variance structures for which covariances or correlation are estimated.
 
-For structures where a full covariance matrix is to be inferred (for example by using a $\texttt{us}$ structure) a useful result is that the prior for the $i^\textrm{th}$ variance has parameters $\texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{V[i,i]}$, $\texttt{nu}^{\ast}=\texttt{nu}-k+1$, $\texttt{alpha.mu}^\ast=\texttt{alpha.mu[i]}$ and $\texttt{alpha.V}^\ast=\texttt{alpha.V[i,i]}$. Consequently, we can choose a $\texttt{V}$ and $\texttt{nu}$ that allows us to specify one of the priors discussed in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec) for a single variance.  For example, in Section \@ref(Vprior-sec) we saw that an inverse-gamma prior with a shape and scale of 0.001 is equivalent to the scalar inverse-Wishart with $\texttt{V}^{\ast}=1$ and $\texttt{nu}^{\ast}=0.002$. Consequently, we can place this prior on the $i^\textrm{th}$ variance by setting $\texttt{nu}$ to be $k-1+0.002$ such that $\texttt{nu}^{\ast}=0.002$. Having $\texttt{V[i,i]}=\texttt{nu}^{\ast}/\texttt{nu}=0.002/(k-1+0.002)$ then results in  $\texttt{V}^{\ast}=1$. An improper prior that is flat for the variance requires $\texttt{V}^{\ast}=0$ and $\texttt{nu}^{\ast}=-2$ which can be achieved by setting $\texttt{nu}=k-3$ and $\texttt{V[i,i]}=0$. In Section \@ref(PXprior-sec) we noted that scaled $F$ priors for variances (scaled folded-$t$ priors for standard deviations) can have better properties than the inverse-Wishart. As in Section \@ref(PXprior-sec) we can set $\texttt{alpha.mu}$ to be a vector of zeros and work with the scaled central $F$ and scaled half-$t$. The marginal distribution for the $i^\textrm{th}$ variance then follows a $F_{1, \texttt{nu}^{\ast}}$ distribution with scale equal to $\texttt{V}^{\ast}\texttt{alpha.V[i,i]}$. We can therefore chose $\texttt{V}$, $\texttt{nu}$ and $\texttt{alpha.V}$ to specify one of the priors discussed in Section \@ref(Vprior-sec) for a single variance or standard deviation. For example, by setting $\texttt{nu}=k$ we have $\texttt{nu}^{\ast}=1$ generating a scaled $F_{1,1}$ prior for the variance (or half-Cauchy for the standard deviation). We noted in Section \@ref(PXprior-sec) that the prior specification in $\texttt{MCMCglmm}$ is redundant and we can set the scale by setting $\texttt{V}$ to one and controlling the scale through $\texttt{alpha.V}$. This can be achieved in the multivariate case by setting $\texttt{V[i,i]}=1/k$ such that $$\texttt{V}^{\ast}=1$ and then altering $\texttt{alpha.V[i,i]}$ as before.
+For structures where a full covariance matrix is to be inferred (for example by using a $\texttt{us}$ structure) a useful result is that the prior for the $i^\textrm{th}$ variance has parameters $\texttt{V}^{\ast}=\frac{\texttt{nu}}{\texttt{nu}^{\ast}}\texttt{V[i,i]}$, $\texttt{nu}^{\ast}=\texttt{nu}-k+1$, $\texttt{alpha.mu}^\ast=\texttt{alpha.mu[i]}$ and $\texttt{alpha.V}^\ast=\texttt{alpha.V[i,i]}$. Consequently, we can choose a $\texttt{V}$ and $\texttt{nu}$ that allows us to specify one of the priors discussed in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec) for a single variance.  For example, in Section \@ref(Vprior-sec) we saw that an inverse-gamma prior with a shape and scale of 0.001 is equivalent to the scalar inverse-Wishart with $\texttt{V}^{\ast}=1$ and $\texttt{nu}^{\ast}=0.002$. Consequently, we can place this prior on the $i^\textrm{th}$ variance by setting $\texttt{nu}=k-1+0.002$ such that $\texttt{nu}^{\ast}=0.002$. Having $\texttt{V[i,i]}=\texttt{nu}^{\ast}/\texttt{nu}=0.002/(k-1+0.002)$ then results in  $\texttt{V}^{\ast}=1$. An improper prior that is flat for the variance requires $\texttt{V}^{\ast}=0$ and $\texttt{nu}^{\ast}=-2$ which can be achieved by setting $\texttt{nu}=k-3$ and $\texttt{V[i,i]}=0$. In Section \@ref(PXprior-sec) we noted that scaled $F$ priors for variances (scaled folded-$t$ priors for standard deviations) can have better properties than the inverse-Wishart. As in Section \@ref(PXprior-sec) we can set $\texttt{alpha.mu}$ to be a vector of zeros and work with the scaled central $F$ and scaled half-$t$. The marginal distribution for the $i^\textrm{th}$ variance then follows a $F_{1, \texttt{nu}^{\ast}}$ distribution with scale equal to $\texttt{V}^{\ast}*\texttt{alpha.V[i,i]}$. We can therefore chose $\texttt{V}$, $\texttt{nu}$ and $\texttt{alpha.V}$ to specify one of the priors discussed in Section \@ref(Vprior-sec) for a single variance or standard deviation. For example, by setting $\texttt{nu}=k$ we have $\texttt{nu}^{\ast}=1$ generating a scaled $F_{1,1}$ prior for the variance (or half-Cauchy for the standard deviation). We noted in Section \@ref(PXprior-sec) that the prior specification in $\texttt{MCMCglmm}$ is redundant and we can set the scale by setting $\texttt{V}$ to one and controlling the scale through $\texttt{alpha.V}$. This can be achieved in the multivariate case by setting $\texttt{V[i,i]}=1/k$ such that $\texttt{V}^{\ast}=1$ and then altering $\texttt{alpha.V[i,i]}$ as before.
 
-The rules for rescaling can be hard to remember and fiddly to implement. In order to simplify the process of prior specification, priors can also be specified using the prior generator functions detailed in Section \@ref(Vprior-gen-sec). When the random term define a (co)variance matrix these prior generators specify a prior for which the *marginal* prior distributions for the variance has the specified distribution. In all cases the off-diagonal elements of $\texttt{V}$ and $\texttt{alpha.V}$ are set to zero.
+The rules for rescaling can be hard to remember and fiddly to implement. In order to simplify the process of prior specification, priors can also be specified using the prior generator functions detailed in Section \@ref(Vprior-gen-sec). When the random term defines a (co)variance matrix, these prior generators specify a prior for which the *marginal* prior distributions for the variance have the specified distribution. In all cases the off-diagonal elements of $\texttt{V}$ and $\texttt{alpha.V}$ are set to zero.
 
 
 ### Marginal Priors for Covariances
+
+Above, we derived prior specifications that resulted in marginal priors for the variances which are well understood. What do the marginal priors for the covariances and correlations look like under these prior specifications?  For the inverse-Wishart prior, results are widely known. When matrix-$F$ priors were first available in $\texttt{MCMCglmm}$, very little was known about them, and my recommendations were mainly based on experience with analysing real and simulated data. Thankfully, analytical results are now available [@Mulder.2018].
+
+
 
 
 ### Marginal Priors for Correlations

@@ -13,7 +13,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
        }
 
        if(inherits(prior, "prior_generator")){
-         prior<-resolve_prior(prior, k=nfl, vtype=vtype)
+         prior<-resolve_prior(prior, k=sum(nfl), vtype=vtype[1])
        }
        if(is.null(prior$V)){
          stop("V not specified for some prior$G/prior$R elements")
