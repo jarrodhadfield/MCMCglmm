@@ -395,22 +395,47 @@ The rules for rescaling can be hard to remember and fiddly to implement. In orde
 resolve_prior(F(1,1000), k=3, vtype="us")
 ``` 
 
-### Marginal Priors for Covariances
+### Marginal Priors for Covariances and Correlations
 
-Above, we derived prior specifications that resulted in marginal priors for the variances which are well understood. What do the marginal priors for the covariances and correlations look like under these prior specifications?  For the inverse-Wishart prior, results are widely known. When matrix-$F$ priors were first available in $\texttt{MCMCglmm}$, very little was known about them, and my recommendations were mainly based on experience with analysing real and simulated data. Thankfully, analytical results are now available [@Mulder.2018][^mulder]. 
+Above, we derived prior specifications that resulted in marginal priors for the variances which are well understood. What do the marginal priors for the covariances and correlations look like under these prior specifications? For the inverse-Wishart, if $\texttt{V}$ is diagonal the marginal distribution of any correlation is beta distributed with shape and scale equal to $(\texttt{nu}-k+1)/2$ [@Barnard.2000]. The beta is flat when the shape=scale=1 implying that $\texttt{nu}=k+1$. As $\texttt{nu}$ becomes smaller the distribution becomes more and more U-shaped with a lot of prior density close to -1 and 1. As $\texttt{nu}$ increases beyond $k+1$ this distribution becomes more constrained around zero \@ref(fig:prior-cor). These results also hold for parameter-expanded priors. Previously, we used priors that had a marginal $F_{1,1}$ prior which involves setting $\texttt{nu}=k$ which has a U-shaped prior density for the correlations. Setting $\texttt{nu}=k+1$ induces a $F_{1,2}$ prior on the variances. 
 
-{}
+Let's rerun model `m.sigma.5` with an $F_{1,2}$ prior of the same scale:
 
+```{r sigma-6}
+prior.sigma.6=list(R=IW(1, 0.002), G=F(2, 1000))
 
+m.sigma.6<-MCMCglmm(cbind(infected, not_infected)~virus, random=~us(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma.6)
+```
 
+The variance in $\texttt{line}$ effects over viruses remain largely unchanged
 
-### Marginal Priors for Correlations
+```{r }
+plot(mcmc.list(m.sigma.5$VCV[,c(1,5,9)], m.sigma.6$VCV[,c(1,5,9)]))
+```
 
+The correlations in $\texttt{line}$ effects between viruses are nudged a little closer to zero under the new prior but the effect is rather subtle (there's also some auto-correltaion in chains so they should be run for longer than the number of default iterations). 
 
+```{r }
+plot(mcmc.list(posterior.cor(m.sigma.5$VCV[,1:9])[,c(2:3,6)], posterior.cor(m.sigma.6$VCV[,1:9])[,c(2:3,6)]))
+```
 
-An uninformative prior for the correlations is an improper prior with `V=diag(dim(V))`$\ast$`0` and `nu=dim(V)+1`. For the $3\times3$ virus by line covariance matrix in model `m3a.4` we used a proper prior with `V=diag(3)`$\ast$`0.02` and `nu=4` in the hope that this would be relatively uninformative for the correlations. We can plot the marginal density of the variances for this distribution as we did in Chapter \@ref(bayesian):
+Increasing $\texttt{nu}$ substantially to 11 has a small effect on the variances, with the prior favouring smaller values:
 
+```{r sigma-7}
+prior.sigma.7=list(R=IW(1, 0.002), G=F(10, 1000))
 
+m.sigma.7<-MCMCglmm(cbind(infected, not_infected)~virus, random=~us(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma.7)
+
+plot(mcmc.list(m.sigma.5$VCV[,c(1,5,9)], m.sigma.7$VCV[,c(1,5,9)]))
+```
+
+but the correlations are now more obviously pushed towards zero.   
+
+```{r }
+plot(mcmc.list(posterior.cor(m.sigma.5$VCV[,1:9])[,c(2:3,6)], posterior.cor(m.sigma.7$VCV[,1:9])[,c(2:3,6)]))
+```
+
+While flat marginal priors for the correlations may seem like a desirable property...
 
 ### Priors for `corg` and `corgh` structures
 
@@ -434,9 +459,5 @@ In most cases correlation matrices do not have known form and so cannot be direc
 [^4.2]: In versions $<$ 2.05 priors on each variance of an $\texttt{idh}$ structure were distributed as $IW\left(\texttt{nu}^{\ast}\texttt{=nu-dim(V)+1},\ \texttt{V}^{\ast}=\texttt{V[1,1]}\right)$ but this was neither intuitive or completely consistent with the marginal prior from a full-covariance matrix (since $\texttt{V}^{\ast}$ should be $\texttt{V[1,1]}\frac{\texttt{nu}}{\texttt{nu}^{\ast}}$). 
 
 [^4.3]: In models `m.sigma.3` (and `m.sigma.4`) we fitted the $\texttt{idh}$ term `idh(virus):line`. We could also have set this model up as the much more ugly `idh(at.level(virus, "France")):line+idh(at.level(virus, "Spain")):line+idh(at.level(virus, "Greece")):line`. The function `at.level` returns a vector with ones where the first term ($\texttt{virus}$) is equal to the second term (e.g. $\texttt{"France"}$) and zero otherwise. In this context, it essentially just fits $\texttt{line}$ effects on observations made on the $\texttt{France}$ virus. The prior specification would require a prior on each of the three variances and a different $\texttt{nu}$ could be specified for each.
-
-[^mulder]: To use results from that paper note that $\delta$, $\nu=\texttt{nu}$ and ${\bf B}=\texttt{V}$ and ${\bf \Psi}$ = $\texttt{alpha.V}/(\texttt{nu}+k-1)$
-
-
 
 [^4.4]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
