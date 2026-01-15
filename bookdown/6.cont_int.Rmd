@@ -243,6 +243,36 @@ prior.m4b.1<-list(R=list(V=1e-7, nu=-2), G=list(G1=list(V=diag(2), nu=2)))
 m4b.1<-MCMCglmm(weight~Diet+poly(Time,2, raw=TRUE), random=~us(1+I(Time-3)):Chick, data=ChickWeight, pr=TRUE, prior=prior.m4b.1, saveX=TRUE, saveZ=TRUE)
 ```
 
+### User-defined design matrices
+
+$\texttt{MCMCglmm}$ generally uses $\texttt{model.matrix}$, or a native equivalent, when evaluating a model formula to obtain the design matrices. Sometimes R formula are not flexible enough to generate the appropriate the design matrix. The multi-membership model above is a case in point. However, it is possible to 'trick' $\texttt{MCMCglmm}$ into using a user design matrix, by including it in the data-frame and using an $\texttt{idv}$ structure. For example, we could create the design matrix by hand ($\texttt{Z}$) for the multi-membership model fitted above:
+
+```{r echo=FALSE}
+data.friends[2,5]<-"S"
+Z<-model.matrix(~friend.1-1, data=data.friends)
+Z<-Z+model.matrix(~friend.2-1, data=data.friends)
+Z<-Z+model.matrix(~friend.3-1, data=data.friends)
+Z<-Z+model.matrix(~friend.4-1, data=data.friends)
+Z<-Z+model.matrix(~friend.5-1, data=data.friends)
+colnames(Z)<-LETTERS
+``` 
+
+```{r }
+head(Z)
+data.friends$Z<-Z
+```
+
+and the model 
+
+```{r }
+prior.mm2=list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=0, alpha.V=1000)))
+m.mm2<-MCMCglmm(y~1, random=~idv(Z), data=data.friends, prior=prior.mm2)
+```
+
+is identical to model `m.mm`.
+
+
+
 ## Meta-analysis {#meta-sec}
 
 Random intercept-slope models implicitly assume that the variance changes as a quadratic function of the predictor. This can be used to our advantage because it allows us to fit meta-analytic models. In meta-analysis the data are usually some standardised statistic which has been estimated with different levels of measurement error. If we wanted to know the expected value of these statistics we would want to weight our answer to those measurements made with the smallest amount of error. If we assume that measurement error around the true value is normally distributed then we could assume the model:
