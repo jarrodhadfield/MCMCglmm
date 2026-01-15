@@ -163,6 +163,7 @@ cont-int
 random-regression
 expected-variances-and-covariances
 RRcentering
+user-defined-design-matrices
 meta-sec
 splines
 multi

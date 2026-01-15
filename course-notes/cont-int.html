@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-14" />
+<meta name="date" content="2026-01-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -274,7 +274,7 @@ div.csl-indent {
 <li class="chapter" data-level="5.2" data-path="cat-int.html"><a href="cat-int.html#linking-functions"><i class="fa fa-check"></i><b>5.2</b> Linking Functions</a>
 <ul>
 <li class="chapter" data-level="5.2.1" data-path="cat-int.html"><a href="cat-int.html#textttstr-covariances-between-random-terms"><i class="fa fa-check"></i><b>5.2.1</b> <span class="math inline">\(\texttt{str}\)</span>: covariances between random terms</a></li>
-<li class="chapter" data-level="5.2.2" data-path="cat-int.html"><a href="cat-int.html#textttmm-multi-membership-models"><i class="fa fa-check"></i><b>5.2.2</b> <span class="math inline">\(\texttt{mm}\)</span>: multi-membership Models</a></li>
+<li class="chapter" data-level="5.2.2" data-path="cat-int.html"><a href="cat-int.html#textttmm-multi-membership-models"><i class="fa fa-check"></i><b>5.2.2</b> <span class="math inline">\(\texttt{mm}\)</span>: multi-membership models</a></li>
 <li class="chapter" data-level="5.2.3" data-path="cat-int.html"><a href="cat-int.html#textttcovu-covariances-between-random-and-residual-terms"><i class="fa fa-check"></i><b>5.2.3</b> <span class="math inline">\(\texttt{covu}\)</span>: covariances between random and residual terms</a></li>
 <li class="chapter" data-level="5.2.4" data-path="cat-int.html"><a href="cat-int.html#texttttheta_scale-scaled-linear-predictor"><i class="fa fa-check"></i><b>5.2.4</b> <span class="math inline">\(\texttt{theta_scale}\)</span>: scaled linear predictor</a></li>
 </ul></li>
@@ -290,7 +290,10 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="6.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>6.1</b> Random Regression</a></li>
 <li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>6.2</b> Expected Variances and Covariances</a></li>
-<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>6.3</b> <code>us</code> versus <code>idh</code> and mean centering</a></li>
+<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>6.3</b> <code>us</code> versus <code>idh</code> and mean centering</a>
+<ul>
+<li class="chapter" data-level="6.3.1" data-path="cont-int.html"><a href="cont-int.html#user-defined-design-matrices"><i class="fa fa-check"></i><b>6.3.1</b> User-defined design matrices</a></li>
+</ul></li>
 <li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#meta-sec"><i class="fa fa-check"></i><b>6.4</b> Meta-analysis</a></li>
 <li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.5</b> Splines</a></li>
 </ul></li>
@@ -608,6 +611,24 @@ reparametersitaion<br />
 <span id="cb228-3"><a href="cont-int.html#cb228-3" tabindex="-1"></a>m4b<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(weight <span class="sc">~</span> Diet <span class="sc">+</span> <span class="fu">poly</span>(Time, <span class="dv">2</span>, <span class="at">raw =</span> <span class="cn">TRUE</span>), <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="fu">I</span>(Time <span class="sc">-</span></span>
 <span id="cb228-4"><a href="cont-int.html#cb228-4" tabindex="-1"></a>    <span class="dv">3</span>))<span class="sc">:</span>Chick, <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.m4b<span class="fl">.1</span>, <span class="at">saveX =</span> <span class="cn">TRUE</span>,</span>
 <span id="cb228-5"><a href="cont-int.html#cb228-5" tabindex="-1"></a>    <span class="at">saveZ =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div id="user-defined-design-matrices" class="section level3 hasAnchor" number="6.3.1">
+<h3><span class="header-section-number">6.3.1</span> User-defined design matrices<a href="cont-int.html#user-defined-design-matrices" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><span class="math inline">\(\texttt{MCMCglmm}\)</span> generally uses <span class="math inline">\(\texttt{model.matrix}\)</span>, or a native equivalent, when evaluating a model formula to obtain the design matrices. Sometimes R formula are not flexible enough to generate the appropriate the design matrix. The multi-membership model above is a case in point. However, it is possible to ‘trick’ <span class="math inline">\(\texttt{MCMCglmm}\)</span> into using a user design matrix, by including it in the data-frame and using an <span class="math inline">\(\texttt{idv}\)</span> structure. For example, we could create the design matrix by hand (<span class="math inline">\(\texttt{Z}\)</span>) for the multi-membership model fitted above:</p>
+<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="cont-int.html#cb229-1" tabindex="-1"></a><span class="fu">head</span>(Z)</span></code></pre></div>
+<pre><code>##   A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+## 1 0 1 0 0 0 0 1 0 0 1 0 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0
+## 2 0 0 0 0 0 0 0 0 0 0 0 0 1 1 0 0 0 0 1 1 0 0 0 1 0 0
+## 3 1 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 1 0
+## 4 1 0 0 0 0 0 0 0 1 1 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 0
+## 5 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 1 0 0
+## 6 0 0 0 1 0 0 0 0 0 0 1 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0</code></pre>
+<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb231-1"><a href="cont-int.html#cb231-1" tabindex="-1"></a>data.friends<span class="sc">$</span>Z <span class="ot">&lt;-</span> Z</span></code></pre></div>
+<p>and the model</p>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb232-1"><a href="cont-int.html#cb232-1" tabindex="-1"></a>prior.mm2 <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>,</span>
+<span id="cb232-2"><a href="cont-int.html#cb232-2" tabindex="-1"></a>    <span class="at">alpha.V =</span> <span class="dv">1000</span>)))</span>
+<span id="cb232-3"><a href="cont-int.html#cb232-3" tabindex="-1"></a>m.mm2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(Z), <span class="at">data =</span> data.friends, <span class="at">prior =</span> prior.mm2)</span></code></pre></div>
+<p>is identical to model <code>m.mm</code>.</p>
+</div>
 </div>
 <div id="meta-sec" class="section level2 hasAnchor" number="6.4">
 <h2><span class="header-section-number">6.4</span> Meta-analysis<a href="cont-int.html#meta-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -624,9 +645,9 @@ reparametersitaion<br />
 <div id="splines" class="section level2 hasAnchor" number="6.5">
 <h2><span class="header-section-number">6.5</span> Splines<a href="cont-int.html#splines" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>blah blah</p>
-<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb229-1"><a href="cont-int.html#cb229-1" tabindex="-1"></a>random <span class="ot">=</span> <span class="er">~</span><span class="fu">idv</span>(<span class="fu">spl</span>(covariate))</span></code></pre></div>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="cont-int.html#cb233-1" tabindex="-1"></a>random <span class="ot">=</span> <span class="er">~</span><span class="fu">idv</span>(<span class="fu">spl</span>(covariate))</span></code></pre></div>
 <p>fits a penalised thin-plate spline,</p>
-<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb230-1"><a href="cont-int.html#cb230-1" tabindex="-1"></a>random <span class="ot">=</span> <span class="er">~</span><span class="fu">idv</span>(<span class="fu">smspline</span>(covariate))</span></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="cont-int.html#cb234-1" tabindex="-1"></a>random <span class="ot">=</span> <span class="er">~</span><span class="fu">idv</span>(<span class="fu">smspline</span>(covariate))</span></code></pre></div>
 <p>fits a penalised cubic spline. The coefficients are random effects, stored in the <code>Sol</code> element of the model output and the single variance component (the penalising bit) is in the <code>VCV</code> element. Its usually a good idea to scale the covariate to lie in the interval [0,1] or some such thing.</p>
 
 </div>
