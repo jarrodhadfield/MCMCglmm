@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-15" />
+<meta name="date" content="2026-01-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -281,8 +281,8 @@ div.csl-indent {
 <li class="chapter" data-level="5.3" data-path="cat-int.html"><a href="cat-int.html#VCVprior-sec"><i class="fa fa-check"></i><b>5.3</b> Priors for Covariance Matrices</a>
 <ul>
 <li class="chapter" data-level="5.3.1" data-path="cat-int.html"><a href="cat-int.html#marginal-priors-for-variances"><i class="fa fa-check"></i><b>5.3.1</b> Marginal Priors for Variances</a></li>
-<li class="chapter" data-level="5.3.2" data-path="cat-int.html"><a href="cat-int.html#marginal-priors-for-covariances-and-correlations"><i class="fa fa-check"></i><b>5.3.2</b> Marginal Priors for Covariances and Correlations</a></li>
-<li class="chapter" data-level="5.3.3" data-path="cat-int.html"><a href="cat-int.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>5.3.3</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
+<li class="chapter" data-level="5.3.2" data-path="cat-int.html"><a href="cat-int.html#VCVprior-r-sec"><i class="fa fa-check"></i><b>5.3.2</b> Marginal Priors for Covariances and Correlations</a></li>
+<li class="chapter" data-level="5.3.3" data-path="cat-int.html"><a href="cat-int.html#full-joint-prior"><i class="fa fa-check"></i><b>5.3.3</b> Full joint prior</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="6" data-path="cont-int.html"><a href="cont-int.html"><i class="fa fa-check"></i><b>6</b> Continuous Random Interactions</a>
@@ -343,6 +343,7 @@ div.csl-indent {
 <li class="chapter" data-level="11.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>11.2.4</b> Ordinal Models</a></li>
 <li class="chapter" data-level="11.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>11.2.5</b> Path Analyses</a></li>
 <li class="chapter" data-level="11.2.6" data-path="technical-details.html"><a href="technical-details.html#deviance-and-dic"><i class="fa fa-check"></i><b>11.2.6</b> Deviance and DIC</a></li>
+<li class="chapter" data-level="11.2.7" data-path="technical-details.html"><a href="technical-details.html#priors-for-corg-and-corgh-structures"><i class="fa fa-check"></i><b>11.2.7</b> Priors for <code>corg</code> and <code>corgh</code> structures</a></li>
 </ul></li>
 </ul></li>
 <li class="chapter" data-level="12" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i><b>12</b> References</a></li>
@@ -540,6 +541,16 @@ Pr({\bf y} | {\boldsymbol{\mathbf{\Omega}}}) =&amp; \Pr({\bf y}_{g}, {\bf y}_{t}
 is more than one threshold trait.</p>
 <p>The deviance is calculated at each iteration if <code>DIC=TRUE</code> and stored each <code>thin</code><span class="math inline">\(^{th}\)</span> iteration after burn-in. However, for computational reasons the deviance is calculated mid-iteration such that the deviance returned at iteration <span class="math inline">\(i\)</span> uses <span class="math inline">\({\boldsymbol{\mathbf{\Omega}}}_{i} = \left\{{\boldsymbol{\mathbf{\gamma}}}_{i},\ \boldsymbol{\theta}_{/n, i},\ {\boldsymbol{\mathbf{l}}}_{n, i-1}\ {\bf R}_{i}\right\}\)</span>. The mean deviance (<span class="math inline">\(\bar{D}\)</span>) is calculated over all iterations, as is the mean of the latent variables (<span class="math inline">\({\bf l}\)</span>) the <span class="math inline">\({\bf R}\)</span>-structure and the vector of predictors (<span class="math inline">\({\bf W}\boldsymbol{\theta}\)</span>). The deviance is calculated at the mean estimate of the parameters (<span class="math inline">\(D(\bar{\boldsymbol{\mathbf{\Omega}}})\)</span>) and the deviance information criterion calculated as:</p>
 <p><span class="math display">\[\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})\]</span></p>
+</div>
+<div id="priors-for-corg-and-corgh-structures" class="section level3 hasAnchor" number="11.2.7">
+<h3><span class="header-section-number">11.2.7</span> Priors for <code>corg</code> and <code>corgh</code> structures<a href="technical-details.html#priors-for-corg-and-corgh-structures" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn20" class="footnote-ref" id="fnref20"><sup>20</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
+<span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>; and <a href="#ref-Box.1973">Box and Tiao 1973</a>)</span>:</p>
+<p><span class="math display">\[\begin{array}{lr}
+Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, &amp; |r|&lt;1\\
+\end{array}\]</span></p>
+<p>and as shown above setting <code>nu</code> =<code>dim(V)+1</code> results in marginal correlations that are uniform on the interval <span class="math display">\[-1,1\]</span>.</p>
+<p>In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. <span class="math inline">\(\texttt{MCMCglmm}\)</span> uses a method proposed by <span class="citation">X. F. Liu and Daniels (<a href="#ref-Liu.2006">2006</a>)</span> with the target prior as in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span>. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> with <code>nu=0</code> so as long as a diffuse prior is set, mixing is generally not a problem. If <code>nu=0</code> is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.</p>
 <div style="border: 0px;overflow-x: scroll; width:100%; ">
 <table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
@@ -960,6 +971,12 @@ Function
 </div>
 <h3> References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Barnard.2000" class="csl-entry">
+Barnard, J., R. McCulloch, and X. L. Meng. 2000. <span>“Modeling Covariance Matrices in Terms of Standard Deviations and Correlations, with Application to Shrinkage.”</span> <em>Statistica Sinica</em> 10 (4): 1281–311.
+</div>
+<div id="ref-Box.1973" class="csl-entry">
+Box, G. E. P., and G. C. Tiao. 1973. <em>Bayesian Inference in Statistical Analysis</em>. New York: John Wiley &amp; Sons.
+</div>
 <div id="ref-Cowles.1996" class="csl-entry">
 Cowles, M. K. 1996. <span>“Accelerating Monte Carlo Markov Chain Convergence for Cumulative–Link Generalized Linear Models.”</span> <em>Statistics and Computing</em> 6 (2): 101–11.
 </div>
@@ -987,6 +1004,9 @@ Henderson, C. R. 1976. <span>“Simple Method for Computing Inverse of a Numerat
 <div id="ref-Korsgaard.1999" class="csl-entry">
 Korsgaard, I. R., A. H. Andersen, and D. Sorensen. 1999. <span>“A Useful Reparameterisation to Obtain Samples from Conditional Inverse Wishart Distributions.”</span> <em>Genetics Selection Evolution</em> 31 (2): 177–81.
 </div>
+<div id="ref-Liu.2006" class="csl-entry">
+Liu, X. F., and M. J. Daniels. 2006. <span>“A New Algorithm for Simulating a Correlation Matrix Based on Parameter Expansion and Reparameterization.”</span> <em>Journal of Computational and Graphical Statistics</em> 15 (4): 897–914.
+</div>
 <div id="ref-Meuwissen.1992" class="csl-entry">
 Meuwissen, T. H. E., and Z. Luo. 1992. <span>“Computing Inbreeding Coefficients in Large Populations.”</span> <em>Genetics Selection Evolution</em> 24 (4): 305–13.
 </div>
@@ -999,6 +1019,12 @@ Robert, C. P. 1995. <span>“Simulation of Truncated Normal Variables.”</span>
 <div id="ref-Spiegelhalter.2002" class="csl-entry">
 Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <span>“Bayesian Measures of Model Complexity and Fit.”</span> <em>Proceedings of the Royal Society of London Series <span>B</span> - Biological Sciences</em> 64 (4): 583–639.
 </div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="20">
+<li id="fn20"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref20" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
             </section>
 

@@ -47,7 +47,7 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 
 ## See also
 
-`rIW`
+`rIW`, `rprior`
 
 ## Examples
 

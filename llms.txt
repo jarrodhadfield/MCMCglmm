@@ -158,6 +158,9 @@ Soft.).
 - [`resolve_prior()`](https://jarrodhadfield.github.io/MCMCglmm/reference/resolve_prior.md)
   : Resolves a Prior Specification in MCMCglmm
 
+- [`rprior()`](https://jarrodhadfield.github.io/MCMCglmm/reference/rprior.md)
+  : Simulate Covariance Matrices from Prior
+
 - [`rtcmvnorm()`](https://jarrodhadfield.github.io/MCMCglmm/reference/rtcmvnorm.md)
   : Random Generation from a Truncated Conditional Normal Distribution
 

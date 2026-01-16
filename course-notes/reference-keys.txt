@@ -56,6 +56,13 @@ tab:prior-functions
 fig:year
 fig:year-sd
 tab:vfunction
+fig:prior-cor
+fig:prior-compare-t
+fig:line-vcompare
+fig:line-rcompare
+fig:prior-compare-iw
+fig:viscov
+fig:viscov2
 fig:ChickWeight
 fig:parallel
 fig:CWpred-1
@@ -156,8 +163,8 @@ textttcovu-covariances-between-random-and-residual-terms
 texttttheta_scale-scaled-linear-predictor
 VCVprior-sec
 marginal-priors-for-variances
-marginal-priors-for-covariances-and-correlations
-priors-for-corg-and-corgh-structures
+VCVprior-r-sec
+full-joint-prior
 cont-int
 random-regression
 expected-variances-and-covariances
@@ -196,4 +203,5 @@ updating-the-variance-structures-bf-g-and-bf-r
 ordinal-models
 path-analyses
 deviance-and-dic
+priors-for-corg-and-corgh-structures
 references
