@@ -70,5 +70,5 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 
 ``` r
 resolve_prior(F(df2=1, scale=1000), k=2)
-#> Error in if (!vtype %in% c("idh", "us")) {    stop(paste("prior_generator not yet implemented for", vtype,         "structures"))}: argument is of length zero
+#> Error in resolve_prior(F(df2 = 1, scale = 1000), k = 2): vtype must be specified
 ```

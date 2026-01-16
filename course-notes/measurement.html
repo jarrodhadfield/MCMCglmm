@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>MCMCglmm Course Notes</title>
+  <title>9 Measurement Error, Meta-analysis an Missing Values | MCMCglmm Course Notes</title>
   <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="MCMCglmm Course Notes" />
+  <meta property="og:title" content="9 Measurement Error, Meta-analysis an Missing Values | MCMCglmm Course Notes" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="MCMCglmm Course Notes" />
+  <meta name="twitter:title" content="9 Measurement Error, Meta-analysis an Missing Values | MCMCglmm Course Notes" />
   
   <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-
-<link rel="next" href="bayesian.html"/>
+<link rel="prev" href="pedigree.html"/>
+<link rel="next" href="path.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -367,33 +367,29 @@ div.csl-indent {
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="header">
-<h1 class="title">MCMCglmm Course Notes</h1>
-<p class="author"><em>Jarrod Hadfield</em></p>
-<p class="date"><em>2026-01-16</em></p>
+<div id="measurement" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">9</span> Measurement Error, Meta-analysis an Missing Values<a href="measurement.html#measurement" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="error-in-the-response" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Error in the Response<a href="measurement.html#error-in-the-response" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Random intercept-slope models implicitly assume that the variance changes as a quadratic function of the predictor. This can be used to our advantage because it allows us to fit meta-analytic models. In meta-analysis the data are usually some standardised statistic which has been estimated with different levels of measurement error. If we wanted to know the expected value of these statistics we would want to weight our answer to those measurements made with the smallest amount of error. If we assume that measurement error around the true value is normally distributed then we could assume the model:</p>
+<p><span class="math display">\[y_{i} = \beta_{1} + m_{i} +e _{i}\]</span></p>
+<p>where <span class="math inline">\(\beta_{1}\)</span> is the expected value, <span class="math inline">\(m_{i}\)</span> is some deviation due to measurement error, and <span class="math inline">\(e_{i}\)</span> is the deviation of the statistic from the global intercept not due to measurement error. Some types of meta-analysis presume <span class="math inline">\(e_{i}\)</span> does not exist and that the only variation between studies is due to measurement error. This is not realistic, I think. Often, standard errors are reported in the literature, and these can be viewed as an approximation to the expected standard deviation of the measurement error. If we put the standard errors for each statistic as a column in the data frame (and call it <code>SE</code>) then the random term <code>idh(SE):units</code> defines a diagonal matrix with the standard errors on the diagonal. Using results from Equation <a href="#eq:RRvar-eq">(<strong>??</strong>)</a></p>
+<p><span class="math display">\[\begin{array}{rl}
+\textrm{VAR}[{\bf m}] =&amp; {\bf Z}{\bf V}{\bf Z}^{&#39;}\\
+               =&amp; {\bf Z}\sigma^{2}_{m}{\bf I}{\bf Z}^{&#39;}\\
+               =&amp; \sigma^{2}_{m}{\bf Z}{\bf Z}^{&#39;}\\                               
+\end{array}\]</span></p>
+<p>fixing <span class="math inline">\(\sigma^{2}_{m}=1\)</span> in the prior, the expected variance in the measurement errors are therefore the standard errors squared (the sampling variance) and all measurement errors are assumed to be independent of each other. The random regression therefore fits a random effect meta-analysis.</p>
+<div id="meta-sec" class="section level3 hasAnchor" number="9.1.1">
+<h3><span class="header-section-number">9.1.1</span> Meta-analysis<a href="measurement.html#meta-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 </div>
-<div id="overview" class="section level1 hasAnchor" number="1">
-<h1><span class="header-section-number">1</span> Overview<a href="overview.html#overview" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>These are (incomplete) course notes about generalised linear mixed models (GLMM). Special emphasis is placed on understanding the underlying structure of a GLMM in order to show that slight modifications of this structure can produce a wide range of models. These include familiar models like regression and ANOVA, but also models with intimidating names: animal models, threshold models, meta-analysis, random regression The primary aim of the course is to show that these models are only daunting by name. The secondary aim is to show how these models can be fitted in a Bayesian framework using Markov chain Monte Carlo (MCMC) methods in the R package <span class="math inline">\(\texttt{MCMCglmm}\)</span> <span class="citation">(<a href="#ref-Hadfield.2010c">Hadfield 2010</a>)</span>. For those not comfortable using Bayesian methods, many of the models outlined in the course notes can be fitted using the packages <span class="math inline">\(\texttt{asreml-r}\)</span> <span class="citation">(<a href="#ref-Butler.2017">Butler et al. 2017</a>)</span>, <span class="math inline">\(\texttt{lme4}\)</span> <span class="citation">(<a href="#ref-Bates.2015">Bates et al. 2015</a>)</span> or <span class="math inline">\(\texttt{glmmTMB}\)</span> <span class="citation">(<a href="#ref-Brooks.2017">Brooks et al. 2017</a>)</span> with little extra work.</p>
-<div id="outline" class="section level2 hasAnchor" number="1.1">
-<h2><span class="header-section-number">1.1</span> Outline<a href="overview.html#outline" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Chapter <a href="bayesian.html#bayesian">2</a> covers the very basics of Bayesian analysis and Markov chain Monte Carlo (MCMC) techniques. Chapter <a href="glm.html#glm">3</a> covers simple generalised linear mixed models (GLMM). The response is assumed to be (conditionally) normal or from a single-parameter family such as the Poisson, and the distribution of the random effects can be parameterised through scalar variances. Chapters <a href="cat-int.html#cat-int">5</a> and <a href="cont-int.html#cont-int">6</a> cover situations where the distribution of the random effects are parameterised through a (co)variance matrix either because the random terms are interacted with categorical predictors (Chapter <a href="cat-int.html#cat-int">5</a>) or continuos predictors (random-regression - Chapter <a href="cont-int.html#cont-int">6</a>). Chapter <a href="multi.html#multi">7</a> covers multi-response models in which multiple response variables, possibly from different distributions, are simultaneously analysed. This chapter also covers distributions that are multi-parameter such as multinomial and zero-inflated distributions. Chapter <a href="pedigree.html#pedigree">8</a> discusses models where a set of random-effects are correlated through a known structure such as a pedigree or phylogeny. Much of the technical details regarding the implementation are in Chapter <a href="technical-details.html#technical-details">11</a>. Chapter <a href="technical-details.html#parameter-expansion">11.3</a> covers parameter-expansion, an algorithm designed to improve the mixing properties of MCMC but which also induces new, and useful, prior distributions. Chapter <a href="path.html#path">10</a> covers path analysis and related antedependence models. Much of the material is currently taken from the old CourseNotes (<em>c</em>2009) but the hope is that over time these new notes will be better structured and include better/some documentation for more recent functionality.</p>
+</div>
+<div id="error-in-the-predictors" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Error in the Predictors<a href="measurement.html#error-in-the-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="missing-values" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> Missing Values<a href="measurement.html#missing-values" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 
-</div>
-</div>
-<h3> References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-Bates.2015" class="csl-entry">
-Bates, Douglas, Martin Mächler, Ben Bolker, and Steve Walker. 2015. <span>“Fitting Linear Mixed-Effects Models Using Lme4.”</span> <em>Journal of Statistical Software</em> 67: 1–48.
-</div>
-<div id="ref-Brooks.2017" class="csl-entry">
-Brooks, Mollie E, Kasper Kristensen, Koen J Van Benthem, Arni Magnusson, Casper W Berg, Anders Nielsen, Hans J Skaug, Martin Mächler, and Benjamin M Bolker. 2017. <span>“<span class="nocase">glmmTMB</span> Balances Speed and Flexibility Among Packages for Zero-Inflated Generalized Linear Mixed Modeling.”</span>
-</div>
-<div id="ref-Butler.2017" class="csl-entry">
-Butler, DG, BR Cullis, AR Gilmour, BJ Gogel, and Ret al Thompson. 2017. <span>“<span>ASReml-R</span> Reference Manual Version 4.”</span> <em><span>VSN</span> International Ltd, Hemel Hempstead, HP1 1ES, UK</em>.
-</div>
-<div id="ref-Hadfield.2010c" class="csl-entry">
-Hadfield, J. D. 2010. <span>“<span>MCMC</span> Methods for Multi–Response Generalised Linear Mixed Models: The <span>MCMCglmm R</span> Package.”</span> <em>Journal of Statistical Software</em> 33 (2): 1–22.
 </div>
 </div>
             </section>
@@ -401,8 +397,8 @@ Hadfield, J. D. 2010. <span>“<span>MCMC</span> Methods for Multi–Response Ge
           </div>
         </div>
       </div>
-
-<a href="bayesian.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="pedigree.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="path.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
