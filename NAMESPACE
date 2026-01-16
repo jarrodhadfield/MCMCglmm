@@ -66,7 +66,8 @@ export(
    IW,
    F,
    IG,
-   tSD
+   tSD,
+   rprior
 ) 
 S3method(summary, MCMCglmm)
 S3method(print, summary.MCMCglmm)

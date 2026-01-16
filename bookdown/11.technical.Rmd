@@ -251,6 +251,24 @@ The deviance is calculated at each iteration if `DIC=TRUE` and stored each `thin
 
 $$\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})$$
 
+
+### Priors for `corg` and `corgh` structures
+
+For `corg` and `corgh` structures[^4.4] the diagonals of `V` define the fixed variances (`corgh`) or are ignored and the variances set to one (`corg`). I use the prior specification in @Barnard.2000 where `nu` controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations ($r$) is given by
+@Barnard.2000 [and @Box.1973]:
+
+$$\begin{array}{lr}
+Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, & |r|<1\\
+\end{array}$$
+
+and as shown above setting `nu` =`dim(V)+1` results in marginal correlations that are uniform on the interval \[-1,1\].
+
+In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. $\texttt{MCMCglmm}$ uses a method proposed by @Liu.2006 with the target prior as in @Barnard.2000. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a diffuse prior is set, mixing is generally not a problem. If `nu=0` is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.
+
+[^4.4]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
+
+
+
 ``` {r echo=FALSE, results='asis'}
 df <- data.frame(
   Distribution = c("`\"gaussian\"`", "`\"poisson\"`", "`\"categorical\"`", "`\"multinomialJ\"`", "`\"ordinal\"`", "`\"threshold\"`", "`\"exponential\"`", "`\"geometric\"`", "`\"cengaussian\"`", "`\"cenpoisson\"`", "`\"cenexponential\"`", "`\"zipoisson\"`", "`\"ztpoisson\"`", "`\"hupoisson\"`", "`\"zapoisson\"`", "`\"hubinomial\"`", "`\"nzbinom\"`", "`\"ncst\"`", "`\"msst\"`", "`\"ztmbJ\"`", "`\"ztmultinomialJ\"`"),

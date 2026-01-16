@@ -20,7 +20,7 @@ If \code{alpha.V} is zero (or \code{NULL}) the density for the variance is a sca
 
 }
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
-\seealso{\code{rIW}}
+\seealso{\code{rIW}, \code{rprior}}
 \examples{
 
 prior<-list(V=1, nu=1, alpha.mu=0, alpha.V=10)

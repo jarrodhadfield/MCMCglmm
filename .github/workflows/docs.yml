@@ -46,6 +46,7 @@ jobs:
             gdata
             kableExtra
             rgl
+            VisCov
             local::.
           needs: website
 

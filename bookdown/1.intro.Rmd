@@ -29,6 +29,7 @@ library(lme4)
 library(rgl)
 library(kableExtra)
 library(cubature)
+library(VisCov)
 knitr::knit_hooks$set(webgl = hook_webgl)
 
 knitr::opts_chunk$set(

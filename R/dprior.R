@@ -20,15 +20,19 @@ dprior<-function(x, prior, sd=FALSE, log=FALSE){
     
     if(length(prior$V)!=1 | length(prior$nu)!=1){
     	stop("only scalar priors permitted: V should be a scalar")
+    }else{
+    	prior$V<-prior$V[1]
     }
 
-    IW<-TRUE # Is it inverse-Wishart or parameter expanded
+    is.IW<-TRUE # Is it inverse-Wishart or parameter expanded
 
 	if(!is.null(prior$alpha.mu)){
-		IW<-FALSE
+		is.IW<-FALSE
 		if(length(prior$alpha.mu)!=1){
 			stop("only scalar priors permitted: alpha.mu should be a scalar")
-		}
+		}else{
+           prior$alpha.mu<-prior$alpha.mu[1]
+	    }		
 		if(is.null(prior$alpha.V)){
 			stop("if alpha.mu is non-zero then alpha.V must be specified in prior")
 	    } 		
@@ -37,13 +41,15 @@ dprior<-function(x, prior, sd=FALSE, log=FALSE){
 	if(!is.null(prior$alpha.V)){
 		if(length(prior$alpha.V)!=1){
 			stop("only scalar priors permitted: alpha.V should be a scalar")
-		}	
+		}else{
+           prior$alpha.V<-prior$alpha.V[1]
+	    }			
 		if(is.null(prior$alpha.mu)){
 			stop("if alpha.V is non-zero then alpha.mu must be specified in prior")
 	    } 		
     }
 
-    if(IW){
+    if(is.IW){
 
         if(sd){
         	x<-x^2

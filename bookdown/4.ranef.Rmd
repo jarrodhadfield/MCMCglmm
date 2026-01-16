@@ -254,7 +254,6 @@ dsd.x[[3]]<-dprior(sd.x, prior.mschool.3$G$G1, sd=TRUE)
 dsd.x[[4]]<-dprior(sd.x, prior.mschool.4$G$G1, sd=TRUE)
 dsd.x[[5]]<-dprior(sd.x, prior.mschool.5$G$G1, sd=TRUE)
 
-
 cols    <- palette()[1:5] 
 
 plot(dsd.x[[1]]~sd.x,                     
@@ -265,7 +264,7 @@ plot(dsd.x[[1]]~sd.x,
 for (i in 2:length(dsd.x))                  
   lines(dsd.x[[i]]~sd.x, col = cols[i], lwd = 2)
 
-model.names<-c("inverse-gamma(0.001, 0.001)", "half-Cauchy: 1000", "half-Cauchy: 25", "half-Cauchy: 5", expression("half-"~t[3]~": 2.5"))
+model.names<-c("inverse-gamma(0.001, 0.001)", "half-Cauchy: 1000", "half-Cauchy: 25", "half-Cauchy: 5", expression("half-"~t[2]~":"~sqrt(1000)), expression("half-"~t[3]~": 2.5"))
 
 legend("topright", lwd = 2, col = cols,
        legend = model.names, bty = "n")
@@ -278,7 +277,7 @@ With so little information coming from the data, these priors also have consider
 
 samples <- list(sqrt(mschool.1$VCV[,"school"]), sqrt(mschool.2$VCV[,"school"]), sqrt(mschool.3$VCV[,"school"]), sqrt(mschool.4$VCV[,"school"]), sqrt(mschool.5$VCV[,"school"]))
 
-cols    <- palette()[1:5]  # nice colours
+cols    <- palette()[c(1:5)]  # nice colours
 
 plot(density(samples[[1]]),                     
      main = "",

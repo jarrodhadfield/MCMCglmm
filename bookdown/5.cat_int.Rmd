@@ -9,12 +9,12 @@ data(sigma)
 head(sigma)
 ```
 
-The number of flies in a vial that are infected with the virus ($\texttt{infected}$) or not ($\texttt{not_infected}$) are recorded. The mean number of flies per vial is `r round(mean(sigma$infected+sigma$not_infected))` although the range is large (`r min(sigma$infected+sigma$not_infected)` - `r max(sigma$infected+sigma$not_infected)` ). All the flies in a vial are the offspring of parents infected with one of five strains ($\texttt{strain}$) of sigma virus, a virus that is transmitted to offspring through eggs and sperm. The parents belong to one of 67 genetically distinct lines ($\texttt{line}$).  Let's start with a simple binomial GLMM that we covered in Chapter \@ref(ranef), but to keep things manageable we'll only analyse data from three strains ($\texttt{France}$, $\texttt{Greece}$ and  $\texttt{Spain}$, named after their country of origin). Note that we will specify the prior using prior generator functions (Section \@ref(Vprior-gen-sec)) and so this specification can be recycled in all models:
+The number of flies in a vial that are infected with the virus ($\texttt{infected}$) or not ($\texttt{not_infected}$) are recorded. The mean number of flies per vial is `r round(mean(sigma$infected+sigma$not_infected))` although the range is large (`r min(sigma$infected+sigma$not_infected)` - `r max(sigma$infected+sigma$not_infected)` ). All the flies in a vial are the offspring of parents infected with one of five strains ($\texttt{strain}$) of sigma virus, a virus that is transmitted to offspring through eggs and sperm. The parents belong to one of 67 genetically distinct lines ($\texttt{line}$).  Let's start with a simple binomial GLMM that we covered in Chapter \@ref(ranef), but to keep things manageable we'll only analyse data from three strains ($\texttt{France}$, $\texttt{Greece}$ and  $\texttt{Spain}$, named after their country of origin). Note that we will specify the prior using prior generator functions (Section \@ref(Vprior-gen-sec)) and so this specification can be recycled in all models. See Section \@ref(VCVprior-r--sec) for why we have specified a scaled-$F_{1,2}$ distribution rather than the scaled-$F_{1,1}$ distribution used when estimating scalar variances (Section \@ref(PXprior-sec)).
 
 ```{r sigma-1}
 sigma_small<-subset(sigma, virus%in%c("France","Greece", "Spain"))
 
-prior.sigma=list(R=IW(1, 0.002), G=F(1, 1000))
+prior.sigma=list(R=IW(1, 0.002), G=F(2, 1000))
 
 m.sigma.1<-MCMCglmm(cbind(infected, not_infected)~virus, random=~line, data=sigma_small, family="multinomial2", prior=prior.sigma)
 
@@ -380,6 +380,8 @@ Occasionally, we need to force a common relationship between two sets of (multip
 
 When fitting a $k$ dimensional (co)variance matrix, $\texttt{V}$ and $\texttt{alpha.V}$ must specify $k$ dimensional (co)variance matrices and $\texttt{alpha.mu}$ must specify a vector of length $k$. The degrees-of-freedom, $\texttt{nu}$, however, remains scalar. By using prior generators to specify the prior (Section \@ref(Vprior-gen-sec)) we hid this complexity. If we want to understand exactly what the prior generators are specifying in this context we cannot avoid this complexity. In addition, if we want to add arguments such as $\texttt{fix}$ or $\texttt{covu}$ to the prior, prior generators cannot be used.
 
+What follows is important, but also hard. For those short of time, patience or expertise, I would recommend using the prior generator `F(2,1000)` for random-effect covariance matrices. However, you may need to adjust the scale if the standard deviation of the data differs greatly from one (Section \@ref(PXprior-sec)).    
+
 ### Marginal Priors for Variances
 
 The joint distribution of all $k(k-1)/2$ elements of the covariance matrix is hard to characterise or visualise [@Tokuda.2025]. We will start by exploring a simpler problem - given some prior specification for a $k$ dimensional (co)variance matrix what is the marginal prior distribution of each variance? Luckily, the marginal distributions have the same form as they have in the scalar case but with some rescaling of parameters. We will designate the parameters of the marginal distribution using asterisks. The marginal distribution is characterised by the *scalar* parameters $\texttt{V}^{\ast}$ and $\texttt{nu}^{\ast}$, and if $F$ priors are used, then $\texttt{alpha.mu}^{\ast}$ and $\texttt{alpha.V}^{\ast}$. The properties of these (marginal) distributions are fully covered in Sections \@ref(Vprior-sec) and \@ref(PXprior-sec), respectively.
@@ -395,60 +397,154 @@ The rules for rescaling can be hard to remember and fiddly to implement. In orde
 resolve_prior(F(1,1000), k=3, vtype="us")
 ``` 
 
-### Marginal Priors for Covariances and Correlations
+### Marginal Priors for Covariances and Correlations {#VCVprior-r-sec}
 
-Above, we derived prior specifications that resulted in marginal priors for the variances which are well understood. What do the marginal priors for the covariances and correlations look like under these prior specifications? For the inverse-Wishart, if $\texttt{V}$ is diagonal the marginal distribution of any correlation is beta distributed with shape and scale equal to $(\texttt{nu}-k+1)/2$ [@Barnard.2000]. The beta is flat when the shape=scale=1 implying that $\texttt{nu}=k+1$. As $\texttt{nu}$ becomes smaller the distribution becomes more and more U-shaped with a lot of prior density close to -1 and 1. As $\texttt{nu}$ increases beyond $k+1$ this distribution becomes more constrained around zero \@ref(fig:prior-cor). These results also hold for parameter-expanded priors. Previously, we used priors that had a marginal $F_{1,1}$ prior which involves setting $\texttt{nu}=k$ which has a U-shaped prior density for the correlations. Setting $\texttt{nu}=k+1$ induces a $F_{1,2}$ prior on the variances. 
+Above, we looked at the prior specifications that resulted in marginal priors for the variances which are well understood. What do the marginal priors for the covariances and correlations look like under these prior specifications? While the marginal distribution for a covariance does not have an easy form, the marginal distribution of a correlations for an inverse-Wishart with diagonal $\texttt{V}$ is a beta distribution transformed to the interval $[-1, 1]$ [@Box.1973; @Barnard.2000].  The shape and scale of the beta are equal to $(\texttt{nu}-k+1)/2$ which is the marginal degrees-of-freedom $\texttt{nu}^{\ast}$ used in the prior generator function[^corg-prior].  The beta is flat when  $\texttt{nu}^{\ast}=2$ since the shape=scale=1. As $\texttt{nu}^{\ast}$ becomes smaller the distribution becomes more and more U-shaped with a lot of prior density close to -1 and 1. As $\texttt{nu}^{\ast}$ increases beyond $2$ this distribution becomes more constrained around zero (Figure \@ref(fig:prior-cor)). Since the working parameters in parameter expansion cancel for the correlation, the distribution of the correlations is the same as that under the inverse-Wishart (although the distribution of the covariances will differ). 
 
-Let's rerun model `m.sigma.5` with an $F_{1,2}$ prior of the same scale:
+
+```{r prior-cor, echo=FALSE, include=TRUE, fig.cap="Prior marginal density for a correlation when $\\texttt{V}$ is diagonal. The density is a beta distribution over the interval $[-1,1]$ with shape=scale=$\\texttt{nu}^{\\ast}/2$. $\\texttt{nu}^{\ast}/2$ is the marginal degrees of freedom for a variance: $\\texttt{nu}-k+1$.", fig.width=7, fig.height=5}
+
+r<-seq(0, 1, length=1000)
+plot(I(dbeta(r, 1/2, 1/2)/2)~I(r*2-1), ylab="Prior density", xlab="Correlation", type="l", lwd=1.5, ylim=c(dbeta(0.01, 4/2, 4/2)/2, dbeta(0.01, 1/2, 1/2)/2))
+lines(I(dbeta(r, 2/2, 2/2)/2)~I(r*2-1), ylab="Prior density", xlab="Correlation", type="l", lwd=1.5)
+lines(I(dbeta(r, 3/2, 3/2)/2)~I(r*2-1), ylab="Prior density", xlab="Correlation", type="l", lwd=1.5)
+lines(I(dbeta(r, 4/2, 4/2)/2)~I(r*2-1), ylab="Prior density", xlab="Correlation", type="l", lwd=1.5)
+lines(I(dbeta(r, 10/2, 10/2)/2)~I(r*2-1), ylab="Prior density", xlab="Correlation", type="l", lwd=1.5)
+
+
+text(0, dbeta(0.5, 1/2, 1/2)/2-0.05, expression("nu"^{'*'}==1))
+text(0, dbeta(0.5, 2/2, 2/2)/2-0.05, expression("nu"^{'*'}==2))
+text(0, dbeta(0.5, 3/2, 3/2)/2-0.05, expression("nu"^{'*'}==3))
+text(0, dbeta(0.5, 4/2, 4/2)/2-0.05, expression("nu"^{'*'}==4))
+text(0, dbeta(0.5, 10/2, 10/2)/2+0.05, expression("nu"^{'*'}==10))
+```
+
+With simple random effects models, where only variances need to be estimated, I usually use a scaled $F_{1,1}$ prior with large scale. In the past I also specified priors for covariance matrices that had a marginal $F_{1,1}$ prior. However, since this implies $\texttt{nu}^{\ast}$=1 (and $\texttt{nu}=k$) this may push the posterior correlation away from zero, especially if the data have support for correlations that are large in magnitude. Using an $F_{1,2}$ marginal prior for the variance is flat for the correlation but it does mean we've switched from a half-Cauchy ($t_1$) to a half-$t_2$ for the standard deviation. However, with a large scale ($\sqrt{1000}=$ `r round(sqrt(1000),1)` for the standard deviation), this is unlikely to have a large effect (Figure \@ref(fig:prior-compare-t)). 
+
+
+``` {r prior-compare-t, echo=FALSE, include=TRUE, fig.cap=paste0("Marginal prior densities for the standard deviation using the prior generator functions $\\texttt{F(1,1000)}$, $\\texttt{F(2,1000)}$ and $\\texttt{F(3,1000)}$. $\\texttt{F(2,1000)}$ results in a flat prior for the correlation. Note that the legend refers to these in terms of the marginal density for the standard deviations (ie. half-$t$) and that the half-$t_1$ is the Cauchy. Also, while the x-axis runs from zero to ", round(max(sqrt(mschool.1$VCV[,"school"]))), ", the posterior distributions for the standard deviation in $\\texttt{line}$ effects lie in the range ", round(min(sqrt(m.sigma.5$VCV[,c(1,5,9)])),1), "-", round(max(sqrt(m.sigma.5$VCV[,c(1,5,9)])),1), ". By doing this, the figure is directly comparable to Figure \\@ref(fig:prior-compare)."), fig.width=7, fig.height=5}
+
+sd.x<-seq(1e-18, max(sqrt(mschool.1$VCV[,"school"])), length=1000)
+
+dsd.x<-as.list(1:4)
+
+t1.prior<-resolve_prior(F(1, 1000), k=1, vtype="us")
+t2.prior<-resolve_prior(F(2, 1000), k=1, vtype="us")
+t3.prior<-resolve_prior(F(3, 1000), k=1, vtype="us")
+t10.prior<-resolve_prior(F(10, 1000), k=1, vtype="us")
+
+dsd.x[[1]]<-dprior(sd.x, t1.prior, sd=TRUE)
+dsd.x[[2]]<-dprior(sd.x, t2.prior, sd=TRUE)
+dsd.x[[3]]<-dprior(sd.x, t3.prior, sd=TRUE)
+dsd.x[[4]]<-dprior(sd.x, t10.prior, sd=TRUE)
+
+cols    <- palette()[1:4] 
+
+plot(dsd.x[[1]]~sd.x,                     
+     main = "",
+     xlab = expression(sigma[school]), ylab = "Prior density",
+     col  = cols[1], lwd = 2, type="l", ylim=c(0, max(unlist(dsd.x))))
+
+for (i in 2:length(dsd.x))                  
+  lines(dsd.x[[i]]~sd.x, col = cols[i], lwd = 2)
+
+model.names<-c(expression("half-"~t[1]~":"~sqrt(1000)), expression("half-"~t[2]~":"~sqrt(1000)), expression("half-"~t[3]~":"~sqrt(1000)), expression("half-"~t[10]~":"~sqrt(1000)))
+
+legend("bottomleft", lwd = 2, col = cols,
+       legend = model.names, bty = "n")
+```
+
+Let's rerun model `m.sigma.5` with an $F_{1,1}$ prior of the same scale to see what happens:
 
 ```{r sigma-6}
-prior.sigma.6=list(R=IW(1, 0.002), G=F(2, 1000))
+prior.sigma.6=list(R=IW(1, 0.002), G=F(1, 1000))
 
 m.sigma.6<-MCMCglmm(cbind(infected, not_infected)~virus, random=~us(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma.6)
 ```
 
 The variance in $\texttt{line}$ effects over viruses remain largely unchanged
 
-```{r }
-plot(mcmc.list(m.sigma.5$VCV[,c(1,5,9)], m.sigma.6$VCV[,c(1,5,9)]))
+``` {r line-vcompare, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the variance in $\\texttt{line}$ effects for the three viruses when the marginal prior for the variances are scaled (1000) $F_{1,2}$ (black - model $\\texttt{m.sigma.5}$) or $F_{1,1}$ (red- model $\\texttt{m.sigma.6}$) distributions.  The $F_{1,2}$ prior is flat for the correlation in $\\texttt{line}$ effects across viruses.", fig.width=7, fig.height=8}
+
+plot(mcmc.list(m.sigma.5$VCV[,c(1,5,9)], m.sigma.6$VCV[,c(1,5,9)]), density=FALSE)
 ```
 
-The correlations in $\texttt{line}$ effects between viruses are nudged a little closer to zero under the new prior but the effect is rather subtle (there's also some auto-correltaion in chains so they should be run for longer than the number of default iterations). 
+The correlations in $\texttt{line}$ effects between viruses are nudged a little further from zero under the new prior but the effect is rather subtle (there's also some auto-correlation in chains so they should be run for longer than the number of default iterations). 
 
-```{r }
-plot(mcmc.list(posterior.cor(m.sigma.5$VCV[,1:9])[,c(2:3,6)], posterior.cor(m.sigma.6$VCV[,1:9])[,c(2:3,6)]))
+``` {r line-rcompare, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the correlation in $\\texttt{line}$ effects between the three viruses when the marginal prior for the variances are scaled (1000) $$F_{1,2}$ (black - model $\\texttt{m.sigma.5}$) or $F_{1,1}$ (red- model $\\texttt{m.sigma.6}$) distributions.  The $F_{1,2}$ prior is flat for the correlation in $\\texttt{line}$ effects across viruses.", fig.width=7, fig.height=8}
+plot(mcmc.list(posterior.cor(m.sigma.5$VCV[,1:9])[,c(2:3,6)], posterior.cor(m.sigma.6$VCV[,1:9])[,c(2:3,6)]), density=FALSE)
 ```
 
-Increasing $\texttt{nu}$ substantially to 11 has a small effect on the variances, with the prior favouring smaller values:
+In contrast, altering the degrees-of-freedom in the inverse-Wishart (ie. not using parameter-expanded $F$-priors) to achieve a better prior distribution for the correlation can have a much stronger influence on the variances and standard deviations \@ref(fig:prior-compare-iw).
 
-```{r sigma-7}
-prior.sigma.7=list(R=IW(1, 0.002), G=F(10, 1000))
 
-m.sigma.7<-MCMCglmm(cbind(infected, not_infected)~virus, random=~us(virus):line, rcov=~idh(virus):units, data=sigma_small, family="multinomial2", prior=prior.sigma.7)
+``` {r prior-compare-iw, echo=FALSE, include=TRUE, fig.cap=paste0("Marginal prior densities for the standard deviation using the prior generator functions $\\texttt{IW(1,0.002)}$, $\\texttt{IW(1,1)}$ and $\\texttt{IW(1,2)}$, $\\texttt{IW(1,3)}$ and $\\texttt{IW(1,10)}$. $\\texttt{IW(1,2)}$ results in a flat prior for the correlation. Note that the legend refers to these in terms of the marginal density for the variance (ie. inverse-gamma). Also, while the x-axis runs from zero to ", round(max(sqrt(mschool.1$VCV[,"school"]))), ", the posterior distributions for the standard deviation in $\\texttt{line}$ effects lie in the range ", round(min(sqrt(m.sigma.5$VCV[,c(1,5,9)])),1), "-", round(max(sqrt(m.sigma.5$VCV[,c(1,5,9)])),1), ". By doing this, the figure is directly comparable to Figure \\@ref(fig:prior-compare)."), fig.width=7, fig.height=5}
 
-plot(mcmc.list(m.sigma.5$VCV[,c(1,5,9)], m.sigma.7$VCV[,c(1,5,9)]))
+sd.x<-seq(1e-18, max(sqrt(mschool.1$VCV[,"school"])), length=1000)
+
+dsd.x<-as.list(1:5)
+
+iw0.prior<-resolve_prior(IW(1, 0.002), k=1, vtype="us")
+iw1.prior<-resolve_prior(IW(1, 1), k=1, vtype="us")
+iw2.prior<-resolve_prior(IW(1, 2), k=1, vtype="us")
+iw3.prior<-resolve_prior(IW(1, 3), k=1, vtype="us")
+iw10.prior<-resolve_prior(IW(1, 10), k=1, vtype="us")
+
+dsd.x[[1]]<-dprior(sd.x, iw0.prior, sd=TRUE)
+dsd.x[[2]]<-dprior(sd.x, iw1.prior, sd=TRUE)
+dsd.x[[3]]<-dprior(sd.x, iw2.prior, sd=TRUE)
+dsd.x[[4]]<-dprior(sd.x, iw3.prior, sd=TRUE)
+dsd.x[[5]]<-dprior(sd.x, iw10.prior, sd=TRUE)
+
+cols    <- palette()[1:5] 
+
+plot(dsd.x[[1]]~sd.x,                     
+     main = "",
+     xlab = expression(sigma[school]), ylab = "Prior density",
+     col  = cols[1], lwd = 2, type="l", ylim=c(0, max(unlist(dsd.x))))
+
+for (i in 2:length(dsd.x))                  
+  lines(dsd.x[[i]]~sd.x, col = cols[i], lwd = 2)
+
+model.names<-c("inverse-gamma(0.001, 0.001)", "inverse-gamma(0.5, 0.5)", "inverse-gamma(1, 1)", "inverse-gamma(1.5, 1.5)", "inverse-gamma(5, 5)")
+
+legend("topright", lwd = 2, col = cols,
+       legend = model.names, bty = "n")
 ```
 
-but the correlations are now more obviously pushed towards zero.   
+### Full joint prior
 
-```{r }
-plot(mcmc.list(posterior.cor(m.sigma.5$VCV[,1:9])[,c(2:3,6)], posterior.cor(m.sigma.7$VCV[,1:9])[,c(2:3,6)]))
+We have concentrated on the marginal priors, since these are relatively easy to understand and visualise. However, by concentrating on the marginal distributions we may miss aspects of the joint prior distribution that is important. Characterising the joint distribution is hard, particular under parameter expansion where the full probability density function *probably* doesn't have a closed form solution. However, we can simulate from these priors using the function `rprior` and use the visualisation tools in the library $\texttt{VisCov}$ [@Tokuda.2025]. 
+
+``` {r viscov, include=TRUE, fig.cap="Visualisation of the prior distribution used for the $3\\times 3$ (co)variance matrix of $\\texttt{line}$ effects from model $\\texttt{m.sigma.5}$ where a parameter expanded prior was used with marginal $F{1,2}$ priors on the variances with a scale of a 1,000 (half-$t_2$ prior on the standard deviation with scale $\\sqrt{1000}\\approx 32$). The prior is flat for the correlations. See @Tokuda.2025 for discussion of $\\texttt{VisCov}$ plots.", fig.width=7, fig.height=8}
+
+prior.line<-resolve_prior(prior.sigma$G, k=3, vtype="us")
+
+VCV<-rprior(2000, prior=prior.line)
+# simulate from prior for line (co)variance matrix 
+
+mat<- apply(VCV, 1, matrix, nrow=3, simplify=FALSE)
+# coerce to list
+
+CovPlotData = VisCov("User defined distribution", param=list(prob = 0.5, mat = mat))
 ```
 
-While flat marginal priors for the correlations may seem like a desirable property...
+We can also visualise the inverse-Wishart prior with $\texttt{nu}=4$ which is flat for the correlations since $\texttt{nu}^{\ast}=2$. We can see the dependencies in the posterior are much stronger, particularly between the correlations and the standard deviations (Figure \@ref(fig:viscov2)).
 
-### Priors for `corg` and `corgh` structures
+``` {r viscov2, include=TRUE, fig.cap="Visualisation of the prior distribution for a $3\\times 3$ (co)variance matrix using an inverse-Wishart distribution with $\\texttt{n}=4$ and $\\texttt{V}={\\bf I}\\frac{1}{2}$. This prior is flat for the correlations ($\\texttt{nu}^{\\ast}=2$) but the marginal prior for the variances is inverse-gamma with shape and scale equal to one. See @Tokuda.2025 for discussion of $\\texttt{VisCov}$ plots.", fig.width=7, fig.height=8}
 
-For `corg` and `corgh` structures[^4.4] the diagonals of `V` define the fixed variances (`corgh`) or are ignored and the variances set to one (`corg`). I use the prior specification in @Barnard.2000 where `nu` controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations ($r$) is given by
-@Barnard.2000 [and @Box.1973]:
+prior.IW<-resolve_prior(IW(1,2), k=3, vtype="us")
+# inverse-Wishart prior with marginal inverse-gamma(1,1) prior on variances
 
-$$\begin{array}{lr}
-Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, & |r|<1\\
-\end{array}$$
+VCV<-rprior(2000, prior=prior.IW)
+# simulate from prior for line (co)variance matrix 
 
-and as shown above setting `nu` =`dim(V)+1` results in marginal correlations that are uniform on the interval \[-1,1\].
+mat<- apply(VCV, 1, matrix, nrow=3, simplify=FALSE)
+# coerce to list
 
-In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. $\texttt{MCMCglmm}$ uses a method proposed by @Liu.2006 with the target prior as in @Barnard.2000. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a diffuse prior is set, mixing is generally not a problem. If `nu=0` is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.
+CovPlotData = VisCov("User defined distribution", param=list(prob = 0.5, mat = mat))
+```
+
 
 
 
@@ -460,4 +556,6 @@ In most cases correlation matrices do not have known form and so cannot be direc
 
 [^4.3]: In models `m.sigma.3` (and `m.sigma.4`) we fitted the $\texttt{idh}$ term `idh(virus):line`. We could also have set this model up as the much more ugly `idh(at.level(virus, "France")):line+idh(at.level(virus, "Spain")):line+idh(at.level(virus, "Greece")):line`. The function `at.level` returns a vector with ones where the first term ($\texttt{virus}$) is equal to the second term (e.g. $\texttt{"France"}$) and zero otherwise. In this context, it essentially just fits $\texttt{line}$ effects on observations made on the $\texttt{France}$ virus. The prior specification would require a prior on each of the three variances and a different $\texttt{nu}$ could be specified for each.
 
-[^4.4]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
+[^corg-prior]: When correlation matrices are estimated using $\texttt{corg}$ and $\texttt{corgh}$ structures only $\texttt{nu}$ determines the prior density  - $\texttt{V}$ is ignored. The marginal density for the correlations are the same as those given for the $inverse-Wishart$ and marginal $F$-priors. 
+
+
