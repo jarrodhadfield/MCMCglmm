@@ -47,6 +47,7 @@ jobs:
             kableExtra
             rgl
             VisCov
+            lmeSplines
             local::.
           needs: website
 

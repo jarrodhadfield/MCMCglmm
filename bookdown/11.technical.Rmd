@@ -252,23 +252,6 @@ The deviance is calculated at each iteration if `DIC=TRUE` and stored each `thin
 $$\textrm{DIC} = 2\bar{D}-D(\bar{\boldsymbol{\mathbf{\Omega}}})$$
 
 
-### Priors for `corg` and `corgh` structures
-
-For `corg` and `corgh` structures[^4.4] the diagonals of `V` define the fixed variances (`corgh`) or are ignored and the variances set to one (`corg`). I use the prior specification in @Barnard.2000 where `nu` controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations ($r$) is given by
-@Barnard.2000 [and @Box.1973]:
-
-$$\begin{array}{lr}
-Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, & |r|<1\\
-\end{array}$$
-
-and as shown above setting `nu` =`dim(V)+1` results in marginal correlations that are uniform on the interval \[-1,1\].
-
-In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. $\texttt{MCMCglmm}$ uses a method proposed by @Liu.2006 with the target prior as in @Barnard.2000. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a diffuse prior is set, mixing is generally not a problem. If `nu=0` is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.
-
-[^4.4]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
-
-
-
 ``` {r echo=FALSE, results='asis'}
 df <- data.frame(
   Distribution = c("`\"gaussian\"`", "`\"poisson\"`", "`\"categorical\"`", "`\"multinomialJ\"`", "`\"ordinal\"`", "`\"threshold\"`", "`\"exponential\"`", "`\"geometric\"`", "`\"cengaussian\"`", "`\"cenpoisson\"`", "`\"cenexponential\"`", "`\"zipoisson\"`", "`\"ztpoisson\"`", "`\"hupoisson\"`", "`\"zapoisson\"`", "`\"hubinomial\"`", "`\"nzbinom\"`", "`\"ncst\"`", "`\"msst\"`", "`\"ztmbJ\"`", "`\"ztmultinomialJ\"`"),
@@ -319,6 +302,49 @@ kable(df, "html", escape = FALSE, caption = "Distribution types that can fitted 
 ```
 
 
+
+## Parameter Expansion {#parameter-expansion}
+
+As the covariance matrix approaches a singularity the mixing of the chain becomes notoriously slow. This problem is often encountered in single-response models when a variance component is small and the chain becomes stuck at values close to zero. Similar problems occur for the EM algorithm and @Liu.1998 introduced parameter expansion to speed up the rate of convergence. The idea was quickly applied to Gibbs sampling problems [@Liu.1999] and has now been extensively used to develop more efficient mixed-model samplers [e.g. @vanDyk.2001; @Gelman.2008b; @Browne.2009].
+
+The columns of the design matrix (${\bf W}$) can be multiplied by the non-identified working parameters ${\boldsymbol{\mathbf{\alpha}}} = \left[1,\ \alpha_{1},\ \alpha_{2},\ \dots \alpha_{k}\right]^{'}$:
+
+$${\bf W}_{\alpha} = \left[{\bf X}\ {\bf Z}_{1}\alpha_{1}\ {\bf Z}_{2}\alpha_{2}\ \dots\ {\bf Z}_{k}\alpha_{k}\right]
+\label{wstar}   (\#eq:wstar)$$
+
+where the indices denote submatrices of ${\bf Z}$ which pertain to effects associated with the same variance component. Replacing ${\bf W}$ with ${\bf W}_{\alpha}$ we can sample the new location effects $\boldsymbol{\theta}_{\alpha}$ as described above, and rescale them to obtain $\boldsymbol{\theta}$:
+
+$$\boldsymbol{\theta} = ({\bf I}_{\beta}\oplus_{i=1}^{k}{\bf I}_{u_{i}}\ \alpha_{i})\boldsymbol{\theta}_{\alpha}$$
+
+where the identity matrices are of dimension equal to the length of the subscripted parameter vectors.
+
+Likewise, the (co)variance matrices can be rescaled by the set of $\alpha$'s associated with the variances of a particular variance structure component (${\boldsymbol{\mathbf{\alpha}}}_{\mathcal{V}}$):
+
+$${\bf V} = Diag({\boldsymbol{\mathbf{\alpha}}}_{\mathcal{V}}){\bf V}_{\alpha}Diag({\boldsymbol{\mathbf{\alpha}}}_{\mathcal{V}})$$
+
+The working parameters are not identifiable in the likelihood, but do have a proper conditional distribution. Defining the $n\times(k+1)$ design matrix ${\bf X}_{\alpha}$ with each column equal to the submatrices in Equation \@ref(eq:wstar) postmultiplied by the relevant subvectors of $\boldsymbol{\theta}_{\alpha}$, we can see that ${\boldsymbol{\mathbf{\alpha}}}$ is a vector of regression coefficients:
+
+$$\begin{array}{rl}
+\bf{l} =& {\bf X}_{\alpha}{\boldsymbol{\mathbf{\alpha}}}+\bf{e}\\
+\end{array}$$
+
+and so the methods described above can be used to update them.
+
+
+## Priors for `corg` and `corgh` structures
+
+For `corg` and `corgh` structures[^4.4] the diagonals of `V` define the fixed variances (`corgh`) or are ignored and the variances set to one (`corg`). I use the prior specification in @Barnard.2000 where `nu` controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations ($r$) is given by
+@Barnard.2000 [and @Box.1973]:
+
+$$\begin{array}{lr}
+Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, & |r|<1\\
+\end{array}$$
+
+and as shown above setting `nu` =`dim(V)+1` results in marginal correlations that are uniform on the interval \[-1,1\].
+
+In most cases correlation matrices do not have known form and so cannot be directly Gibbs sampled. $\texttt{MCMCglmm}$ uses a method proposed by @Liu.2006 with the target prior as in @Barnard.2000. Generally this algorithm is very efficient as the Metropolis-Hastings acceptance probability only depends on the degree to which the candidate prior and the target prior (the prior you specify) conflict. The candidate prior is equivalent to the prior in @Barnard.2000 with `nu=0` so as long as a diffuse prior is set, mixing is generally not a problem. If `nu=0` is set (the default) then the Metropolis-Hastings steps are always accepted resulting in Gibbs sampling. However, a prior of this form puts high density on extreme correlations which can cause problems if the data give support to correlations in this region.
+
+[^4.4]: In versions $<2.18$ `cor` fitted what is now a `corg` structure. The reason for the change is to keep the `asreml` and $\texttt{MCMCglmm}$ syntax equivalent. However, the `corgh` structure in asreml is a reparameterised `us` structure whereas in $\texttt{MCMCglmm}$ the variances are fixed in the prior.
 
 
 

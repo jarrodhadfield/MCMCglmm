@@ -1,0 +1,29 @@
+# Measurement Error, Meta-analysis an Missing Values {#measurement}
+
+
+## Error in the Response
+
+Random intercept-slope models implicitly assume that the variance changes as a quadratic function of the predictor. This can be used to our advantage because it allows us to fit meta-analytic models. In meta-analysis the data are usually some standardised statistic which has been estimated with different levels of measurement error. If we wanted to know the expected value of these statistics we would want to weight our answer to those measurements made with the smallest amount of error. If we assume that measurement error around the true value is normally distributed then we could assume the model:
+
+$$y_{i} = \beta_{1} + m_{i} +e _{i}$$
+
+where $\beta_{1}$ is the expected value, $m_{i}$ is some deviation due to measurement error, and $e_{i}$ is the deviation of the statistic from the global intercept not due to measurement error. Some types of meta-analysis presume $e_{i}$ does not exist and that the only variation between studies is due to measurement error. This is not realistic, I think. Often, standard errors are reported in the literature, and these can be viewed as an approximation to the expected standard deviation of the measurement error. If we put the standard errors for each statistic as a column in the data frame (and call it `SE`) then the random term `idh(SE):units` defines a diagonal matrix with the standard errors on the diagonal. Using results from Equation \@ref(eq:RRvar-eq)
+
+$$\begin{array}{rl}
+\textrm{VAR}[{\bf m}] =& {\bf Z}{\bf V}{\bf Z}^{'}\\ 
+               =& {\bf Z}\sigma^{2}_{m}{\bf I}{\bf Z}^{'}\\ 
+               =& \sigma^{2}_{m}{\bf Z}{\bf Z}^{'}\\                               
+\end{array}$$
+
+fixing $\sigma^{2}_{m}=1$ in the prior, the expected variance in the measurement errors are therefore the standard errors squared (the sampling variance) and all measurement errors are assumed to be independent of each other. The random regression therefore fits a random effect meta-analysis.
+
+### Meta-analysis {#meta-sec}
+
+
+## Error in the Predictors
+
+## Missing Values
+
+
+
+

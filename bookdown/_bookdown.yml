@@ -10,7 +10,7 @@ rmd_files:
   - 6.cont_int.Rmd
   - 7.multi.Rmd
   - 8.pedigree.Rmd  
-  - 9.px.Rmd
+  - 9.measurement.Rmd
   - 10.path.Rmd
   - 11.technical.Rmd
   - 12.references.Rmd  
