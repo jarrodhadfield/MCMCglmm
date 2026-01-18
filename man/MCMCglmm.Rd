@@ -13,7 +13,7 @@ MCMCglmm(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL,
     scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE,
     pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE,
     saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, 
-    theta_scale=NULL, saveWS=TRUE, aggregate=NULL)
+    theta_scale=NULL, saveWS=TRUE, aggregate=NULL, longer=1)
 }
 \arguments{
   \item{fixed}{\code{\link{formula}} for the fixed effects, multiple responses 
@@ -67,6 +67,7 @@ saved?}
   \item{theta_scale}{optional list of 4 possible elements specifying a set of location effects (fixed or random) that are to be scaled by the parameter \code{theta_scale} for the subset of observations which have level \code{level} in factor \code{factor}: \code{factor}, \code{level}, \code{fixed} (position of fixed terms to be scaled) and \code{random} (position of random effect components).}
   \item{saveWS}{logical: save design matrix for scaled effects.}
   \item{aggregate}{character: names of long-format variables to be formed from wide-format variables in multi-trait models. Wide-format variables should have the long-format variable name followed by an underscore and then the trait name. For example, a wide-format data frame might have variable names \code{y1}, \code{y2}, \code{x_y1}, \code{x_y2}. If a multi-trait model is fitted for \code{y1} and \code{y2} then \code{aggregate="x"} generates the new variable \code{x=c(x_y1, x_y2)}).}
+  \item{longer: positive integer that multiples \code{nitt}, \code{thin} and \code{burnin}}
 }
 \value{
   \item{Sol}{Posterior Distribution of MME solutions, including fixed effects}

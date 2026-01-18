@@ -19,6 +19,7 @@ fixing $\sigma^{2}_{m}=1$ in the prior, the expected variance in the measurement
 
 ### Meta-analysis {#meta-sec}
 
+### Interval Estimation
 
 ## Error in the Predictors
 

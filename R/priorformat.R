@@ -9,6 +9,9 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
             }
             prior$beta.mu<-rep(0,nk)
             prior$beta.V<-diag(nk)*1e+10
+            if(grepl("ante.*v$", vtype[1])){
+              prior$V<-diag(1)
+            }
           }
        }
 

@@ -22,7 +22,7 @@ navbar:
       href: articles/index.html
 
     course-notes:
-      text: "Course notes"
+      text: "Course Notes"
       href: course-notes/overview.html
 
     github:

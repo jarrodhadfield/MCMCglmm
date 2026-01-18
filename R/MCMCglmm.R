@@ -1,4 +1,4 @@
-"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL, saveWS=TRUE, aggregate=NULL){
+"MCMCglmm"<-function(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL, data, start=NULL, prior=NULL, tune=NULL, pedigree=NULL, nodes="ALL",scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE, pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE, saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, theta_scale=NULL, saveWS=TRUE, aggregate=NULL, longer=1){
 
   orig.na.action<-options("na.action")[[1]]
   options("na.action"="na.pass")	
@@ -1471,9 +1471,14 @@ ncutpoints_store<-sum((ncutpoints-3)*(ncutpoints>3))
 
 data$MCMC_family.names<-match(data$MCMC_family.names, family.types)     # add measurement error variances and y.additional 
 
+if(longer%%1!=0 | longer<1){stop("longer must be a positive integer")}
 if(nitt%%1!=0){stop("nitt must be integer")}
 if(thin%%1!=0){stop("thin must be integer")}
 if(burnin%%1!=0){stop("burnin must be integer")}
+
+nitt<-nitt*longer
+burnin<-burnin*longer
+thin<-thin*longer
 
 nkeep<-ceiling((nitt-burnin)/thin)
 
@@ -1831,7 +1836,7 @@ output<-list(
   Tune=list2bdiag(Tune),
   meta=!is.null(mev),
   y.additional=y.additional,
-  Wscale=L 
+  Wscale=L
   )
 
 class(output)<-c("MCMCglmm")
