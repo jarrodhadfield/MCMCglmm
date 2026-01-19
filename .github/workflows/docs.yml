@@ -34,6 +34,7 @@ jobs:
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          install-suggests: false
           extra-packages: |
             bookdown
             pkgdown
