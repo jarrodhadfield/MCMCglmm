@@ -1,6 +1,6 @@
 # Continuous Random Interactions {#cont-int}
 
-In Chapter \@ref(cat-int) we saw how we could define a set of random effects by specifying a linear model within a variance function and then interacting this term with a categorical predictor. In that Chapter, we used the random term `~us(virus):line` in order to model $\texttt{virus}$ by $\texttt{line}$ interactions. Since the variance function model involved a categorical predictor (`virus`), and the intercept is omitted by default, it was not really necessary to fully engage with the idea that the variance function is taking a model formula: most users familiar with covariance matrices will be happy that `~us(virus):line` specifies the covariance matrix
+In Chapter \@ref(cat-int) we saw how we could define a set of random effects by specifying a linear model within a variance function and then interacting this term with a categorical predictor. In that Chapter, we used the random term `~us(virus):line` in order to model $\texttt{virus}$ by $\texttt{line}$ interactions. Since the variance function model involved a categorical predictor (`virus`), and the intercept is omitted by default, it was not really necessary to fully engage with the idea that the variance function is taking a model formula - most users familiar with covariance matrices will be happy that `~us(virus):line` specifies the covariance matrix:
 
 $${\bf V}_{{\color{red}{\texttt{line}}}}=
 \left[
@@ -49,7 +49,7 @@ where $\beta_{3}$ is the interaction effect, which will be labelled as $\texttt{
 
 $$E[\texttt{weight} | \texttt{Diet}=\texttt{2}] = \beta_0+\left(\beta_1+\beta_3\right)\texttt{Time} +  \beta_{2}\texttt{Time}^{2}$$
 
-At hatching the model predicts chicks on different diets to have the same expected weight ($\beta_0$). This is why I intentionally dropped the 'main' effect: at hatching the diet is yet to have an effect on the chick's weight and since chicks were randomly assigned to a treatment they should be equivalent at $\texttt{Time}$ 0. We could test this if we wished, but I'm prepared to trust the experimenters. After hatching, however, we may expect the diet to cause the weights of the chicks to diverge because it alters their growth rate. The difference in growth rate between $\texttt{Diet 2}$ and $\texttt{Diet 1}$ is $\beta_{3}$. We've assumed that the effect of $\texttt{Time}^{2}$ is constant over diets. This means that if the growth rates differ between the treatment groups that difference remains constant: the growth rate on $\texttt{Diet 2}$ at some value of $\texttt{Time}$ is $\beta_1+\beta_3+\beta_{2}\texttt{Time}$, and consistently differs from  $\texttt{Diet 1}$ by an amount $\beta_\texttt{3}$ at all values of $\texttt{Time}$.
+At hatching the model predicts chicks on different diets to have the same expected weight ($\beta_0$). This is why I intentionally dropped the 'main' effect: at hatching the diet is yet to have an effect on the chick's weight and since chicks were randomly assigned to a treatment they should be equivalent at $\texttt{Time}$ 0. We could test this if we wished, but I'm prepared to trust the experimenters. After hatching, however, we may expect the diet to cause the weights of the chicks to diverge because it alters their growth rate. The difference in growth rate between $\texttt{Diet 2}$ and $\texttt{Diet 1}$ is $\beta_{3}$. We've assumed that the effect of $\texttt{Time}^{2}$ is constant over diets. This means that if the growth rates differ between the treatment groups, that difference remains constant: the growth rate on $\texttt{Diet 2}$ at some value of $\texttt{Time}$ is $\beta_1+\beta_3+\beta_{2}\texttt{Time}$, and consistently differs from  $\texttt{Diet 1}$ by an amount $\beta_\texttt{3}$ at all values of $\texttt{Time}$.
 
 
 Let's have a look at the model summary:
@@ -101,7 +101,7 @@ $${\bf V}_{{\color{red}{\texttt{Chick}}}}=
 \end{array}
 \right]$$
 
-$\sigma^{2}_{\color{blue}{\texttt{(Intercept)}}}$ is the amount of variation in intercepts between chicks, and $\sigma^{2}_{\color{blue}{\texttt{Time}}}$ is the amount of variation in the regression slopes between chicks. If the `idh` function had been used, the covariance would have been set to zero, but there is often covariance between intercepts and slopes and it is usually a good idea to use the `us` function and estimate them. We shall do so:
+$\sigma^{2}_{\color{blue}{\texttt{(Intercept)}}}$ is the amount of variation in intercepts between chicks, and $\sigma^{2}_{\color{blue}{\texttt{Time}}}$ is the amount of variation in the regression slopes between chicks (their growth rate). If the `idh` function had been used, the covariance between intercepts and slopes would have been set to zero, but they are often correlated and it is usually a good idea to use the `us` function and estimate the covariance. We shall do so:
 
 ``` {r echo=TRUE, cache=TRUE}
 mweight.2<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Chick, data=ChickWeight, pr=TRUE, prior=prior.weight)
@@ -149,15 +149,16 @@ $$
 \label{Vrr-eq}   (\#eq:Vrr)
 $$
 
-Because we can conceptualise the random regression in terms of the covariance between observations, rather than intercepts, slopes, and so on, random regression models are sometimes known as covariance function models.
+Since we specified a 1st degree polynomial at the level of $\texttt{Chick}$ (an intercept and slope) the variance is a 1st degree polynomial of $\texttt{Time}$ (it has a quadratic term, with coefficient $\sigma^2_{\texttt{Time}}$).  
 
-The function `buildV` returns the predicted variance of observations (and the covariances if `diag=FALSE`). As with the predict function, there is the option to condition on some of the random effects (i.e. treat them as constants) by excluding them from the argument passed to marginal (see Section \@ref(ranpred-sec)). However, the default is not to condition on them and so we can get the total predicted variance for each observation due to chick effects and the residuals. In our model, the residual variance, $\sigma^2_{\textrm{units}}$, is constant and so we can simply add it to Equation \@ref(Vrr-eq) to get the total variance (after accounting for the fixed effects).
+
+Because we can conceptualise the random regression in terms of the covariance between observations, rather than in terms of intercepts, slopes, and so on, random regression models are sometimes known as covariance function models. The function `buildV` returns the predicted variance of observations (and the covariances if `diag=FALSE`) after conditioning on the fixed effect model. As with the predict function, there is also the option to condition on some of the random effects (i.e. treat them as constants) by excluding them from the argument passed to marginal (see Section \@ref(ranpred-sec)). However, the default is not to condition on them and so we can get the total predicted variance for each observation due to chick effects and the residuals. The residual variance in our model ($\sigma^2_{\textrm{units}}$) is constant and so the total variance is obtained by simply adding $\sigma^2_{\textrm{units}}$ to Equation \@ref(eq:Vrr).
 
 ```{r }
 predv.weight.2<-buildV(mweight.2)
 ```
 
-The predicted variance goes up dramatically with $\texttt{Time}$ (red points in Figure \@ref(fig:V-rr)). In contrast, the model with chick intercepts only assumes that the variance is constant with $\texttt{Time}$ (black points in Figure \@ref(fig:V-rr)).
+The predicted variance goes up dramatically with $\texttt{Time}$ (red points in Figure \@ref(fig:V-rr)). In contrast, model (`mweight.1`) where chicks do not vary in their growth rate assumes that the variance is constant with $\texttt{Time}$ (black points in Figure \@ref(fig:V-rr)).
 
 ``` {r V-rr, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Predicted variance in weight due to random effects from model `mweight.2`.", fig.width=7, fig.height=5}
 plot(t(predv.weight.2)~ChickWeight$Time, ylab="Predicted Variance", xlab="Time", col="red")
@@ -172,7 +173,7 @@ pred.weight.1<-predict(mweight.1, interval="prediction")
 pred.weight.2<-predict(mweight.2, interval="prediction")
 ```
 
-and overlay these on the data for all chicks plotted simultaneously, we see that our first model - that assumes constant variance - has serious problems (black lines in Figure \@ref(fig:pred-int1)). Initially, it predicts far more variability than observed, but after around $\texttt{Time}$ 12 it predicts too little variability. The random slope model (red lines) does much better, although it still predicts too much variability initially.  
+and overlay these on the data for all chicks plotted simultaneously, we see that our first model - that assumes constant variance - has serious problems (black lines in Figure \@ref(fig:pred-int1)). Initially, it predicts far more variability than observed, but after around $\texttt{Time}$ 12 it predicts too little variability. The random slope model (red lines) does much better, although it still predicts too much variability initially, particularly at hatching.  
 
 ``` {r pred-int1, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a random intercept model (`mweight.1`) that implicitly assumes the variance is constant over $\\texttt{Time}$.  The red line is for a random intercept-slope model (`mweight.2`) that allows the variance to change as a quadratic function of $\\texttt{Time}$.", fig.width=7, fig.height=5}
 
@@ -194,7 +195,7 @@ lines(upper.2~unique(ChickWeight$Time), col="red", lty=2)
 
 ```
 
-At this point we may be fairly chuffed with the random-intercept model - not only does tit seem to predict the expected response well, but in terms of the variance in the response, it's a massive improvement. However, it does raise an issue. If the model correctly specifies how chicks grow as a function of $\texttt{Time}$ this change in the variance is expected. However, it does mean that we could find evidence for variation in chick effects that comes solely from how the variance in weight changes as a function of $\texttt{Time}$ (i.e from Equation \@ref(eq:Vrr)) not from assessing whether weights from the same chick are correlated (i.e from Equation \@ref(eq:Crr)).  
+At this point we may be fairly chuffed with the random intercept-slope model - not only does it seem to predict the expected response well (Figure \@ref(fig:CWpred-2)), but in terms of the variance in the response, it's a massive improvement. However, it does raise an issue. The only way the model can accommodate changes in the variance over $\texttt{Time}$ is through the (co)variance matrix of chick effects (Equation \@ref(eq:Vrr)). Consequently, evidence that $\sigma^2_\texttt{Time}$ is non-zero may indicate that chick's vary in their growth rate but it may also just be capturing increases in variance due to some other mechanism. Perhaps the evidence for a non-zero $\sigma^2_\texttt{Time}$ is coming solely from how the variance in weight changes as a function of $\texttt{Time}$ (i.e from Equation \@ref(eq:Vrr)) not from assessing whether weights from the same chick are correlated (i.e from Equation \@ref(eq:Crr))? 
 
 To see this, let's take the $\texttt{ChickWeight}$ data frame and permute $\texttt{Chick}$ labels within each $\texttt{Time}$ point. 
 
