@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-16" />
+<meta name="date" content="2026-01-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -289,11 +289,15 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="6.1" data-path="cont-int.html"><a href="cont-int.html#random-regression"><i class="fa fa-check"></i><b>6.1</b> Random Regression</a>
 <ul>
-<li class="chapter" data-level="6.1.1" data-path="cont-int.html"><a href="cont-int.html#RRcentering"><i class="fa fa-check"></i><b>6.1.1</b> Mean centring</a></li>
-<li class="chapter" data-level="6.1.2" data-path="cont-int.html"><a href="cont-int.html#expected-variances-and-covariances"><i class="fa fa-check"></i><b>6.1.2</b> Expected Variances and Covariances</a></li>
+<li class="chapter" data-level="6.1.1" data-path="cont-int.html"><a href="cont-int.html#covf-sec"><i class="fa fa-check"></i><b>6.1.1</b> Covariance Functions</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#user-defined-sec"><i class="fa fa-check"></i><b>6.2</b> User-defined Design Matrices</a></li>
-<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.3</b> Splines</a></li>
+<li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#het-res"><i class="fa fa-check"></i><b>6.2</b> Heterogeneous Residual Variances</a>
+<ul>
+<li class="chapter" data-level="6.2.1" data-path="cont-int.html"><a href="cont-int.html#variance-stabilisation"><i class="fa fa-check"></i><b>6.2.1</b> Variance stabilisation</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#antedependence-models"><i class="fa fa-check"></i><b>6.3</b> Antedependence Models</a></li>
+<li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#user-defined-sec"><i class="fa fa-check"></i><b>6.4</b> User-defined Design Matrices</a></li>
+<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.5</b> Splines</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response models</a>
 <ul>
@@ -324,6 +328,7 @@ div.csl-indent {
 <li class="chapter" data-level="9.1" data-path="measurement.html"><a href="measurement.html#error-in-the-response"><i class="fa fa-check"></i><b>9.1</b> Error in the Response</a>
 <ul>
 <li class="chapter" data-level="9.1.1" data-path="measurement.html"><a href="measurement.html#meta-sec"><i class="fa fa-check"></i><b>9.1.1</b> Meta-analysis</a></li>
+<li class="chapter" data-level="9.1.2" data-path="measurement.html"><a href="measurement.html#interval-estimation"><i class="fa fa-check"></i><b>9.1.2</b> Interval Estimation</a></li>
 </ul></li>
 <li class="chapter" data-level="9.2" data-path="measurement.html"><a href="measurement.html#error-in-the-predictors"><i class="fa fa-check"></i><b>9.2</b> Error in the Predictors</a></li>
 <li class="chapter" data-level="9.3" data-path="measurement.html"><a href="measurement.html#missing-values"><i class="fa fa-check"></i><b>9.3</b> Missing Values</a></li>
@@ -382,6 +387,9 @@ div.csl-indent {
 <p>fixing <span class="math inline">\(\sigma^{2}_{m}=1\)</span> in the prior, the expected variance in the measurement errors are therefore the standard errors squared (the sampling variance) and all measurement errors are assumed to be independent of each other. The random regression therefore fits a random effect meta-analysis.</p>
 <div id="meta-sec" class="section level3 hasAnchor" number="9.1.1">
 <h3><span class="header-section-number">9.1.1</span> Meta-analysis<a href="measurement.html#meta-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+</div>
+<div id="interval-estimation" class="section level3 hasAnchor" number="9.1.2">
+<h3><span class="header-section-number">9.1.2</span> Interval Estimation<a href="measurement.html#interval-estimation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 </div>
 </div>
 <div id="error-in-the-predictors" class="section level2 hasAnchor" number="9.2">

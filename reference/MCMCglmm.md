@@ -15,7 +15,7 @@ MCMCglmm(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL,
     scale=TRUE, nitt=13000, thin=10, burnin=3000, pr=FALSE,
     pl=FALSE, verbose=TRUE, DIC=TRUE, singular.ok=FALSE, saveX=TRUE,
     saveZ=TRUE, saveXL=TRUE, slice=FALSE, ginverse=NULL, trunc=FALSE, 
-    theta_scale=NULL, saveWS=TRUE, aggregate=NULL)
+    theta_scale=NULL, saveWS=TRUE, aggregate=NULL, longer=1)
 ```
 
 ## Arguments
@@ -241,6 +241,8 @@ MCMCglmm(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL,
   have variable names `y1`, `y2`, `x_y1`, `x_y2`. If a multi-trait model
   is fitted for `y1` and `y2` then `aggregate="x"` generates the new
   variable `x=c(x_y1, x_y2)`).
+
+- longer: positive integer that multiples `nitt`, `thin` and `burnin`:
 
 ## Value
 
