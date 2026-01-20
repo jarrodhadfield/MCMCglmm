@@ -22,10 +22,14 @@ data(ChickWeight)
 head(ChickWeight)
 ```
 
+```{r echo=FALSE}
+ChickWeight$Chick<-factor(as.character(ChickWeight$Chick), levels=1:50)
+```
+
 The data consist of body weights (`weight`) for 50 chicks (`Chick`) measured up to 12 times over a 3 week period. The variable `Time` is the number of days since hatching, and `Diet` is a four level factor indicating the type of protein diet the chicks received. The data are plotted in Figure \@ref(fig:ChickWeight).
 
-``` {r ChickWeight, echo=FALSE, include=TRUE, fig.cap="Weight data of 50 chicks from hatching until three weeks old.", fig.width=7, fig.height=8}
-xyplot(weight~Time|Chick, data=ChickWeight, col="black")
+``` {r ChickWeight, echo=FALSE, include=TRUE, fig.cap="Weight data of 50 chicks from hatching until three weeks old.", fig.width=9, fig.height=6}
+xyplot(weight~Time|Chick, data=ChickWeight, col="black",  layout = c(10, 5), as.table = TRUE)
 ```
 
 Growth curves tend to be sigmoidal and so one of the non-linear growth curves such as the Gompertz or logistic may fit the data well. However, these can be tricky to use and an alternative is to try and capture the form of the curve using polynomials. We'll start with a quadratic function at the population level and and fit chick effects as random[^cont-1]. 
@@ -70,10 +74,10 @@ where $u^{(0)}_i$ is the random chick effect. The model assumes that chicks devi
 pweight.1<-predict(mweight.1, marginal=NULL)
 ```
 
-and we can add them to the $\texttt{xyplot}$ plot as orange lines (Figure \@ref(fig:CWpred-1)).
+and we can add them to the $\texttt{xyplot}$ plot as black lines (Figure \@ref(fig:CWpred-1)).
 
-``` {r CWpred-1, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). The mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with random chick intercepts (model `mweight.1`). The predicted weights are shown as lines.", fig.width=7, fig.height=8}
-xyplot(weight+pweight.1~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("p", "l"), lwd=c(1, 2), col=c("black", "black"))
+``` {r CWpred-1, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). The mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with random chick intercepts (model `mweight.1`). The predicted weights are shown as lines.", fig.width=9, fig.height=6}
+xyplot(weight+pweight.1~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("p", "l"), lwd=c(1, 2), col=c("black", "black"),  layout = c(10, 5), as.table = TRUE)
 ```
 
 The predictions don't look too bad (but see Section \@ref(covf-sec)), although you will notice that for some chicks (e.g. 7, 13 and 35) the slope of the predicted growth seems either too shallow, or too steep. As we did with the $\texttt{Diet}$ by $\texttt{Time}$ interaction, we could also allow our chicks to deviate in their growth rates and fit the model: 
@@ -82,7 +86,7 @@ $$E[\texttt{weight} | \texttt{Diet}=1, \texttt{Chick}=i] = \beta_0+(\beta_1+u^{(
 \label{rr-eq}   (\#eq:rr)$$
 
 
-where $u^{(1)}_i$ is how much $\texttt{Chick}$ $i$'s growth rate differs from the average ($\beta_1$ for $\texttt{Diet 1}$). To do this we can fit the term `us(1+Time):Chick`. The linear model inside the variance function has two parameters, an intercept (`1` - which he have to specify explicitly[^4.1]) and a regression slope associated with `Time`. Consequently, the interaction with $\texttt{Chick}$ defines the set of coefficients:
+where $u^{(1)}_i$ is how much $\texttt{Chick}$ $i$'s growth rate differs from the average ($\beta_1$ for $\texttt{Diet 1}$). This type of model is often referred to as a random-regression model. To fit such a model we can replace `Chick` in the random formula with the term `us(1+Time):Chick`. The linear model inside the variance function has two parameters, an intercept (`1` - which he have to specify explicitly[^4.1]) and a regression slope associated with `Time`. Consequently, the interaction with $\texttt{Chick}$ defines the set of coefficients:
 
 $$\begin{array}{c|rrrrrc}
 &{\color{red}{\texttt{Chick1}}}&{\color{red}{\texttt{Chick2}}}&{\color{red}{\texttt{Chick3}}}&\dots\\
@@ -101,7 +105,10 @@ $${\bf V}_{{\color{red}{\texttt{Chick}}}}=
 \end{array}
 \right]$$
 
-$\sigma^{2}_{\color{blue}{\texttt{(Intercept)}}}$ is the amount of variation in intercepts between chicks, and $\sigma^{2}_{\color{blue}{\texttt{Time}}}$ is the amount of variation in the regression slopes between chicks (their growth rate). If the `idh` function had been used, the covariance between intercepts and slopes would have been set to zero, but they are often correlated and it is usually a good idea to use the `us` function and estimate the covariance. We shall do so:
+$\sigma^{2}_{\color{blue}{\texttt{(Intercept)}}}$ is the amount of variation in intercepts between chicks, and $\sigma^{2}_{\color{blue}{\texttt{Time}}}$ is the amount of variation in the regression slopes between chicks (their growth rate). Note that our first model could also have been fitted using `us(1):Chick` (rather than just  `Chick`) which may have made clearer the justification for calling the $\texttt{Chick}$ effects in that model intercepts.
+
+
+Let's fit the random regression model: 
 
 ``` {r echo=TRUE, cache=TRUE}
 mweight.2<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Chick, data=ChickWeight, pr=TRUE, prior=prior.weight)
@@ -116,8 +123,8 @@ pweight.2<-predict(mweight.2, marginal=NULL)
 
 and we can see that the fit is better (See Figure \@ref(fig:CWpred-2)). 
 
-```{r CWpred-2, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with random chick intercepts (black lines - model `mweight.1`) or random chick intercepts and slopes (red lines - model `mweight.2`).", fig.width=7, fig.height=8}
-xyplot(weight+pweight.1+pweight.2~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("p", "l", "l"), lwd=c(1, 2,2), col=c("black", "black", "red"))
+```{r CWpred-2, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with random chick intercepts (black lines - model `mweight.1`) or random chick intercepts and slopes (red lines - model `mweight.2`).", fig.width=9, fig.height=6}
+xyplot(weight+pweight.1+pweight.2~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("p", "l", "l"), lwd=c(1, 2,2), col=c("black", "black", "red"),  layout = c(10, 5), as.table = TRUE)
 ```
 
 In theory we could fit higher degree random regressions (data and prior permitting). For example, fitting `random=~us(1+Time+I(Time^2)):Chick` would allow the quadratic term for each Chick to deviate from the population mean and we would be estimating the $3\times3$ covariance matrix:
@@ -164,14 +171,14 @@ Because we can conceptualise the random regression in terms of the covariance be
 predv.weight.2<-buildV(mweight.2)
 ```
 
-The predicted variance goes up dramatically with $\texttt{Time}$ (red points in Figure \@ref(fig:V-rr)). In contrast, model (`mweight.1`) where chicks do not vary in their growth rate assumes that the variance is constant with $\texttt{Time}$ (black points in Figure \@ref(fig:V-rr)).
+The predicted variance goes up dramatically with $\texttt{Time}$ (red points in Figure \@ref(fig:V-rr)). In contrast, model (`mweight.1`), where chicks do not vary in their growth rate, assumes that the variance is constant with $\texttt{Time}$ (black points in Figure \@ref(fig:V-rr)).
 
 ``` {r V-rr, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Predicted variance in weight due to random effects from model `mweight.2`.", fig.width=7, fig.height=5}
 plot(t(predv.weight.2)~ChickWeight$Time, ylab="Predicted Variance", xlab="Time", col="red")
 points(rep(mean(rowSums(mweight.1$VCV)), 12)~unique(ChickWeight$Time))
 ```
 
-The two models are dramatically different in how they predict the variance changes with $\texttt{Time}$. This important difference isn't really apparent from comparing the panel plots (Figures \@ref(fig:CWpred-1) and Figures \@ref(fig:CWpred-2). However, if we obtain the 95% prediction intervals for the two models (the interval within which we expect to see 95% of observations)
+The two models are dramatically different in how they predict the variance changes with $\texttt{Time}$. This important difference isn't really apparent from comparing their predictions with the data (Figure \@ref(fig:CWpred-2). However, if we obtain the 95% prediction intervals for the two models (the interval within which we expect to see 95% of observations)
 
 
 ```{r }
@@ -200,9 +207,12 @@ lines(lower.2~unique(ChickWeight$Time), col="red", lty=2)
 lines(upper.2~unique(ChickWeight$Time), col="red", lty=2)
 ```
 
-At this point we may be fairly chuffed with the random intercept-slope model - not only does it seem to predict the expected response well (Figure \@ref(fig:CWpred-2)), but in terms of the variance in the response, it's a massive improvement. However, it does raise an issue. The only way the model can accommodate changes in the variance over $\texttt{Time}$ is through the (co)variance matrix of chick effects (Equation \@ref(eq:Vrr)). Consequently, evidence that $\sigma^2_\texttt{Time}$ is non-zero may indicate that chick's vary in their growth rate but it may also just be capturing increases in variance due to some other mechanism. Perhaps the evidence for a non-zero $\sigma^2_\texttt{Time}$ is coming solely from how the variance in weight changes as a function of $\texttt{Time}$ (i.e from Equation \@ref(eq:Vrr)) not from assessing whether weights from the same chick are correlated (i.e from Equation \@ref(eq:Crr))? 
+## Heterogeneous Residual Variances {#het-res}
 
-To see this, let's take the $\texttt{ChickWeight}$ data frame and permute $\texttt{Chick}$ labels within each $\texttt{Time}$ point. 
+In Section \@ref(covf-sec) we ended with a random intercept-slope model of chick weight. We were fairly chuffed with it - not only did it seem to predict the expected response well (Figure \@ref(fig:CWpred-2)), but in terms of the variance in the response, it was a massive improvement over the intercept-only model (Figure \@ref(fig:pred-int1)). Indeed, the $\texttt{ChickWeight}$ data has become something of a classic for illustrating the power of random regression models. However, a number of issues remain with the model and it's interpretation. We will address these issues in this section and the next.
+
+
+The only way that our random intercept-slope model (model `mweight.2`) could accommodate an increase in the variance over $\texttt{Time}$ was through the parameters of the (co)variance matrix of chick effects (Equation \@ref(eq:Vrr)). Consequently, a non-zero $\sigma^2_\texttt{Time}$ may indicate that chick's vary in their growth rate but it may also just be capturing increases in variance due to some other mechanism. Perhaps the evidence for a non-zero $\sigma^2_\texttt{Time}$ is coming solely from how the variance in weight changes as a function of $\texttt{Time}$ (i.e from Equation \@ref(eq:Vrr)) not from assessing whether weights from the same chick are correlated (i.e from Equation \@ref(eq:Crr))? To see this, let's take the $\texttt{ChickWeight}$ data frame and permute $\texttt{Chick}$ labels within each $\texttt{Time}$ point. 
 
 ```{r echo=TRUE}
 ChickWeightPerm<-ChickWeight
@@ -225,7 +235,6 @@ hist(mweight.perm$VCV[,4], breaks=50, main="", freq=FALSE, xlab=expression(sigma
 
 This is quite disconcerting - our model tells us that chicks systematically differ in their growth rate, yet we've jumbled the chick labels up in a way that weights from the same chick must be completely uncorrelated.  How do we know that something similar isn't happening with our original model? One option would be to allow the residual variance to change as a function of $\texttt{Time}$ and so we can be sure that the information for estimating the random effect part of the model is really coming from the repeated nature of the observations.
 
-## Heterogeneous Residual Variances {#het-res}
 
 In Section \@ref(covf-sec) we saw that we can think of random regression models in terms of the covariance between observations at pairs of values for the continuous predictor variable (Equation \@ref(eq:Vrr)).  When the pair of values are the same, we obtain the variance of observations at a given value of the predictor (Equation \@ref(eq:Vrr)). We can use this idea to allow the residual variance to increase with the square of some covariate. Although I won't discuss it here, $\texttt{covu}$ models (Section \@ref(covu-sec)) could be used to allow the residual variance to change as a polynomial function of the predictor with arbitrary degree. 
 
@@ -277,41 +286,122 @@ pweight.3<-predict(mweight.3, marginal=~us(Time):units)
 
 If we overlay these predictions from our model that assumed a constant residual variance, we can see that the predictions for the mean are rather similar (Figure \@ref(fig:CWpred-3)). 
 
-```{r CWpred-3, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\\texttt{Time}$ (blue lines - model `mweight.3`).", fig.width=7, fig.height=8}
-xyplot(weight+pweight.2+pweight.3~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("p", "l", "l"), lwd=c(1, 2,2), col=c("black", "red", "blue"))
+```{r CWpred-3, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\\texttt{Time}$ (blue lines - model `mweight.3`).", fig.width=9, fig.height=6}
+xyplot(weight+pweight.2+pweight.3~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("p", "l", "l"), lwd=c(1, 2,2), col=c("black", "red", "blue"),  layout = c(10, 5), as.table = TRUE)
 ```
 
 However, I would argue that in terms of predicting the mean, the model that assumed constant residual variance actually does slightly better than our new model. Both models also show autocorrelation in their residuals - we see runs of data-points lying consistently above, or consistently below, the prediction lines (for example $\texttt{Chick 43}$). If we plot the residuals from our predictions these patterns are much more obvious (Figure \@ref(fig:CWresid)). 
 
-```{r CWresid, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $$\\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\\texttt{Time}$ (blue lines - model `mweight.3`).", fig.width=7, fig.height=8}
-xyplot(rep(0,nrow(ChickWeight))+I(weight-pweight.2)+I(weight-pweight.3)~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("l", "l", "l"), lwd=c(1, 2,2), col=c("black", "red", "blue"), ylab="Residual Weight")
+```{r CWresid, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\\texttt{Time}$ (blue lines - model `mweight.3`).", fig.width=9, fig.height=6}
+xyplot(rep(0,nrow(ChickWeight))+I(weight-pweight.2)+I(weight-pweight.3)~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("l", "l", "l"), lwd=c(1, 2,2), col=c("black", "red", "blue"), ylab="Residual Weight",  layout = c(10, 5), as.table = TRUE)
+```
+
+We are in a tricky situation. The model with non-constant residual variance does a better job at catching the patterns in the data. If it did not, the variance associated with the term `us(Time):units` should be zero, and it is clearly not. However, when we focus on specific aspects of the data (e.g. the predicted means) it does a poorer job.  The central issue here is that both models have their inadequacies, and without fixing them it might be hard to draw very firm conclusions.  While dissatisfying, it is the reality, and previous random-regression tutorials that have used the $\texttt{ChickWeight}$ data set as an example rarely touch on the difficulties and subtleties of the approach.  
+
+## Autocorrelation {#autoc-sec}
+
+In Figure \@ref(fig:CWresid) we plotted a time series for the residuals of each chick. Neighbouring residuals were much more likely to have the same sign than a random pair of residuals, indicating autocorrelation in the residuals: two observations close in time are more similar to each other than our model predicts.    
+
+```{r }
+
+ChickWeight$resid<-ChickWeight$weight-predict(mweight.3)
+
+chick.wide <- reshape(ChickWeight[,c("resid", "Chick", "Time")], v.names="resid", idvar="Chick", timevar="Time", direction="wide")
+
+
+empiricalC<-cov(chick.wide[,-1], use="pairwise.complete.obs")
+
+
+Z<-cbind(1, unique(ChickWeight$Time))
+
+Vchick<-matrix(colMeans(mweight.3$VCV[,1:4]),2,2)
+Vres<-diag(colMeans(mweight.3$VCV[,5:6]))
+
+
+theoreticalC.3<-Z%*%Vchick%*%t(Z)+diag(mean(mweight.3$VCV[,5])+Z[,2]*mean(mweight.3$VCV[,6]))
+
+#open3d()
+#bg3d("white")
+
+#persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(empiricalC), xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "red", front="lines", back="lines", diagonal = "back")
+# persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(theoreticalC.3), add=TRUE, col = "blue")
+
 ```
 
 
-We are in a tricky situation. The model with non-constant residual variance does a better job at catching the patterns in the data. If it did not, the variance associated with the term `us(Time):units` should be zero, and it is clearly not. However, when we focus on specific aspects of the data (e.g. the predicted means) it does a poorer job.  The central issue here is that both models have their inadequacies, and without fixing them it might be hard to draw very firm conclusions.  While dissatisfying, it is the reality. The $\texttt{ChickWeight}$ data set has become something of a classic for illustrating the power of random regression models, yet the difficulties and subtleties of the approach are really covered.  
+
+``` {r echo=TRUE}
+prior.7<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=rep(0,12), alpha.V=diag(12)*10000, beta.mu=0, beta.V=diag(1)*10000)))
+mweight.7<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~antec1v(as.factor(Time)):Chick, data=ChickWeight, prior=prior.7, pr=TRUE)
+
+pweight.7<-predict(mweight.7, marginal=NULL)
+prior.8<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=rep(0,12), alpha.V=diag(12)*10000, beta.mu=0, beta.V=diag(1)*10000), G2=list(V=1, nu=1, alpha.mu=0, alpha.V=1)))
+mweight.8<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~antec1v(as.factor(Time)):Chick+us(Time):units, data=ChickWeight, prior=prior.8, pr=TRUE)
+
+#open3d()
+#bg3d("white")
+
+theoreticalC.7<-matrix(colMeans(mweight.7$VCV[,1:(12^2)]), 12,12)+diag(12)*mean(mweight.7$VCV[,1+(12^2)])
 
 
-### Variance stabilisation
+#persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(empiricalC), xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "red", front="lines", back="lines", diagonal = "back")
+#persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(theoreticalC.7), add=TRUE, col = "blue")
+
+
+
+```
+
+
+``` {r pred-int4, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a 1st order antedependence model (`mweight.7`). The red line for a 1st order antedependence model (`mweight.8`) but .........", fig.width=7, fig.height=5}
+
+pred.weight.7<-predict(mweight.7, interval="prediction")
+pred.weight.8<-predict(mweight.8, interval="prediction")
+mean.7<-tapply(pred.weight.7[,1], ChickWeight$Time, mean)
+lower.7<-tapply(pred.weight.7[,2], ChickWeight$Time, mean)
+upper.7<-tapply(pred.weight.7[,3], ChickWeight$Time, mean)
+mean.8<-tapply(pred.weight.8[,1], ChickWeight$Time, mean)
+lower.8<-tapply(pred.weight.8[,2], ChickWeight$Time, mean)
+upper.8<-tapply(pred.weight.8[,3], ChickWeight$Time, mean)
+
+plot(ChickWeight$weight~ChickWeight$Time, ylim=range(ChickWeight$weight, lower.7, upper.7, lower.8, upper.8), ylab="Weight (g)", xlab = "Time (days)")
+
+lines(mean.7~unique(ChickWeight$Time), col="red")
+lines(lower.7~unique(ChickWeight$Time), col="red", lty=2)
+lines(upper.7~unique(ChickWeight$Time),col="red", lty=2)
+lines(mean.8~unique(ChickWeight$Time), col="blue")
+lines(lower.8~unique(ChickWeight$Time), lty=2, col="blue")
+lines(upper.8~unique(ChickWeight$Time), lty=2, col="blue")
+```
+
+Under-predicts. Probably OK. Correcting for Selection bias.
+
+
+
+
+
+## Antedependence Models
+
+```{r }
+pweightF.2<-predict(mweight.2)
+e.2<-ChickWeight$weight-pweightF.2
+predict(mweight.2)
+```
+
+## Variance stabilisation
 
 The variance in chick weight increased dramatically with $\texttt{Time}$ and it required effort to understand how this aspect of the data is captured by random-regression models.  We also saw that while modelling the change in variance accurately improved our models ability to capture general features of the data, it did compromised our ability to predict some aspects, such as the predicted means. In addition to the variance, the mean chick weight also increased dramatically in time, and we managed to model this fairly intuitively by fitting $\texttt{Time}$ and $\texttt{Time}^2$ in the fixed effect formula.  Let's plot the means and variances for each $\texttt{Diet}$/$\texttt{Time}$ combination.
 
 ```{r }
-means<-with(ChickWeight, tapply(weight, list(Diet, Time), mean))
-vars<-with(ChickWeight, tapply(weight, list(Diet, Time), var))
-plot(vars[1,]~means[1,], col=1)
-for(i in 2:4){
-points(vars[i,]~means[i,], col=i)
-}
+means<-with(ChickWeight, tapply(weight, Time, mean))
+vars<-with(ChickWeight, tapply(weight, Time, var))
+plot(vars~means)
 ```
 
 
 ```{r }
-lmeans<-with(ChickWeight, tapply(log(weight), list(Diet, Time), mean))
-lvars<-with(ChickWeight, tapply(log(weight), list(Diet, Time), var))
-plot(lvars[1,]~lmeans[1,], col=1)
-for(i in 2:4){
-points(lvars[i,]~lmeans[i,], col=i)
-}
+meansl<-with(ChickWeight, tapply(log(weight), Time, mean))
+varsl<-with(ChickWeight, tapply(log(weight), Time, var))
+plot(varsl~meansl)
 ```
 
 
@@ -328,8 +418,8 @@ pweight.6<-predict(mweight.6, marginal=~us(Time):units)
 
 ```
 
-```{r CWresid-log, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $$\\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\\texttt{Time}$ (blue lines - model `mweight.3`).", fig.width=7, fig.height=8}
-xyplot(rep(0,nrow(ChickWeight))+I(log(weight)-pweight.5)+I(log(weight)-pweight.6)~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("l", "l", "l"), lwd=c(1, 2,2), col=c("black", "red", "blue"), ylab="Residual log(Weight)")
+```{r CWresid-log, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $$\\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\\texttt{Time}$ (blue lines - model `mweight.3`).", fig.width=9, fig.height=6}
+xyplot(rep(0,nrow(ChickWeight))+I(log(weight)-pweight.5)+I(log(weight)-pweight.6)~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("l", "l", "l"), lwd=c(1, 2,2), col=c("black", "red", "blue"), ylab="Residual log(Weight)",  layout = c(10, 5), as.table = TRUE)
 ```
 
 
@@ -366,49 +456,7 @@ lines(upper.6~unique(ChickWeight$Time), lty=2, col="blue")
 
 
 
-## Antedependence Models
 
-
-``` {r echo=TRUE}
-prior.7<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=rep(0,12), alpha.V=diag(12)*10000, beta.mu=0, beta.V=diag(1)*10000)))
-mweight.7<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~antec1v(as.factor(Time)):Chick, data=ChickWeight, prior=prior.7, pr=TRUE)
-
-pweight.7<-predict(mweight.7, marginal=NULL)
-prior.8<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=rep(0,12), alpha.V=diag(12)*10000, beta.mu=0, beta.V=diag(1)*10000), G2=list(V=1, nu=1, alpha.mu=0, alpha.V=1)))
-mweight.8<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~antec1v(as.factor(Time)):Chick+us(Time):units, data=ChickWeight, prior=prior.8, pr=TRUE)
-```
-
-
-``` {r pred-int4, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a 1st order antedependence model (`mweight.7`). The red line for a 1st order antedependence model (`mweight.8`) but .........", fig.width=7, fig.height=5}
-
-pred.weight.7<-predict(mweight.7, interval="prediction")
-pred.weight.8<-predict(mweight.8, interval="prediction")
-mean.7<-tapply(pred.weight.7[,1], ChickWeight$Time, mean)
-lower.7<-tapply(pred.weight.7[,2], ChickWeight$Time, mean)
-upper.7<-tapply(pred.weight.7[,3], ChickWeight$Time, mean)
-mean.8<-tapply(pred.weight.8[,1], ChickWeight$Time, mean)
-lower.8<-tapply(pred.weight.8[,2], ChickWeight$Time, mean)
-upper.8<-tapply(pred.weight.8[,3], ChickWeight$Time, mean)
-
-plot(ChickWeight$weight~ChickWeight$Time, ylim=range(ChickWeight$weight, lower.1, upper.1, lower.2, upper.2), ylab="Weight (g)", xlab = "Time (days)")
-
-lines(mean.7~unique(ChickWeight$Time), col="red")
-lines(lower.7~unique(ChickWeight$Time), col="red", lty=2)
-lines(upper.7~unique(ChickWeight$Time),col="red", lty=2)
-lines(mean.8~unique(ChickWeight$Time), col="blue")
-lines(lower.8~unique(ChickWeight$Time), lty=2, col="blue")
-lines(upper.8~unique(ChickWeight$Time), lty=2, col="blue")
-
-sim.7<-simulate(mweight.7, nsim=1000, marginal=NULL)
-
-interval.7<-sapply(unique(ChickWeight$Time), function(x){quantile(sim.7[which(ChickWeight$Time==x),], prob=c(0.025, 0.5, 0.975))})
-
-lines(interval.7[2,]~unique(ChickWeight$Time), col="green", lty=3, lwd=2)
-lines(interval.7[1,]~unique(ChickWeight$Time), col="green", lty=3, lwd=2)
-lines(interval.7[3,]~unique(ChickWeight$Time), col="green", lty=3, lwd=2)
-```
-
-Under-predicts. Probably OK. Correcting for Selection bias.
 
 
 ## User-defined Design Matrices {#user-defined-sec}
