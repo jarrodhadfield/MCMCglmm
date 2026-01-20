@@ -75,9 +75,9 @@ fig:perm
 fig:pred-int2
 fig:CWpred-3
 fig:CWresid
+fig:pred-int4
 fig:CWresid-log
 fig:pred-int3
-fig:pred-int4
 fig:spline
 fig:asUV
 fig:MVvUV2
@@ -171,8 +171,9 @@ cont-int
 random-regression
 covf-sec
 het-res
-variance-stabilisation
+autoc-sec
 antedependence-models
+variance-stabilisation
 user-defined-sec
 splines
 multi

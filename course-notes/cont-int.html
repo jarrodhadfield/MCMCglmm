@@ -291,13 +291,12 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="6.1.1" data-path="cont-int.html"><a href="cont-int.html#covf-sec"><i class="fa fa-check"></i><b>6.1.1</b> Covariance Functions</a></li>
 </ul></li>
-<li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#het-res"><i class="fa fa-check"></i><b>6.2</b> Heterogeneous Residual Variances</a>
-<ul>
-<li class="chapter" data-level="6.2.1" data-path="cont-int.html"><a href="cont-int.html#variance-stabilisation"><i class="fa fa-check"></i><b>6.2.1</b> Variance stabilisation</a></li>
-</ul></li>
-<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#antedependence-models"><i class="fa fa-check"></i><b>6.3</b> Antedependence Models</a></li>
-<li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#user-defined-sec"><i class="fa fa-check"></i><b>6.4</b> User-defined Design Matrices</a></li>
-<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.5</b> Splines</a></li>
+<li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#het-res"><i class="fa fa-check"></i><b>6.2</b> Heterogeneous Residual Variances</a></li>
+<li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#autoc-sec"><i class="fa fa-check"></i><b>6.3</b> Autocorrelation</a></li>
+<li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#antedependence-models"><i class="fa fa-check"></i><b>6.4</b> Antedependence Models</a></li>
+<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#variance-stabilisation"><i class="fa fa-check"></i><b>6.5</b> Variance stabilisation</a></li>
+<li class="chapter" data-level="6.6" data-path="cont-int.html"><a href="cont-int.html#user-defined-sec"><i class="fa fa-check"></i><b>6.6</b> User-defined Design Matrices</a></li>
+<li class="chapter" data-level="6.7" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.7</b> Splines</a></li>
 </ul></li>
 <li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response models</a>
 <ul>
@@ -399,7 +398,7 @@ div.csl-indent {
 ## 6     93   10     1    1</code></pre>
 <p>The data consist of body weights (<code>weight</code>) for 50 chicks (<code>Chick</code>) measured up to 12 times over a 3 week period. The variable <code>Time</code> is the number of days since hatching, and <code>Diet</code> is a four level factor indicating the type of protein diet the chicks received. The data are plotted in Figure <a href="cont-int.html#fig:ChickWeight">6.1</a>.</p>
 <div class="figure"><span style="display:block;" id="fig:ChickWeight"></span>
-<img src="_bookdown_files/fig/ChickWeight-1.png" alt="Weight data of 50 chicks from hatching until three weeks old." width="672" />
+<img src="_bookdown_files/fig/ChickWeight-1.png" alt="Weight data of 50 chicks from hatching until three weeks old." width="864" />
 <p class="caption">
 Figure 6.1: Weight data of 50 chicks from hatching until three weeks old.
 </p>
@@ -423,27 +422,27 @@ Figure 6.1: Weight data of 50 chicks from hatching until three weeks old.
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 5525.508 
+##  DIC: 5398.374 
 ## 
 ##  G-structure:  ~Chick
 ## 
 ##       post.mean l-95% CI u-95% CI eff.samp
-## Chick     570.2    336.7    835.4     1000
+## Chick     575.9    335.2    813.1     1000
 ## 
 ##  R-structure:  ~units
 ## 
 ##       post.mean l-95% CI u-95% CI eff.samp
-## units     764.8    677.6    863.1     1000
+## units     610.5    529.4    679.2     1000
 ## 
-##  Location effects: weight ~ Diet + Time + I(Time^2) 
+##  Location effects: weight ~ Time + I(Time^2) + Diet:Time 
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## (Intercept)  21.27344  7.94378 32.32329     1000 &lt;0.001 ***
-## Diet2        16.45051 -0.91746 36.47284     1000  0.082 .  
-## Diet3        37.18376 20.15287 57.24728     1000  0.002 ** 
-## Diet4        30.57343 11.83705 50.51496     1000  0.006 ** 
-## Time          5.47621  4.26819  6.89114     1000 &lt;0.001 ***
-## I(Time^2)     0.15234  0.09544  0.21106     1095 &lt;0.001 ***
+## (Intercept)  38.09190 29.37737 46.23461     1000 &lt;0.001 ***
+## Time          3.66880  2.38609  4.84156     1000 &lt;0.001 ***
+## I(Time^2)     0.14632  0.09254  0.19570     1100 &lt;0.001 ***
+## Time:Diet2    1.80958  0.99523  2.48771     1000 &lt;0.001 ***
+## Time:Diet3    4.46028  3.79161  5.28554     1000 &lt;0.001 ***
+## Time:Diet4    2.94754  2.20819  3.70829     1140 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Hopefully the output is now familiar. At hatching the chicks weigh approximately 38 grams. On the reference diet the chicks are growing at a rate of 3.7 grams per day at the beginning (<span class="math inline">\(\texttt{Time}=0\)</span>) but as they get older they start to grow faster (the coefficient associated with <span class="math inline">\(\texttt{Time}^2\)</span> is positive). All diets seem to increase growth rate compared to <span class="math inline">\(\texttt{Diet 1}\)</span>.</p>
@@ -451,9 +450,9 @@ Figure 6.1: Weight data of 50 chicks from hatching until three weeks old.
 <p><span class="math display">\[E[\texttt{weight} | \texttt{Diet}=1, \texttt{Chick}=i] = \beta_0+\beta_1\texttt{Time} +  \beta_{2}\texttt{Time}^{2}+u^{(0)}_i\]</span></p>
 <p>where <span class="math inline">\(u^{(0)}_i\)</span> is the random chick effect. The model assumes that chicks deviate consistently in their weight across time, but chicks do not deviate in their growth rate. Since we saved the random chick effects (<code>pr=TRUE</code>) we can obtain the predictions for each chick by specifying <code>marginal=NULL</code> (Section <a href="ranef.html#ranpred-sec">4.2</a>):</p>
 <div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="cont-int.html#cb204-1" tabindex="-1"></a>pweight<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.1</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span></code></pre></div>
-<p>and we can add them to the <span class="math inline">\(\texttt{xyplot}\)</span> plot as orange lines (Figure <a href="cont-int.html#fig:CWpred-1">6.2</a>).</p>
+<p>and we can add them to the <span class="math inline">\(\texttt{xyplot}\)</span> plot as black lines (Figure <a href="cont-int.html#fig:CWpred-1">6.2</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:CWpred-1"></span>
-<img src="_bookdown_files/fig/CWpred-1-1.png" alt="Weights of each chick as a function of age (points). The mean growth curve was fitted as a quadratic function of $\texttt{Time}$ with random chick intercepts (model `mweight.1`). The predicted weights are shown as lines." width="672" />
+<img src="_bookdown_files/fig/CWpred-1-1.png" alt="Weights of each chick as a function of age (points). The mean growth curve was fitted as a quadratic function of $\texttt{Time}$ with random chick intercepts (model `mweight.1`). The predicted weights are shown as lines." width="864" />
 <p class="caption">
 Figure 6.2: Weights of each chick as a function of age (points). The mean growth curve was fitted as a quadratic function of <span class="math inline">\(\texttt{Time}\)</span> with random chick intercepts (model <code>mweight.1</code>). The predicted weights are shown as lines.
 </p>
@@ -461,7 +460,7 @@ Figure 6.2: Weights of each chick as a function of age (points). The mean growth
 <p>The predictions don’t look too bad (but see Section <a href="cont-int.html#covf-sec">6.1.1</a>), although you will notice that for some chicks (e.g. 7, 13 and 35) the slope of the predicted growth seems either too shallow, or too steep. As we did with the <span class="math inline">\(\texttt{Diet}\)</span> by <span class="math inline">\(\texttt{Time}\)</span> interaction, we could also allow our chicks to deviate in their growth rates and fit the model:</p>
 <p><span class="math display" id="eq:rr">\[E[\texttt{weight} | \texttt{Diet}=1, \texttt{Chick}=i] = \beta_0+(\beta_1+u^{(1)}_i)\texttt{Time} + \beta_{2}\texttt{Time}^{2}+u^{(0)}_i
 \label{rr-eq}   \tag{6.1}\]</span></p>
-<p>where <span class="math inline">\(u^{(1)}_i\)</span> is how much <span class="math inline">\(\texttt{Chick}\)</span> <span class="math inline">\(i\)</span>’s growth rate differs from the average (<span class="math inline">\(\beta_1\)</span> for <span class="math inline">\(\texttt{Diet 1}\)</span>). To do this we can fit the term <code>us(1+Time):Chick</code>. The linear model inside the variance function has two parameters, an intercept (<code>1</code> - which he have to specify explicitly<a href="#fn21" class="footnote-ref" id="fnref21"><sup>21</sup></a>) and a regression slope associated with <code>Time</code>. Consequently, the interaction with <span class="math inline">\(\texttt{Chick}\)</span> defines the set of coefficients:</p>
+<p>where <span class="math inline">\(u^{(1)}_i\)</span> is how much <span class="math inline">\(\texttt{Chick}\)</span> <span class="math inline">\(i\)</span>’s growth rate differs from the average (<span class="math inline">\(\beta_1\)</span> for <span class="math inline">\(\texttt{Diet 1}\)</span>). This type of model is often referred to as a random-regression model. To fit such a model we can replace <code>Chick</code> in the random formula with the term <code>us(1+Time):Chick</code>. The linear model inside the variance function has two parameters, an intercept (<code>1</code> - which he have to specify explicitly<a href="#fn21" class="footnote-ref" id="fnref21"><sup>21</sup></a>) and a regression slope associated with <code>Time</code>. Consequently, the interaction with <span class="math inline">\(\texttt{Chick}\)</span> defines the set of coefficients:</p>
 <p><span class="math display">\[\begin{array}{c|rrrrrc}
 &amp;{\color{red}{\texttt{Chick1}}}&amp;{\color{red}{\texttt{Chick2}}}&amp;{\color{red}{\texttt{Chick3}}}&amp;\dots\\
 \hline
@@ -476,7 +475,8 @@ Figure 6.2: Weights of each chick as a function of age (points). The mean growth
 \sigma_{\color{blue}{\texttt{(Intercept)}, \texttt{Time}}}&amp;\sigma^{2}_{\color{blue}{\texttt{Time}}}\\
 \end{array}
 \right]\]</span></p>
-<p><span class="math inline">\(\sigma^{2}_{\color{blue}{\texttt{(Intercept)}}}\)</span> is the amount of variation in intercepts between chicks, and <span class="math inline">\(\sigma^{2}_{\color{blue}{\texttt{Time}}}\)</span> is the amount of variation in the regression slopes between chicks (their growth rate). If the <code>idh</code> function had been used, the covariance between intercepts and slopes would have been set to zero, but they are often correlated and it is usually a good idea to use the <code>us</code> function and estimate the covariance. We shall do so:</p>
+<p><span class="math inline">\(\sigma^{2}_{\color{blue}{\texttt{(Intercept)}}}\)</span> is the amount of variation in intercepts between chicks, and <span class="math inline">\(\sigma^{2}_{\color{blue}{\texttt{Time}}}\)</span> is the amount of variation in the regression slopes between chicks (their growth rate). Note that our first model could also have been fitted using <code>us(1):Chick</code> (rather than just <code>Chick</code>) which may have made clearer the justification for calling the <span class="math inline">\(\texttt{Chick}\)</span> effects in that model intercepts.</p>
+<p>Let’s fit the random regression model:</p>
 <div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb205-1"><a href="cont-int.html#cb205-1" tabindex="-1"></a>mweight<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(weight <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(<span class="dv">1</span> <span class="sc">+</span> Time)<span class="sc">:</span>Chick,</span>
 <span id="cb205-2"><a href="cont-int.html#cb205-2" tabindex="-1"></a>    <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.weight)</span>
 <span id="cb205-3"><a href="cont-int.html#cb205-3" tabindex="-1"></a><span class="fu">summary</span>(mweight<span class="fl">.2</span>)</span></code></pre></div>
@@ -485,37 +485,37 @@ Figure 6.2: Weights of each chick as a function of age (points). The mean growth
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 4544.518 
+##  DIC: 4544.498 
 ## 
 ##  G-structure:  ~us(1 + Time):Chick
 ## 
 ##                               post.mean l-95% CI u-95% CI eff.samp
-## (Intercept):(Intercept).Chick    145.88   83.861   222.00     1000
-## Time:(Intercept).Chick           -37.70  -54.847   -22.49     1000
-## (Intercept):Time.Chick           -37.70  -54.847   -22.49     1000
-## Time:Time.Chick                   11.69    7.211    16.54     1000
+## (Intercept):(Intercept).Chick    146.00   77.176   219.94     1000
+## Time:(Intercept).Chick           -37.70  -55.904   -22.19     1000
+## (Intercept):Time.Chick           -37.70  -55.904   -22.19     1000
+## Time:Time.Chick                   11.67    7.511    16.88     1000
 ## 
 ##  R-structure:  ~units
 ## 
 ##       post.mean l-95% CI u-95% CI eff.samp
-## units     133.1    115.8    149.3    987.3
+## units     133.1    115.5    149.6    984.1
 ## 
 ##  Location effects: weight ~ Time + I(Time^2) + Diet:Time 
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## (Intercept)  37.79136 33.86115 41.79544     1000 &lt;0.001 ***
-## Time          4.52294  3.29601  5.63219     1000 &lt;0.001 ***
-## I(Time^2)     0.12941  0.10707  0.15445     1000 &lt;0.001 ***
-## Time:Diet2    1.25267 -0.06571  2.61541     1127  0.070 .  
-## Time:Diet3    1.83860  0.43561  3.26762     1000  0.014 *  
-## Time:Diet4    2.86274  1.49101  4.19528     1000 &lt;0.001 ***
+## (Intercept)   37.8003  33.8645  41.7408     1000 &lt;0.001 ***
+## Time           4.5223   3.3090   5.6356     1000 &lt;0.001 ***
+## I(Time^2)      0.1294   0.1074   0.1547     1000 &lt;0.001 ***
+## Time:Diet2     1.2520  -0.1042   2.5516     1129  0.070 .  
+## Time:Diet3     1.8390   0.3580   3.2278     1000  0.016 *  
+## Time:Diet4     2.8644   1.4744   4.2199     1000 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>There seems to be substantial variation in growth rate between chicks after controlling for the diet treatment. The posterior mean of the slope variance is 11.69 which in terms of a standard deviation is 3.42 - larger than the effects of <span class="math inline">\(\texttt{Diet}\)</span>. Again, we can get the predicted weights from this model</p>
+<p>There seems to be substantial variation in growth rate between chicks after controlling for the diet treatment. The posterior mean of the slope variance is 11.67 which in terms of a standard deviation is 3.42 - larger than the effects of <span class="math inline">\(\texttt{Diet}\)</span>. Again, we can get the predicted weights from this model</p>
 <div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb207-1"><a href="cont-int.html#cb207-1" tabindex="-1"></a>pweight<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.2</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span></code></pre></div>
 <p>and we can see that the fit is better (See Figure <a href="cont-int.html#fig:CWpred-2">6.3</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:CWpred-2"></span>
-<img src="_bookdown_files/fig/CWpred-2-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\texttt{Time}$ with random chick intercepts (black lines - model `mweight.1`) or random chick intercepts and slopes (red lines - model `mweight.2`)." width="672" />
+<img src="_bookdown_files/fig/CWpred-2-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\texttt{Time}$ with random chick intercepts (black lines - model `mweight.1`) or random chick intercepts and slopes (red lines - model `mweight.2`)." width="864" />
 <p class="caption">
 Figure 6.3: Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of <span class="math inline">\(\texttt{Time}\)</span> with random chick intercepts (black lines - model <code>mweight.1</code>) or random chick intercepts and slopes (red lines - model <code>mweight.2</code>).
 </p>
@@ -549,14 +549,14 @@ Figure 6.3: Weights of each chick as a function of age (points). Predictions are
 <p>Since we specified a 1st degree polynomial at the level of <span class="math inline">\(\texttt{Chick}\)</span> (an intercept and slope) the variance is a 2nd degree polynomial of <span class="math inline">\(\texttt{Time}\)</span> (it has a quadratic term, with coefficient <span class="math inline">\(\sigma^2_{\texttt{Time}}\)</span>).</p>
 <p>Because we can conceptualise the random regression in terms of the covariance between observations, rather than in terms of intercepts, slopes, and so on, random regression models are sometimes known as covariance function models. The function <code>buildV</code> returns the predicted variance of observations (and the covariances if <code>diag=FALSE</code>) after conditioning on the fixed effect model. As with the predict function, there is also the option to condition on some of the random effects (i.e. treat them as constants) by excluding them from the argument passed to marginal (see Section <a href="ranef.html#ranpred-sec">4.2</a>). However, the default is not to condition on them and so we can get the total predicted variance for each observation due to chick effects and the residuals. The residual variance in our model is constant, so the total variance is obtained by simply adding <span class="math inline">\(\sigma^2_{\textrm{units}}\)</span> to Equation <a href="cont-int.html#eq:Vrr">(6.3)</a>.</p>
 <div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="cont-int.html#cb208-1" tabindex="-1"></a>predv.weight<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">buildV</span>(mweight<span class="fl">.2</span>)</span></code></pre></div>
-<p>The predicted variance goes up dramatically with <span class="math inline">\(\texttt{Time}\)</span> (red points in Figure <a href="cont-int.html#fig:V-rr">6.4</a>). In contrast, model (<code>mweight.1</code>) where chicks do not vary in their growth rate assumes that the variance is constant with <span class="math inline">\(\texttt{Time}\)</span> (black points in Figure <a href="cont-int.html#fig:V-rr">6.4</a>).</p>
+<p>The predicted variance goes up dramatically with <span class="math inline">\(\texttt{Time}\)</span> (red points in Figure <a href="cont-int.html#fig:V-rr">6.4</a>). In contrast, model (<code>mweight.1</code>), where chicks do not vary in their growth rate, assumes that the variance is constant with <span class="math inline">\(\texttt{Time}\)</span> (black points in Figure <a href="cont-int.html#fig:V-rr">6.4</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:V-rr"></span>
 <img src="_bookdown_files/fig/V-rr-1.png" alt="Predicted variance in weight due to random effects from model `mweight.2`." width="672" />
 <p class="caption">
 Figure 6.4: Predicted variance in weight due to random effects from model <code>mweight.2</code>.
 </p>
 </div>
-<p>The two models are dramatically different in how they predict the variance changes with <span class="math inline">\(\texttt{Time}\)</span>. This important difference isn’t really apparent from comparing the panel plots (Figures <a href="cont-int.html#fig:CWpred-1">6.2</a> and Figures <a href="cont-int.html#fig:CWpred-2">6.3</a>. However, if we obtain the 95% prediction intervals for the two models (the interval within which we expect to see 95% of observations)</p>
+<p>The two models are dramatically different in how they predict the variance changes with <span class="math inline">\(\texttt{Time}\)</span>. This important difference isn’t really apparent from comparing their predictions with the data (Figure <a href="cont-int.html#fig:CWpred-2">6.3</a>. However, if we obtain the 95% prediction intervals for the two models (the interval within which we expect to see 95% of observations)</p>
 <div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb209-1"><a href="cont-int.html#cb209-1" tabindex="-1"></a>pred.weight<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.1</span>, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>)</span>
 <span id="cb209-2"><a href="cont-int.html#cb209-2" tabindex="-1"></a>pred.weight<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.2</span>, <span class="at">interval =</span> <span class="st">&quot;prediction&quot;</span>)</span></code></pre></div>
 <p>and overlay these on the data for all chicks plotted simultaneously, we see that our first model - that assumes constant variance - has serious problems (black lines in Figure <a href="cont-int.html#fig:pred-int1">6.5</a>). Initially, it predicts far more variability than observed, but after around <span class="math inline">\(\texttt{Time}\)</span> 12 it predicts too little variability. The random slope model (red lines) does much better, although it still predicts too much variability initially, particularly at hatching.</p>
@@ -566,8 +566,12 @@ Figure 6.4: Predicted variance in weight due to random effects from model <code>
 Figure 6.5: Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a random intercept model (<code>mweight.1</code>) that implicitly assumes the variance is constant over <span class="math inline">\(\texttt{Time}\)</span>. The red line is for a random intercept-slope model (<code>mweight.2</code>) that allows the variance to change as a quadratic function of <span class="math inline">\(\texttt{Time}\)</span>.
 </p>
 </div>
-<p>At this point we may be fairly chuffed with the random intercept-slope model - not only does it seem to predict the expected response well (Figure <a href="cont-int.html#fig:CWpred-2">6.3</a>), but in terms of the variance in the response, it’s a massive improvement. However, it does raise an issue. The only way the model can accommodate changes in the variance over <span class="math inline">\(\texttt{Time}\)</span> is through the (co)variance matrix of chick effects (Equation <a href="cont-int.html#eq:Vrr">(6.3)</a>). Consequently, evidence that <span class="math inline">\(\sigma^2_\texttt{Time}\)</span> is non-zero may indicate that chick’s vary in their growth rate but it may also just be capturing increases in variance due to some other mechanism. Perhaps the evidence for a non-zero <span class="math inline">\(\sigma^2_\texttt{Time}\)</span> is coming solely from how the variance in weight changes as a function of <span class="math inline">\(\texttt{Time}\)</span> (i.e from Equation <a href="cont-int.html#eq:Vrr">(6.3)</a>) not from assessing whether weights from the same chick are correlated (i.e from Equation <a href="cont-int.html#eq:Crr">(6.2)</a>)?</p>
-<p>To see this, let’s take the <span class="math inline">\(\texttt{ChickWeight}\)</span> data frame and permute <span class="math inline">\(\texttt{Chick}\)</span> labels within each <span class="math inline">\(\texttt{Time}\)</span> point.</p>
+</div>
+</div>
+<div id="het-res" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> Heterogeneous Residual Variances<a href="cont-int.html#het-res" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In Section <a href="cont-int.html#covf-sec">6.1.1</a> we ended with a random intercept-slope model of chick weight. We were fairly chuffed with it - not only did it seem to predict the expected response well (Figure <a href="cont-int.html#fig:CWpred-2">6.3</a>), but in terms of the variance in the response, it was a massive improvement over the intercept-only model (Figure <a href="cont-int.html#fig:pred-int1">6.5</a>). Indeed, the <span class="math inline">\(\texttt{ChickWeight}\)</span> data has become something of a classic for illustrating the power of random regression models. However, a number of issues remain with the model and it’s interpretation. We will address these issues in this section and the next.</p>
+<p>The only way that our random intercept-slope model (model <code>mweight.2</code>) could accommodate an increase in the variance over <span class="math inline">\(\texttt{Time}\)</span> was through the parameters of the (co)variance matrix of chick effects (Equation <a href="cont-int.html#eq:Vrr">(6.3)</a>). Consequently, a non-zero <span class="math inline">\(\sigma^2_\texttt{Time}\)</span> may indicate that chick’s vary in their growth rate but it may also just be capturing increases in variance due to some other mechanism. Perhaps the evidence for a non-zero <span class="math inline">\(\sigma^2_\texttt{Time}\)</span> is coming solely from how the variance in weight changes as a function of <span class="math inline">\(\texttt{Time}\)</span> (i.e from Equation <a href="cont-int.html#eq:Vrr">(6.3)</a>) not from assessing whether weights from the same chick are correlated (i.e from Equation <a href="cont-int.html#eq:Crr">(6.2)</a>)? To see this, let’s take the <span class="math inline">\(\texttt{ChickWeight}\)</span> data frame and permute <span class="math inline">\(\texttt{Chick}\)</span> labels within each <span class="math inline">\(\texttt{Time}\)</span> point.</p>
 <div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="cont-int.html#cb210-1" tabindex="-1"></a>ChickWeightPerm <span class="ot">&lt;-</span> ChickWeight</span>
 <span id="cb210-2"><a href="cont-int.html#cb210-2" tabindex="-1"></a>ChickWeightPerm<span class="sc">$</span>Chick <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(Chick, Time, sample)))</span></code></pre></div>
 <p>The <span class="math inline">\(\texttt{Chick}\)</span> labels in this new data frame do <em>not</em> link multiple observations from the same chick, but let’s fit the same random regression model that we have fitted previously:</p>
@@ -581,10 +585,6 @@ Figure 6.6: Posterior distributions for the variances in chick intercepts and sl
 </p>
 </div>
 <p>This is quite disconcerting - our model tells us that chicks systematically differ in their growth rate, yet we’ve jumbled the chick labels up in a way that weights from the same chick must be completely uncorrelated. How do we know that something similar isn’t happening with our original model? One option would be to allow the residual variance to change as a function of <span class="math inline">\(\texttt{Time}\)</span> and so we can be sure that the information for estimating the random effect part of the model is really coming from the repeated nature of the observations.</p>
-</div>
-</div>
-<div id="het-res" class="section level2 hasAnchor" number="6.2">
-<h2><span class="header-section-number">6.2</span> Heterogeneous Residual Variances<a href="cont-int.html#het-res" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In Section <a href="cont-int.html#covf-sec">6.1.1</a> we saw that we can think of random regression models in terms of the covariance between observations at pairs of values for the continuous predictor variable (Equation <a href="cont-int.html#eq:Vrr">(6.3)</a>). When the pair of values are the same, we obtain the variance of observations at a given value of the predictor (Equation <a href="cont-int.html#eq:Vrr">(6.3)</a>). We can use this idea to allow the residual variance to increase with the square of some covariate. Although I won’t discuss it here, <span class="math inline">\(\texttt{covu}\)</span> models (Section <a href="#covu-sec"><strong>??</strong></a>) could be used to allow the residual variance to change as a polynomial function of the predictor with arbitrary degree.</p>
 <p>To our model of chick weights lets add the term <code>us(Time):units</code> to the random part of the model.</p>
 <div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="cont-int.html#cb212-1" tabindex="-1"></a>mweight<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(weight <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(<span class="dv">1</span> <span class="sc">+</span> Time)<span class="sc">:</span>Chick <span class="sc">+</span></span>
@@ -641,83 +641,700 @@ Figure 6.7: Chick weights plotted against time with predicted mean weight (solid
 <div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="cont-int.html#cb214-1" tabindex="-1"></a>pweight<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.3</span>, <span class="at">marginal =</span> <span class="sc">~</span><span class="fu">us</span>(Time)<span class="sc">:</span>units)</span></code></pre></div>
 <p>If we overlay these predictions from our model that assumed a constant residual variance, we can see that the predictions for the mean are rather similar (Figure <a href="cont-int.html#fig:CWpred-3">6.8</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:CWpred-3"></span>
-<img src="_bookdown_files/fig/CWpred-3-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\texttt{Time}$ (blue lines - model `mweight.3`)." width="672" />
+<img src="_bookdown_files/fig/CWpred-3-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\texttt{Time}$ (blue lines - model `mweight.3`)." width="864" />
 <p class="caption">
 Figure 6.8: Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of <span class="math inline">\(\texttt{Time}\)</span> with random chick intercept and slopes. The residual variance is either assumed constant (red lines - model <code>mweight.2</code>) or to change with square of <span class="math inline">\(\texttt{Time}\)</span> (blue lines - model <code>mweight.3</code>).
 </p>
 </div>
 <p>However, I would argue that in terms of predicting the mean, the model that assumed constant residual variance actually does slightly better than our new model. Both models also show autocorrelation in their residuals - we see runs of data-points lying consistently above, or consistently below, the prediction lines (for example <span class="math inline">\(\texttt{Chick 43}\)</span>). If we plot the residuals from our predictions these patterns are much more obvious (Figure <a href="cont-int.html#fig:CWresid">6.9</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:CWresid"></span>
-<img src="_bookdown_files/fig/CWresid-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $$\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\texttt{Time}$ (blue lines - model `mweight.3`)." width="672" />
+<img src="_bookdown_files/fig/CWresid-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\texttt{Time}$ (blue lines - model `mweight.3`)." width="864" />
 <p class="caption">
-Figure 6.9: Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $<span class="math inline">\(\texttt{Time}\)</span> with random chick intercept and slopes. The residual variance is either assumed constant (red lines - model <code>mweight.2</code>) or to change with square of <span class="math inline">\(\texttt{Time}\)</span> (blue lines - model <code>mweight.3</code>).
+Figure 6.9: Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of <span class="math inline">\(\texttt{Time}\)</span> with random chick intercept and slopes. The residual variance is either assumed constant (red lines - model <code>mweight.2</code>) or to change with square of <span class="math inline">\(\texttt{Time}\)</span> (blue lines - model <code>mweight.3</code>).
 </p>
 </div>
-<p>We are in a tricky situation. The model with non-constant residual variance does a better job at catching the patterns in the data. If it did not, the variance associated with the term <code>us(Time):units</code> should be zero, and it is clearly not. However, when we focus on specific aspects of the data (e.g. the predicted means) it does a poorer job. The central issue here is that both models have their inadequacies, and without fixing them it might be hard to draw very firm conclusions. While dissatisfying, it is the reality. The <span class="math inline">\(\texttt{ChickWeight}\)</span> data set has become something of a classic for illustrating the power of random regression models, yet the difficulties and subtleties of the approach are really covered.</p>
-<div id="variance-stabilisation" class="section level3 hasAnchor" number="6.2.1">
-<h3><span class="header-section-number">6.2.1</span> Variance stabilisation<a href="cont-int.html#variance-stabilisation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>The variance in chick weight increased dramatically with <span class="math inline">\(\texttt{Time}\)</span> and it required effort to understand how this aspect of the data is captured by random-regression models. We also saw that while modelling the change in variance accurately improved our models ability to capture general features of the data, it did compromised our ability to predict some aspects, such as the predicted means. In addition to the variance, the mean chick weight also increased dramatically in time, and we managed to model this fairly intuitively by fitting <span class="math inline">\(\texttt{Time}\)</span> and <span class="math inline">\(\texttt{Time}^2\)</span> in the fixed effect formula. Let’s plot the means and variances for each <span class="math inline">\(\texttt{Diet}\)</span>/<span class="math inline">\(\texttt{Time}\)</span> combination.</p>
-<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="cont-int.html#cb215-1" tabindex="-1"></a>means <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(weight, <span class="fu">list</span>(Diet, Time), mean))</span>
-<span id="cb215-2"><a href="cont-int.html#cb215-2" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(weight, <span class="fu">list</span>(Diet, Time), var))</span>
-<span id="cb215-3"><a href="cont-int.html#cb215-3" tabindex="-1"></a><span class="fu">plot</span>(vars[<span class="dv">1</span>, ] <span class="sc">~</span> means[<span class="dv">1</span>, ], <span class="at">col =</span> <span class="dv">1</span>)</span>
-<span id="cb215-4"><a href="cont-int.html#cb215-4" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>) {</span>
-<span id="cb215-5"><a href="cont-int.html#cb215-5" tabindex="-1"></a>    <span class="fu">points</span>(vars[i, ] <span class="sc">~</span> means[i, ], <span class="at">col =</span> i)</span>
-<span id="cb215-6"><a href="cont-int.html#cb215-6" tabindex="-1"></a>}</span></code></pre></div>
-<p><img src="_bookdown_files/fig/unnamed-chunk-105-1.png" alt="" width="672" /></p>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="cont-int.html#cb216-1" tabindex="-1"></a>lmeans <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(<span class="fu">log</span>(weight), <span class="fu">list</span>(Diet, Time), mean))</span>
-<span id="cb216-2"><a href="cont-int.html#cb216-2" tabindex="-1"></a>lvars <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(<span class="fu">log</span>(weight), <span class="fu">list</span>(Diet, Time), var))</span>
-<span id="cb216-3"><a href="cont-int.html#cb216-3" tabindex="-1"></a><span class="fu">plot</span>(lvars[<span class="dv">1</span>, ] <span class="sc">~</span> lmeans[<span class="dv">1</span>, ], <span class="at">col =</span> <span class="dv">1</span>)</span>
-<span id="cb216-4"><a href="cont-int.html#cb216-4" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span><span class="dv">4</span>) {</span>
-<span id="cb216-5"><a href="cont-int.html#cb216-5" tabindex="-1"></a>    <span class="fu">points</span>(lvars[i, ] <span class="sc">~</span> lmeans[i, ], <span class="at">col =</span> i)</span>
-<span id="cb216-6"><a href="cont-int.html#cb216-6" tabindex="-1"></a>}</span></code></pre></div>
-<p><img src="_bookdown_files/fig/unnamed-chunk-106-1.png" alt="" width="672" /></p>
-<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="cont-int.html#cb217-1" tabindex="-1"></a>mweight<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(weight) <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span>Chick,</span>
-<span id="cb217-2"><a href="cont-int.html#cb217-2" tabindex="-1"></a>    <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.weight)</span>
-<span id="cb217-3"><a href="cont-int.html#cb217-3" tabindex="-1"></a>mweight<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(weight) <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(<span class="dv">1</span> <span class="sc">+</span></span>
-<span id="cb217-4"><a href="cont-int.html#cb217-4" tabindex="-1"></a>    Time)<span class="sc">:</span>Chick, <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.weight)</span>
-<span id="cb217-5"><a href="cont-int.html#cb217-5" tabindex="-1"></a>mweight<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(weight) <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(<span class="dv">1</span> <span class="sc">+</span></span>
-<span id="cb217-6"><a href="cont-int.html#cb217-6" tabindex="-1"></a>    Time)<span class="sc">:</span>Chick <span class="sc">+</span> <span class="fu">us</span>(Time)<span class="sc">:</span>units, <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.weight)</span>
-<span id="cb217-7"><a href="cont-int.html#cb217-7" tabindex="-1"></a></span>
-<span id="cb217-8"><a href="cont-int.html#cb217-8" tabindex="-1"></a>pweight<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.4</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span>
-<span id="cb217-9"><a href="cont-int.html#cb217-9" tabindex="-1"></a>pweight<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.5</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span>
-<span id="cb217-10"><a href="cont-int.html#cb217-10" tabindex="-1"></a>pweight<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.6</span>, <span class="at">marginal =</span> <span class="sc">~</span><span class="fu">us</span>(Time)<span class="sc">:</span>units)</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:CWresid-log"></span>
-<img src="_bookdown_files/fig/CWresid-log-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $$\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\texttt{Time}$ (blue lines - model `mweight.3`)." width="672" />
+<p>We are in a tricky situation. The model with non-constant residual variance does a better job at catching the patterns in the data. If it did not, the variance associated with the term <code>us(Time):units</code> should be zero, and it is clearly not. However, when we focus on specific aspects of the data (e.g. the predicted means) it does a poorer job. The central issue here is that both models have their inadequacies, and without fixing them it might be hard to draw very firm conclusions. While dissatisfying, it is the reality, and previous random-regression tutorials that have used the <span class="math inline">\(\texttt{ChickWeight}\)</span> data set as an example rarely touch on the difficulties and subtleties of the approach.</p>
+</div>
+<div id="autoc-sec" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> Autocorrelation<a href="cont-int.html#autoc-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In Figure <a href="cont-int.html#fig:CWresid">6.9</a> we plotted a time series for the residuals of each chick. Neighbouring residuals were much more likely to have the same sign than a random pair of residuals, indicating autocorrelation in the residuals: two observations close in time are more similar to each other than our model predicts.</p>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb215-1"><a href="cont-int.html#cb215-1" tabindex="-1"></a>ChickWeight<span class="sc">$</span>resid <span class="ot">&lt;-</span> ChickWeight<span class="sc">$</span>weight <span class="sc">-</span> <span class="fu">predict</span>(mweight<span class="fl">.3</span>)</span>
+<span id="cb215-2"><a href="cont-int.html#cb215-2" tabindex="-1"></a></span>
+<span id="cb215-3"><a href="cont-int.html#cb215-3" tabindex="-1"></a>chick.wide <span class="ot">&lt;-</span> <span class="fu">reshape</span>(ChickWeight[, <span class="fu">c</span>(<span class="st">&quot;resid&quot;</span>, <span class="st">&quot;Chick&quot;</span>, <span class="st">&quot;Time&quot;</span>)], <span class="at">v.names =</span> <span class="st">&quot;resid&quot;</span>,</span>
+<span id="cb215-4"><a href="cont-int.html#cb215-4" tabindex="-1"></a>    <span class="at">idvar =</span> <span class="st">&quot;Chick&quot;</span>, <span class="at">timevar =</span> <span class="st">&quot;Time&quot;</span>, <span class="at">direction =</span> <span class="st">&quot;wide&quot;</span>)</span>
+<span id="cb215-5"><a href="cont-int.html#cb215-5" tabindex="-1"></a></span>
+<span id="cb215-6"><a href="cont-int.html#cb215-6" tabindex="-1"></a></span>
+<span id="cb215-7"><a href="cont-int.html#cb215-7" tabindex="-1"></a>empiricalC <span class="ot">&lt;-</span> <span class="fu">cov</span>(chick.wide[, <span class="sc">-</span><span class="dv">1</span>], <span class="at">use =</span> <span class="st">&quot;pairwise.complete.obs&quot;</span>)</span>
+<span id="cb215-8"><a href="cont-int.html#cb215-8" tabindex="-1"></a></span>
+<span id="cb215-9"><a href="cont-int.html#cb215-9" tabindex="-1"></a></span>
+<span id="cb215-10"><a href="cont-int.html#cb215-10" tabindex="-1"></a>Z <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, <span class="fu">unique</span>(ChickWeight<span class="sc">$</span>Time))</span>
+<span id="cb215-11"><a href="cont-int.html#cb215-11" tabindex="-1"></a></span>
+<span id="cb215-12"><a href="cont-int.html#cb215-12" tabindex="-1"></a>Vchick <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">colMeans</span>(mweight<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]), <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb215-13"><a href="cont-int.html#cb215-13" tabindex="-1"></a>Vres <span class="ot">&lt;-</span> <span class="fu">diag</span>(<span class="fu">colMeans</span>(mweight<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">5</span><span class="sc">:</span><span class="dv">6</span>]))</span>
+<span id="cb215-14"><a href="cont-int.html#cb215-14" tabindex="-1"></a></span>
+<span id="cb215-15"><a href="cont-int.html#cb215-15" tabindex="-1"></a></span>
+<span id="cb215-16"><a href="cont-int.html#cb215-16" tabindex="-1"></a>theoreticalC<span class="fl">.3</span> <span class="ot">&lt;-</span> Z <span class="sc">%*%</span> Vchick <span class="sc">%*%</span> <span class="fu">t</span>(Z) <span class="sc">+</span> <span class="fu">diag</span>(<span class="fu">mean</span>(mweight<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">5</span>]) <span class="sc">+</span> Z[, <span class="dv">2</span>] <span class="sc">*</span></span>
+<span id="cb215-17"><a href="cont-int.html#cb215-17" tabindex="-1"></a>    <span class="fu">mean</span>(mweight<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">6</span>]))</span>
+<span id="cb215-18"><a href="cont-int.html#cb215-18" tabindex="-1"></a></span>
+<span id="cb215-19"><a href="cont-int.html#cb215-19" tabindex="-1"></a><span class="co"># open3d() bg3d(&#39;white&#39;)</span></span>
+<span id="cb215-20"><a href="cont-int.html#cb215-20" tabindex="-1"></a></span>
+<span id="cb215-21"><a href="cont-int.html#cb215-21" tabindex="-1"></a><span class="co"># persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z</span></span>
+<span id="cb215-22"><a href="cont-int.html#cb215-22" tabindex="-1"></a><span class="co"># =cov2cor(empiricalC), xlab = &#39;Time 1&#39;, ylab = &#39;Time 2&#39;, zlab = &#39;correlation&#39;,</span></span>
+<span id="cb215-23"><a href="cont-int.html#cb215-23" tabindex="-1"></a><span class="co"># aspect = c(1, 1, 0.5), col = &#39;red&#39;, front=&#39;lines&#39;, back=&#39;lines&#39;, diagonal =</span></span>
+<span id="cb215-24"><a href="cont-int.html#cb215-24" tabindex="-1"></a><span class="co"># &#39;back&#39;) persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z</span></span>
+<span id="cb215-25"><a href="cont-int.html#cb215-25" tabindex="-1"></a><span class="co"># =cov2cor(theoreticalC.3), add=TRUE, col = &#39;blue&#39;)</span></span></code></pre></div>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="cont-int.html#cb216-1" tabindex="-1"></a>prior<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>,</span>
+<span id="cb216-2"><a href="cont-int.html#cb216-2" tabindex="-1"></a>    <span class="dv">12</span>), <span class="at">alpha.V =</span> <span class="fu">diag</span>(<span class="dv">12</span>) <span class="sc">*</span> <span class="dv">10000</span>, <span class="at">beta.mu =</span> <span class="dv">0</span>, <span class="at">beta.V =</span> <span class="fu">diag</span>(<span class="dv">1</span>) <span class="sc">*</span> <span class="dv">10000</span>)))</span>
+<span id="cb216-3"><a href="cont-int.html#cb216-3" tabindex="-1"></a>mweight<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(weight <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">antec1v</span>(<span class="fu">as.factor</span>(Time))<span class="sc">:</span>Chick,</span>
+<span id="cb216-4"><a href="cont-int.html#cb216-4" tabindex="-1"></a>    <span class="at">data =</span> ChickWeight, <span class="at">prior =</span> prior<span class="fl">.7</span>, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb216-5"><a href="cont-int.html#cb216-5" tabindex="-1"></a></span>
+<span id="cb216-6"><a href="cont-int.html#cb216-6" tabindex="-1"></a>pweight<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span>
+<span id="cb216-7"><a href="cont-int.html#cb216-7" tabindex="-1"></a>prior<span class="fl">.8</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>,</span>
+<span id="cb216-8"><a href="cont-int.html#cb216-8" tabindex="-1"></a>    <span class="dv">12</span>), <span class="at">alpha.V =</span> <span class="fu">diag</span>(<span class="dv">12</span>) <span class="sc">*</span> <span class="dv">10000</span>, <span class="at">beta.mu =</span> <span class="dv">0</span>, <span class="at">beta.V =</span> <span class="fu">diag</span>(<span class="dv">1</span>) <span class="sc">*</span> <span class="dv">10000</span>), <span class="at">G2 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
+<span id="cb216-9"><a href="cont-int.html#cb216-9" tabindex="-1"></a>    <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>, <span class="at">alpha.V =</span> <span class="dv">1</span>)))</span>
+<span id="cb216-10"><a href="cont-int.html#cb216-10" tabindex="-1"></a>mweight<span class="fl">.8</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(weight <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">antec1v</span>(<span class="fu">as.factor</span>(Time))<span class="sc">:</span>Chick <span class="sc">+</span></span>
+<span id="cb216-11"><a href="cont-int.html#cb216-11" tabindex="-1"></a>    <span class="fu">us</span>(Time)<span class="sc">:</span>units, <span class="at">data =</span> ChickWeight, <span class="at">prior =</span> prior<span class="fl">.8</span>, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb216-12"><a href="cont-int.html#cb216-12" tabindex="-1"></a></span>
+<span id="cb216-13"><a href="cont-int.html#cb216-13" tabindex="-1"></a><span class="co"># open3d() bg3d(&#39;white&#39;)</span></span>
+<span id="cb216-14"><a href="cont-int.html#cb216-14" tabindex="-1"></a></span>
+<span id="cb216-15"><a href="cont-int.html#cb216-15" tabindex="-1"></a>theoreticalC<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">colMeans</span>(mweight<span class="fl">.7</span><span class="sc">$</span>VCV[, <span class="dv">1</span><span class="sc">:</span>(<span class="dv">12</span><span class="sc">^</span><span class="dv">2</span>)]), <span class="dv">12</span>, <span class="dv">12</span>) <span class="sc">+</span> <span class="fu">diag</span>(<span class="dv">12</span>) <span class="sc">*</span></span>
+<span id="cb216-16"><a href="cont-int.html#cb216-16" tabindex="-1"></a>    <span class="fu">mean</span>(mweight<span class="fl">.7</span><span class="sc">$</span>VCV[, <span class="dv">1</span> <span class="sc">+</span> (<span class="dv">12</span><span class="sc">^</span><span class="dv">2</span>)])</span>
+<span id="cb216-17"><a href="cont-int.html#cb216-17" tabindex="-1"></a></span>
+<span id="cb216-18"><a href="cont-int.html#cb216-18" tabindex="-1"></a></span>
+<span id="cb216-19"><a href="cont-int.html#cb216-19" tabindex="-1"></a><span class="co"># persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z</span></span>
+<span id="cb216-20"><a href="cont-int.html#cb216-20" tabindex="-1"></a><span class="co"># =cov2cor(empiricalC), xlab = &#39;Time 1&#39;, ylab = &#39;Time 2&#39;, zlab = &#39;correlation&#39;,</span></span>
+<span id="cb216-21"><a href="cont-int.html#cb216-21" tabindex="-1"></a><span class="co"># aspect = c(1, 1, 0.5), col = &#39;red&#39;, front=&#39;lines&#39;, back=&#39;lines&#39;, diagonal =</span></span>
+<span id="cb216-22"><a href="cont-int.html#cb216-22" tabindex="-1"></a><span class="co"># &#39;back&#39;) persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z</span></span>
+<span id="cb216-23"><a href="cont-int.html#cb216-23" tabindex="-1"></a><span class="co"># =cov2cor(theoreticalC.7), add=TRUE, col = &#39;blue&#39;)</span></span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:pred-int4"></span>
+<img src="_bookdown_files/fig/pred-int4-1.png" alt="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a 1st order antedependence model (`mweight.7`). The red line for a 1st order antedependence model (`mweight.8`) but ........." width="672" />
 <p class="caption">
-Figure 6.10: Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $<span class="math inline">\(\texttt{Time}\)</span> with random chick intercept and slopes. The residual variance is either assumed constant (red lines - model <code>mweight.2</code>) or to change with square of <span class="math inline">\(\texttt{Time}\)</span> (blue lines - model <code>mweight.3</code>).
+Figure 6.10: Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a 1st order antedependence model (<code>mweight.7</code>). The red line for a 1st order antedependence model (<code>mweight.8</code>) but ………
+</p>
+</div>
+<p>Under-predicts. Probably OK. Correcting for Selection bias.</p>
+</div>
+<div id="antedependence-models" class="section level2 hasAnchor" number="6.4">
+<h2><span class="header-section-number">6.4</span> Antedependence Models<a href="cont-int.html#antedependence-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb217-1"><a href="cont-int.html#cb217-1" tabindex="-1"></a>pweightF<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.2</span>)</span>
+<span id="cb217-2"><a href="cont-int.html#cb217-2" tabindex="-1"></a>e<span class="fl">.2</span> <span class="ot">&lt;-</span> ChickWeight<span class="sc">$</span>weight <span class="sc">-</span> pweightF<span class="fl">.2</span></span>
+<span id="cb217-3"><a href="cont-int.html#cb217-3" tabindex="-1"></a><span class="fu">predict</span>(mweight<span class="fl">.2</span>)</span></code></pre></div>
+<pre><code>##          [,1]
+## 1    37.80031
+## 2    47.36255
+## 3    57.95992
+## 4    69.59241
+## 5    82.26002
+## 6    95.96276
+## 7   110.70063
+## 8   126.47361
+## 9   143.28173
+## 10  161.12496
+## 11  180.00332
+## 12  189.83068
+## 13   37.80031
+## 14   47.36255
+## 15   57.95992
+## 16   69.59241
+## 17   82.26002
+## 18   95.96276
+## 19  110.70063
+## 20  126.47361
+## 21  143.28173
+## 22  161.12496
+## 23  180.00332
+## 24  189.83068
+## 25   37.80031
+## 26   47.36255
+## 27   57.95992
+## 28   69.59241
+## 29   82.26002
+## 30   95.96276
+## 31  110.70063
+## 32  126.47361
+## 33  143.28173
+## 34  161.12496
+## 35  180.00332
+## 36  189.83068
+## 37   37.80031
+## 38   47.36255
+## 39   57.95992
+## 40   69.59241
+## 41   82.26002
+## 42   95.96276
+## 43  110.70063
+## 44  126.47361
+## 45  143.28173
+## 46  161.12496
+## 47  180.00332
+## 48  189.83068
+## 49   37.80031
+## 50   47.36255
+## 51   57.95992
+## 52   69.59241
+## 53   82.26002
+## 54   95.96276
+## 55  110.70063
+## 56  126.47361
+## 57  143.28173
+## 58  161.12496
+## 59  180.00332
+## 60  189.83068
+## 61   37.80031
+## 62   47.36255
+## 63   57.95992
+## 64   69.59241
+## 65   82.26002
+## 66   95.96276
+## 67  110.70063
+## 68  126.47361
+## 69  143.28173
+## 70  161.12496
+## 71  180.00332
+## 72  189.83068
+## 73   37.80031
+## 74   47.36255
+## 75   57.95992
+## 76   69.59241
+## 77   82.26002
+## 78   95.96276
+## 79  110.70063
+## 80  126.47361
+## 81  143.28173
+## 82  161.12496
+## 83  180.00332
+## 84  189.83068
+## 85   37.80031
+## 86   47.36255
+## 87   57.95992
+## 88   69.59241
+## 89   82.26002
+## 90   95.96276
+## 91  110.70063
+## 92  126.47361
+## 93  143.28173
+## 94  161.12496
+## 95  180.00332
+## 96   37.80031
+## 97   47.36255
+## 98   57.95992
+## 99   69.59241
+## 100  82.26002
+## 101  95.96276
+## 102 110.70063
+## 103 126.47361
+## 104 143.28173
+## 105 161.12496
+## 106 180.00332
+## 107 189.83068
+## 108  37.80031
+## 109  47.36255
+## 110  57.95992
+## 111  69.59241
+## 112  82.26002
+## 113  95.96276
+## 114 110.70063
+## 115 126.47361
+## 116 143.28173
+## 117 161.12496
+## 118 180.00332
+## 119 189.83068
+## 120  37.80031
+## 121  47.36255
+## 122  57.95992
+## 123  69.59241
+## 124  82.26002
+## 125  95.96276
+## 126 110.70063
+## 127 126.47361
+## 128 143.28173
+## 129 161.12496
+## 130 180.00332
+## 131 189.83068
+## 132  37.80031
+## 133  47.36255
+## 134  57.95992
+## 135  69.59241
+## 136  82.26002
+## 137  95.96276
+## 138 110.70063
+## 139 126.47361
+## 140 143.28173
+## 141 161.12496
+## 142 180.00332
+## 143 189.83068
+## 144  37.80031
+## 145  47.36255
+## 146  57.95992
+## 147  69.59241
+## 148  82.26002
+## 149  95.96276
+## 150 110.70063
+## 151 126.47361
+## 152 143.28173
+## 153 161.12496
+## 154 180.00332
+## 155 189.83068
+## 156  37.80031
+## 157  47.36255
+## 158  57.95992
+## 159  69.59241
+## 160  82.26002
+## 161  95.96276
+## 162 110.70063
+## 163 126.47361
+## 164 143.28173
+## 165 161.12496
+## 166 180.00332
+## 167 189.83068
+## 168  37.80031
+## 169  47.36255
+## 170  57.95992
+## 171  69.59241
+## 172  82.26002
+## 173  95.96276
+## 174 110.70063
+## 175 126.47361
+## 176  37.80031
+## 177  47.36255
+## 178  57.95992
+## 179  69.59241
+## 180  82.26002
+## 181  95.96276
+## 182 110.70063
+## 183  37.80031
+## 184  47.36255
+## 185  57.95992
+## 186  69.59241
+## 187  82.26002
+## 188  95.96276
+## 189 110.70063
+## 190 126.47361
+## 191 143.28173
+## 192 161.12496
+## 193 180.00332
+## 194 189.83068
+## 195  37.80031
+## 196  47.36255
+## 197  37.80031
+## 198  47.36255
+## 199  57.95992
+## 200  69.59241
+## 201  82.26002
+## 202  95.96276
+## 203 110.70063
+## 204 126.47361
+## 205 143.28173
+## 206 161.12496
+## 207 180.00332
+## 208 189.83068
+## 209  37.80031
+## 210  47.36255
+## 211  57.95992
+## 212  69.59241
+## 213  82.26002
+## 214  95.96276
+## 215 110.70063
+## 216 126.47361
+## 217 143.28173
+## 218 161.12496
+## 219 180.00332
+## 220 189.83068
+## 221  37.80031
+## 222  49.86664
+## 223  62.96809
+## 224  77.10467
+## 225  92.27638
+## 226 108.48321
+## 227 125.72516
+## 228 144.00224
+## 229 163.31444
+## 230 183.66177
+## 231 205.04422
+## 232 216.12361
+## 233  37.80031
+## 234  49.86664
+## 235  62.96809
+## 236  77.10467
+## 237  92.27638
+## 238 108.48321
+## 239 125.72516
+## 240 144.00224
+## 241 163.31444
+## 242 183.66177
+## 243 205.04422
+## 244 216.12361
+## 245  37.80031
+## 246  49.86664
+## 247  62.96809
+## 248  77.10467
+## 249  92.27638
+## 250 108.48321
+## 251 125.72516
+## 252 144.00224
+## 253 163.31444
+## 254 183.66177
+## 255 205.04422
+## 256 216.12361
+## 257  37.80031
+## 258  49.86664
+## 259  62.96809
+## 260  77.10467
+## 261  92.27638
+## 262 108.48321
+## 263 125.72516
+## 264 144.00224
+## 265 163.31444
+## 266 183.66177
+## 267 205.04422
+## 268 216.12361
+## 269  37.80031
+## 270  49.86664
+## 271  62.96809
+## 272  77.10467
+## 273  92.27638
+## 274 108.48321
+## 275 125.72516
+## 276 144.00224
+## 277 163.31444
+## 278 183.66177
+## 279 205.04422
+## 280 216.12361
+## 281  37.80031
+## 282  49.86664
+## 283  62.96809
+## 284  77.10467
+## 285  92.27638
+## 286 108.48321
+## 287 125.72516
+## 288 144.00224
+## 289 163.31444
+## 290 183.66177
+## 291 205.04422
+## 292 216.12361
+## 293  37.80031
+## 294  49.86664
+## 295  62.96809
+## 296  77.10467
+## 297  92.27638
+## 298 108.48321
+## 299 125.72516
+## 300 144.00224
+## 301 163.31444
+## 302 183.66177
+## 303 205.04422
+## 304 216.12361
+## 305  37.80031
+## 306  49.86664
+## 307  62.96809
+## 308  77.10467
+## 309  92.27638
+## 310 108.48321
+## 311 125.72516
+## 312 144.00224
+## 313 163.31444
+## 314 183.66177
+## 315 205.04422
+## 316 216.12361
+## 317  37.80031
+## 318  49.86664
+## 319  62.96809
+## 320  77.10467
+## 321  92.27638
+## 322 108.48321
+## 323 125.72516
+## 324 144.00224
+## 325 163.31444
+## 326 183.66177
+## 327 205.04422
+## 328 216.12361
+## 329  37.80031
+## 330  49.86664
+## 331  62.96809
+## 332  77.10467
+## 333  92.27638
+## 334 108.48321
+## 335 125.72516
+## 336 144.00224
+## 337 163.31444
+## 338 183.66177
+## 339 205.04422
+## 340 216.12361
+## 341  37.80031
+## 342  51.04053
+## 343  65.31587
+## 344  80.62633
+## 345  96.97192
+## 346 114.35264
+## 347 132.76848
+## 348 152.21944
+## 349 172.70553
+## 350 194.22674
+## 351 216.78308
+## 352 228.44942
+## 353  37.80031
+## 354  51.04053
+## 355  65.31587
+## 356  80.62633
+## 357  96.97192
+## 358 114.35264
+## 359 132.76848
+## 360 152.21944
+## 361 172.70553
+## 362 194.22674
+## 363 216.78308
+## 364 228.44942
+## 365  37.80031
+## 366  51.04053
+## 367  65.31587
+## 368  80.62633
+## 369  96.97192
+## 370 114.35264
+## 371 132.76848
+## 372 152.21944
+## 373 172.70553
+## 374 194.22674
+## 375 216.78308
+## 376 228.44942
+## 377  37.80031
+## 378  51.04053
+## 379  65.31587
+## 380  80.62633
+## 381  96.97192
+## 382 114.35264
+## 383 132.76848
+## 384 152.21944
+## 385 172.70553
+## 386 194.22674
+## 387 216.78308
+## 388 228.44942
+## 389  37.80031
+## 390  51.04053
+## 391  65.31587
+## 392  80.62633
+## 393  96.97192
+## 394 114.35264
+## 395 132.76848
+## 396 152.21944
+## 397 172.70553
+## 398 194.22674
+## 399 216.78308
+## 400 228.44942
+## 401  37.80031
+## 402  51.04053
+## 403  65.31587
+## 404  80.62633
+## 405  96.97192
+## 406 114.35264
+## 407 132.76848
+## 408 152.21944
+## 409 172.70553
+## 410 194.22674
+## 411 216.78308
+## 412 228.44942
+## 413  37.80031
+## 414  51.04053
+## 415  65.31587
+## 416  80.62633
+## 417  96.97192
+## 418 114.35264
+## 419 132.76848
+## 420 152.21944
+## 421 172.70553
+## 422 194.22674
+## 423 216.78308
+## 424 228.44942
+## 425  37.80031
+## 426  51.04053
+## 427  65.31587
+## 428  80.62633
+## 429  96.97192
+## 430 114.35264
+## 431 132.76848
+## 432 152.21944
+## 433 172.70553
+## 434 194.22674
+## 435 216.78308
+## 436 228.44942
+## 437  37.80031
+## 438  51.04053
+## 439  65.31587
+## 440  80.62633
+## 441  96.97192
+## 442 114.35264
+## 443 132.76848
+## 444 152.21944
+## 445 172.70553
+## 446 194.22674
+## 447 216.78308
+## 448 228.44942
+## 449  37.80031
+## 450  51.04053
+## 451  65.31587
+## 452  80.62633
+## 453  96.97192
+## 454 114.35264
+## 455 132.76848
+## 456 152.21944
+## 457 172.70553
+## 458 194.22674
+## 459 216.78308
+## 460 228.44942
+## 461  37.80031
+## 462  53.09134
+## 463  69.41750
+## 464  86.77879
+## 465 105.17519
+## 466 124.60673
+## 467 145.07338
+## 468 166.57517
+## 469 189.11207
+## 470 212.68410
+## 471 237.29126
+## 472 249.98300
+## 473  37.80031
+## 474  53.09134
+## 475  69.41750
+## 476  86.77879
+## 477 105.17519
+## 478 124.60673
+## 479 145.07338
+## 480 166.57517
+## 481 189.11207
+## 482 212.68410
+## 483 237.29126
+## 484 249.98300
+## 485  37.80031
+## 486  53.09134
+## 487  69.41750
+## 488  86.77879
+## 489 105.17519
+## 490 124.60673
+## 491 145.07338
+## 492 166.57517
+## 493 189.11207
+## 494 212.68410
+## 495 237.29126
+## 496 249.98300
+## 497  37.80031
+## 498  53.09134
+## 499  69.41750
+## 500  86.77879
+## 501 105.17519
+## 502 124.60673
+## 503 145.07338
+## 504 166.57517
+## 505 189.11207
+## 506 212.68410
+## 507  37.80031
+## 508  53.09134
+## 509  69.41750
+## 510  86.77879
+## 511 105.17519
+## 512 124.60673
+## 513 145.07338
+## 514 166.57517
+## 515 189.11207
+## 516 212.68410
+## 517 237.29126
+## 518 249.98300
+## 519  37.80031
+## 520  53.09134
+## 521  69.41750
+## 522  86.77879
+## 523 105.17519
+## 524 124.60673
+## 525 145.07338
+## 526 166.57517
+## 527 189.11207
+## 528 212.68410
+## 529 237.29126
+## 530 249.98300
+## 531  37.80031
+## 532  53.09134
+## 533  69.41750
+## 534  86.77879
+## 535 105.17519
+## 536 124.60673
+## 537 145.07338
+## 538 166.57517
+## 539 189.11207
+## 540 212.68410
+## 541 237.29126
+## 542 249.98300
+## 543  37.80031
+## 544  53.09134
+## 545  69.41750
+## 546  86.77879
+## 547 105.17519
+## 548 124.60673
+## 549 145.07338
+## 550 166.57517
+## 551 189.11207
+## 552 212.68410
+## 553 237.29126
+## 554 249.98300
+## 555  37.80031
+## 556  53.09134
+## 557  69.41750
+## 558  86.77879
+## 559 105.17519
+## 560 124.60673
+## 561 145.07338
+## 562 166.57517
+## 563 189.11207
+## 564 212.68410
+## 565 237.29126
+## 566 249.98300
+## 567  37.80031
+## 568  53.09134
+## 569  69.41750
+## 570  86.77879
+## 571 105.17519
+## 572 124.60673
+## 573 145.07338
+## 574 166.57517
+## 575 189.11207
+## 576 212.68410
+## 577 237.29126
+## 578 249.98300</code></pre>
+</div>
+<div id="variance-stabilisation" class="section level2 hasAnchor" number="6.5">
+<h2><span class="header-section-number">6.5</span> Variance stabilisation<a href="cont-int.html#variance-stabilisation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The variance in chick weight increased dramatically with <span class="math inline">\(\texttt{Time}\)</span> and it required effort to understand how this aspect of the data is captured by random-regression models. We also saw that while modelling the change in variance accurately improved our models ability to capture general features of the data, it did compromised our ability to predict some aspects, such as the predicted means. In addition to the variance, the mean chick weight also increased dramatically in time, and we managed to model this fairly intuitively by fitting <span class="math inline">\(\texttt{Time}\)</span> and <span class="math inline">\(\texttt{Time}^2\)</span> in the fixed effect formula. Let’s plot the means and variances for each <span class="math inline">\(\texttt{Diet}\)</span>/<span class="math inline">\(\texttt{Time}\)</span> combination.</p>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb219-1"><a href="cont-int.html#cb219-1" tabindex="-1"></a>means <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(weight, Time, mean))</span>
+<span id="cb219-2"><a href="cont-int.html#cb219-2" tabindex="-1"></a>vars <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(weight, Time, var))</span>
+<span id="cb219-3"><a href="cont-int.html#cb219-3" tabindex="-1"></a><span class="fu">plot</span>(vars <span class="sc">~</span> means)</span></code></pre></div>
+<p><img src="_bookdown_files/fig/unnamed-chunk-109-1.png" alt="" width="672" /></p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="cont-int.html#cb220-1" tabindex="-1"></a>meansl <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(<span class="fu">log</span>(weight), Time, mean))</span>
+<span id="cb220-2"><a href="cont-int.html#cb220-2" tabindex="-1"></a>varsl <span class="ot">&lt;-</span> <span class="fu">with</span>(ChickWeight, <span class="fu">tapply</span>(<span class="fu">log</span>(weight), Time, var))</span>
+<span id="cb220-3"><a href="cont-int.html#cb220-3" tabindex="-1"></a><span class="fu">plot</span>(varsl <span class="sc">~</span> meansl)</span></code></pre></div>
+<p><img src="_bookdown_files/fig/unnamed-chunk-110-1.png" alt="" width="672" /></p>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="cont-int.html#cb221-1" tabindex="-1"></a>mweight<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(weight) <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span>Chick,</span>
+<span id="cb221-2"><a href="cont-int.html#cb221-2" tabindex="-1"></a>    <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.weight)</span>
+<span id="cb221-3"><a href="cont-int.html#cb221-3" tabindex="-1"></a>mweight<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(weight) <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(<span class="dv">1</span> <span class="sc">+</span></span>
+<span id="cb221-4"><a href="cont-int.html#cb221-4" tabindex="-1"></a>    Time)<span class="sc">:</span>Chick, <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.weight)</span>
+<span id="cb221-5"><a href="cont-int.html#cb221-5" tabindex="-1"></a>mweight<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(weight) <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(<span class="dv">1</span> <span class="sc">+</span></span>
+<span id="cb221-6"><a href="cont-int.html#cb221-6" tabindex="-1"></a>    Time)<span class="sc">:</span>Chick <span class="sc">+</span> <span class="fu">us</span>(Time)<span class="sc">:</span>units, <span class="at">data =</span> ChickWeight, <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> prior.weight)</span>
+<span id="cb221-7"><a href="cont-int.html#cb221-7" tabindex="-1"></a></span>
+<span id="cb221-8"><a href="cont-int.html#cb221-8" tabindex="-1"></a>pweight<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.4</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span>
+<span id="cb221-9"><a href="cont-int.html#cb221-9" tabindex="-1"></a>pweight<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.5</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span>
+<span id="cb221-10"><a href="cont-int.html#cb221-10" tabindex="-1"></a>pweight<span class="fl">.6</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.6</span>, <span class="at">marginal =</span> <span class="sc">~</span><span class="fu">us</span>(Time)<span class="sc">:</span>units)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:CWresid-log"></span>
+<img src="_bookdown_files/fig/CWresid-log-1.png" alt="Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $$\texttt{Time}$ with  random chick intercept and slopes. The residual variance is either assumed constant (red lines - model `mweight.2`) or to change with square of $\texttt{Time}$ (blue lines - model `mweight.3`)." width="864" />
+<p class="caption">
+Figure 6.11: Weights of each chick as a function of age (points). Predictions are shown for models where the mean growth curve was fitted as a quadratic function of $<span class="math inline">\(\texttt{Time}\)</span> with random chick intercept and slopes. The residual variance is either assumed constant (red lines - model <code>mweight.2</code>) or to change with square of <span class="math inline">\(\texttt{Time}\)</span> (blue lines - model <code>mweight.3</code>).
 </p>
 </div>
 <div class="figure"><span style="display:block;" id="fig:pred-int3"></span>
 <img src="_bookdown_files/fig/pred-int3-1.png" alt="Log chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a random intercept model (`mweight.4`) that implicitly assumes the variance is constant over $\texttt{Time}$.  The red line is for a random intercept-slope model (`mweight.5`) that allows the variance to change as a quadratic function of $\texttt{Time}$. The blue line is also for a random intercept-slope model (`mweight.6`) but ........." width="672" />
 <p class="caption">
-Figure 6.11: Log chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a random intercept model (<code>mweight.4</code>) that implicitly assumes the variance is constant over <span class="math inline">\(\texttt{Time}\)</span>. The red line is for a random intercept-slope model (<code>mweight.5</code>) that allows the variance to change as a quadratic function of <span class="math inline">\(\texttt{Time}\)</span>. The blue line is also for a random intercept-slope model (<code>mweight.6</code>) but ………
+Figure 6.12: Log chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a random intercept model (<code>mweight.4</code>) that implicitly assumes the variance is constant over <span class="math inline">\(\texttt{Time}\)</span>. The red line is for a random intercept-slope model (<code>mweight.5</code>) that allows the variance to change as a quadratic function of <span class="math inline">\(\texttt{Time}\)</span>. The blue line is also for a random intercept-slope model (<code>mweight.6</code>) but ………
 </p>
 </div>
 </div>
-</div>
-<div id="antedependence-models" class="section level2 hasAnchor" number="6.3">
-<h2><span class="header-section-number">6.3</span> Antedependence Models<a href="cont-int.html#antedependence-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="cont-int.html#cb218-1" tabindex="-1"></a>prior<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>,</span>
-<span id="cb218-2"><a href="cont-int.html#cb218-2" tabindex="-1"></a>    <span class="dv">12</span>), <span class="at">alpha.V =</span> <span class="fu">diag</span>(<span class="dv">12</span>) <span class="sc">*</span> <span class="dv">10000</span>, <span class="at">beta.mu =</span> <span class="dv">0</span>, <span class="at">beta.V =</span> <span class="fu">diag</span>(<span class="dv">1</span>) <span class="sc">*</span> <span class="dv">10000</span>)))</span>
-<span id="cb218-3"><a href="cont-int.html#cb218-3" tabindex="-1"></a>mweight<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(weight <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">antec1v</span>(<span class="fu">as.factor</span>(Time))<span class="sc">:</span>Chick,</span>
-<span id="cb218-4"><a href="cont-int.html#cb218-4" tabindex="-1"></a>    <span class="at">data =</span> ChickWeight, <span class="at">prior =</span> prior<span class="fl">.7</span>, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb218-5"><a href="cont-int.html#cb218-5" tabindex="-1"></a></span>
-<span id="cb218-6"><a href="cont-int.html#cb218-6" tabindex="-1"></a>pweight<span class="fl">.7</span> <span class="ot">&lt;-</span> <span class="fu">predict</span>(mweight<span class="fl">.7</span>, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span>
-<span id="cb218-7"><a href="cont-int.html#cb218-7" tabindex="-1"></a>prior<span class="fl">.8</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>,</span>
-<span id="cb218-8"><a href="cont-int.html#cb218-8" tabindex="-1"></a>    <span class="dv">12</span>), <span class="at">alpha.V =</span> <span class="fu">diag</span>(<span class="dv">12</span>) <span class="sc">*</span> <span class="dv">10000</span>, <span class="at">beta.mu =</span> <span class="dv">0</span>, <span class="at">beta.V =</span> <span class="fu">diag</span>(<span class="dv">1</span>) <span class="sc">*</span> <span class="dv">10000</span>), <span class="at">G2 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
-<span id="cb218-9"><a href="cont-int.html#cb218-9" tabindex="-1"></a>    <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>, <span class="at">alpha.V =</span> <span class="dv">1</span>)))</span>
-<span id="cb218-10"><a href="cont-int.html#cb218-10" tabindex="-1"></a>mweight<span class="fl">.8</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(weight <span class="sc">~</span> Time <span class="sc">+</span> <span class="fu">I</span>(Time<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> Diet<span class="sc">:</span>Time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">antec1v</span>(<span class="fu">as.factor</span>(Time))<span class="sc">:</span>Chick <span class="sc">+</span></span>
-<span id="cb218-11"><a href="cont-int.html#cb218-11" tabindex="-1"></a>    <span class="fu">us</span>(Time)<span class="sc">:</span>units, <span class="at">data =</span> ChickWeight, <span class="at">prior =</span> prior<span class="fl">.8</span>, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div class="figure"><span style="display:block;" id="fig:pred-int4"></span>
-<img src="_bookdown_files/fig/pred-int4-1.png" alt="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a 1st order antedependence model (`mweight.7`). The red line for a 1st order antedependence model (`mweight.8`) but ........." width="672" />
-<p class="caption">
-Figure 6.12: Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a 1st order antedependence model (<code>mweight.7</code>). The red line for a 1st order antedependence model (<code>mweight.8</code>) but ………
-</p>
-</div>
-<p>Under-predicts. Probably OK. Correcting for Selection bias.</p>
-</div>
-<div id="user-defined-sec" class="section level2 hasAnchor" number="6.4">
-<h2><span class="header-section-number">6.4</span> User-defined Design Matrices<a href="cont-int.html#user-defined-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="user-defined-sec" class="section level2 hasAnchor" number="6.6">
+<h2><span class="header-section-number">6.6</span> User-defined Design Matrices<a href="cont-int.html#user-defined-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><span class="math inline">\(\texttt{MCMCglmm}\)</span> generally uses <span class="math inline">\(\texttt{model.matrix}\)</span>, or a native equivalent, when evaluating a model formula to obtain the design matrices. Sometimes R formula syntax is not flexible enough to generate the appropriate design matrix. However, if a random-effect design matrix can be generated, it is possible to fit the model by exploiting the <span class="math inline">\(\texttt{idv}\)</span> variance structure. However, the parameters defined by the formula in the <span class="math inline">\(\texttt{idv}\)</span> structure should not be interacted with another factor. Consider the term <code>~idv(z1+z2+z3+z4):1</code> and let’s set up the table of random effects as we have before:</p>
 <p><span class="math display">\[\begin{array}{c|c}
 &amp;{\color{red}{\texttt{(Intercept)}}}\\
@@ -737,21 +1354,21 @@ Figure 6.12: Chick weights plotted against time with predicted mean weight (soli
 ## 5 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0 1 0 0 0 0 1 0 0
 ## 6 0 0 0 1 0 0 0 0 0 0 1 0 1 1 1 0 0 0 0 0 0 0 0 0 0 0</code></pre>
 <p>The row for each child has five ones indicating their friends. This design matrix cannot be created using a standard R formula and the multi-membership linking function <code>~mm(freind.1+freind.2+freind.3+freind.4+freind.5)</code> was used to create the design matrix. However, if we had the incidence matrix, we could place it in the data-frame and fit an identical model:</p>
-<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="cont-int.html#cb220-1" tabindex="-1"></a>data.friends<span class="sc">$</span>Z <span class="ot">&lt;-</span> Z</span>
-<span id="cb220-2"><a href="cont-int.html#cb220-2" tabindex="-1"></a>m.mm2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(Z), <span class="at">data =</span> data.friends, <span class="at">prior =</span> prior.mm)</span></code></pre></div>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="cont-int.html#cb223-1" tabindex="-1"></a>data.friends<span class="sc">$</span>Z <span class="ot">&lt;-</span> Z</span>
+<span id="cb223-2"><a href="cont-int.html#cb223-2" tabindex="-1"></a>m.mm2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(Z), <span class="at">data =</span> data.friends, <span class="at">prior =</span> prior.mm)</span></code></pre></div>
 <p>Note that there is no need to explicitly interact the <span class="math inline">\(\texttt{idv}\)</span> structure with an intercept (in fact <span class="math inline">\(\texttt{MCMCglmm}\)</span> will complain if you try). In this example, the predictor variables (<span class="math inline">\(\texttt{freind}\)</span>) are categorical, but there is nothing to stop design matrices from being formed using continuous predictors, as we’ll see in the next section on splines.</p>
 </div>
-<div id="splines" class="section level2 hasAnchor" number="6.5">
-<h2><span class="header-section-number">6.5</span> Splines<a href="cont-int.html#splines" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The function <span class="math inline">\(\texttt{smspline}\)</span> in <span class="math inline">\(\texttt{lmeSplines}\)</span> can be used to generate design matrices for penalised splines that are transformed such that the random effects are expected to be identically and independently distributed with unknown variance. Using the ideas discussed above for user-specified design matrices (Section <a href="cont-int.html#user-defined-sec">6.4</a>) we can use an <span class="math inline">\(\texttt{idv}\)</span> structure to fit the spline. However, rather than generating the design matrix outside of <span class="math inline">\(\texttt{MCMCglmm}\)</span> and adding it to the data-frame, we can simply use the <span class="math inline">\(\texttt{smspline}\)</span> function inside <span class="math inline">\(\texttt{idv}\)</span>. For example, we can fit a penalised cubic spline to one of the test data sets in <span class="math inline">\(\texttt{lmeSplines}\)</span>:</p>
-<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb221-1"><a href="cont-int.html#cb221-1" tabindex="-1"></a>spline.prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">1</span>, <span class="dv">1000</span>))</span>
-<span id="cb221-2"><a href="cont-int.html#cb221-2" tabindex="-1"></a>m.spline <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(<span class="fu">smspline</span>(time)), <span class="at">data =</span> smSplineEx1,</span>
-<span id="cb221-3"><a href="cont-int.html#cb221-3" tabindex="-1"></a>    <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> spline.prior)</span></code></pre></div>
+<div id="splines" class="section level2 hasAnchor" number="6.7">
+<h2><span class="header-section-number">6.7</span> Splines<a href="cont-int.html#splines" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The function <span class="math inline">\(\texttt{smspline}\)</span> in <span class="math inline">\(\texttt{lmeSplines}\)</span> can be used to generate design matrices for penalised splines that are transformed such that the random effects are expected to be identically and independently distributed with unknown variance. Using the ideas discussed above for user-specified design matrices (Section <a href="cont-int.html#user-defined-sec">6.6</a>) we can use an <span class="math inline">\(\texttt{idv}\)</span> structure to fit the spline. However, rather than generating the design matrix outside of <span class="math inline">\(\texttt{MCMCglmm}\)</span> and adding it to the data-frame, we can simply use the <span class="math inline">\(\texttt{smspline}\)</span> function inside <span class="math inline">\(\texttt{idv}\)</span>. For example, we can fit a penalised cubic spline to one of the test data sets in <span class="math inline">\(\texttt{lmeSplines}\)</span>:</p>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb224-1"><a href="cont-int.html#cb224-1" tabindex="-1"></a>spline.prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">1</span>, <span class="dv">1000</span>))</span>
+<span id="cb224-2"><a href="cont-int.html#cb224-2" tabindex="-1"></a>m.spline <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> time, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(<span class="fu">smspline</span>(time)), <span class="at">data =</span> smSplineEx1,</span>
+<span id="cb224-3"><a href="cont-int.html#cb224-3" tabindex="-1"></a>    <span class="at">pr =</span> <span class="cn">TRUE</span>, <span class="at">prior =</span> spline.prior)</span></code></pre></div>
 <p>The random effects need to be saved (<code>pr=TRUE</code>) because these are the coefficients of the spline. Similarly, when making a prediction we want to include the spline coefficients in the prediction, rather than marginalising them (Section <a href="ranef.html#ranpred-sec">4.2</a>).</p>
-<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="cont-int.html#cb222-1" tabindex="-1"></a>p.slpine <span class="ot">&lt;-</span> <span class="fu">predict</span>(m.spline, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb225-1"><a href="cont-int.html#cb225-1" tabindex="-1"></a>p.slpine <span class="ot">&lt;-</span> <span class="fu">predict</span>(m.spline, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span></code></pre></div>
 <p>The model wiggles its way through the data, as splines do …</p>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="cont-int.html#cb223-1" tabindex="-1"></a><span class="fu">plot</span>(y <span class="sc">~</span> time, <span class="at">data =</span> smSplineEx1)</span>
-<span id="cb223-2"><a href="cont-int.html#cb223-2" tabindex="-1"></a><span class="fu">lines</span>(p.slpine <span class="sc">~</span> smSplineEx1<span class="sc">$</span>time)</span></code></pre></div>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb226-1"><a href="cont-int.html#cb226-1" tabindex="-1"></a><span class="fu">plot</span>(y <span class="sc">~</span> time, <span class="at">data =</span> smSplineEx1)</span>
+<span id="cb226-2"><a href="cont-int.html#cb226-2" tabindex="-1"></a><span class="fu">lines</span>(p.slpine <span class="sc">~</span> smSplineEx1<span class="sc">$</span>time)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:spline"></span>
 <img src="_bookdown_files/fig/spline-1.png" alt="Data and prediction from a penalised cubic spline fitted to the example data $\texttt{smSplineEx1}$ from $\texttt{lmeSplines}$" width="672" />
 <p class="caption">
