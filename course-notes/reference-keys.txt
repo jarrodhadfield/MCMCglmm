@@ -73,6 +73,9 @@ fig:V-rr
 fig:pred-int1
 fig:perm
 fig:pred-int2
+fig:CWpred-3
+fig:CWresid
+fig:CWresid-log
 fig:pred-int3
 fig:pred-int4
 fig:spline
