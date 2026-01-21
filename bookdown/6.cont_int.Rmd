@@ -300,56 +300,98 @@ We are in a tricky situation. The model with non-constant residual variance does
 
 ## Autocorrelation {#autoc-sec}
 
-In Figure \@ref(fig:CWresid) we plotted a time series for the residuals of each chick. Neighbouring residuals were much more likely to have the same sign than a random pair of residuals, indicating autocorrelation in the residuals: two observations close in time are more similar to each other than our model predicts.    
+In Figure \@ref(fig:CWresid) we plotted a time series for the residuals of each chick. Neighbouring residuals were much more likely to have the same sign than a random pair of residuals, indicating positive autocorrelation in the residuals over short time scales: two observations close in time are more similar to each other than our model predicts.  Conversely, those time series where the middle residuals fall below the zero line tend to have terminal residuals that fall above the line, and vice versa: at longer time scales we see negative autocorrelation in the residuals and our observations are less similar to each other than our model predicts. 
+
+A way to visualise these issues more clearly is to think about the corelations we see in our data between observations made on the same chicks at different times, and compare these to what the model predicts.  We can use the function $\texttt{buildV}$ to obtain the expected (co)variances in our data due to the random effects we choose to marginalise and the residuals. The default is to marginalise all random effects which will give us the covariances due to both chick effects and residuals:  
 
 ```{r }
+theoreticalC.3<-buildV(mweight.3, diag=FALSE)
+```
 
-ChickWeight$resid<-ChickWeight$weight-predict(mweight.3)
+Note that we need to specify `diag=FALSE`. This returns an $n\times n$ (sparse) covariance matrix for the data-frame, where $n$ is the number of observations (`r nrow(ChickWeight)` in this case). Since we are assuming that the covariance structure for each chick is the same we can just extract the covariance structure for the first chick (which has a complete time series of 12 observations)[^cov-pred]. We can also turn the $12\times 12$ covariance matrix into a correlation matrix since we have already assessed how well the model does at predicting the scale of the observations (Figure \@ref(fig:pred-int2)).
 
-chick.wide <- reshape(ChickWeight[,c("resid", "Chick", "Time")], v.names="resid", idvar="Chick", timevar="Time", direction="wide")
+```{r }
+theoreticalC.3<-cov2cor(theoreticalC.3[1:12,1:12])
+```
+
+[^cov-pred]: To do this by hand, we need to add the covariances up due to the three terms in the model: `us(1+Time):Chick` and `us(Time):units` in the random formula, and `units` in $\texttt{rcov}$. For `us(1+Time):Chick`, subset the random effect design matrix that is relevant for the $i$th $\texttt{Chick}$ effects. Lets call this ${\bf Z}_i$ which will have 12 rows (one for each observation) and two columns. The first column will be all ones (since it is the predictor for the intercept) and the second column will contain the 12 unique values of $\texttt{Time}$. The covariance due to chick effects is then ${\bf Z}_i{\bf V}_\texttt{Chick}{\bf Z}_i^{\top}$ where ${\bf V}_\texttt{Chick}$ is the (co)variance matrix of intercepts and slopes. To this, we need to add the (co)variance matrix due to the `us(Time):units`. Again, subset the random effect design matrix that is relevant for the 12 $\texttt{unit}$ effects associated with $\texttt{Chick}$ $i$. Again, the matrix ${\bf Z}_u$ has 12 rows, one for each observation. However, it has 12 columns since the there is a separate  $\texttt{unit}$ effect for each observation. ${\bf Z}_u$ is diagonal, with the diagonals being the 12 unique values of $\texttt{Time}$.  The covariance due to `us(Time):units` is ${\bf Z}_u\sigma^2_\texttt{Time:units}{\bf Z}_u^{\top}$. Finally, we need to add the covariance due to `units` which is ${\bf I}\sigma^2_\texttt{units}$ since we are assuming the residuals are independent with constant variance $\sigma^2_\texttt{units}$ (${\bf I}$ is a $12\times 12$ identity matrix). These operations follow from the rules outlined in Section \@ref(covf-sec) and the footnote above[^cov].
+
+This is a matrix of expected correlations in weights at different ages after controlling for the fixed effect part of the model. To obtain the observed correlations, we need to calculate the correlation in the deviations of the chick's weights from their predicted values. Note that these predicted values should be based on the fixed effect part of the model only, and the chick effects need to be marginalised (the default for $\texttt{predict}$). 
+
+```{r }
+ChickWeight$marginal.resid<-ChickWeight$weight-predict(mweight.3)
+```
+
+I will refer to these as marginal residuals to distinguish them from the residual plotted in Figure \@ref(fig:CWresid) which include the chick effects in the prediction. We can reshape $\texttt{ChickWeight}$ into wide format where each row is a chick and the marginal residuals at different ages are columns:
 
 
-empiricalC<-cov(chick.wide[,-1], use="pairwise.complete.obs")
+```{r }
+chick.wide <- reshape(ChickWeight[,c("marginal.resid", "Chick", "Time")], v.names="marginal.resid", idvar="Chick", timevar="Time", direction="wide")
+head(chick.wide[,1:5])
+```
+
+From this we can calculate the observed $12\times 12$ correlation in the marginal residuals.
+
+```{r }
+empiricalC<-cor(chick.wide[,-1], use="pairwise.complete.obs")
+```
+
+Note that we needed to specify `use="pairwise.complete.obs"` because some chicks have missing values at later times, presumably because they died - an issue I will return to in Section \@ref(missing-sec). The theoretical and observed correlations are shown in blue and red respectively (Widget 6.1)
 
 
-Z<-cbind(1, unique(ChickWeight$Time))
+```{r label=ar-rgl, echo=FALSE, include=TRUE, hide=TRUE, webgl=TRUE, cache=FALSE}
+persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =empiricalC, xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "red", front="lines", back="lines", diagonal = "back")
+persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =theoreticalC.3, add=TRUE, col = "blue")
+```
+Widget 6.1: In red (wire-frame) are the correlations in the marginal residuals of weight over $\texttt{Time}$. In blue (solid) is the predicted correlations from a model with random chick intercept and slopes and a residual variance that is assumed to change with the square of $\texttt{Time}$. 
+<details>
+<summary>See code</summary>
+```{r eval=FALSE}
+persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =empiricalC, xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "red", front="lines", back="lines", diagonal = "back")
+persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =theoreticalC.3, add=TRUE, col = "blue")
+```
+</details><br>
 
-Vchick<-matrix(colMeans(mweight.3$VCV[,1:4]),2,2)
-Vres<-diag(colMeans(mweight.3$VCV[,5:6]))
+The diagonal ridge has a height of one: observations are perfectly correlated with themselves. Close to the ridge, the observed correlations are larger than that predicted (the red wire-frame is above the blue surface) particularly at later ages. This indicates that the autocorrelation is stronger at small time-scales than our model predicts. As we move further away from the ridge the observed correlations become smaller than our predicted correlations indicating that at medium time-scales  the autocorrelation is weaker than our model predicts. Finally, the model is very poor at predicting the correlation between hatching and all other values of $\texttt{Time}$: the observed correlation starts of strong and eventually becomes weakly negative, whereas the predicted correlation quickly drops to strongly negative values.
 
+Three dimensional plots can be confusing. We can also plot the correlations between a specific time-point and all others. These plots are sometimes referred to as variograms. In Figure \@ref(fig:ar-2d) we have the empirical (red circles) and theoretical (blue points) correlations for hatching ($\texttt{Time}=0$) the mid-point ($\texttt{Time}=10$) and the end ($\texttt{Time}=21$). Note that at all time points there is a discontinuity for the theoretical correlations when $\texttt{Time 1}=\texttt{Time 2}$ due to the residual variance. In the geostatistical literature this is often referred to as the 'nugget effect' and is visible in Widget 6.1 by viewing from the origin.
 
-theoreticalC.3<-Z%*%Vchick%*%t(Z)+diag(mean(mweight.3$VCV[,5])+Z[,2]*mean(mweight.3$VCV[,6]))
-
-#open3d()
-#bg3d("white")
-
-#persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(empiricalC), xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "red", front="lines", back="lines", diagonal = "back")
-# persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(theoreticalC.3), add=TRUE, col = "blue")
-
+```{r ar-2d, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="", fig.width=9, fig.height=5}
+par(mfrow=c(1,3))
+plot(empiricalC[1,]~unique(ChickWeight$Time), col="red", ylim=range(c(empiricalC[1,], theoreticalC.3[1,])), ylab="Correlation in Marginal Residuals: Time 1 = 0", xlab="Time 2", cex.lab=1.5)
+points(theoreticalC.3[1,]~unique(ChickWeight$Time), col="blue", pch=16, cex=1.4)
+plot(empiricalC[6,]~unique(ChickWeight$Time), col="red", ylim=range(c(empiricalC[1,], theoreticalC.3[1,])), ylab="Correlation in Marginal Residuals: Time 1 = 10", xlab="Time 2", cex.lab=1.5)
+points(theoreticalC.3[6,]~unique(ChickWeight$Time), col="blue", pch=16, cex=1.4)
+plot(empiricalC[12,]~unique(ChickWeight$Time), col="red", ylim=range(c(empiricalC[1,], theoreticalC.3[1,])), ylab="Correlation in Marginal Residuals: Time 1 = 21", xlab="Time 2", cex.lab=1.5)
+points(theoreticalC.3[12,]~unique(ChickWeight$Time), col="blue", pch=16, cex=1.4)
 ```
 
 
 
-``` {r echo=TRUE}
-prior.7<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=rep(0,12), alpha.V=diag(12)*10000, beta.mu=0, beta.V=diag(1)*10000)))
+
+## Antedependence Models
+
+``` {r ante, echo=TRUE}
+prior.7<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(1), nu=0.002, beta.mu=0, beta.V=10000)))
 mweight.7<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~antec1v(as.factor(Time)):Chick, data=ChickWeight, prior=prior.7, pr=TRUE)
 
 pweight.7<-predict(mweight.7, marginal=NULL)
-prior.8<-list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=1, alpha.mu=rep(0,12), alpha.V=diag(12)*10000, beta.mu=0, beta.V=diag(1)*10000), G2=list(V=1, nu=1, alpha.mu=0, alpha.V=1)))
-mweight.8<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~antec1v(as.factor(Time)):Chick+us(Time):units, data=ChickWeight, prior=prior.8, pr=TRUE)
 
-#open3d()
-#bg3d("white")
+
+prior.8<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(1), nu=0.002, beta.mu=0, beta.V=10000), G2=IW(1, 0.002)))
+
+mweight.8<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~antec1v(as.factor(Time)):Chick+us(Time):units, data=ChickWeight, prior=prior.8, pr=TRUE)
 
 theoreticalC.7<-matrix(colMeans(mweight.7$VCV[,1:(12^2)]), 12,12)+diag(12)*mean(mweight.7$VCV[,1+(12^2)])
 
-
-#persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(empiricalC), xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "red", front="lines", back="lines", diagonal = "back")
-#persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(theoreticalC.7), add=TRUE, col = "blue")
-
-
-
 ```
+
+```{r label=ar-rgl2, echo=FALSE, include=TRUE, webgl=TRUE, cache=FALSE}
+persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(empiricalC), xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "red", front="lines", back="lines", diagonal = "back")
+persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =cov2cor(theoreticalC.7), add=TRUE,  col = "blue", alpha=0.9)
+```
+
+
 
 
 ``` {r pred-int4, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a 1st order antedependence model (`mweight.7`). The red line for a 1st order antedependence model (`mweight.8`) but .........", fig.width=7, fig.height=5}
@@ -375,17 +417,6 @@ lines(upper.8~unique(ChickWeight$Time), lty=2, col="blue")
 
 Under-predicts. Probably OK. Correcting for Selection bias.
 
-
-
-
-
-## Antedependence Models
-
-```{r }
-pweightF.2<-predict(mweight.2)
-e.2<-ChickWeight$weight-pweightF.2
-predict(mweight.2)
-```
 
 ## Variance stabilisation
 

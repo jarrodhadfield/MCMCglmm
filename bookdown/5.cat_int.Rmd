@@ -136,7 +136,7 @@ Because the $\texttt{line}$ effects are assumed to be multivariate normal we can
 ```{r label=rgl, echo=TRUE, include=TRUE, webgl=TRUE, cache=FALSE}
 plotsubspace(Vline.idh, axes.lab=TRUE)
 ```
-Widget 4.1: Ellipsoid that circumscribes 95\% of the expected $\texttt{line}$ effects as estimated in model `m.sigma.3`. This can be thought of as a scatter plot of the $\texttt{line}$ effects between each virus, if the $\texttt{line}$ effects could be directly measured.  Because the covariances of the $\texttt{line}$ effects between each virus were set to zero, and the variance of the $\texttt{line}$ effects are quite similar for each virus, the ellipsoid is almost spherical.
+Widget 5.1: Ellipsoid that circumscribes 95\% of the expected $\texttt{line}$ effects as estimated in model `m.sigma.3`. This can be thought of as a scatter plot of the $\texttt{line}$ effects between each virus, if the $\texttt{line}$ effects could be directly measured.  Because the covariances of the $\texttt{line}$ effects between each virus were set to zero, and the variance of the $\texttt{line}$ effects are quite similar for each virus, the ellipsoid is almost spherical.
 
 Although we have allowed the variance in $\texttt{line}$ effects to be different across the viruses, we have used the default specification for the residual structure (`rcov=~units`). $\texttt{MCMCglmm}$ augments the original data-frame with a column called $\texttt{units}$ which is a factor that has unique levels for each row. This is covered in greater depth when discussing multi-response models (Chapter \@ref(multi)) but for the single-response model used here we can simply think of $\texttt{units}$ as indexing residuals. Having a constant residual variance for each virus but allowing the between-line variance to vary is somewhat dangerous: if the residual variances did vary then this may be reflected to some degree in the estimates of the between-line variances. Allowing the residual variances to also vary overs viruses is straightforward:
 
@@ -171,7 +171,7 @@ We can see that the covariances are large, and like the variances, relatively co
 ```{r label=rgl2, fig=-TRUE, echo=TRUE, eval=TRUE, webgl=TRUE, cache=FALSE}
 plotsubspace(Vline.us, axes.lab=TRUE)
 ```
-Widget 4.2: Ellipsoid that circumscribes 95% of the expected $\texttt{line}$ effects as estimated in model $\texttt{m.sigma.5}$. This can be thought of as a scatter plot of the $\texttt{line}$ effects between virus, if the $\texttt{line}$ effects could be directly measured.  The correlations of the $\texttt{line}$ effects between viruses are large, and the variance in $\texttt{line}$ effects are roughly equal in magnitude across viruses.  Consequently the orientation of the major axis of the ellipsoid is tending towards $45^{o}$ relative to the figure axes.
+Widget 5.2: Ellipsoid that circumscribes 95% of the expected $\texttt{line}$ effects as estimated in model $\texttt{m.sigma.5}$. This can be thought of as a scatter plot of the $\texttt{line}$ effects between virus, if the $\texttt{line}$ effects could be directly measured.  The correlations of the $\texttt{line}$ effects between viruses are large, and the variance in $\texttt{line}$ effects are roughly equal in magnitude across viruses.  Consequently the orientation of the major axis of the ellipsoid is tending towards $45^{o}$ relative to the figure axes.
 
 
 We can use the function `posterior.cor` to convert the posterior samples of the (co)variance matrix into posterior samples of the correlation matrix. Doing so we can see that the estimated correlations are indeed large and relatively invariant.
@@ -197,7 +197,7 @@ and we can see this if we visualise the two distributions simultaneously:
 ```{r label=rgl3, fig=-TRUE, echo=TRUE, eval=TRUE, webgl=TRUE, cache=FALSE}
 plotsubspace(Vline.us, Vline.2, axes.lab=TRUE, shadeCA=FALSE)
 ```
-Widget 4.3: Ellipsoids that circumscribes 95% of the expected $\texttt{line}$ effects as estimated in model $\texttt{m.sigma.5}$ where all (co)variance parameters are estimated (red wireframe) and model $\texttt{m.sigma.2}$ where the variances across viruses, and the correlations between viruses, are assumed constant (solid blue).
+Widget 5.3: Ellipsoids that circumscribes 95% of the expected $\texttt{line}$ effects as estimated in model $\texttt{m.sigma.5}$ where all (co)variance parameters are estimated (red wireframe) and model $\texttt{m.sigma.2}$ where the variances across viruses, and the correlations between viruses, are assumed constant (solid blue).
 
 Note that when using a $\texttt{us}$ structure for the $\texttt{line}$ effects in model $\texttt{m.sigma.6}$ we retained the $\texttt{idh}$ structure for the residuals. Since the flies in each vial (indexed by $\texttt{units}$ since they correspond to a row of the data-frame) are all exposed to the same virus, the residual covariances between viruses cannot be estimated and so can be set to zero. In Chapter \@ref(multi) we will look at multi-response models where this generally isn't the case. 
 
