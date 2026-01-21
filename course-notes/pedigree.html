@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-20" />
+<meta name="date" content="2026-01-21" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -382,11 +382,11 @@ div.csl-indent {
 the first column and the sire (father) in the third. I prefer the words dam and sire because if I subscript things with <span class="math inline">\(m\)</span> and <span class="math inline">\(f\)</span> I can never remember whether I mean male and female, or mother and father. In hermaphrodite systems the same individual may appear in both columns, even within the same row if an individual was produced through selfing. This is not a problem, but <span class="math inline">\(\texttt{MCMCglmm}\)</span> will issue a warning in case hermaphrodites are not present and a data entry mistake has been made. Impossible pedigrees (for example individual’s that give birth to their own mother) are a problem and <span class="math inline">\(\texttt{MCMCglmm}\)</span> will issue an error, hopefully with an appropriate message, when impossibilities are detected.</p>
 <p>If the parent(s) of an individual are unknown then a missing value (<code>NA</code>) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. <span class="math inline">\(\texttt{MCMCglmm}\)</span> can handle this, as long as all the individuals appearing in the data frame passed to <code>data</code> also appear in the pedigree.</p>
 <p>To illustrate, we can load a pedigree for a population of blue tits and display the pedigree for the nuclear family that has individuals <span class="math inline">\(\texttt{R187920}\)</span> and <span class="math inline">\(\texttt{R187921}\)</span> as parents:</p>
-<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="pedigree.html#cb285-1" tabindex="-1"></a><span class="fu">data</span>(BTped)</span>
-<span id="cb285-2"><a href="pedigree.html#cb285-2" tabindex="-1"></a>Nped <span class="ot">&lt;-</span> BTped[<span class="fu">which</span>(<span class="fu">apply</span>(BTped, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb285-3"><a href="pedigree.html#cb285-3" tabindex="-1"></a>    <span class="fu">any</span>(x <span class="sc">==</span> <span class="st">&quot;R187920&quot;</span> <span class="sc">|</span> x <span class="sc">==</span> <span class="st">&quot;R187921&quot;</span>)</span>
-<span id="cb285-4"><a href="pedigree.html#cb285-4" tabindex="-1"></a>})), ]</span>
-<span id="cb285-5"><a href="pedigree.html#cb285-5" tabindex="-1"></a>Nped</span></code></pre></div>
+<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="pedigree.html#cb289-1" tabindex="-1"></a><span class="fu">data</span>(BTped)</span>
+<span id="cb289-2"><a href="pedigree.html#cb289-2" tabindex="-1"></a>Nped <span class="ot">&lt;-</span> BTped[<span class="fu">which</span>(<span class="fu">apply</span>(BTped, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
+<span id="cb289-3"><a href="pedigree.html#cb289-3" tabindex="-1"></a>    <span class="fu">any</span>(x <span class="sc">==</span> <span class="st">&quot;R187920&quot;</span> <span class="sc">|</span> x <span class="sc">==</span> <span class="st">&quot;R187921&quot;</span>)</span>
+<span id="cb289-4"><a href="pedigree.html#cb289-4" tabindex="-1"></a>})), ]</span>
+<span id="cb289-5"><a href="pedigree.html#cb289-5" tabindex="-1"></a>Nped</span></code></pre></div>
 <pre><code>##       animal     dam    sire
 ## 66   R187920    &lt;NA&gt;    &lt;NA&gt;
 ## 172  R187921    &lt;NA&gt;    &lt;NA&gt;
@@ -404,12 +404,12 @@ the first column and the sire (father) in the third. I prefer the words dam and 
 <h3><span class="header-section-number">8.1.2</span> Phylogenies<a href="pedigree.html#phylogenies" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Phylogenies can be expressed in tabular form, although only two columns are required because each species only has a single parent. In general however, phylogenies are not expressed in this form presumably because it is hard to traverse phylogenies (and pedigrees) backwards in time when they are stored this way. For phylogenetic mixed models we generally only need to traverse phylogenies forward in time (if at all) but I have stuck with convention and used the <code>phylo</code> class from the <code>ape</code> package to store phylogenies. As with pedigrees, all species appearing in the data frame passed to <code>data</code> need to appear in the phylogeny. Typically, this will only include species at the tips of the phylogeny and so the measured species should appear in the <code>tip.label</code> element of the phylo object. An error message will be issued if this is not the case. Data may also exist for ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data as long as the phylogeny has labelled internal nodes. If nodes are unlabelled then <span class="math inline">\(\texttt{MCMCglmm}\)</span> names them internally using the default arguments of <code>makeNodeLabel</code> from <code>ape</code>.</p>
 <p>To illustrate, lets take the phylogeny of bird families included in the <code>ape</code> package, and extract the phylogeny in tabular form for the Paridae (Tits), Certhiidae (Treecreepers), Gruidae (Cranes) and the Struthionidae (Ostriches):</p>
-<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="pedigree.html#cb287-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bird.families&quot;</span>)</span>
-<span id="cb287-2"><a href="pedigree.html#cb287-2" tabindex="-1"></a>bird.families <span class="ot">&lt;-</span> <span class="fu">makeNodeLabel</span>(bird.families)</span>
-<span id="cb287-3"><a href="pedigree.html#cb287-3" tabindex="-1"></a>some.families <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Certhiidae&quot;</span>, <span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Gruidae&quot;</span>, <span class="st">&quot;Struthionidae&quot;</span>)</span>
-<span id="cb287-4"><a href="pedigree.html#cb287-4" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.families, <span class="fu">setdiff</span>(bird.families<span class="sc">$</span>tip.label, some.families))</span>
-<span id="cb287-5"><a href="pedigree.html#cb287-5" tabindex="-1"></a>INphylo <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(Nphylo)</span>
-<span id="cb287-6"><a href="pedigree.html#cb287-6" tabindex="-1"></a>INphylo<span class="sc">$</span>pedigree</span></code></pre></div>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="pedigree.html#cb291-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bird.families&quot;</span>)</span>
+<span id="cb291-2"><a href="pedigree.html#cb291-2" tabindex="-1"></a>bird.families <span class="ot">&lt;-</span> <span class="fu">makeNodeLabel</span>(bird.families)</span>
+<span id="cb291-3"><a href="pedigree.html#cb291-3" tabindex="-1"></a>some.families <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Certhiidae&quot;</span>, <span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Gruidae&quot;</span>, <span class="st">&quot;Struthionidae&quot;</span>)</span>
+<span id="cb291-4"><a href="pedigree.html#cb291-4" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.families, <span class="fu">setdiff</span>(bird.families<span class="sc">$</span>tip.label, some.families))</span>
+<span id="cb291-5"><a href="pedigree.html#cb291-5" tabindex="-1"></a>INphylo <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(Nphylo)</span>
+<span id="cb291-6"><a href="pedigree.html#cb291-6" tabindex="-1"></a>INphylo<span class="sc">$</span>pedigree</span></code></pre></div>
 <pre><code>##      node.names                  
 ## [1,] &quot;Node58&quot;        NA        NA
 ## [2,] &quot;Node122&quot;       &quot;Node58&quot;  NA
@@ -424,21 +424,21 @@ the first column and the sire (father) in the third. I prefer the words dam and 
 </p>
 </div>
 <p>The full phylogeny, with these families and their connecting notes displayed, is shown in Figure @ref(fig:bird.families). You will notice that <span class="math inline">\(\texttt{Node1}\)</span> - the root - does not appear in the phylogeny in tabular form. This is because the root is equivalent to the base population in a pedigree analysis, an issue which we will come back to later. Another piece of information that seems to be lacking in the tabular form is the branch length information. Branch lengths are equivalent to inbreeding coefficients in a pedigree. As with pedigrees the inbreeding coefficients are calculated by <code>inverseA</code>:</p>
-<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="pedigree.html#cb289-1" tabindex="-1"></a>INphylo<span class="sc">$</span>inbreeding</span></code></pre></div>
+<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="pedigree.html#cb293-1" tabindex="-1"></a>INphylo<span class="sc">$</span>inbreeding</span></code></pre></div>
 <pre><code>## [1] 0.2285714 0.3857143 1.0000000 0.7714286 0.3857143 0.3857143</code></pre>
 <p>You will notice that the Struthionidae have an inbreeding coefficient of 1 because we used the default <code>scale=TRUE</code> in the call to <code>inverseA</code>. Only ultrametric trees can be scaled in <span class="math inline">\(\texttt{MCMCglmm}\)</span> and in this case the sum of the inbreeding coefficients connecting the root to a terminal node is one. To take the Paridae as an example:</p>
-<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="pedigree.html#cb291-1" tabindex="-1"></a><span class="fu">sum</span>(INphylo<span class="sc">$</span>inbreeding[<span class="fu">which</span>(INphylo<span class="sc">$</span>pedigree[, <span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Node122&quot;</span>, <span class="st">&quot;Node58&quot;</span>))])</span></code></pre></div>
+<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="pedigree.html#cb295-1" tabindex="-1"></a><span class="fu">sum</span>(INphylo<span class="sc">$</span>inbreeding[<span class="fu">which</span>(INphylo<span class="sc">$</span>pedigree[, <span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Paridae&quot;</span>, <span class="st">&quot;Node122&quot;</span>, <span class="st">&quot;Node58&quot;</span>))])</span></code></pre></div>
 <pre><code>## [1] 1</code></pre>
 <p>The inbreeding coefficients for the members of the blue tit nuclear family are of course all zero:</p>
-<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="pedigree.html#cb293-1" tabindex="-1"></a><span class="fu">inverseA</span>(Nped)<span class="sc">$</span>inbreeding</span></code></pre></div>
+<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="pedigree.html#cb297-1" tabindex="-1"></a><span class="fu">inverseA</span>(Nped)<span class="sc">$</span>inbreeding</span></code></pre></div>
 <pre><code>## [1] 0 0 0 0 0 0 0 0</code></pre>
 </div>
 </div>
 <div id="the-animal-model-and-the-phylogenetic-mixed-model" class="section level2 hasAnchor" number="8.2">
 <h2><span class="header-section-number">8.2</span> The animal model and the phylogenetic mixed model<a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The structure of pedigrees and phylogenies can be expressed in terms of the relatedness matrix <span class="math inline">\({\bf A}\)</span>. This matrix is symmetric, square, and has dimensions equal to the number of individuals in the pedigree (or the number of taxa in the phylogeny). For pedigrees, element <span class="math inline">\(A_{i,j}\)</span> is twice the probability that an allele drawn from individual <span class="math inline">\(i\)</span> is identical by descent to an allele in individual <span class="math inline">\(j\)</span>. For phylogenies, element <span class="math inline">\(A_{i,j}\)</span> is the amount of time that elapsed (since the common ancestor of all sampled taxa) before the speciation event that resulted in taxa <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. Simple, but perhaps slow, recursive methods exist for calculating <span class="math inline">\({\bf A}\)</span> in both cases:</p>
-<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="pedigree.html#cb295-1" tabindex="-1"></a>Aped <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> kinship2<span class="sc">::</span><span class="fu">kinship</span>(Nped[, <span class="dv">1</span>], Nped[, <span class="dv">2</span>], Nped[, <span class="dv">3</span>])</span>
-<span id="cb295-2"><a href="pedigree.html#cb295-2" tabindex="-1"></a>Aped</span></code></pre></div>
+<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="pedigree.html#cb299-1" tabindex="-1"></a>Aped <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> kinship2<span class="sc">::</span><span class="fu">kinship</span>(Nped[, <span class="dv">1</span>], Nped[, <span class="dv">2</span>], Nped[, <span class="dv">3</span>])</span>
+<span id="cb299-2"><a href="pedigree.html#cb299-2" tabindex="-1"></a>Aped</span></code></pre></div>
 <pre><code>##         R187920 R187921 R187726 R187724 R187723 R187613 R187612 R187609
 ## R187920     1.0     0.0     0.5     0.5     0.5     0.5     0.5     0.5
 ## R187921     0.0     1.0     0.5     0.5     0.5     0.5     0.5     0.5
@@ -448,8 +448,8 @@ the first column and the sire (father) in the third. I prefer the words dam and 
 ## R187613     0.5     0.5     0.5     0.5     0.5     1.0     0.5     0.5
 ## R187612     0.5     0.5     0.5     0.5     0.5     0.5     1.0     0.5
 ## R187609     0.5     0.5     0.5     0.5     0.5     0.5     0.5     1.0</code></pre>
-<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="pedigree.html#cb297-1" tabindex="-1"></a>Aphylo <span class="ot">&lt;-</span> <span class="fu">vcv.phylo</span>(Nphylo, <span class="at">cor =</span> T)</span>
-<span id="cb297-2"><a href="pedigree.html#cb297-2" tabindex="-1"></a>Aphylo</span></code></pre></div>
+<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="pedigree.html#cb301-1" tabindex="-1"></a>Aphylo <span class="ot">&lt;-</span> <span class="fu">vcv.phylo</span>(Nphylo, <span class="at">cor =</span> T)</span>
+<span id="cb301-2"><a href="pedigree.html#cb301-2" tabindex="-1"></a>Aphylo</span></code></pre></div>
 <pre><code>##               Struthionidae   Gruidae Certhiidae   Paridae
 ## Struthionidae             1 0.0000000  0.0000000 0.0000000
 ## Gruidae                   0 1.0000000  0.2285714 0.2285714
@@ -457,8 +457,8 @@ the first column and the sire (father) in the third. I prefer the words dam and 
 ## Paridae                   0 0.2285714  0.6142857 1.0000000</code></pre>
 <p>Note that specifying <code>cor=T</code> is equivalent to scaling the tree as we did in the argument to <code>inverseA</code>.</p>
 <p>In fact, all of the mixed models we fitted in earlier sections also used an <span class="math inline">\({\bf A}\)</span> matrix, but in those cases the matrix was an identity matrix (i.e. <span class="math inline">\({\bf A}={\bf I}\)</span>) and we didn’t have to worry about it. Let’s reconsider the Blue tit model <code>m3a.1</code> from Section <a href="cat-int.html#cat-int">5</a> where we were interested in estimating <code>sex</code> effects for <code>tarsus</code> length together with the amount of variance explained by genetic mother (<code>dam</code>) and foster mother (<code>fosternest</code>):</p>
-<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="pedigree.html#cb299-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
-<span id="cb299-2"><a href="pedigree.html#cb299-2" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="pedigree.html#cb303-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
+<span id="cb303-2"><a href="pedigree.html#cb303-2" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <p>All individuals that contributed to that analysis are from a single generation and appear in <code>BTped</code> together with their parents. However, individuals in the parental generation do not have tarsus length measurements so they do not have their own records in <code>BTdata</code>.</p>
 <p>The model can be expressed as:</p>
 <p><span class="math display">\[{\bf y}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}_{1}{\bf u}_{1}+{\bf Z}_{2}{\bf u}_{2}+{\bf e}\]</span></p>
