@@ -467,7 +467,49 @@ points(theoreticalC.l3[12,]~unique(ChickWeight$Time), col="blue", lwd=2)
 
 Despite the improvement, there still remains some discrepancy between the observed and predicted correlations, so let's see if we can improve the model.
 
-## Antedependence Models
+## Antedependence and Autoregressive Models
+
+Antedependence models offer a flexible way of modelling relationships between time-ordered variables and include autoregressive models as a special case. They can be applied to (time) ordered random effects or ordered residuals, but lets focus on the residual structure here. In the previous section, we designated $\texttt{unit}$ effects as $e$'s and superscripted them with $(0)$ or $(1)$ depending on whether it was the intercept (specified through `rcov=~units`) or the slope (specified through `random=~us(Time):units`). Here we will break with this notation and use the notation $e^{(1)}$, $e^{(2)}$ ... $e^{(T)}$ to designate the residuals for a set of $T$ observations belonging to a time-series. For our analyses of chick weight $T=12$. The time series is initiated at $t=1$ and we will say
+
+$$e^{(1)} = \epsilon^{(1)}$$
+
+where $\epsilon^{(1)}$ is drawn from a normal distribution with a mean of zero and a variance $\sigma^2_{\epsilon^{(1)}}$. With one observation we've simply redefined the residual, which isn't very interesting. However, for the second residual we will say
+
+$$e^{(2)} = \beta_{2|1}e^{(1)}+\epsilon^{(2)}$$
+
+where $\beta_{2|1}$ is the regression coefficient of $e^{(2)}$ on $e^{(1)}$ and $\epsilon^{(2)}$ is drawn from a normal distribution with a mean of zero and a variance $\sigma^2_{\epsilon^{(2)}}$. For the third residual we will say
+
+$$e^{(3)} = \beta_{3|1}e^{(1)}+\beta_{3|2}e^{(2)}+\epsilon^{(3)}$$
+
+Essentially, we are building a series of nested multiple regressions, where each variable is regressed on all previous values. The residual variances of these regressions - the variances of the  $\epsilon$'s  - are referred to as the innovation variances as they add new variation into the time series. For $T$ variables there are $T(T-1)/2$ regression parameters and $T$ innovations variances. If we put no constraint on these parameters and estimated all $T(T+1)/2$ of them, we would be estimating a fully unstructured covariance matrix as specified by `us`, albeit using a different parameterisation. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ that have a natural starting point. 
+
+
+is to imagine the variable at time $t$ being dependent on the same variable at some previous time, $t-1$, $t-2$ and so on. 
+
+
+predicted 
+
+
 
 ``` {r ante, echo=TRUE}
 prior.lweight.4<-list(R=list(V=diag(1), nu=0.002, beta.mu=0, beta.V=10000), G=F(2,10000))
