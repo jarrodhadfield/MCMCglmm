@@ -67,7 +67,6 @@ fig:ChickWeight
 fig:CWpred-1
 eq:rr
 fig:CWpred-2
-eq:Crr
 eq:Vrr
 fig:V-rr
 fig:pred-int1
@@ -75,9 +74,11 @@ fig:perm
 fig:pred-int2
 fig:CWpred-3
 fig:CWresid
+eq:Crr
+fig:ar-2d
 fig:m-sd
-fig:CWresid-log
 fig:pred-int3
+fig:ar-2d-l
 fig:pred-int4
 fig:spline
 fig:asUV
@@ -170,7 +171,6 @@ VCVprior-r-sec
 full-joint-prior
 cont-int
 random-regression
-covf-sec
 het-res
 autoc-sec
 vstab-sec
