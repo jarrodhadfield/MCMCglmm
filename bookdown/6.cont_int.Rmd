@@ -481,33 +481,23 @@ where $\beta_{2|1}$ is the regression coefficient of $e^{(2)}$ on $e^{(1)}$ and 
 
 $$e^{(3)} = \beta_{3|1}e^{(1)}+\beta_{3|2}e^{(2)}+\epsilon^{(3)}$$
 
-Essentially, we are building a series of nested multiple regressions, where each variable is regressed on all previous values. The residual variances of these regressions - the variances of the  $\epsilon$'s  - are referred to as the innovation variances as they add new variation into the time series. For $T$ variables there are $T(T-1)/2$ regression parameters and $T$ innovations variances. If we put no constraint on these parameters and estimated all $T(T+1)/2$ of them, we would be estimating a fully unstructured covariance matrix as specified by `us`, albeit using a different parameterisation. 
+Essentially, we are building a series of nested multiple regressions, where each variable is regressed on all previous values. The residual variances of these regressions - the variances of the  $\epsilon$'s  - are referred to as the innovation variances as they add new variation into the time series. For $T$ variables there are $T(T-1)/2$ regression parameters and $T$ innovations variances. If we put no constraints on these parameters and estimated all $T(T+1)/2$ of them, we would be estimating a fully unstructured covariance matrix, as specified by `us`, albeit using a different parameterisation. The trick, of course, is to impose sensible constraints. 
 
+Let's write each equation in reverse order and put them all together
 
+$$
+\begin{array}{r lc cc cc  cc cc} 
+e^{(1)} =&\epsilon^{(1)}&&&&&&&&&\\
+e^{(2)} =&\epsilon^{(2)}&+&\beta_{2|1}e^{(1)}&&&&&&&\\
+e^{(3)} =&\epsilon^{(3)}&+&\beta_{3|2}e^{(2)}&+&\beta_{3|1}e^{(1)}&&&&&\\
+e^{(3)} =&\epsilon^{(4)}&+&\beta_{4|3}e^{(3)}&+&\beta_{4|2}e^{(2)}&+&\beta_{4|1}e^{(1)}&&&\\
+e^{(5)} =&\epsilon^{(5)}&+&\beta_{5|4}e^{(4)}&+&\beta_{5|3}e^{(3)}&+&\beta_{5|2}e^{(2)}&+&\beta_{5|1}e^{(1)}\\
+\end{array} 
+$$
 
+One obvious set of constraints would be to set some of the regression coefficients to zero. 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- that have a natural starting point. 
-
-
-is to imagine the variable at time $t$ being dependent on the same variable at some previous time, $t-1$, $t-2$ and so on. 
-
-
-predicted 
+The first column are the innovations. One possible constraint is that their variances are all the same and so we only have to estimate a single innovation variance ($\sigma^2_\epsilon$), rather than $T$ of them. 
 
 
 
