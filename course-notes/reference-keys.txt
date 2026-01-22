@@ -174,7 +174,7 @@ random-regression
 het-res
 autoc-sec
 vstab-sec
-antedependence-models
+antedependence-and-autoregressive-models
 user-defined-sec
 splines
 multi
