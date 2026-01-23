@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-22" />
+<meta name="date" content="2026-01-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -727,7 +727,7 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 ##   640   275</code></pre>
 <div class="sourceCode" id="cb267"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb267-1"><a href="multi.html#cb267-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
 <pre><code>## [1] 0.1839859</code></pre>
-<p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code><a href="#fn26" class="footnote-ref" id="fnref26"><sup>26</sup></a> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures overdispersion:</p>
+<p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code><a href="#fn27" class="footnote-ref" id="fnref27"><sup>27</sup></a> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures overdispersion:</p>
 <div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="multi.html#cb269-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
 <span id="cb269-2"><a href="multi.html#cb269-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
 <span id="cb269-3"><a href="multi.html#cb269-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
@@ -886,8 +886,8 @@ Clutton-Brock, T. H., and J. M. Pemberton, eds. 2004. <em>Soay Sheep: Dynamics a
 </div>
 <div class="footnotes">
 <hr />
-<ol start="26">
-<li id="fn26"><p>Earlier versions of the CourseNotes had <code>nu=1.002</code>. In versions <span class="math inline">\(&lt;\)</span><!-- -->2.05 the marginal prior of a variance associated with an <code>idh</code> structure was inverse-Wishart with <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}-1\)</span> where <span class="math inline">\(\texttt{nu}^{\ast}\)</span> is the marginal degree of belief. In versions <span class="math inline">\(&gt;=\)</span><!-- -->2.05 I changed this so that <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}\)</span> as it was leading to confusion.<a href="multi.html#fnref26" class="footnote-back">↩︎</a></p></li>
+<ol start="27">
+<li id="fn27"><p>Earlier versions of the CourseNotes had <code>nu=1.002</code>. In versions <span class="math inline">\(&lt;\)</span><!-- -->2.05 the marginal prior of a variance associated with an <code>idh</code> structure was inverse-Wishart with <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}-1\)</span> where <span class="math inline">\(\texttt{nu}^{\ast}\)</span> is the marginal degree of belief. In versions <span class="math inline">\(&gt;=\)</span><!-- -->2.05 I changed this so that <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}\)</span> as it was leading to confusion.<a href="multi.html#fnref27" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

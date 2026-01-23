@@ -79,6 +79,7 @@ fig:ar-2d
 fig:m-sd
 fig:pred-int3
 fig:ar-2d-l
+eq:ante
 fig:pred-int4
 fig:spline
 fig:asUV

@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-22" />
+<meta name="date" content="2026-01-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -980,7 +980,7 @@ Function
 </div>
 <div id="priors-for-corg-and-corgh-structures" class="section level2 hasAnchor" number="11.4">
 <h2><span class="header-section-number">11.4</span> Priors for <code>corg</code> and <code>corgh</code> structures<a href="technical-details.html#priors-for-corg-and-corgh-structures" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn27" class="footnote-ref" id="fnref27"><sup>27</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
+<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
 <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>; and <a href="#ref-Box.1973">Box and Tiao 1973</a>)</span>:</p>
 <p><span class="math display">\[\begin{array}{lr}
 Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, &amp; |r|&lt;1\\
@@ -1058,8 +1058,8 @@ Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <spa
 </div>
 <div class="footnotes">
 <hr />
-<ol start="27">
-<li id="fn27"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref27" class="footnote-back">↩︎</a></p></li>
+<ol start="28">
+<li id="fn28"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref28" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>
