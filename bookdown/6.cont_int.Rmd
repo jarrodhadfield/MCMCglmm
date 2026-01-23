@@ -481,7 +481,7 @@ where $\beta_{2|1}$ is the regression coefficient of $e^{(2)}$ on $e^{(1)}$ and 
 
 $$e^{(3)} = \beta_{3|1}e^{(1)}+\beta_{3|2}e^{(2)}+\epsilon^{(3)}$$
 
-Essentially, we are building a series of nested multiple regressions, where each variable is regressed on all previous values. The residual variances of these regressions - the variances of the  $\epsilon$'s  - are referred to as the innovation variances as they add new variation into the time series. For $T$ variables there are $T(T-1)/2$ regression parameters and $T$ innovations variances. If we put no constraints on these parameters and estimated all $T(T+1)/2$ of them, we would be estimating a fully unstructured covariance matrix, as specified by `us`, albeit using a different parameterisation. The trick, of course, is to impose sensible constraints. 
+Essentially, we are building a series of nested multiple regressions, where each variable is regressed on all previous values. I'll refer to the regression coefficients as lag-coefficients. The residual variances of these regressions - the variances of the  $\epsilon$'s  - I'll refer to as the innovation variances as they add new variation into the time series. For $T$ variables there are $T(T-1)/2$ lag-coefficients and $T$ innovations variances. If we put no constraints on these parameters and estimate all $T(T+1)/2$ of them, we would be estimating a fully unstructured covariance matrix, as specified by `us`, albeit using a different parameterisation. The trick, of course, is to impose sensible constraints. 
 
 Let's write each equation in reverse order and put them all together
 
@@ -492,13 +492,34 @@ e^{(2)} =&\epsilon^{(2)}&+&\beta_{2|1}e^{(1)}&&&&&&&\\
 e^{(3)} =&\epsilon^{(3)}&+&\beta_{3|2}e^{(2)}&+&\beta_{3|1}e^{(1)}&&&&&\\
 e^{(3)} =&\epsilon^{(4)}&+&\beta_{4|3}e^{(3)}&+&\beta_{4|2}e^{(2)}&+&\beta_{4|1}e^{(1)}&&&\\
 e^{(5)} =&\epsilon^{(5)}&+&\beta_{5|4}e^{(4)}&+&\beta_{5|3}e^{(3)}&+&\beta_{5|2}e^{(2)}&+&\beta_{5|1}e^{(1)}\\
-\end{array} 
+\end{array}
+\label{ante-eq}   (\#eq:ante) 
 $$
 
-One obvious set of constraints would be to set some of the regression coefficients to zero. 
+and so on. 
 
-The first column are the innovations. One possible constraint is that their variances are all the same and so we only have to estimate a single innovation variance ($\sigma^2_\epsilon$), rather than $T$ of them. 
+One obvious set of constraints would be to set some of the lag coefficients to zero. In $\texttt{MCMCglmm}$, any individual lag coefficient can be set to zero in the prior. However, it is more common to set a group of coefficients to zero. In Equation \@ref(eq:ante), the first column of coefficients are the lag-1 coefficients - they represent the effect of the previous value on the current one. The second column of coefficients are the lag-2 coefficients - they represent the effect of the previous value but one on the current one. The most usual constraint is to only retain the low order lag coefficients. For example, in a first-order antedependence model the lag-1 coefficients are estimated, but higher order coefficients are set to zero. In a second-order antedependence model the lag-1 and lag-2 coefficients are retained, and so on. To fit antedependence structures in MCMCglmm we need to use the variance function $\texttt{ante}$ followed by the order of the model. For example, to fit a 1st order antedependence model to the chick residuals we could use `ante1(as.factor(Time)):Chick`, which would set up the equations
 
+$$
+\begin{array}{r lc c} 
+e^{(1)} =&\epsilon^{(1)}&&\\
+e^{(2)} =&\epsilon^{(2)}&+&\beta_{2|1}e^{(1)}\\
+e^{(3)} =&\epsilon^{(3)}&+&\beta_{3|2}e^{(2)}\\
+e^{(3)} =&\epsilon^{(4)}&+&\beta_{4|3}e^{(3)}\\
+e^{(5)} =&\epsilon^{(5)}&+&\beta_{5|4}e^{(4)}\\
+\end{array}
+$$
+
+
+Setting higher order lag coefficients to zero does **not** imply that non-adjacent residuals are independent of each other. What we are assuming is that conditional on the previous residual all earlier residuals provide no information about the current residual. We are assuming that non-adjacent residuals are only *conditionally* independent.  For example, if we consider the non-adjacent residuals $e^{(1)}$ and $e^{(3)}$ they are correlated because $e^{(1)}$ affects $e^{(2)}$ which effects $e^{(3)}$. Their covariance is:
+
+$$
+\textrm{Cov}(e^{(1)}, e^{(3)})=\beta_{3|2}\beta_{2|1}\sigma^2_{\epsilon^{(1)}}\\ 
+$$
+
+These calculations get a bit hairy when the order of model is higher and we want to calculate the covariance between distant residuals[^anteV]. 
+
+[^anteV]: To calculate the (co)variance matrix of the residuals (${\bf V}_e$) we can form two matrices: ${\bf V}_{\epsilon}$ is a diagonal matrix with the innovation variances along the diagonal. ${\bf B}$ is a matrix with $b_{ij}=\beta_{i|j}$. ${\bf V}^{-1}_e$= $({\bf I}-{\bf B})^{\top}{\bf V}^{-1}_\epsilon ({\bf I}-{\bf B})$
 
 
 ``` {r ante, echo=TRUE}
