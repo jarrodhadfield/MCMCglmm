@@ -291,7 +291,11 @@ div.csl-indent {
 <li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#het-res"><i class="fa fa-check"></i><b>6.2</b> Heterogeneous (Residual) Variances</a></li>
 <li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#autoc-sec"><i class="fa fa-check"></i><b>6.3</b> Autocorrelation</a></li>
 <li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#vstab-sec"><i class="fa fa-check"></i><b>6.4</b> Variance stabilisation</a></li>
-<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#antedependence-and-autoregressive-models"><i class="fa fa-check"></i><b>6.5</b> Antedependence and Autoregressive Models</a></li>
+<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#antedependence-and-autoregressive-models"><i class="fa fa-check"></i><b>6.5</b> Antedependence and Autoregressive Models</a>
+<ul>
+<li class="chapter" data-level="6.5.1" data-path="cont-int.html"><a href="cont-int.html#autoregressive-models"><i class="fa fa-check"></i><b>6.5.1</b> Autoregressive Models</a></li>
+<li class="chapter" data-level="6.5.2" data-path="cont-int.html"><a href="cont-int.html#prior-ante-sec"><i class="fa fa-check"></i><b>6.5.2</b> Priors in Antedependence models</a></li>
+</ul></li>
 <li class="chapter" data-level="6.6" data-path="cont-int.html"><a href="cont-int.html#user-defined-sec"><i class="fa fa-check"></i><b>6.6</b> User-defined Design Matrices</a></li>
 <li class="chapter" data-level="6.7" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.7</b> Splines</a></li>
 </ul></li>
@@ -980,7 +984,7 @@ Function
 </div>
 <div id="priors-for-corg-and-corgh-structures" class="section level2 hasAnchor" number="11.4">
 <h2><span class="header-section-number">11.4</span> Priors for <code>corg</code> and <code>corgh</code> structures<a href="technical-details.html#priors-for-corg-and-corgh-structures" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
+<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn29" class="footnote-ref" id="fnref29"><sup>29</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
 <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>; and <a href="#ref-Box.1973">Box and Tiao 1973</a>)</span>:</p>
 <p><span class="math display">\[\begin{array}{lr}
 Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, &amp; |r|&lt;1\\
@@ -1058,8 +1062,8 @@ Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <spa
 </div>
 <div class="footnotes">
 <hr />
-<ol start="28">
-<li id="fn28"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref28" class="footnote-back">↩︎</a></p></li>
+<ol start="29">
+<li id="fn29"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref29" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

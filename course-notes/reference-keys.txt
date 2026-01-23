@@ -79,7 +79,8 @@ fig:ar-2d
 fig:m-sd
 fig:pred-int3
 fig:ar-2d-l
-eq:ante
+fig:path-ante
+fig:equil-ante
 fig:pred-int4
 fig:spline
 fig:asUV
@@ -176,6 +177,8 @@ het-res
 autoc-sec
 vstab-sec
 antedependence-and-autoregressive-models
+autoregressive-models
+prior-ante-sec
 user-defined-sec
 splines
 multi
