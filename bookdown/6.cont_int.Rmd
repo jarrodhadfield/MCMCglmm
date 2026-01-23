@@ -681,8 +681,9 @@ That was a lot of abstract concepts. Lets fit a first order antedependence model
 prior.lweight.4<-list(R=list(V=diag(1), nu=0.002, beta.mu=0, beta.V=10000), G=F(2,1000))
 
 
-mlweight.4<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~idh(Diet):units+us(1+Time):Chick, rcov=~antec1v(as.factor(Time)):Chick, data=ChickWeight, prior=prior.lweight.4)
+mlweight.4<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Chick, rcov=~antec1v(as.factor(Time)):Chick, data=ChickWeight, prior=prior.lweight.4)
 
+summary(mlweight.4)
 ```
 
 

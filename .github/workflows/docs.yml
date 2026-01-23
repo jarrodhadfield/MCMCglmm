@@ -49,6 +49,7 @@ jobs:
             rgl
             VisCov
             lmeSplines
+            magick
             local::.
           needs: website
 

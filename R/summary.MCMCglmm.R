@@ -1,4 +1,4 @@
-"summary.MCMCglmm"<-function(object, random=FALSE, antev=FALSE ...){
+"summary.MCMCglmm"<-function(object, random=FALSE, antev=FALSE, ...){
 
   DIC<-object$DIC
   fixed.formula<-object$Fixed$formula
@@ -20,49 +20,74 @@
   random.formula=object$Random$formula
   residual.formula=object$Residual$formula
 
-  ngterms<-sum(object$Random$nfl^2)
-
-  gcomponents<-split.direct.sum(as.character(object$Residual$formula)[2])
+  gcomponents<-split.direct.sum(as.character(object$Random$formula)[2])
+  rcomponents<-split.direct.sum(as.character(object$Residual$formula)[2])
 
   if(!antev){
+
     anteg<-grep("^ante.*\\(", gcomponents)
 
-    if(length(anteg)>1){
+    if(length(anteg)>0){
        for(i in anteg){
-
           vtype<-gsub("\\(.*", "", gcomponents[i])
           lag<-as.numeric(gsub("[a-z]", "", vtype))
 
           ante_pos<-sum(object$Random$nrt[1:i])
 
-          if(i==1){
+          if(ante_pos==1){
             last<-0
           }else{
-            last<-sum(object$Random$nfl[1:sum(object$Random$nrt[1:(ante_pos-1)])]^2)
+            last<-sum(object$Random$nfl[1:sum(object$Random$nfl[1:(ante_pos-1)]^2)])
           }
 
           k<-object$Random$nfl[ante_pos]
 
-          object$VCV[,last+1:(k^2)]<-posterior.cor(object$VCV[,last+1:(k^2)], k)
+          post_ante<-posterior.ante(object$VCV[,last+1:(k^2)], vtype=vtype)
 
-          if(grepl("v", vtype)){
-             save_pos<-1
-          }else{
-             save_pos<-1:k
-          }   
-          if(grepl("c", vtype)){
-             save_pos<-c(save_pos, k+1:lag)
-          }else{
-             save_pos<-c(sum(k-1:lag))
-          }  
+          object$VCV[,last+1:ncol(post_ante)]<-post_ante
+          
+          colnames(object$VCV)[last+1:ncol(post_ante)]<-colnames(post_ante)
 
+          if(ncol(post_ante)!=(k^2)){
+            object$VCV<-object$VCV[,-(last+(1+ncol(post_ante)):(k^2))]
+            object$Random$nfl[ante_pos]<-sqrt(ncol(post_ante))
+          }
+       }
+    }
+
+    anter<-grep("^ante.*\\(", rcomponents)
+
+    if(length(anter)>0){
+       for(i in anter){
+          vtype<-gsub("\\(.*", "", rcomponents[i])
+          lag<-as.numeric(gsub("[a-z]", "", vtype))
+
+          ante_pos<-sum(object$Residual$nrt[1:i])
+
+          last<-sum(object$Random$nfl^2)
+
+          if(ante_pos!=1){
+            last<-last+sum(object$Residual$nfl[1:sum(object$Residual$nfl[1:(ante_pos-1)]^2)])
+          }
+
+          k<-object$Residual$nfl[ante_pos]
+
+          post_ante<-posterior.ante(object$VCV[,last+1:(k^2)], vtype=vtype)
+
+          object$VCV[,last+1:ncol(post_ante)]<-post_ante
+
+          colnames(object$VCV)[last+1:ncol(post_ante)]<-colnames(post_ante)
+
+          if(ncol(post_ante)!=(k^2)){
+            object$VCV<-object$VCV[,-(last+(1+ncol(post_ante)):(k^2))]
+            object$Residual$nfl[ante_pos]<-sqrt(ncol(post_ante))
+          }
        }
     }
   }
 
+  ngterms<-sum(object$Random$nfl^2)
   nrterms<-sum(object$Residual$nfl^2)
-
-
 
   covariances<-cbind(colMeans(object$VCV), coda::HPDinterval(object$VCV), effectiveSize(object$VCV))
   colnames(covariances)<-c("post.mean", "l-95% CI", "u-95% CI","eff.samp")
