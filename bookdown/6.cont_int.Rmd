@@ -686,6 +686,10 @@ mlweight.4<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Ch
 summary(mlweight.4)
 ```
 
+The summary[^new.ante]
+
+[^new.ante]: jdiod
+
 
 ``` {r pred-int4, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick log weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The red line is for a random intercept-slope model (`mlweight.2`) with identically and indepedently distributed residuals. The green line is for a random intercept-slope model (`mlweight.2`) with residuals modelled using an antedependence structure", fig.width=7, fig.height=5}
 
