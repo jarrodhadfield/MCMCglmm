@@ -1,4 +1,4 @@
-"summary.MCMCglmm"<-function(object, random=FALSE, ...){
+"summary.MCMCglmm"<-function(object, random=FALSE, antev=FALSE ...){
 
   DIC<-object$DIC
   fixed.formula<-object$Fixed$formula
@@ -20,17 +20,58 @@
   random.formula=object$Random$formula
   residual.formula=object$Residual$formula
 
-  gterms<-sum(object$Random$nfl^2)
-  
-  rterms<-sum(object$Residual$nfl^2)
+  ngterms<-sum(object$Random$nfl^2)
+
+  gcomponents<-split.direct.sum(as.character(object$Residual$formula)[2])
+
+  if(!antev){
+    anteg<-grep("^ante.*\\(", gcomponents)
+
+    if(length(anteg)>1){
+       for(i in anteg){
+
+          vtype<-gsub("\\(.*", "", gcomponents[i])
+          lag<-as.numeric(gsub("[a-z]", "", vtype))
+
+          ante_pos<-sum(object$Random$nrt[1:i])
+
+          if(i==1){
+            last<-0
+          }else{
+            last<-sum(object$Random$nfl[1:sum(object$Random$nrt[1:(ante_pos-1)])]^2)
+          }
+
+          k<-object$Random$nfl[ante_pos]
+
+          object$VCV[,last+1:(k^2)]<-posterior.cor(object$VCV[,last+1:(k^2)], k)
+
+          if(grepl("v", vtype)){
+             save_pos<-1
+          }else{
+             save_pos<-1:k
+          }   
+          if(grepl("c", vtype)){
+             save_pos<-c(save_pos, k+1:lag)
+          }else{
+             save_pos<-c(sum(k-1:lag))
+          }  
+
+       }
+    }
+  }
+
+  nrterms<-sum(object$Residual$nfl^2)
+
+
+
   covariances<-cbind(colMeans(object$VCV), coda::HPDinterval(object$VCV), effectiveSize(object$VCV))
   colnames(covariances)<-c("post.mean", "l-95% CI", "u-95% CI","eff.samp")
-  if(gterms>0){
-   Gcovariances<-covariances[1:gterms,,drop=FALSE]
+  if(ngterms>0){
+   Gcovariances<-covariances[1:ngterms,,drop=FALSE]
   }else{
    Gcovariances<-NULL
   }
-  Rcovariances<-covariances[gterms+1:rterms,,drop=FALSE]
+  Rcovariances<-covariances[ngterms+1:nrterms,,drop=FALSE]
   cstats<-attr(object$VCV, "mcpar")
   cstats[4]<-dim(object$VCV)[1]
   if(is.null(object$CP)){

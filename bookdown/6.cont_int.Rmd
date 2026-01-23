@@ -469,64 +469,219 @@ Despite the improvement, there still remains some discrepancy between the observ
 
 ## Antedependence and Autoregressive Models
 
-Antedependence models offer a flexible way of modelling relationships between time-ordered variables and include autoregressive models as a special case. They can be applied to (time) ordered random effects or ordered residuals, but lets focus on the residual structure here. In the previous section, we designated $\texttt{unit}$ effects as $e$'s and superscripted them with $(0)$ or $(1)$ depending on whether it was the intercept (specified through `rcov=~units`) or the slope (specified through `random=~us(Time):units`). Here we will break with this notation and use the notation $e^{(1)}$, $e^{(2)}$ ... $e^{(T)}$ to designate the residuals for a set of $T$ observations belonging to a time-series. For our analyses of chick weight $T=12$. The time series is initiated at $t=1$ and we will say
+Antedependence models offer a flexible way of modelling relationships between time-ordered variables and include autoregressive models as a special case. They can be applied to (time) ordered random effects or ordered residuals, but lets focus on the residual structure here. In the previous section, we designated $\texttt{unit}$ effects as $e$'s and superscripted them with $(0)$ or $(1)$ depending on whether it was the intercept (specified through `rcov=~units`) or the slope (specified through `random=~us(Time):units`). Here we will break with this notation and use the notation $e^{(1)}$, $e^{(2)}$ ... $e^{(T)}$ to designate the residuals for a set of $T$ observations belonging to a time-series. For our analyses of chick weight, $T=12$. The time series is initiated at $t=1$ and we will say
 
 $$e^{(1)} = \epsilon^{(1)}$$
 
-where $\epsilon^{(1)}$ is drawn from a normal distribution with a mean of zero and a variance $\sigma^2_{\epsilon^{(1)}}$. With one observation we've simply redefined the residual, which isn't very interesting. However, for the second residual we will say
+where $\epsilon^{(1)}$ is drawn from a normal distribution with a mean of zero and a variance $\sigma^2_{\epsilon^{(1)}}$. With one observation we've simply redefined the residual, which isn't very interesting. However, for the second residual the model is:
 
 $$e^{(2)} = \beta_{2|1}e^{(1)}+\epsilon^{(2)}$$
 
-where $\beta_{2|1}$ is the regression coefficient of $e^{(2)}$ on $e^{(1)}$ and $\epsilon^{(2)}$ is drawn from a normal distribution with a mean of zero and a variance $\sigma^2_{\epsilon^{(2)}}$. For the third residual we will say
+where $\beta_{2|1}$ is the regression coefficient of $e^{(2)}$ on $e^{(1)}$ and $\epsilon^{(2)}$ is drawn from a normal distribution with a mean of zero and a variance $\sigma^2_{\epsilon^{(2)}}$. We can regress the third residual on the previous residuals to obtain
 
 $$e^{(3)} = \beta_{3|1}e^{(1)}+\beta_{3|2}e^{(2)}+\epsilon^{(3)}$$
 
-Essentially, we are building a series of nested multiple regressions, where each variable is regressed on all previous values. I'll refer to the regression coefficients as lag-coefficients. The residual variances of these regressions - the variances of the  $\epsilon$'s  - I'll refer to as the innovation variances as they add new variation into the time series. For $T$ variables there are $T(T-1)/2$ lag-coefficients and $T$ innovations variances. If we put no constraints on these parameters and estimate all $T(T+1)/2$ of them, we would be estimating a fully unstructured covariance matrix, as specified by `us`, albeit using a different parameterisation. The trick, of course, is to impose sensible constraints. 
+and we can follow the same rules for the remaining residuals. Essentially, we are building a series of nested multiple regressions, where each variable is regressed on all previous values. I'll refer to the regression coefficients as lag-coefficients. The residual variances of these regressions - the variances of the  $\epsilon$'s  - I'll refer to as the innovation variances as they add new variation into the time series. We can represent the antedependence model as a path diagram, but to keep things manageable we'll just look at the first six time points and only represent a subset of all possible lag coefficients (Figure \@ref(fig:path-ante)).
 
-Let's write each equation in reverse order and put them all together
+<br><br>
+
+```{r path-ante,engine='tikz',fig.ext = 'png', echo=FALSE, out.width='80%', fig.cap="Path diagram of an antedependence model for a set of six residuals ($e$). The $\\epsilon$'s are 'innovations' specific to each residual. The curved arrows represent the effect of a residual on a future residual with strength determined by the lag coefficient. lag-1 coefficients are in black, lag-2 coefficients are in red and lag-3 coefficients are in green. Higher order lag coefficients are not shown."}
+
+\begin{tikzpicture}[
+	every node/.style = {font=\small},
+	e/.style   ={draw,circle,minimum size=9mm},
+	eps/.style ={inner sep=0pt},
+	background rectangle/.style = {fill=white},
+	]
+
+	\def\N   {6}   % how many e-nodes
+	\def\gap {1.4}  % horizontal gap (cm)
+
+	% --- 3. nodes and vertical arrows ---------------------------------------
+	\foreach \i in {1,...,\N}{
+	    \pgfmathsetmacro\x{(\i-1)*\gap}
+
+	    \node[e]   (e\i)   at (\x,0)   {$ e^{(\i)} $};
+	    \node[eps] (eps\i) at (\x,1.2) {$ \epsilon^{(\i)} $};
+
+	    \draw[->] (eps\i) -- (e\i);
+	}
+
+	\foreach \i in {1,...,\numexpr\N-1\relax}{
+	        \pgfmathtruncatemacro\j{\i+1}
+	        \draw[->,bend right=25] (e\i) to (e\j);
+	}
+	\foreach \i in {1,...,\numexpr\N-2\relax}{
+	    \pgfmathtruncatemacro\j{\i+2}
+	    \draw[->,bend right=50,red] (e\i) to (e\j);
+	}
+	\foreach \i in {1,...,\numexpr\N-3\relax}{
+        \pgfmathtruncatemacro\j{\i+3}
+        \draw[->,bend right=75,blue] (e\i) to (e\j);
+    }
+	\foreach \i in {1,...,\numexpr\N-4\relax}{
+        \pgfmathtruncatemacro\j{\i+4}
+        \draw[->,bend right=100,green] (e\i) to (e\j);
+    }
+\end{tikzpicture}
+```
+
+Each curved arrow represents one of the lag coefficients.  For $T$ variables there are $T(T-1)/2$ lag-coefficients and $T$ innovations variances. If we put no constraints on these parameters and estimate all $T(T+1)/2$ of them, we would be estimating a fully unstructured covariance matrix, as specified by `us`, albeit using a different parameterisation. The trick, of course, is to impose sensible constraints. 
+
+
+One obvious set of constraints would be to set some of the lag coefficients to zero. In $\texttt{MCMCglmm}$, any individual lag coefficient can be set to zero in the prior. However, it is more common to set a group of coefficients to zero. I have coloured the paths in Figure \@ref(fig:path-ante) by their order. The black paths are the lag-1 coefficients - they represent the effect of the previous value on the current one. The red paths are the lag-2 coefficients - they represent the effect of the previous value but one on the current one. The blue and green paths are the lag-3 and lag-4 coefficients, respectively. The most usual constraint is to only retain the low order lag coefficients. For example, in a first-order antedependence model the lag-1 coefficients are estimated, but higher order coefficients are set to zero. In a second-order antedependence model the lag-1 and lag-2 coefficients are retained, and so on. 
+
+<p style="margin-bottom:4em;">
+To fit antedependence structures in MCMCglmm we need to use the variance function $\texttt{ante}$ followed by the antedependence order of the model. For example, to fit a 2nd order antedependence model to the chick residuals, we could use `rcov=~ante2(as.factor(Time)):Chick`, which would fit the model:
+</p>
+
+```{r path-ante2, engine='tikz',fig.ext = 'png', echo=FALSE, out.width='80%', fig.align='center'}
+
+\begin{tikzpicture}[
+	every node/.style = {font=\small},
+	e/.style   ={draw,circle,minimum size=9mm},
+	eps/.style ={inner sep=0pt},
+	background rectangle/.style = {fill=white},
+	]
+
+	\def\N   {6}   % how many e-nodes
+	\def\gap {1.4}  % horizontal gap (cm)
+
+	% --- 3. nodes and vertical arrows ---------------------------------------
+	\foreach \i in {1,...,\N}{
+	    \pgfmathsetmacro\x{(\i-1)*\gap}
+
+	    \node[e]   (e\i)   at (\x,0)   {$ e^{(\i)} $};
+	    \node[eps] (eps\i) at (\x,1.2) {$ \epsilon^{(\i)} $};
+
+	    \draw[->] (eps\i) -- (e\i);
+	}
+
+	\foreach \i in {2,...,\N}{%
+	  \pgfmathtruncatemacro{\im}{\i-1}         
+
+	  \draw[->,bend right=25] (e\im)
+	        to[bend right=25]                   
+	        node[midway, below=-2pt, sloped, font=\tiny]   
+	             {$\beta(\i|\im)$}      
+	        (e\i);
+	}
+
+	\foreach \i in {3,...,\N}{%
+	  \pgfmathtruncatemacro{\im}{\i-2}         
+
+	  \draw[->,bend right=60,red] (e\im)
+	        to[bend right=60]                   
+	        node[midway, below=-2pt, sloped, font=\tiny]   
+	             {$\beta(\i|\im)$}      
+	        (e\i);
+	}
+
+\end{tikzpicture}
+```
+
+<p style="margin-bottom:4em; margin-top:4em;">
+We can also impose further constraints by specifying that coefficients of the same lag are all the same. This can achieved by putting a $\texttt{c}$ (for constant) *before* the antedepedence order when specifying the variance structure. For example, $\texttt{antec2}$ fits a 2nd order antedependence where only two lag-parameters need to be estimated: the lag-1 and lag-2 coefficients ($\beta_{1}$ and $\beta_{2}$) , respectively:
+</p>
+
+```{r path-antec2, engine='tikz',fig.ext = 'png', echo=FALSE, out.width='80%', fig.align='center'}
+
+\begin{tikzpicture}[
+	every node/.style = {font=\small},
+	e/.style   ={draw,circle,minimum size=9mm},
+	eps/.style ={inner sep=0pt},
+	background rectangle/.style = {fill=white},
+	]
+
+	\def\N   {6}   % how many e-nodes
+	\def\gap {1.4}  % horizontal gap (cm)
+
+	% --- 3. nodes and vertical arrows ---------------------------------------
+	\foreach \i in {1,...,\N}{
+	    \pgfmathsetmacro\x{(\i-1)*\gap}
+
+	    \node[e]   (e\i)   at (\x,0)   {$ e^{(\i)} $};
+	    \node[eps] (eps\i) at (\x,1.2) {$ \epsilon^{(\i)} $};
+
+	    \draw[->] (eps\i) -- (e\i);
+	}
+
+	\foreach \i in {2,...,\N}{%
+	  \pgfmathtruncatemacro{\im}{\i-1}         
+
+	  \draw[->,bend right=25] (e\im)
+	        to[bend right=25]                   
+	        node[midway, below=-2pt, sloped, font=\tiny]   
+	             {$\beta_{1}$}      
+	        (e\i);
+	}
+
+	\foreach \i in {3,...,\N}{%
+	  \pgfmathtruncatemacro{\im}{\i-2}         
+
+	  \draw[->,bend right=60,red] (e\im)
+	        to[bend right=60]                   
+	        node[midway, below=-2pt, sloped, font=\tiny]   
+	             {$\beta_{2}$}      
+	        (e\i);
+	}
+
+\end{tikzpicture}
+```
+
+By default, the innovation variances for each residual are allowed to take on different values. We can also specify that we would like the innovation variances to be time-homogeneous so that we just estimate a single innovation variance, $\sigma^2_{\epsilon}$, common to all residuals.  This can achieved by putting a $\texttt{v}$ *after* the antedepedence order when specifying the variance structure. For example, $\texttt{antec2v}$ fits a 2nd order antedependence with three parameters - $\beta_{1}$, $\beta_{2}$ and $\sigma^2_{\epsilon}$. The model is time-homogeneous in its *parameters*. For example, the lag-1 coefficients are all $\beta_{1}$ irrespective of whether we are looking at $e^{(1)}$'s affect on $e^{(2)}$, or $e^{(4)}$'s affect on $e^(5)$. 
+
+
+For those not familiar with antedepedence models, two misconceptions are possible when considering an antedependence model of the form $\texttt{antec2v}$. The first misconception is that because a 2nd order model has been fitted, any residuals that are more than two time units apart are uncorrelated. This isn't the case. Consider the pair of residuals $e^{(1)}$ and $e^{(4)}$ for which there is no direct path since they are at lag-3.  Their covariance is:
 
 $$
-\begin{array}{r lc cc cc  cc cc} 
-e^{(1)} =&\epsilon^{(1)}&&&&&&&&&\\
-e^{(2)} =&\epsilon^{(2)}&+&\beta_{2|1}e^{(1)}&&&&&&&\\
-e^{(3)} =&\epsilon^{(3)}&+&\beta_{3|2}e^{(2)}&+&\beta_{3|1}e^{(1)}&&&&&\\
-e^{(3)} =&\epsilon^{(4)}&+&\beta_{4|3}e^{(3)}&+&\beta_{4|2}e^{(2)}&+&\beta_{4|1}e^{(1)}&&&\\
-e^{(5)} =&\epsilon^{(5)}&+&\beta_{5|4}e^{(4)}&+&\beta_{5|3}e^{(3)}&+&\beta_{5|2}e^{(2)}&+&\beta_{5|1}e^{(1)}\\
-\end{array}
-\label{ante-eq}   (\#eq:ante) 
+\textrm{Cov}(e^{(1)}, e^{(4)})=(\beta_{4|3}\beta_{3|2}\beta_{2|1}+\beta_{4|3}\beta_{3|1}+\beta_{4|2}\beta_{2|1})\sigma^2_{\epsilon^{(1)}}
 $$
 
-and so on. 
+The three products of lag-coefficients represent the three possible (indirect) paths that connect $e^{(1)}$ to $e^{(4)}$ and cause them to be correlated. When we assume the lag-coefficients are time homogeneous this simplifies to:
 
-One obvious set of constraints would be to set some of the lag coefficients to zero. In $\texttt{MCMCglmm}$, any individual lag coefficient can be set to zero in the prior. However, it is more common to set a group of coefficients to zero. In Equation \@ref(eq:ante), the first column of coefficients are the lag-1 coefficients - they represent the effect of the previous value on the current one. The second column of coefficients are the lag-2 coefficients - they represent the effect of the previous value but one on the current one. The most usual constraint is to only retain the low order lag coefficients. For example, in a first-order antedependence model the lag-1 coefficients are estimated, but higher order coefficients are set to zero. In a second-order antedependence model the lag-1 and lag-2 coefficients are retained, and so on. To fit antedependence structures in MCMCglmm we need to use the variance function $\texttt{ante}$ followed by the order of the model. For example, to fit a 1st order antedependence model to the chick residuals we could use `ante1(as.factor(Time)):Chick`, which would set up the equations
-
-$$
-\begin{array}{r lc c} 
-e^{(1)} =&\epsilon^{(1)}&&\\
-e^{(2)} =&\epsilon^{(2)}&+&\beta_{2|1}e^{(1)}\\
-e^{(3)} =&\epsilon^{(3)}&+&\beta_{3|2}e^{(2)}\\
-e^{(3)} =&\epsilon^{(4)}&+&\beta_{4|3}e^{(3)}\\
-e^{(5)} =&\epsilon^{(5)}&+&\beta_{5|4}e^{(4)}\\
-\end{array}
+ $$
+\textrm{Cov}(e^{(1)}, e^{(4)})=(\beta_{1}^3+2\beta_{1}\beta_{2})\sigma^2_{\epsilon}
 $$
 
+but these calculations can still be a bit hairy when the order of the model is high and are best calculated in matrix form[^anteV]. 
 
-Setting higher order lag coefficients to zero does **not** imply that non-adjacent residuals are independent of each other. What we are assuming is that conditional on the previous residual all earlier residuals provide no information about the current residual. We are assuming that non-adjacent residuals are only *conditionally* independent.  For example, if we consider the non-adjacent residuals $e^{(1)}$ and $e^{(3)}$ they are correlated because $e^{(1)}$ affects $e^{(2)}$ which effects $e^{(3)}$. Their covariance is:
+[^anteV]: To calculate the (co)variance matrix of the residuals (${\bf V}_e$) we can form two matrices: ${\bf V}_{\epsilon}$ is a diagonal matrix with the innovation variances along the diagonal. ${\bf B}$ is a matrix with $b_{ij}=\beta_{i|j}$. ${\bf V}_e$= $({\bf I}-{\bf B})^{-1}{\bf V}_\epsilon ({\bf I}-{\bf B})^{-\top}$
 
-$$
-\textrm{Cov}(e^{(1)}, e^{(3)})=\beta_{3|2}\beta_{2|1}\sigma^2_{\epsilon^{(1)}}\\ 
-$$
 
-These calculations get a bit hairy when the order of model is higher and we want to calculate the covariance between distant residuals[^anteV]. 
+The second possible misconception is that because the parameters are time-homogeneous, the distribution of residuals must also be time-homogeneous. If the lag-coefficients are not to large then the distribution of residuals will eventually become time-homogeneous, but it takes time for them to 'forget' their initial state. As an example, in Figure \@ref(fig:equil-ante) I have plotted the variances (left) and the lag-1 correlations (right) as a function of time when $\beta_1=0.5$, $\beta_2=0.25$ and $\sigma^2_{\epsilon}=1$. The equilibrated (co)variances are shown as solid lines in Figure \@ref(fig:equil-ante) and are often referred to as the stationary (co)variances. 
 
-[^anteV]: To calculate the (co)variance matrix of the residuals (${\bf V}_e$) we can form two matrices: ${\bf V}_{\epsilon}$ is a diagonal matrix with the innovation variances along the diagonal. ${\bf B}$ is a matrix with $b_{ij}=\beta_{i|j}$. ${\bf V}^{-1}_e$= $({\bf I}-{\bf B})^{\top}{\bf V}^{-1}_\epsilon ({\bf I}-{\bf B})$
+```{r equil-ante, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="The residual variance (left) and the correlation between residuals and their predecessors (right) as a function of time for a 2nd-order antedepedence model with time-homogeneous parameters ($\\beta_1=0.5$, $\\beta_2=0.25$ and $\\sigma^2_{\\epsilon}=1$)."}
+k<-12
+beta_1<-0.5
+beta_2<-0.25
+v_espsilon<-1
 
+B<-bandSparse(k, k=c(-2, -1), diagonals=list(rep(beta_2, k-2),rep(beta_1, k-1)))
+I<-diag(k)
+V<-diag(k)*v_espsilon
+
+Ve<-solve(I-B)%*%V%*%t(solve(I-B))
+
+r1<-band(cov2cor(Ve), 1,1)[which(band(cov2cor(Ve),1,1)!=0)]
+
+par(mfrow=c(1,2))
+plot(diag(Ve), ylab="Residual Variance", xlab="Time", bty="l")
+abline(h=v_espsilon*(1-beta_2)/((1+beta_2)*((1-beta_2)^2-beta_1^2)))
+#v_espsilon/(1-beta_1)^2 for AR(1)
+
+plot(r1, ylab="Residual Correlation at lag-1", xlab="Time", bty="l")
+abline(h=beta_1/(1-beta_2))
+#beta_1 for AR(1)
+```
+
+That was a lot of abstract concepts. Lets fit a first order antedependence model to the residuals in our model of log chick weights. The details of the prior specification can be found in Section \@ref(prior-ante-sec). 
 
 ``` {r ante, echo=TRUE}
-prior.lweight.4<-list(R=list(V=diag(1), nu=0.002, beta.mu=0, beta.V=10000), G=F(2,10000))
+prior.lweight.4<-list(R=list(V=diag(1), nu=0.002, beta.mu=0, beta.V=10000), G=F(2,1000))
 
 
-mlweight.4<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Chick, rcov=~antec1v(as.factor(Time)):Chick, data=ChickWeight, prior=prior.lweight.4)
+mlweight.4<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~idh(Diet):units+us(1+Time):Chick, rcov=~antec1v(as.factor(Time)):Chick, data=ChickWeight, prior=prior.lweight.4)
 
 ```
 
@@ -563,7 +718,7 @@ theoreticalC.l4<-cov2cor(buildV(mlweight.4, diag=FALSE)[1:12,1:12])
 empiricalC.l<-cor(chick.wide[,-1], use="pairwise.complete.obs")
 
 persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =empiricalC.l, xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "black", front="lines", back="lines", diagonal = "back")
-persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =theoreticalC.l4, add=TRUE,  col = "blue", alpha=0.9)
+persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =theoreticalC.l4, add=TRUE,  col = "green", alpha=0.9)
 ```
 
 
@@ -581,6 +736,11 @@ points(theoreticalC.l4[12,]~unique(ChickWeight$Time), col="green", lwd=2)
 ```
 
 
+### Autoregressive Models
+
+### Priors in Antedependence models {#prior-ante-sec}
+
+
 ## User-defined Design Matrices {#user-defined-sec}
 
 $\texttt{MCMCglmm}$ generally uses $\texttt{model.matrix}$, or a native equivalent, when evaluating a model formula to obtain the design matrices. Sometimes R formula syntax is not flexible enough to generate the appropriate design matrix. However, if a random-effect design matrix can be generated, it is possible to fit the model by exploiting the $\texttt{idv}$ variance structure. However, the parameters defined by the formula in the $\texttt{idv}$ structure should not be interacted with another factor. Consider the term `~idv(z1+z2+z3+z4):1` and let's set up the table of random effects as we have before:
@@ -595,7 +755,7 @@ $$\begin{array}{c|c}
 {\color{blue}{\texttt{z4}}}&{\color{blue}{\texttt{z4}}}.{\color{red}{\texttt{(Intercept)}}}\\
 \end{array}$$
 
-An $\texttt{idv}$ structure, like an $\texttt{idh}$ structure, assumes no correlation between effects on different rows: the $\texttt{id}$ in $\texttt{idh}$ stands for identity matrix. The $\texttt{h}$ in $\texttt{idh}$ stands for heterogeneous and so each row is allowed a different variance. Clearly, with only one effect per row estimating a variance is not feasible. However, with $\texttt{idv}$ the variances are assumed homogenous and so only a single variance (the $\texttt{v}$ in $\texttt{idv}$) is estimated that is common to all effects. The (four) regression coefficient are then treated exactly like simple random effects: identically and independently distributed with zero mean and a variance to be estimated. When there are many random effects, writing `~idv(z1+z2+z3+z4+...z999+z1000):1` is going to be painful to write and read. However, you can simply including the design matrix as a matrix in the data-frame and fit it inside the $\texttt{idv}$ structure. 
+An $\texttt{idv}$ structure, like an $\texttt{idh}$ structure, assumes no correlation between effects on different rows: the $\texttt{id}$ in $\texttt{idh}$ stands for identity matrix. The $\texttt{h}$ in $\texttt{idh}$ stands for heterogeneous and so each row is allowed a different variance. Clearly, with only one effect per row estimating a variance is not feasible. However, with $\texttt{idv}$ the variances are assumed homogeneous and so only a single variance (the $\texttt{v}$ in $\texttt{idv}$) is estimated that is common to all effects. The (four) regression coefficient are then treated exactly like simple random effects: identically and independently distributed with zero mean and a variance to be estimated. When there are many random effects, writing `~idv(z1+z2+z3+z4+...z999+z1000):1` is going to be painful to write and read. However, you can simply including the design matrix as a matrix in the data-frame and fit it inside the $\texttt{idv}$ structure. 
 
 The multi-membership model fitted in Section \@ref(multim-sec) is a case in point. In that example, each child had five friends and we would like to fit $\texttt{friend}$ as a random effect that predicts the child's well-being. We can take a look at the random effect design matrix for that model:
 

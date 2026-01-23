@@ -48,6 +48,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
          }
        }
        if(grepl("ante.*v$", vtype[1])){
+           if(!is.null(prior$alpha.V)){stop("parameter expanded priors not yet possible with antev structures -  nag j.hadfield@ed.ac.uk")}
            if(nrow(prior$V)!=1){stop("prior$V should be a scalar with antev structures")}
            prior$V<-diag(nfl)*as.numeric(prior$V)
        }
@@ -111,6 +112,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
          }
        }
        if(vtype[1]=="idvm" & nfl[1]>1){
+          if(!is.null(prior$alpha.V)){stop("parameter expanded priors not yet possible with idvm structures -  nag j.hadfield@ed.ac.uk")}
           if(var(diag(prior$V))>0){stop("for idvm structures all diagonal elements of V should be the same")}
           if(prior$fix<2){         # either not fixed or not updated.
             prior$nu<-prior$nu/nfl # need to spread prior over all informative component.
