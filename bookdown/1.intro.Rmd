@@ -32,6 +32,7 @@ library(cubature)
 library(VisCov)
 library(lmeSplines)
 library(magick)
+library(pdftools)
 
 knitr::knit_hooks$set(webgl = hook_webgl)
 

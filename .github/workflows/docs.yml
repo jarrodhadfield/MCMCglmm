@@ -50,6 +50,7 @@ jobs:
             VisCov
             lmeSplines
             magick
+            pdftools
             local::.
           needs: website
 
