@@ -31,6 +31,7 @@ library(kableExtra)
 library(cubature)
 library(VisCov)
 library(lmeSplines)
+library(magick)
 
 knitr::knit_hooks$set(webgl = hook_webgl)
 
