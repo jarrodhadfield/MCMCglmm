@@ -38,4 +38,5 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 ``` r
 v<-rIW(diag(2),10, n=1000)
 plot(posterior.ante(mcmc(v),1))
+#> Error in colnames(ante)[1:k] <- colnames(x)[seq(1, k^2, k + 1)]: replacement has length zero
 ```
