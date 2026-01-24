@@ -17,7 +17,7 @@ However, we are also free to use continuous covariates in the variance function 
 
 As an example, we'll use a longitudinal data set on chicken growth (See Figure \@ref(fig:ChickWeight)). 
 
-``` {r echo=TRUE}
+```{r echo=TRUE}
 data(ChickWeight)
 head(ChickWeight)
 ```
@@ -28,13 +28,13 @@ ChickWeight$Chick<-factor(as.character(ChickWeight$Chick), levels=1:50)
 
 The data consist of body weights (`weight`) for 50 chicks (`Chick`) measured up to 12 times over a 3 week period. The variable `Time` is the number of days since hatching, and `Diet` is a four level factor indicating the type of protein diet the chicks received. The data are plotted in Figure \@ref(fig:ChickWeight).
 
-``` {r ChickWeight, echo=FALSE, include=TRUE, fig.cap="Weight data of 50 chicks from hatching until three weeks old. Chicks in the first two rows were fed on $\texttt{Diet 1}$, and chicks in rows 3 to 5 were fed on $\texttt{Diet 2}$ to $\texttt{4}$, respectively.", fig.width=9, fig.height=6}
+```{r ChickWeight, echo=FALSE, include=TRUE, fig.cap="Weight data of 50 chicks from hatching until three weeks old. Chicks in the first two rows were fed on $\texttt{Diet 1}$, and chicks in rows 3 to 5 were fed on $\texttt{Diet 2}$ to $\texttt{4}$, respectively.", fig.width=9, fig.height=6}
 xyplot(weight~Time|Chick, data=ChickWeight, col="black",  layout = c(10, 5), as.table = TRUE)
 ```
 
 Growth curves tend to be sigmoidal and so one of the non-linear growth curves such as the Gompertz or logistic may fit the data well. However, these can be tricky to use and an alternative is to try and capture the form of the curve using polynomials. We'll start with a quadratic function at the population level and and fit chick effects as random[^cont-1]. 
 
-``` {r echo=TRUE}
+```{r echo=TRUE}
 prior.weight<-list(R=IW(1,0.002), G=F(2, 10000))
 
 mweight.1<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~Chick, data=ChickWeight, pr=TRUE, prior=prior.weight)
@@ -58,7 +58,7 @@ At hatching the model predicts chicks on different diets to have the same expect
 
 Let's have a look at the model summary:
 
-``` {r echo=TRUE}
+```{r echo=TRUE}
 summary(mweight.1)
 ```
 
@@ -70,13 +70,13 @@ $$E[\texttt{weight} | \texttt{Diet}=1, \texttt{Chick}=i] = \beta_0+\beta_1\textt
 
 where $u^{(0)}_i$ is the random chick effect. The model assumes that chicks deviate consistently in their weight across time, but chicks do not deviate in their growth rate.  Since we saved the random chick effects (`pr=TRUE`) we can obtain the predictions for each chick by specifying `marginal=NULL` (Section \@ref(ranpred-sec)):
 
-``` {r echo=TRUE}
+```{r echo=TRUE}
 pweight.1<-predict(mweight.1, marginal=NULL)
 ```
 
 and we can add them to the $\texttt{xyplot}$ plot as black lines (Figure \@ref(fig:CWpred-1)).
 
-``` {r CWpred-1, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). The mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with random chick intercepts (model `mweight.1`). The predicted weights are shown as lines.", fig.width=9, fig.height=6}
+```{r CWpred-1, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Weights of each chick as a function of age (points). The mean growth curve was fitted as a quadratic function of $\\texttt{Time}$ with random chick intercepts (model `mweight.1`). The predicted weights are shown as lines.", fig.width=9, fig.height=6}
 xyplot(weight+pweight.1~Time|Chick, data=ChickWeight, distribute.type = TRUE, type   = c("p", "l"), lwd=c(1, 2), col=c("black", "black"),  layout = c(10, 5), as.table = TRUE)
 ```
 
@@ -109,7 +109,7 @@ $\sigma^{2}_{\color{blue}{\texttt{(Intercept)}}}$ is the amount of variation in 
 
 Let's fit the random regression model: 
 
-``` {r echo=TRUE, cache=TRUE}
+```{r echo=TRUE, cache=TRUE}
 mweight.2<-MCMCglmm(weight~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Chick, data=ChickWeight, pr=TRUE, prior=prior.weight)
 summary(mweight.2)
 ```
@@ -158,7 +158,7 @@ predv.weight.2<-buildV(mweight.2)
 
 The predicted variance goes up dramatically with $\texttt{Time}$ (red points in Figure \@ref(fig:V-rr)). In contrast, model (`mweight.1`), where chicks do not vary in their growth rate, assumes that the variance is constant with $\texttt{Time}$ (black points in Figure \@ref(fig:V-rr)).
 
-``` {r V-rr, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Predicted variance in weight due to random effects from model `mweight.2`.", fig.width=7, fig.height=5}
+```{r V-rr, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Predicted variance in weight due to random effects from model `mweight.2`.", fig.width=7, fig.height=5}
 plot(t(predv.weight.2)~ChickWeight$Time, ylab="Predicted Variance", xlab="Time", col="red")
 points(rep(mean(rowSums(mweight.1$VCV)), 12)~unique(ChickWeight$Time))
 ```
@@ -183,13 +183,13 @@ lower.2<-tapply(pred.weight.2[,2], ChickWeight$Time, mean)
 upper.2<-tapply(pred.weight.2[,3], ChickWeight$Time, mean)
 plot(ChickWeight$weight~ChickWeight$Time, ylim=range(c(ChickWeight$weight, lower.1, upper.1, lower.2, upper.2)), ylab="Weight (g)", xlab = "Time (days)")
 
-lines(mean.1~unique(ChickWeight$Time))
-lines(lower.1~unique(ChickWeight$Time), lty=2)
-lines(upper.1~unique(ChickWeight$Time), lty=2)
+lines(mean.1~unique(ChickWeight$Time), lwd=1.5)
+lines(lower.1~unique(ChickWeight$Time), lty=2, lwd=1.5)
+lines(upper.1~unique(ChickWeight$Time), lty=2, lwd=1.5)
 
-lines(mean.2~unique(ChickWeight$Time), col="red")
-lines(lower.2~unique(ChickWeight$Time), col="red", lty=2)
-lines(upper.2~unique(ChickWeight$Time), col="red", lty=2)
+lines(mean.2~unique(ChickWeight$Time), col="red", lwd=1.5)
+lines(lower.2~unique(ChickWeight$Time), col="red", lty=2, lwd=1.5)
+lines(upper.2~unique(ChickWeight$Time), col="red", lty=2, lwd=1.5)
 ```
 
 At this point we may be fairly chuffed with our model - not only does it seem to predict the expected response well (Figure \@ref(fig:CWpred-2)), but in terms of the variance in the response, it's a massive improvement over the intercept-only model (Figure \@ref(fig:pred-int1)). Indeed, the $\texttt{ChickWeight}$ data has become something of a classic for illustrating the power of random regression models. However, a number of issues remain with the model and it's interpretation. We will address these issues in the remainder of this section and the next.
@@ -241,7 +241,7 @@ This has the same form as Equation \@ref(eq:Vrr) although note that that it miss
 The reason that the (co)variances of the $\texttt{Chick}$ effects has decreased is because our new model attributes part of the increase in variance over $\texttt{Time}$ to things other than variation in growth rate. The model does a good job at predicting how the variance increases with $\texttt{Time}$, and in particular predicts the variance at hatching much better than our previous model (blue lines in Figure \@ref(fig:pred-int2)).
 
 
-``` {r pred-int2, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The red line is for a random intercept-slope model (`mweight.2`) that allows the variance to across chicks to change as a quadratic function of $\\texttt{Time}$. The blue line is also for a random intercept-slope model (`mweight.3`) but the residual variance has been allowed to change with the square of $\\texttt{Time}$.", fig.width=7, fig.height=5}
+```{r pred-int2, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The red line is for a random intercept-slope model (`mweight.2`) that allows the variance to across chicks to change as a quadratic function of $\\texttt{Time}$. The blue line is also for a random intercept-slope model (`mweight.3`) but the residual variance has been allowed to change with the square of $\\texttt{Time}$.", fig.width=7, fig.height=5}
 
 pred.weight.3<-predict(mweight.3,interval="prediction")
 
@@ -251,12 +251,12 @@ upper.3<-tapply(pred.weight.3[,3], ChickWeight$Time, mean)
 
 plot(ChickWeight$weight~ChickWeight$Time, ylim=range(c(ChickWeight$weight, lower.1, upper.1, lower.2, upper.2)), ylab="Weight (g)", xlab = "Time (days)")
 
-lines(mean.2~unique(ChickWeight$Time), col="red")
-lines(lower.2~unique(ChickWeight$Time), col="red", lty=2)
-lines(upper.2~unique(ChickWeight$Time), col="red", lty=2)
-lines(mean.3~unique(ChickWeight$Time), col="blue")
-lines(lower.3~unique(ChickWeight$Time), lty=2, col="blue")
-lines(upper.3~unique(ChickWeight$Time), lty=2, col="blue")
+lines(mean.2~unique(ChickWeight$Time), col="red", lwd=1.5)
+lines(lower.2~unique(ChickWeight$Time), col="red", lty=2, lwd=1.5)
+lines(upper.2~unique(ChickWeight$Time), col="red", lty=2, lwd=1.5)
+lines(mean.3~unique(ChickWeight$Time), col="blue", lwd=1.5)
+lines(lower.3~unique(ChickWeight$Time), lty=2, col="blue", lwd=1.5)
+lines(upper.3~unique(ChickWeight$Time), lty=2, col="blue", lwd=1.5)
 ```
 
 We can also look at how well the predicted means align with each chick's growth curve. However, to make a fair comparison with other models we should marginalise `us(Time):units` so that the prediction doesn't contain part of our 'residual' ($e^{(1)}\texttt{Time}$):
@@ -387,17 +387,23 @@ abline(lm(sds~means))
 
 A remarkably tight and linear relationship. A linear relationship between the standard deviation and the mean, or the variance and the square of the mean, is often the hall-mark of a multiplicative process - chick don't add $x$ grams to their weight per unit time, they increase their weight be $x$% per unit time. Log transforming the outcome of a multiplicative process makes it additive and very often reduces, or even eliminates, any relationship between the mean and variance. Let's fit our three models that have random intercepts (`mlweight.1`), random intercepts and slopes (`mlweight.2`) and  random intercepts and slopes and with the residual variance allowed to increase with $\texttt{Time}$ (`mlweight.3`).
 
-``` {r lweight}
+```{r lweight}
 prior.lweight<-list(R=IW(1, 0.002), G=F(2,1000))
 mlweight.1<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~Chick, data=ChickWeight, prior=prior.lweight)
 mlweight.2<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Chick, data=ChickWeight, prior=prior.lweight)
 mlweight.3<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Chick+us(Time):units, data=ChickWeight, prior=prior.lweight, longer=10)
 ```
 
-Using the work-flow used in previous sections, we can first look to see how well these models capture any change in the mean and variance in weight over $\texttt{Time}$ (Figure \@ref(fig:pred-int3)). 
+If we look at the model summary for our most complex model:
+
+```{r }
+summary(mlweight.3)
+```
+
+we can see that there is good evidence for variation in both intercepts and slopes. However, the variance associated with $\texttt{us(Time):units}$, which allows the residual variance to increase with $\texttt{Time}^2$, is very small. Using the work-flow used in previous sections, we can first look to see how well these models capture any change in the mean and variance in weight over $\texttt{Time}$ (Figure \@ref(fig:pred-int3)). 
 
 
-``` {r pred-int3, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Log chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a random intercept model (`mlweight.1`) that implicitly assumes the variance is constant over $\\texttt{Time}$.  The red line is for a random intercept-slope model (`mlweight.2`) that allows the variance across chicks to change as a quadratic function of $\\texttt{Time}$. The blue line is also for a random intercept-slope model (`mlweight.3`) but the residual variance has been allowed to change with the square of $\\texttt{Time}$.", fig.width=7, fig.height=5}
+```{r pred-int3, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Log chick weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The black line is for a random intercept model (`mlweight.1`) that implicitly assumes the variance is constant over $\\texttt{Time}$.  The red line is for a random intercept-slope model (`mlweight.2`) that allows the variance across chicks to change as a quadratic function of $\\texttt{Time}$. The blue line is also for a random intercept-slope model (`mlweight.3`) but the residual variance has been allowed to change with the square of $\\texttt{Time}$.", fig.width=7, fig.height=5}
 
 pred.lweight.1<-predict(mlweight.1, interval="prediction")
 pred.lweight.2<-predict(mlweight.2, interval="prediction")
@@ -416,15 +422,15 @@ upperl.3<-tapply(pred.lweight.3[,3], ChickWeight$Time, mean)
 plot(log(ChickWeight$weight)~ChickWeight$Time, ylim=range(c(log(ChickWeight$weight), lowerl.1, upperl.1, lowerl.2, upperl.2, lowerl.3, upperl.3)), ylab="Log Weight", xlab = "Time (days)")
 
 
-lines(meanl.1~unique(ChickWeight$Time))
-lines(lowerl.1~unique(ChickWeight$Time), lty=2)
-lines(upperl.2~unique(ChickWeight$Time), lty=2)
-lines(meanl.2~unique(ChickWeight$Time), col="red")
-lines(lowerl.2~unique(ChickWeight$Time), col="red", lty=2)
-lines(upperl.2~unique(ChickWeight$Time), col="red", lty=2)
-lines(meanl.3~unique(ChickWeight$Time), col="blue")
-lines(lowerl.3~unique(ChickWeight$Time), lty=2, col="blue")
-lines(upperl.3~unique(ChickWeight$Time), lty=2, col="blue")
+lines(meanl.1~unique(ChickWeight$Time), lwd=1.5)
+lines(lowerl.1~unique(ChickWeight$Time), lty=2, lwd=1.5)
+lines(upperl.2~unique(ChickWeight$Time), lty=2, lwd=1.5)
+lines(meanl.2~unique(ChickWeight$Time), col="red", lwd=1.5)
+lines(lowerl.2~unique(ChickWeight$Time), col="red", lty=2, lwd=1.5)
+lines(upperl.2~unique(ChickWeight$Time), col="red", lty=2, lwd=1.5)
+lines(meanl.3~unique(ChickWeight$Time), col="blue", lwd=1.5)
+lines(lowerl.3~unique(ChickWeight$Time), lty=2, col="blue", lwd=1.5)
+lines(upperl.3~unique(ChickWeight$Time), lty=2, col="blue", lwd=1.5)
 ```
 
 While the log-transform hasn't stabilised the variance with respect to $\texttt{Time}$ or the mean, the change in variance is much less dramatic than it was on the artithemtic scale. The model with only random intercepts assumes constant variance which is not well supported. The two random intercept-slope models give almost identical predictions and capture the change in variance reasonably well, although the variance at hatching remains smaller than the model predicts. The two models are very similar because model `mlweight.3` predicts that the increase in variance with $\texttt{Time}$ can be attributed almost completely to variation in growth rate ($\sigma^2_\texttt{Time:units}$ is very small) unlike our conclusions from the model on the raw weights, `mweight.3`.  Allowing the residual variance to change as a function of $\texttt{Time}$ has hardly any impact on our estimate of the variance in growth rate ($\sigma^2_\texttt{Time}$) - it has only decreased by `r round(100*(1-mean(mlweight.3$VCV[,"Time:Time.Chick"])/mean(mlweight.2$VCV[,"Time:Time.Chick"])),1)`%, rather than the `r round(100*(1-mean(mweight.3$VCV[,"Time:Time.Chick"])/mean(mweight.2$VCV[,"Time:Time.Chick"])),1)`% decrease we saw on the arithmetic scale.
@@ -646,7 +652,7 @@ $$
 
 but these calculations can still be a bit hairy when the order of the model is high and are best calculated in matrix form[^anteV]. 
 
-[^anteV]: To calculate the (co)variance matrix of the residuals (${\bf V}_e$) we can form two matrices: ${\bf V}_{\epsilon}$ is a diagonal matrix with the innovation variances along the diagonal. ${\bf B}$ is a matrix with $b_{ij}=\beta_{i|j}$. ${\bf V}_e$= $({\bf I}-{\bf B})^{-1}{\bf V}_\epsilon ({\bf I}-{\bf B})^{-\top}$
+[^anteV]: To calculate the (co)variance matrix of the residuals (${\bf V}_e$) we can form two matrices: ${\bf V}_{\epsilon}$ is a diagonal matrix with the innovation variances along the diagonal. ${\bf B}$ is a matrix with $b_{ij}=\beta_{i|j}$. ${\bf V}_e$= $({\bf I}-{\bf B})^{-1}{\bf V}_\epsilon ({\bf I}-{\bf B})^{-\top}$. If we want to do the reverse operation where we have ${\bf V}_e$ and would like to know the innovation variances and lag-coefficients 
 
 
 The second possible misconception is that because the parameters are time-homogeneous, the distribution of residuals must also be time-homogeneous. If the lag-coefficients are not to large then the distribution of residuals will eventually become time-homogeneous, but it takes time for them to 'forget' their initial state. As an example, in Figure \@ref(fig:equil-ante) I have plotted the variances (left) and the lag-1 correlations (right) as a function of time when $\beta_1=0.5$, $\beta_2=0.25$ and $\sigma^2_{\epsilon}=1$. The equilibrated (co)variances are shown as solid lines in Figure \@ref(fig:equil-ante) and are often referred to as the stationary (co)variances. 
@@ -677,7 +683,7 @@ abline(h=beta_1/(1-beta_2))
 
 That was a lot of abstract concepts. Lets fit a first order antedependence model to the residuals in our model of log chick weights. The details of the prior specification can be found in Section \@ref(prior-ante-sec). 
 
-``` {r ante, echo=TRUE}
+```{r ante, echo=TRUE}
 prior.lweight.4<-list(R=list(V=diag(1), nu=0.002, beta.mu=0, beta.V=10000), G=F(2,1000))
 
 
@@ -686,12 +692,13 @@ mlweight.4<-MCMCglmm(log(weight)~Time+I(Time^2)+Diet:Time, random=~us(1+Time):Ch
 summary(mlweight.4)
 ```
 
-The summary[^new.ante]
-
-[^new.ante]: jdiod
+In the summary[^new.ante] we now see that the variance in \texttt{Chick} intercepts has become very small and the innovation variance is around two-thirds the estimate we obtained of the variance in \texttt{Chick} intercepts in the model without antedependent residuals (`mlweight.3`). The lag-1 coefficient is also very large and overlaps one. Let's see how well this new model captures the changes in mean and variance over time (Figure \@ref(fig:pred-int4)).
 
 
-``` {r pred-int4, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick log weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The red line is for a random intercept-slope model (`mlweight.2`) with identically and indepedently distributed residuals. The green line is for a random intercept-slope model (`mlweight.2`) with residuals modelled using an antedependence structure", fig.width=7, fig.height=5}
+[^new.ante]: in versions <4.0 the estimate covariance matrix was reported in the model summary. However, for large matrices ($12\times 12$ here) the output was overwhelming. Now, the innovation variance(s) are reported followed by the lag-coefficient(s) at successive lags. If you use $\texttt{antev=TRUE}$ in the call to $\texttt{summary}$ the covariance matrix will be reported. The model object still stores the output of the covariance matrix, and from this the antedependent parameters can be obtained using the function $\texttt{posterior.ante}$
+
+
+```{r pred-int4, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="Chick log weights plotted against time with predicted mean weight (solid lines) and 95% predictions intervals (dashed line). The blue line is for a random intercept-slope model (`mlweight.2`) that allowed the residual variance to increase with the square of $\texttt{Time}$. The green line is for a random intercept-slope model (`mlweight.2`) with residuals modelled using a 1st order antedependence structure", fig.width=7, fig.height=5}
 
 
 pred.lweight.4<-predict(mlweight.4, interval="prediction")
@@ -703,15 +710,18 @@ upperl.4<-tapply(pred.lweight.4[,3], ChickWeight$Time, mean)
 plot(log(ChickWeight$weight)~ChickWeight$Time, ylim=range(c(log(ChickWeight$weight), lowerl.1, upperl.1, lowerl.2, upperl.2, lowerl.3, upperl.3)), ylab="Log Weight", xlab = "Time (days)")
 
 
-lines(meanl.2~unique(ChickWeight$Time), col="red")
-lines(lowerl.2~unique(ChickWeight$Time), lty=2, col="red")
-lines(upperl.2~unique(ChickWeight$Time), lty=2, col="red")
+lines(meanl.3~unique(ChickWeight$Time), col="blue", lwd=1.5)
+lines(lowerl.3~unique(ChickWeight$Time), lty=2, col="blue", lwd=1.5)
+lines(upperl.3~unique(ChickWeight$Time), lty=2, col="blue", lwd=1.5)
 
-lines(meanl.4~unique(ChickWeight$Time), col="green")
-lines(lowerl.4~unique(ChickWeight$Time), lty=2, col="green")
-lines(upperl.4~unique(ChickWeight$Time), lty=2, col="green")
+lines(meanl.4~unique(ChickWeight$Time), col="darkgreen", lwd=1.5)
+lines(lowerl.4~unique(ChickWeight$Time), lty=2, col="green", lwd=1.5)
+lines(upperl.4~unique(ChickWeight$Time), lty=2, col="green", lwd=1.5)
 
 ```
+
+It looks like the antedependence model (in green) does a better job at predicting the reduced variation in hatching compared to the model where the residual variation is allowed to change with $\texttt{Time}$ squared (in blue). However, the predicted variances at later ages are rather similar. The predicted correlation structure, however, looks slightly worse than the previous model (Figure \@ref(fig:ar-rgl-l7)).
+
 
 
 ```{r label=ar-rgl-l7, echo=FALSE, include=TRUE, webgl=TRUE, cache=FALSE}
@@ -725,27 +735,40 @@ empiricalC.l<-cor(chick.wide[,-1], use="pairwise.complete.obs")
 persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =empiricalC.l, xlab = "Time 1", ylab = "Time 2", zlab = "correlation", aspect = c(1, 1, 0.5), col = "black", front="lines", back="lines", diagonal = "back")
 persp3d(x = unique(ChickWeight$Time), y = unique(ChickWeight$Time), z =theoreticalC.l4, add=TRUE,  col = "green", alpha=0.9)
 ```
+Widget 6.3: In black (wire-frame) are the correlations in the marginal residuals of log weight over $\texttt{Time}$. In green (solid) is the predicted correlations from a model with random chick intercept and slopes and a 1st order antedependence structure for the residuals.<br>
 
 
-```{r ar-2d-l7, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="", fig.width=9, fig.height=5}
+and this is perhaps more obvious when we look at the a select subset of correlations (Figure \ref(fig:ar-2d-l7)).
+
+```{r ar-2d-l7, echo=FALSE, fig=TRUE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.ca="Correlations between the marginal residuals for log weight at each of the 12 time-points against the marginal residuals at hatching ($\\texttt{Time 1}=0$ - left), the mid-point ($\\texttt{Time 1}=10$ - middle) or the end ($\\texttt{Time 1}=21$ - right). The lines are the theoretical predictions from a random-intercept slope model where the residual variance is allowed to change with the square of \texttt{time} (blue) or the residuals are modelled with a 1st order antedependence structure."}
+
 par(mfrow=c(1,3))
 plot(empiricalC.l[1,]~unique(ChickWeight$Time), col="black",ylab="Correlation in Marginal Residuals: Time 1 = 0", xlab="Time 2", cex.lab=1.5, ylim=c(-0.6, 1))
-points(theoreticalC.l2[1,]~unique(ChickWeight$Time), col="red", lwd=2)
+points(theoreticalC.l3[1,]~unique(ChickWeight$Time), col="blue", lwd=2)
 points(theoreticalC.l4[1,]~unique(ChickWeight$Time), col="green", lwd=2)
 plot(empiricalC.l[6,]~unique(ChickWeight$Time), col="black",  ylab="Correlation in Marginal Residuals: Time 1 = 10", xlab="Time 2", cex.lab=1.5, ylim=c(-0.6, 1))
-points(theoreticalC.l2[6,]~unique(ChickWeight$Time), col="red", lwd=2)
+points(theoreticalC.l3[6,]~unique(ChickWeight$Time), col="blue", lwd=2)
 points(theoreticalC.l4[6,]~unique(ChickWeight$Time), col="green", lwd=2)
 plot(empiricalC.l[12,]~unique(ChickWeight$Time), col="black", ylab="Correlation in Marginal Residuals: Time 1 = 21", xlab="Time 2", cex.lab=1.5, ylim=c(-0.6, 1))
-points(theoreticalC.l2[12,]~unique(ChickWeight$Time), col="red", lwd=2)
+points(theoreticalC.l3[12,]~unique(ChickWeight$Time), col="blue", lwd=2)
 points(theoreticalC.l4[12,]~unique(ChickWeight$Time), col="green", lwd=2)
 ```
 
+Sadly, the antedependence model has not improved our model's ability to capture the correlations in the data, and has primarily improved the estimate of the variance at hatching. 
 
 ### Autoregressive Models
 
 ### Priors in Antedependence models {#prior-ante-sec}
 
+For antedependence models, priors are placed on the innovation variances and the lag-coefficients. The prior for the innovation variances are specified in the same way that priors are specified for variances in an `idh` structure (see Section \@ref(VCVprior-sec)). The prior for the lag-coefficients, like the prior for the fixed effects, is multivariate normal with a specified mean vector ($\texttt{beta.mu}$) and a specified (co)variance matrix ($\texttt{beta.V}$). The default prior for the lag-coefficients are also the same as for the fixed effects with a zero mean vector and a diagonal (co)variance matrix  with large variances ($10^10$).
 
+Understanding what prior this places on the covariance matrix is challenging, and currently, the best option is probably to assess this graphically using simulations from the prior.
+       
+```{r }
+prior<-list(V=diag(1), nu=1, alpha.mu=0, alpha.V=1000, beta.mu=0, beta.V=1)
+x<-rprior(1000, prior=prior, vtype="antec1v", k=3)
+```
+     
 ## User-defined Design Matrices {#user-defined-sec}
 
 $\texttt{MCMCglmm}$ generally uses $\texttt{model.matrix}$, or a native equivalent, when evaluating a model formula to obtain the design matrices. Sometimes R formula syntax is not flexible enough to generate the appropriate design matrix. However, if a random-effect design matrix can be generated, it is possible to fit the model by exploiting the $\texttt{idv}$ variance structure. However, the parameters defined by the formula in the $\texttt{idv}$ structure should not be interacted with another factor. Consider the term `~idv(z1+z2+z3+z4):1` and let's set up the table of random effects as we have before:

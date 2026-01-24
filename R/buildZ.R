@@ -62,6 +62,8 @@ buildZ<-function(x, data, nginverse=NULL, covu=FALSE, mfac=NULL, convert_rcov=0)
     }
   }
 
+  if(length(closeB)==0){stop("syntax error in random or rcov formula - most likely the specified variance structure doesn't exist")} 
+
   rterms<-substr(fformula,closeB[1]+2,nchar(fformula))
   rterms<-gsub("(^|:)(str|mm|)\\(", "", rterms)
   rterms<-gsub("\\)$", "", rterms)

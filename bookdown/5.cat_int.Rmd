@@ -545,9 +545,6 @@ mat<- apply(VCV, 1, matrix, nrow=3, simplify=FALSE)
 CovPlotData = VisCov("User defined distribution", param=list(prob = 0.5, mat = mat))
 ```
 
-
-
-
 [^4.1]: Remember that a global intercept is not fitted by default for variance structure models, and the model formula is essentially `~virus-1`. To add the global intercept, `us(1+virus):line` could be fitted but this can be harder to interpret because the effects are then `France`, `Spain-France` and `Greece-France`. If a $\texttt{us}$ structure is fitted, the two models are equivalent reparameterisations of each other although the priors have to be modified accordingly. This is not the case if the variance function is $\texttt{idh}$. In this case the virus-specific variances are allowed to vary as before, but a constant covariance equal to $\sigma^{2}_{\color{blue}{\texttt{France}}}$ is also assumed
 
 [^cant_int.4]: If anyone has an actual data set that could serve as an example, please get in touch. The code was developed for estimating a direct-maternal genetic correlation in an animal model (Chapter \@ref(pedigree)) but as an example it is too complicated.
