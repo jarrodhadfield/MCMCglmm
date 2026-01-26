@@ -83,6 +83,7 @@ fig:path-ante
 fig:equil-ante
 fig:pred-int4
 fig:spline
+fig:spending
 fig:asUV
 fig:MVvUV2
 fig:MN1
@@ -159,7 +160,7 @@ intra-class-correlation
 fix-or-rand
 cat-int
 vstruct-sec
-textttidh-variance-structure
+idh-sec
 us-sec
 other-variance-structures
 linking-functions
@@ -176,14 +177,16 @@ random-regression
 het-res
 autoc-sec
 vstab-sec
-antedependence-and-autoregressive-models
+ante-sec
 autoregressive-models
 prior-ante-sec
 user-defined-sec
 splines
+penalised-signal-regression
 multi
-relaxing-the-univariate-assumptions-of-causality
-textttcovu-covariances-between-random-and-residual-terms-1
+gaussian-multi-response-models
+non-gaussian-multi-response-models
+covariances-between-random-and-residual-terms-textttcovu
 texttttheta_scale-scaled-linear-predictor-1
 multinomial-models
 zero-inflated-models
@@ -203,7 +206,6 @@ error-in-the-predictors
 missing-values
 path
 path-anlaysis
-ante-sec
 scaling
 technical-details
 model-form

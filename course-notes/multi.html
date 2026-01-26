@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>7 Multi-response models | MCMCglmm Course Notes</title>
+  <title>7 Multi-response Models | MCMCglmm Course Notes</title>
   <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="7 Multi-response models | MCMCglmm Course Notes" />
+  <meta property="og:title" content="7 Multi-response Models | MCMCglmm Course Notes" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="7 Multi-response models | MCMCglmm Course Notes" />
+  <meta name="twitter:title" content="7 Multi-response Models | MCMCglmm Course Notes" />
   
   <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-24" />
+<meta name="date" content="2026-01-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -267,7 +267,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="5.1" data-path="cat-int.html"><a href="cat-int.html#vstruct-sec"><i class="fa fa-check"></i><b>5.1</b> Variance Structures</a>
 <ul>
-<li class="chapter" data-level="5.1.1" data-path="cat-int.html"><a href="cat-int.html#textttidh-variance-structure"><i class="fa fa-check"></i><b>5.1.1</b> <span class="math inline">\(\texttt{idh}\)</span> Variance Structure</a></li>
+<li class="chapter" data-level="5.1.1" data-path="cat-int.html"><a href="cat-int.html#idh-sec"><i class="fa fa-check"></i><b>5.1.1</b> <span class="math inline">\(\texttt{idh}\)</span> Variance Structure</a></li>
 <li class="chapter" data-level="5.1.2" data-path="cat-int.html"><a href="cat-int.html#us-sec"><i class="fa fa-check"></i><b>5.1.2</b> <span class="math inline">\(\texttt{us}\)</span> Variance Structure</a></li>
 <li class="chapter" data-level="5.1.3" data-path="cat-int.html"><a href="cat-int.html#other-variance-structures"><i class="fa fa-check"></i><b>5.1.3</b> Other Variance Structures</a></li>
 </ul></li>
@@ -291,28 +291,28 @@ div.csl-indent {
 <li class="chapter" data-level="6.2" data-path="cont-int.html"><a href="cont-int.html#het-res"><i class="fa fa-check"></i><b>6.2</b> Heterogeneous (Residual) Variances</a></li>
 <li class="chapter" data-level="6.3" data-path="cont-int.html"><a href="cont-int.html#autoc-sec"><i class="fa fa-check"></i><b>6.3</b> Autocorrelation</a></li>
 <li class="chapter" data-level="6.4" data-path="cont-int.html"><a href="cont-int.html#vstab-sec"><i class="fa fa-check"></i><b>6.4</b> Variance stabilisation</a></li>
-<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#antedependence-and-autoregressive-models"><i class="fa fa-check"></i><b>6.5</b> Antedependence and Autoregressive Models</a>
+<li class="chapter" data-level="6.5" data-path="cont-int.html"><a href="cont-int.html#ante-sec"><i class="fa fa-check"></i><b>6.5</b> Antedependence and Autoregressive Models</a>
 <ul>
 <li class="chapter" data-level="6.5.1" data-path="cont-int.html"><a href="cont-int.html#autoregressive-models"><i class="fa fa-check"></i><b>6.5.1</b> Autoregressive Models</a></li>
 <li class="chapter" data-level="6.5.2" data-path="cont-int.html"><a href="cont-int.html#prior-ante-sec"><i class="fa fa-check"></i><b>6.5.2</b> Priors in Antedependence models</a></li>
 </ul></li>
 <li class="chapter" data-level="6.6" data-path="cont-int.html"><a href="cont-int.html#user-defined-sec"><i class="fa fa-check"></i><b>6.6</b> User-defined Design Matrices</a></li>
 <li class="chapter" data-level="6.7" data-path="cont-int.html"><a href="cont-int.html#splines"><i class="fa fa-check"></i><b>6.7</b> Splines</a></li>
+<li class="chapter" data-level="6.8" data-path="cont-int.html"><a href="cont-int.html#penalised-signal-regression"><i class="fa fa-check"></i><b>6.8</b> Penalised Signal Regression</a></li>
 </ul></li>
-<li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response models</a>
+<li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response Models</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="multi.html"><a href="multi.html#relaxing-the-univariate-assumptions-of-causality"><i class="fa fa-check"></i><b>7.1</b> Relaxing the univariate assumptions of causality</a>
+<li class="chapter" data-level="7.1" data-path="multi.html"><a href="multi.html#gaussian-multi-response-models"><i class="fa fa-check"></i><b>7.1</b> Gaussian Multi-response Models</a></li>
+<li class="chapter" data-level="7.2" data-path="multi.html"><a href="multi.html#non-gaussian-multi-response-models"><i class="fa fa-check"></i><b>7.2</b> Non-Gaussian Multi-response Models</a></li>
+<li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#covariances-between-random-and-residual-terms-textttcovu"><i class="fa fa-check"></i><b>7.3</b> Covariances between random and residual terms (<span class="math inline">\(\texttt{covu}\)</span>)</a></li>
+<li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#texttttheta_scale-scaled-linear-predictor-1"><i class="fa fa-check"></i><b>7.4</b> <span class="math inline">\(\texttt{theta_scale}\)</span>: scaled linear predictor</a></li>
+<li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.5</b> Multinomial Models</a></li>
+<li class="chapter" data-level="7.6" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>7.6</b> Zero-inflated Models</a>
 <ul>
-<li class="chapter" data-level="7.1.1" data-path="multi.html"><a href="multi.html#textttcovu-covariances-between-random-and-residual-terms-1"><i class="fa fa-check"></i><b>7.1.1</b> <span class="math inline">\(\texttt{covu}\)</span>: covariances between random and residual terms</a></li>
-<li class="chapter" data-level="7.1.2" data-path="multi.html"><a href="multi.html#texttttheta_scale-scaled-linear-predictor-1"><i class="fa fa-check"></i><b>7.1.2</b> <span class="math inline">\(\texttt{theta_scale}\)</span>: scaled linear predictor</a></li>
+<li class="chapter" data-level="7.6.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>7.6.1</b> Posterior predictive checks</a></li>
 </ul></li>
-<li class="chapter" data-level="7.2" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.2</b> Multinomial Models</a></li>
-<li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>7.3</b> Zero-inflated Models</a>
-<ul>
-<li class="chapter" data-level="7.3.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>7.3.1</b> Posterior predictive checks</a></li>
-</ul></li>
-<li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.4</b> Hurdle Models</a></li>
-<li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.5</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="7.7" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.7</b> Hurdle Models</a></li>
+<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.8</b> Zero-altered Models</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
 <ul>
@@ -336,7 +336,7 @@ div.csl-indent {
 <li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
 <ul>
 <li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
-<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
+<li class="chapter" data-level="10.2" data-path="cont-int.html"><a href="cont-int.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
 <li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
 </ul></li>
 <li class="chapter" data-level="11" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>11</b> Technical Details</a>
@@ -373,149 +373,150 @@ div.csl-indent {
 
             <section class="normal" id="section-">
 <div id="multi" class="section level1 hasAnchor" number="7">
-<h1><span class="header-section-number">7</span> Multi-response models<a href="multi.html#multi" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>So far we have only fitted models to a single response variable. Multi-response models are not that widely used, except perhaps in quantitative genetics, and deserve wider use. They allow some of the assumptions of single response models to be relaxed and can be an effective way of dealing with missing data problems.</p>
-<div id="relaxing-the-univariate-assumptions-of-causality" class="section level2 hasAnchor" number="7.1">
-<h2><span class="header-section-number">7.1</span> Relaxing the univariate assumptions of causality<a href="multi.html#relaxing-the-univariate-assumptions-of-causality" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Imagine we knew how much money 200 people had spent on their holiday and on their car in each of four years, and we want to know whether a relationship exists between the two. A simple correlation would be one possibility, but then how do we control for the repeated measures? An often used solution to this problem is to choose one variable as the response (lets say the amount spent on a car) and have the other variable as a fixed covariate (the amount spent on a holiday). The choice is essentially arbitrary, highlighting the belief that any relationship between the two types of spending maybe in part due to unmeasured variables, rather than being completely causal.</p>
-<p>In practice does this matter? Lets imagine there was only one unmeasured variable: disposable income. There are repeatable differences between individuals in their disposable income, but also some variation within individuals across the four years. Likewise, people vary in what proportion of their disposable income they are willing to spend on a holiday versus a car, but this also changes from year to year. We can simulate some toy data to get a feel for the issues:</p>
-<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="multi.html#cb233-1" tabindex="-1"></a>id<span class="ot">&lt;-</span><span class="fu">gl</span>(<span class="dv">200</span>,<span class="dv">4</span>)                  <span class="co"># 200 people recorded four times                      </span></span>
+<h1><span class="header-section-number">7</span> Multi-response Models<a href="multi.html#multi" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>So far we have only fitted models to a single response variable, and even then, each response variable came from a distribution that only required one location parameter to be estimated, such as the mean of the Poisson or the probability of the binomial. In this section we will first cover multi-response models and then move on to models of multi-parameter distributions.</p>
+<div id="gaussian-multi-response-models" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Gaussian Multi-response Models<a href="multi.html#gaussian-multi-response-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Since they are much less widely used than single-response models, let’s start by motivating why anyone would want to use them. Imagine we knew how much money 200 people had spent on their holiday and on their car in each of four years, and we want to know whether a relationship exists between the two. A simple correlation would be one possibility, but then how do we control for the repeated measures? An often used solution to this problem is to choose one variable as the response (lets say the amount spent on a car) and have the other variable as a predictor (the amount spent on a holiday) for which a fixed effect is estimated. The choice is essentially arbitrary, highlighting the belief that any relationship between the two types of spending maybe in part due to unmeasured variables, rather than being completely causal.</p>
+<p>In practice does this matter? Let’s imagine there was only one unmeasured variable: disposable income. There are repeatable differences between individuals in their disposable income, but also some variation within individuals across the four years. Likewise, people vary in what proportion of their disposable income they are willing to spend on a holiday versus a car, but this also changes from year to year. We can simulate some toy data to get a feel for the issues:</p>
+<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb233-1"><a href="multi.html#cb233-1" tabindex="-1"></a>id<span class="ot">&lt;-</span><span class="fu">gl</span>(<span class="dv">200</span>,<span class="dv">4</span>)   <span class="co"># 200 people recorded four times                      </span></span>
 <span id="cb233-2"><a href="multi.html#cb233-2" tabindex="-1"></a></span>
 <span id="cb233-3"><a href="multi.html#cb233-3" tabindex="-1"></a>av_wealth<span class="ot">&lt;-</span><span class="fu">rlnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="dv">1</span>)               </span>
-<span id="cb233-4"><a href="multi.html#cb233-4" tabindex="-1"></a>ac_wealth<span class="ot">&lt;-</span>av_wealth[id]<span class="sc">+</span><span class="fu">rlnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="dv">1</span>) </span>
+<span id="cb233-4"><a href="multi.html#cb233-4" tabindex="-1"></a>ac_wealth<span class="ot">&lt;-</span><span class="fu">rlnorm</span>(<span class="dv">800</span>, <span class="fu">log</span>(av_wealth[id]), <span class="dv">1</span><span class="sc">/</span><span class="dv">4</span>) </span>
 <span id="cb233-5"><a href="multi.html#cb233-5" tabindex="-1"></a><span class="co"># expected disposable incomes + some year to year variation</span></span>
 <span id="cb233-6"><a href="multi.html#cb233-6" tabindex="-1"></a></span>
 <span id="cb233-7"><a href="multi.html#cb233-7" tabindex="-1"></a>av_ratio<span class="ot">&lt;-</span><span class="fu">rbeta</span>(<span class="dv">200</span>,<span class="dv">10</span>,<span class="dv">10</span>)                 </span>
-<span id="cb233-8"><a href="multi.html#cb233-8" tabindex="-1"></a>ac_ratio<span class="ot">&lt;-</span><span class="fu">rbeta</span>(<span class="dv">800</span>, <span class="dv">2</span><span class="sc">*</span>(av_ratio[id]), <span class="dv">2</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>av_ratio[id])) </span>
+<span id="cb233-8"><a href="multi.html#cb233-8" tabindex="-1"></a>ac_ratio<span class="ot">&lt;-</span><span class="fu">rbeta</span>(<span class="dv">800</span>, <span class="dv">3</span><span class="sc">*</span>(av_ratio[id]), <span class="dv">3</span><span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>av_ratio[id])) </span>
 <span id="cb233-9"><a href="multi.html#cb233-9" tabindex="-1"></a><span class="co"># expected proportion spent on car + some year to year variation</span></span>
 <span id="cb233-10"><a href="multi.html#cb233-10" tabindex="-1"></a></span>
-<span id="cb233-11"><a href="multi.html#cb233-11" tabindex="-1"></a>y.car<span class="ot">&lt;-</span>(ac_wealth<span class="sc">*</span>ac_ratio)<span class="sc">^</span><span class="fl">0.25</span>     <span class="co"># disposable income * proportion spent on car</span></span>
-<span id="cb233-12"><a href="multi.html#cb233-12" tabindex="-1"></a>y.hol<span class="ot">&lt;-</span>(ac_wealth<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>ac_ratio))<span class="sc">^</span><span class="fl">0.25</span> <span class="co"># disposable income * proportion spent on holiday                              </span></span>
+<span id="cb233-11"><a href="multi.html#cb233-11" tabindex="-1"></a>y.car<span class="ot">&lt;-</span>ac_wealth<span class="sc">*</span>ac_ratio      <span class="co"># disposable income * proportion spent on car</span></span>
+<span id="cb233-12"><a href="multi.html#cb233-12" tabindex="-1"></a>y.hol<span class="ot">&lt;-</span>ac_wealth<span class="sc">*</span>(<span class="dv">1</span><span class="sc">-</span>ac_ratio)  <span class="co"># disposable income * proportion spent on holiday                              </span></span>
 <span id="cb233-13"><a href="multi.html#cb233-13" tabindex="-1"></a></span>
-<span id="cb233-14"><a href="multi.html#cb233-14" tabindex="-1"></a>Spending<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">y.hol=</span>y.hol, <span class="at">y.car=</span>y.car, <span class="at">id=</span>id)</span></code></pre></div>
-<p>A simple regression suggests the two types of spending are negatively related but the association is weak with the <span class="math inline">\(R^2\)</span> close to zero.</p>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="multi.html#cb234-1" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">data =</span> Spending))</span></code></pre></div>
+<span id="cb233-14"><a href="multi.html#cb233-14" tabindex="-1"></a>Spending<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">y.hol=</span><span class="fu">log</span>(y.hol), <span class="at">y.car=</span><span class="fu">log</span>(y.car), <span class="at">id=</span>id)</span></code></pre></div>
+<p>A simple model suggests the two types of spending (on the log-scale) are positively related:</p>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="multi.html#cb234-1" tabindex="-1"></a>mspending<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">data =</span> Spending)</span>
+<span id="cb234-2"><a href="multi.html#cb234-2" tabindex="-1"></a><span class="fu">summary</span>(mspending<span class="fl">.1</span>)</span></code></pre></div>
 <pre><code>## 
-## Call:
-## lm(formula = y.car ~ y.hol, data = Spending)
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
 ## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -0.8745 -0.1890  0.0038  0.1813  1.0646 
+##  DIC: 2634.549 
 ## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  0.98066    0.03662  26.783   &lt;2e-16 ***
-## y.hol        0.03500    0.03426   1.022    0.307    
+##  R-structure:  ~units
+## 
+##       post.mean l-95% CI u-95% CI eff.samp
+## units      1.57    1.416    1.733     1000
+## 
+##  Location effects: y.car ~ y.hol 
+## 
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)   -0.6410  -0.7455  -0.5447     1000 &lt;0.001 ***
+## y.hol          0.3129   0.2485   0.3785     1000 &lt;0.001 ***
 ## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.2916 on 798 degrees of freedom
-## Multiple R-squared:  0.001306,   Adjusted R-squared:  5.459e-05 
-## F-statistic: 1.044 on 1 and 798 DF,  p-value: 0.3073</code></pre>
-<p>With <code>id</code> added as a random term to deal with the the repeated measures, a similar conclusion is reached although the estimate is more negative:</p>
-<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="multi.html#cb236-1" tabindex="-1"></a>m5a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">random =</span> <span class="sc">~</span>id, <span class="at">data =</span> Spending)</span>
-<span id="cb236-2"><a href="multi.html#cb236-2" tabindex="-1"></a><span class="fu">summary</span>(m5a<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="st">&quot;y.hol&quot;</span>])</span></code></pre></div>
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>This conclusion seems to be supported by just looking at a scatter plot of the two variables (Figure <a href="multi.html#fig:spending">7.1</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:spending"></span>
+<img src="_bookdown_files/fig/spending-1.png" alt="Money spent on car versus money spent on holiday (both logged) with the regression line from a simple regression (model `mspending.1`)" width="672" />
+<p class="caption">
+Figure 7.1: Money spent on car versus money spent on holiday (both logged) with the regression line from a simple regression (model <code>mspending.1</code>)
+</p>
+</div>
+<p>An obvious problem with the model is that we have repeated measures (the spending habits of each individual have been recorded for each of four years) and yet we haven’t dealt with any possible non-independence. We can remedy this by fitting <code>id</code> effects as random:</p>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="multi.html#cb236-1" tabindex="-1"></a>mspending<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">random =</span> <span class="sc">~</span>id, <span class="at">data =</span> Spending)</span>
+<span id="cb236-2"><a href="multi.html#cb236-2" tabindex="-1"></a><span class="fu">summary</span>(mspending<span class="fl">.2</span>)</span></code></pre></div>
 <pre><code>## 
-## Iterations = 3001:12991
-## Thinning interval = 10 
-## Number of chains = 1 
-## Sample size per chain = 1000 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
 ## 
-## 1. Empirical mean and standard deviation for each variable,
-##    plus standard error of the mean:
+##  DIC: 1922.517 
 ## 
-##           Mean             SD       Naive SE Time-series SE 
-##      -0.038491       0.036527       0.001155       0.001155 
+##  G-structure:  ~id
 ## 
-## 2. Quantiles for each variable:
+##    post.mean l-95% CI u-95% CI eff.samp
+## id     1.674    1.313    2.045     1000
 ## 
-##     2.5%      25%      50%      75%    97.5% 
-## -0.11186 -0.06301 -0.03866 -0.01313  0.03171</code></pre>
-<p>We may be inclined to stop there, but lets proceed with a multi-response model of the problem. The two responses are passed as a matrix using <code>cbind()</code>, and the rows of this matrix are indexed by the reserved variable <code>units</code>, and the columns by the reserved variable <code>trait</code>.</p>
-<p>It is useful to think of a new data frame where the response variables have been stacked column-wise and the other predictors duplicated accordingly. Below is the original data frame on the left (<code>Spending</code>) and the stacked data frame on the right:</p>
+##  R-structure:  ~units
+## 
+##       post.mean l-95% CI u-95% CI eff.samp
+## units    0.5132   0.4589   0.5733     1131
+## 
+##  Location effects: y.car ~ y.hol 
+## 
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)   -1.1801  -1.3688  -0.9852     1000 &lt;0.001 ***
+## y.hol         -0.2762  -0.3447  -0.2111     1053 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Strangely, and in contradiction to the scatter plot, the model suggests that spending more on a holiday means less is spent on a car - the regression slope is negative. If I hadn’t looked at the raw data, I would probably report the negative relationship and move on. But I have looked at the raw data and simply reporting a negative relationship without caveats makes me feel uneasy.</p>
+<p>Lets proceed with a multi-response model of the problem to see what is going on. The two responses are passed as a matrix using <code>cbind()</code>, and the rows of this matrix are indexed by the reserved variable <code>units</code>, and the columns by the reserved variable <code>trait</code>. It is useful to think of a new data frame where the response variables have been stacked column-wise and the other predictors duplicated accordingly. Below is the original data frame on the left (<code>Spending</code>) and the stacked data frame on the right when <code>cbind(y.hol, y.car)</code> is passed as the response:</p>
 <p><span class="math display">\[\begin{array}{cc}
 \begin{array}{cccc}
 &amp;{\color{blue}{\texttt{y.hol}}}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{id}\\
-{\color{red}{\texttt{1}}}&amp;\texttt{1.569284}&amp;\texttt{0.865704}&amp;\texttt{1}\\
-{\color{red}{\texttt{2}}}&amp;\texttt{1.345308}&amp;\texttt{1.195682}&amp;\texttt{1}\\
+{\color{red}{\texttt{1}}}&amp;\texttt{0.058057}&amp;\texttt{1.475391}&amp;\texttt{1}\\
+{\color{red}{\texttt{2}}}&amp;\texttt{0.763508}&amp;\texttt{0.759238}&amp;\texttt{1}\\
 \vdots&amp;\vdots&amp;\vdots\\
-{\color{red}{\texttt{800}}}&amp;\texttt{0.529248}&amp;\texttt{1.330803}&amp;\texttt{200}\\
+{\color{red}{\texttt{800}}}&amp;\texttt{-2.304347}&amp;\texttt{0.774078}&amp;\texttt{200}\\
 \end{array}&amp;
 \Longrightarrow
 \begin{array}{ccccc}
 &amp;\texttt{y}&amp;{\color{blue}{\texttt{trait}}}&amp;\texttt{id}&amp;{\color{red}{\texttt{units}}}\\
-1&amp;\texttt{1.569284}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
-2&amp;\texttt{1.345308}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
+1&amp;\texttt{0.058057}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
+2&amp;\texttt{0.763508}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
 \vdots&amp;\vdots&amp;\vdots&amp;\vdots\\
-800&amp;\texttt{0.529248}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
-801&amp;\texttt{0.865704}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
-802&amp;\texttt{1.195682}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
+800&amp;\texttt{-2.304347}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
+801&amp;\texttt{1.475391}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
+802&amp;\texttt{0.759238}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
 \vdots&amp;\vdots&amp;\vdots&amp;\vdots\\
-1600&amp;\texttt{1.330803}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
+1600&amp;\texttt{0.774078}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
 \end{array}
 \end{array}\]</span></p>
 <p>From this we can see that fitting a multi-response model is a direct extension to how we fitted models with categorical random interactions (Chapter <a href="cat-int.html#cat-int">5</a>):</p>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="multi.html#cb238-1" tabindex="-1"></a>prior.m5a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">1.002</span>), <span class="at">G =</span> <span class="fu">list</span>(<span class="at">G1 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>),</span>
-<span id="cb238-2"><a href="multi.html#cb238-2" tabindex="-1"></a>    <span class="at">nu =</span> <span class="dv">2</span>, <span class="at">alpha.mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="at">alpha.V =</span> <span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">*</span> <span class="dv">1000</span>)))</span>
-<span id="cb238-3"><a href="multi.html#cb238-3" tabindex="-1"></a></span>
-<span id="cb238-4"><a href="multi.html#cb238-4" tabindex="-1"></a>m5a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb238-5"><a href="multi.html#cb238-5" tabindex="-1"></a>    <span class="at">data =</span> Spending, <span class="at">prior =</span> prior.m5a<span class="fl">.2</span>, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;gaussian&quot;</span>))</span></code></pre></div>
-<p>We have fitted the fixed effect <code>trait</code> so that the two types of spending can have different intercepts. I usually suppress the intercept (<code>-1</code>) for these types of models so the second coefficient is not the difference between the intercept for the first level of <code>trait</code> (<code>y.hol</code>) and the second level (<code>y.car</code>) but the actual trait specific intercepts. In other words the design matrix for the fixed effects has the form:</p>
-<p><span class="math display">\[\begin{array}{rl}
-\left[
-\begin{array}{cc}
-\texttt{trait[1]==&quot;y.hol&quot;}&amp;\texttt{trait[1]==&quot;y.car&quot;}\\
-\texttt{trait[2]==&quot;y.hol&quot;}&amp;\texttt{trait[2]==&quot;y.car&quot;}\\
-\vdots&amp;\vdots\\
-\texttt{trait[800]==&quot;y.hol&quot;}&amp;\texttt{trait[800]==&quot;y.car&quot;}\\
-\texttt{trait[801]==&quot;y.hol&quot;}&amp;\texttt{trait[801]==&quot;y.car&quot;}\\
-\texttt{trait[802]==&quot;y.hol&quot;}&amp;\texttt{trait[802]==&quot;y.car&quot;}\\
-\vdots&amp;\vdots\\
-\texttt{trait[1600]==&quot;y.hol&quot;}&amp;\texttt{trait[1600]==&quot;y.car&quot;}\\
-\end{array}
-\right]
-=&amp;
-\left[
-\begin{array}{cc}
-1&amp;0\\
-1&amp;0\\
-\vdots&amp;\vdots\\
-1&amp;0\\
-0&amp;1\\
-0&amp;1\\
-\vdots&amp;\vdots\\
-0&amp;1\\
-\end{array}
-\right]\\
-\end{array}\]</span></p>
-<p>A <span class="math inline">\(2\times2\)</span> covariance matrix is estimated for the random term where the diagonal elements are the variance in consistent individual effects for each type of spending. The off-diagonal is the covariance between these effects which if positive suggests that people that consistently spend more on their holidays consistently spend more on their cars. A <span class="math inline">\(2\times2\)</span> residual covariance matrix is also fitted. In Section<a href="#heter-sec"><strong>??</strong></a> we fitted heterogeneous error models using <code>idh():units</code> which made sense in this case because each level of <code>unit</code> was specific to a particular datum and so any covariances could not be estimated. In multi-response models this is not the case because both traits have often been measured on the same observational unit and so the covariance can be measured. In the context of this example a positive covariance would indicate that in those years an individual spent a lot on their car they also spent a lot on their holiday.</p>
-<p>A univariate regression is defined as the covariance between the response and the predictor divided by the variance in the predictor. We can therefore estimate a regression coefficient for these two levels of random variation, and compare them with the regression coefficient we obtained in the simpler model:</p>
-<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="multi.html#cb239-1" tabindex="-1"></a>id.regression <span class="ot">&lt;-</span> m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">2</span>]<span class="sc">/</span>m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">1</span>]</span>
-<span id="cb239-2"><a href="multi.html#cb239-2" tabindex="-1"></a>units.regression <span class="ot">&lt;-</span> m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">6</span>]<span class="sc">/</span>m5a<span class="fl">.2</span><span class="sc">$</span>VCV[, <span class="dv">5</span>]</span>
-<span id="cb239-3"><a href="multi.html#cb239-3" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m5a<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="st">&quot;y.hol&quot;</span>], id.regression, units.regression), <span class="at">density =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>The regression coefficients (see Figure <a href="multi.html#fig:asUV">7.1</a>) differ substantially at the within individual (green) and between
-individual (red) levels, and neither is entirely consistent with the regression coefficient from the univariate model (black). The process by which we generated the data gives rise to this phenomenon - large variation between individuals in their disposable income means that people who are able to spend a lot on their holiday can also afford to spend a lot on their holidays (hence positive covariation between <code>id</code> effects). However, a person that spent a large proportion of their disposable income in a particular year on a holiday, must have less to spend that year on a car (hence negative residual (within year) covariation).</p>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="multi.html#cb238-1" tabindex="-1"></a>prior.mspending<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">2</span>, <span class="dv">1000</span>))</span>
+<span id="cb238-2"><a href="multi.html#cb238-2" tabindex="-1"></a></span>
+<span id="cb238-3"><a href="multi.html#cb238-3" tabindex="-1"></a>mspending<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id,</span>
+<span id="cb238-4"><a href="multi.html#cb238-4" tabindex="-1"></a>    <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> Spending, <span class="at">prior =</span> prior.mspending<span class="fl">.3</span>, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>,</span>
+<span id="cb238-5"><a href="multi.html#cb238-5" tabindex="-1"></a>        <span class="st">&quot;gaussian&quot;</span>))</span></code></pre></div>
+<p>The only real difference is that we must now specify the distribution for each response in <span class="math inline">\(\texttt{family}\)</span>. While the interpretation of the model is identical to that covered in Chapter <a href="cat-int.html#cat-int">5</a>, it does take a little time to get used to working with the new categorical factor, <span class="math inline">\(\texttt{trait}\)</span>.</p>
+<p>I have fitted a fixed <span class="math inline">\(\texttt{trait}\)</span> effect so that the two types of spending can have different intercepts. I usually suppress the global intercept (<code>-1</code>) for these types of models so the second coefficient is not the difference between the intercept for the first level of <span class="math inline">\(\texttt{trait}\)</span> (<code>y.hol</code>) and the second level (<code>y.car</code>) but the actual trait specific intercepts. Note that the levels of <span class="math inline">\(\texttt{trait}\)</span> are ordered as they appear in the response (<span class="math inline">\(\texttt{y.hol}\)</span> then <span class="math inline">\(\texttt{y.car}\)</span> in this instance). A <span class="math inline">\(2\times2\)</span> covariance matrix is estimated for the random term where the diagonal elements are the variance in consistent individual (<span class="math inline">\(\texttt{id}\)</span>) effects for each type of spending. The off-diagonal is the covariance between these effects which if positive suggests that people that consistently spend more on their holidays consistently spend more on their cars. A <span class="math inline">\(2\times2\)</span> residual covariance matrix is also fitted. In Section<a href="cat-int.html#idh-sec">5.1.1</a> we fitted heterogeneous error models using <code>idh():units</code> which made sense for single-response models because each level of <code>unit</code> was specific to a particular observation and so any covariances could not be estimated. In multi-response models this is not the case because both traits have often been measured on the same observational unit and so the covariance can be measured. In the context of this example a positive covariance would indicate that in those years an individual spent a lot on their car they also spent a lot on their holiday.</p>
+<p>With a single predictors, a regression is defined as the covariance between the response and the predictor divided by the variance in the predictor<a href="#fn29" class="footnote-ref" id="fnref29"><sup>29</sup></a>. We can therefore obtain the coefficients of a regression of <span class="math inline">\(\texttt{y.car}\)</span> on <span class="math inline">\(\texttt{y.hol}\)</span> at the level of both <span class="math inline">\(\texttt{id}\)</span> and <span class="math inline">\(\texttt{units}\)</span><a href="#fn30" class="footnote-ref" id="fnref30"><sup>30</sup></a>:</p>
+<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="multi.html#cb239-1" tabindex="-1"></a>id.regression <span class="ot">&lt;-</span> mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.car:traity.hol.id&quot;</span>]</span>
+<span id="cb239-2"><a href="multi.html#cb239-2" tabindex="-1"></a><span class="co"># covariance between individuals</span></span>
+<span id="cb239-3"><a href="multi.html#cb239-3" tabindex="-1"></a>id.regression <span class="ot">&lt;-</span> id.regression<span class="sc">/</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.hol:traity.hol.id&quot;</span>]</span>
+<span id="cb239-4"><a href="multi.html#cb239-4" tabindex="-1"></a><span class="co"># regression across individual</span></span>
+<span id="cb239-5"><a href="multi.html#cb239-5" tabindex="-1"></a></span>
+<span id="cb239-6"><a href="multi.html#cb239-6" tabindex="-1"></a>units.regression <span class="ot">&lt;-</span> mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.car:traity.hol.units&quot;</span>]</span>
+<span id="cb239-7"><a href="multi.html#cb239-7" tabindex="-1"></a><span class="co"># covariance within individuals</span></span>
+<span id="cb239-8"><a href="multi.html#cb239-8" tabindex="-1"></a>units.regression <span class="ot">&lt;-</span> units.regression<span class="sc">/</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.hol:traity.hol.units&quot;</span>]</span>
+<span id="cb239-9"><a href="multi.html#cb239-9" tabindex="-1"></a><span class="co"># regression within individuals</span></span></code></pre></div>
+<p>Conceptually, the regression at the level of <span class="math inline">\(\texttt{id}\)</span> is a regression of average expenditures across people, whereas the regression at the level of <span class="math inline">\(\texttt{units}\)</span> is a regression of yearly expenditures within individuals. We can compare these two regression with those that we got from the single response models that did (<code>mspending.2</code>) or did not (<code>mspending.1</code>) fit <span class="math inline">\(\texttt{id}\)</span> effects (Figure <a href="multi.html#fig:asUV">7.2</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:asUV"></span>
-<img src="_bookdown_files/fig/asUV-1.png" alt="MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). The relationship between the two types of spending is in part mediating by a third unmeasured variable, disposable income." width="672" />
+<img src="_bookdown_files/fig/asUV-1.png" alt="MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red). The relationship between the two types of spending is in part mediating by a third unmeasured variable, disposable income." width="672" />
 <p class="caption">
-Figure 7.1: MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). The relationship between the two types of spending is in part mediating by a third unmeasured variable, disposable income.
+Figure 7.2: MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red). The relationship between the two types of spending is in part mediating by a third unmeasured variable, disposable income.
 </p>
 </div>
-<p>When fitting the simpler univariate model we make the assumption that the effect of spending money on a car directly effects how much you spend on a holiday. If this relationship was purely causal then all regression coefficients would have the same expectation, and the simpler model would be justified.</p>
-<p>For example, we could set up a simpler model where two thirds of the variation in holiday expenditure is due to between individual differences, and holiday expenditure directly affects how much an individual will spend on their car (using a regression coefficient of -0.3). The variation in car expenditure not caused by holiday expenditure is also due to individual differences, but in this case they only explain a third of the variance.</p>
-<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="multi.html#cb240-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.hol2 <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb240-2"><a href="multi.html#cb240-2" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2 <span class="ot">&lt;-</span> Spending<span class="sc">$</span>y.hol2 <span class="sc">*</span> <span class="sc">-</span><span class="fl">0.3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="dv">1</span>)[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>,</span>
-<span id="cb240-3"><a href="multi.html#cb240-3" tabindex="-1"></a>    <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
-<p>We can fit the univariate and multivariate models to these data, and compare the regression coefficients as we did before. Figure <a href="multi.html#fig:MVvUV2">7.2</a> shows that the regression coefficients are all very similar and a value of -0.3 has a reasonably high posterior probability. However, it should be noted that the posterior standard deviation is smaller in the simpler model because the more strict assumptions have allowed us to pool information across the two levels to get a more precise answer.</p>
+<p>The regression coefficients differ substantially at the within individual (blue) and between
+individual (red) levels, and neither is entirely consistent with the regression coefficient from the single response models (black). The process by which we generated the data gives rise to this phenomenon - large variation between individuals in their disposable income means that people who are able to spend a lot on their holiday can also afford to spend a lot on their holidays (hence positive covariation between <span class="math inline">\(\texttt{id}\)</span> effects). However, a person that spent a large proportion of their disposable income in a particular year on a holiday, must have less to spend that year on a car (hence negative residual (within year) covariation).</p>
+<p>When fitting the simpler single-response models we make the assumption that the effect of spending money on a holiday directly effects how much you spend on a car. If this relationship was purely causal then the regression coefficients at the level of <span class="math inline">\(\texttt{id}\)</span> and <span class="math inline">\(\texttt{unit}\)</span> would have the same expectation, and the simpler model would be justified. For example, we could simulate data where the expected car expenditure depends directly on holiday expenditure (using a regression coefficient of -0.3) with some variation around this due to between and within-individual effects:</p>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb240-1"><a href="multi.html#cb240-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2 <span class="ot">&lt;-</span> Spending<span class="sc">$</span>y.hol <span class="sc">*</span> <span class="sc">-</span><span class="fl">0.3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="dv">1</span>)[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>,</span>
+<span id="cb240-2"><a href="multi.html#cb240-2" tabindex="-1"></a>    <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
+<p>We can fit the univariate and multivariate models to these data, and compare the regression coefficients as we did before. Figure <a href="multi.html#fig:MVvUV2">7.3</a> shows that the regression coefficients are all similar and a value of -0.3 has a reasonably high posterior probability.</p>
 <div class="figure"><span style="display:block;" id="fig:MVvUV2"></span>
-<img src="_bookdown_files/fig/MVvUV2-1.png" alt="MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). In this model the relationship between the two types of spending is causal and the regression coefficients have the same expectation. However, the posterior standard deviation from the simple regression is smaller because information from the two different levels is pooled." width="672" />
+<img src="_bookdown_files/fig/MVvUV2-1.png" alt="MCMC trace plot of the coefficient from a regression of car spending on holiday spending in black. The red and blue traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red). In simulated data the relationship between the two types of spending is causal and the regression coefficients have the same expectation. However, the posterior standard deviation from the simple regression is smaller because information from the two different levels is pooled." width="672" />
 <p class="caption">
-Figure 7.2: MCMC summary plot of the coefficient from a regression of car spending on holiday spending in black. The red and green traces are from a model where the regression coefficient is estimated at two levels: within an individual (green) and across individuals (red). In this model the relationship between the two types of spending is causal and the regression coefficients have the same expectation. However, the posterior standard deviation from the simple regression is smaller because information from the two different levels is pooled.
+Figure 7.3: MCMC trace plot of the coefficient from a regression of car spending on holiday spending in black. The red and blue traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red). In simulated data the relationship between the two types of spending is causal and the regression coefficients have the same expectation. However, the posterior standard deviation from the simple regression is smaller because information from the two different levels is pooled.
 </p>
 </div>
-<div id="textttcovu-covariances-between-random-and-residual-terms-1" class="section level3 hasAnchor" number="7.1.1">
-<h3><span class="header-section-number">7.1.1</span> <span class="math inline">\(\texttt{covu}\)</span>: covariances between random and residual terms<a href="multi.html#textttcovu-covariances-between-random-and-residual-terms-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>However, it should be noted that the posterior standard deviation is smaller in the simpler model because the more strict assumptions have allowed us to pool information across the two levels to get a more precise answer. This is one of the downsides of multi-response models - if the regressions at each level are the same we can get a more precise estimate using a standard single-response model. The other major benefit of the single-response model is that we only have to worry whether the conditional distribution of the response variable is modelled well (<span class="math inline">\(\texttt{y.car}\)</span> in this case) . In a multi-response model, we have to consider whether the model for the joint distribution of all responses is doing a good job.</p>
+</div>
+<div id="non-gaussian-multi-response-models" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Non-Gaussian Multi-response Models<a href="multi.html#non-gaussian-multi-response-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The specification of</p>
+</div>
+<div id="covariances-between-random-and-residual-terms-textttcovu" class="section level2 hasAnchor" number="7.3">
+<h2><span class="header-section-number">7.3</span> Covariances between random and residual terms (<span class="math inline">\(\texttt{covu}\)</span>)<a href="multi.html#covariances-between-random-and-residual-terms-textttcovu" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Occasionally, we need to link a set of random effects with a set of residuals. This most commonly occurs in multi-response models when we have repeated measures for one response but only single measures for another response. We can link the set of random effects appearing in the final random term of the <code>random</code> specification with the residuals appearing in the first residual term of the <code>rcov</code> specification. The linking is specified by adding a <code>covu=TRUE</code> to the prior specification for the first residual term. For example, imagine the random effect model specification:</p>
 <div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="multi.html#cb241-1" tabindex="-1"></a>random <span class="ot">=</span> <span class="er">~</span>... <span class="sc">+</span> ... <span class="sc">+</span> <span class="fu">us</span>(<span class="fu">at.level</span>(response, <span class="st">&quot;repeat&quot;</span>))<span class="sc">:</span>individual</span></code></pre></div>
 <p>where <span class="math inline">\(\dots\)</span> indicate additional random terms and the rather complicated final random term is simply fitting <span class="math inline">\(\texttt{individual}\)</span> effects but for the repeat-measure response only. We could then specify the residual model as:</p>
@@ -525,13 +526,12 @@ Figure 7.2: MCMC summary plot of the coefficient from a regression of car spendi
 <span id="cb243-2"><a href="multi.html#cb243-2" tabindex="-1"></a>    <span class="at">covu =</span> <span class="cn">TRUE</span>), <span class="at">R2 =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>, <span class="at">nu =</span> <span class="dv">1</span>, <span class="at">alpha.mu =</span> <span class="dv">0</span>, <span class="at">alpha.V =</span> <span class="dv">1000</span>))</span></code></pre></div>
 <p>The first prior specifies a <span class="math inline">\(2\times 2\)</span> covariance matrix for the two sets of <span class="math inline">\(\texttt{individual}\)</span> effects. Since the prior for the last set of random effects is absorbed into the residual prior specification, it should be omitted from the random-effect (G-structure) prior specification. The covariance matrix inherits the variance function of the first residual term, in this case <span class="math inline">\(\texttt{us}\)</span>.</p>
 </div>
-<div id="texttttheta_scale-scaled-linear-predictor-1" class="section level3 hasAnchor" number="7.1.2">
-<h3><span class="header-section-number">7.1.2</span> <span class="math inline">\(\texttt{theta_scale}\)</span>: scaled linear predictor<a href="multi.html#texttttheta_scale-scaled-linear-predictor-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="texttttheta_scale-scaled-linear-predictor-1" class="section level2 hasAnchor" number="7.4">
+<h2><span class="header-section-number">7.4</span> <span class="math inline">\(\texttt{theta_scale}\)</span>: scaled linear predictor<a href="multi.html#texttttheta_scale-scaled-linear-predictor-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Occasionally, we need to force a common relationship between two sets of multiple random effects. To give a brief overview, imagine that we have individuals with repeat measures for variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> and these individuals can be grouped into families. We would like to know the regression of <span class="math inline">\(y\)</span> on <span class="math inline">\(x\)</span> but the issue is that the within-individual variance is believed to be simply measurement error. As in the <span class="math inline">\(\texttt{covu}\)</span> model what we would really like to do is regress an individuals true average value for <span class="math inline">\(y\)</span> on the individuals true average value for <span class="math inline">\(x\)</span>. If we only had one set of random effects (e.g. <span class="math inline">\(\texttt{individual}\)</span>) this would be straightforward because we could fit the <span class="math inline">\(2\times 2\)</span> covariance matrix for individual effects and obtain the regression as <span class="math inline">\(\sigma_\texttt{individual:x, individual:y}/\sigma_\texttt{individual:x}\)</span>. With the two sets of random effects, <span class="math inline">\(\texttt{individual}\)</span> and <span class="math inline">\(\texttt{family}\)</span>, we would need to somehow enforce <span class="math inline">\(\sigma_\texttt{individual:x, individual:y}/\sigma_\texttt{individual:x}\)</span>=<span class="math inline">\(\sigma_\texttt{family:x, family:y}/\sigma_\texttt{family:x}\)</span> unless we though the regression might differ at these two levels. The argument <span class="math inline">\(\texttt{theta_scale}\)</span> allows you to do this by specifying which fixed and/or random effects should be duplicated and scaled.</p>
 </div>
-</div>
-<div id="multinomial-models" class="section level2 hasAnchor" number="7.2">
-<h2><span class="header-section-number">7.2</span> Multinomial Models<a href="multi.html#multinomial-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="multinomial-models" class="section level2 hasAnchor" number="7.5">
+<h2><span class="header-section-number">7.5</span> Multinomial Models<a href="multi.html#multinomial-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Multinomial models are difficult - both to fit and interpret. This is particularly true when each unit of observation only has a single realisation from the multinomial. In these instances the data can be expressed as a single vector of factors, and the family argument can be specified as <code>categorical</code>. To illustrate, using a very simple example, we’ll use data collected on 666 Soay sheep from the island of Hirta in the St. Kilda archipelago <span class="citation">(<a href="#ref-Clutton-Brock.2004">Clutton-Brock and Pemberton 2004</a> Table A2.5)</span>.</p>
 <div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="multi.html#cb244-1" tabindex="-1"></a><span class="fu">data</span>(SShorns)</span>
 <span id="cb244-2"><a href="multi.html#cb244-2" tabindex="-1"></a><span class="fu">head</span>(SShorns)</span></code></pre></div>
@@ -581,12 +581,12 @@ Figure 7.2: MCMC summary plot of the coefficient from a regression of car spendi
 <span id="cb252-2"><a href="multi.html#cb252-2" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> IJ, <span class="at">fix =</span> <span class="dv">1</span>))</span>
 <span id="cb252-3"><a href="multi.html#cb252-3" tabindex="-1"></a>m5c<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">prior =</span> prior, <span class="at">data =</span> SShorns,</span>
 <span id="cb252-4"><a href="multi.html#cb252-4" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>)</span></code></pre></div>
-<p>The posterior distribution for the intercepts is shown in Figure <a href="multi.html#fig:MN1">7.3</a>, and the model
-clearly needs to be run for longer (Figure <a href="multi.html#fig:MN1">7.3</a>. However…</p>
+<p>The posterior distribution for the intercepts is shown in Figure <a href="multi.html#fig:MN1">7.4</a>, and the model
+clearly needs to be run for longer (Figure <a href="multi.html#fig:MN1">7.4</a>. However…</p>
 <div class="figure"><span style="display:block;" id="fig:MN1"></span>
 <img src="_bookdown_files/fig/MN1-1.png" alt="Posterior distribution of fixed effects from model `m5c.1`: a simple multinomial logit model with intercepts only}" width="672" />
 <p class="caption">
-Figure 7.3: Posterior distribution of fixed effects from model <code>m5c.1</code>: a simple multinomial logit model with intercepts only}
+Figure 7.4: Posterior distribution of fixed effects from model <code>m5c.1</code>: a simple multinomial logit model with intercepts only}
 </p>
 </div>
 <p>The problem can also be represented using the contrast matrix <span class="math inline">\({\bf \Delta}\)</span> <span class="citation">(<a href="#ref-Bunch.1991">Bunch 1991</a>)</span>:</p>
@@ -637,11 +637,11 @@ probability for each horn type:</p>
 <p>To test for the effects of sex specific expression we can also fit a model with a sex effect:</p>
 <div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="multi.html#cb257-1" tabindex="-1"></a>m5c<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">+</span> sex <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> SShorns,</span>
 <span id="cb257-2"><a href="multi.html#cb257-2" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior)</span></code></pre></div>
-<p>In this case we have not interacted sex with trait, and so we are estimating the difference between the sexes in their expression of normal and polled+scurred jointly. The posterior distribution is plotted in Figure <a href="multi.html#fig:MN2">7.4</a> and clearly shows that males are more likely to express the normal horn phenotype than females.</p>
+<p>In this case we have not interacted sex with trait, and so we are estimating the difference between the sexes in their expression of normal and polled+scurred jointly. The posterior distribution is plotted in Figure <a href="multi.html#fig:MN2">7.5</a> and clearly shows that males are more likely to express the normal horn phenotype than females.</p>
 <div class="figure"><span style="display:block;" id="fig:MN2"></span>
 <img src="_bookdown_files/fig/MN2-1.png" alt="Posterior distribution of fixed effects from model `m5c.2` in which a main effect of sex was included" width="672" />
 <p class="caption">
-Figure 7.4: Posterior distribution of fixed effects from model <code>m5c.2</code> in which a main effect of sex was included
+Figure 7.5: Posterior distribution of fixed effects from model <code>m5c.2</code> in which a main effect of sex was included
 </p>
 </div>
 <p>A more general model would be to estimate separate probabilities for each cell, but the contingency table indicates that one cell (polled males) has zero counts which will cause extreme separation problems. We could choose to have a better prior for the fixed effects, that is close to being flat for the two-way (i.e. polled vs scurred, normal vs.scurred &amp; polled vs. normal) marginal probabilities within each sex:</p>
@@ -707,8 +707,8 @@ Figure 7.4: Posterior distribution of fixed effects from model <code>m5c.2</code
 <pre><code>##    normal    polled   scurred 
 ## 0.8341232 0.0000000 0.1658768</code></pre>
 </div>
-<div id="zero-inflated-models" class="section level2 hasAnchor" number="7.3">
-<h2><span class="header-section-number">7.3</span> Zero-inflated Models<a href="multi.html#zero-inflated-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="zero-inflated-models" class="section level2 hasAnchor" number="7.6">
+<h2><span class="header-section-number">7.6</span> Zero-inflated Models<a href="multi.html#zero-inflated-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Each datum in a zero-inflated model is associated with two latent variables. The first latent variable is associated with the named distribution and the second latent variable is associated with zero inflation. I’ll work through a zero-inflated Poisson (ZIP) model to make things clearer. As the name suggests, a ZIP distribution is a Poisson distribution with extra zero’s. The observed zeros are modelled as a mixture distribution of zero’s originating form the Poisson process and zero’s arising through zero-inflation. It is the probability (on the logit scale) that a zero is from the zero-inflation process that we aim to model with the second latent variable. The likelihood has the form:</p>
 <p><span class="math display">\[\begin{array}{rl}
 Pr(y=0) =&amp; \texttt{plogis}(l_{2})+\texttt{plogis}(-l_{2})\ast \texttt{dpois}(0, \texttt{exp}(l_{1}))\\
@@ -731,24 +731,24 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 ##   640   275</code></pre>
 <div class="sourceCode" id="cb271"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb271-1"><a href="multi.html#cb271-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
 <pre><code>## [1] 0.1839859</code></pre>
-<p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code><a href="#fn28" class="footnote-ref" id="fnref28"><sup>28</sup></a> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures overdispersion:</p>
+<p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures overdispersion:</p>
 <div class="sourceCode" id="cb273"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb273-1"><a href="multi.html#cb273-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
 <span id="cb273-2"><a href="multi.html#cb273-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
 <span id="cb273-3"><a href="multi.html#cb273-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
 <span id="cb273-4"><a href="multi.html#cb273-4" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>)</span></code></pre></div>
-<p>As is often the case the parameters of the zero-inflation model mixes poorly (See Figure <a href="multi.html#fig:ZIP">7.5</a> especially when compared to equivalent hurdle models (See Section <a href="multi.html#Hurdle">7.4</a>). Poor mixing is often associated with distributions that may <em>not</em> be zero-inflated but instead overdispersed.</p>
+<p>As is often the case the parameters of the zero-inflation model mixes poorly (See Figure <a href="multi.html#fig:ZIP">7.6</a> especially when compared to equivalent hurdle models (See Section <a href="multi.html#Hurdle">7.7</a>). Poor mixing is often associated with distributions that may <em>not</em> be zero-inflated but instead overdispersed.</p>
 <div class="figure"><span style="display:block;" id="fig:ZIP"></span>
 <img src="_bookdown_files/fig/ZIP-1.png" alt="Posterior distribution of fixed effects from model `m5d.1` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the zero-inflation." width="672" />
 <p class="caption">
-Figure 7.5: Posterior distribution of fixed effects from model <code>m5d.1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
+Figure 7.6: Posterior distribution of fixed effects from model <code>m5d.1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
 </p>
 </div>
 <p>The model would have to be run for (much) longer to say something concrete about the level of zero-inflation but my guess would be it’s not a big issue, given the probability is probably quite small:</p>
 <div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="multi.html#cb274-1" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">plogis</span>(m5d<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##          0%         25%         50%         75%        100% 
 ## 0.002411913 0.006275172 0.008380651 0.012331379 0.068352559</code></pre>
-<div id="posterior-predictive-checks" class="section level3 hasAnchor" number="7.3.1">
-<h3><span class="header-section-number">7.3.1</span> Posterior predictive checks<a href="multi.html#posterior-predictive-checks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="posterior-predictive-checks" class="section level3 hasAnchor" number="7.6.1">
+<h3><span class="header-section-number">7.6.1</span> Posterior predictive checks<a href="multi.html#posterior-predictive-checks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Another useful check is to fit the standard Poisson model and use posterior predictive checks to see how many zero’s you would expect under the simple model:</p>
 <div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="multi.html#cb276-1" tabindex="-1"></a>prior.m5d<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
 <span id="cb276-2"><a href="multi.html#cb276-2" tabindex="-1"></a>m5d<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.2</span>,</span>
@@ -761,17 +761,17 @@ Figure 7.5: Posterior distribution of fixed effects from model <code>m5d.1</code
 <span id="cb276-9"><a href="multi.html#cb276-9" tabindex="-1"></a>    pred.l <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">915</span>, (m5d<span class="fl">.2</span><span class="sc">$</span>X <span class="sc">%*%</span> m5d<span class="fl">.2</span><span class="sc">$</span>Sol[i, ])<span class="sc">@</span>x, <span class="fu">sqrt</span>(m5d<span class="fl">.2</span><span class="sc">$</span>VCV[i]))</span>
 <span id="cb276-10"><a href="multi.html#cb276-10" tabindex="-1"></a>    nz[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rpois</span>(<span class="dv">915</span>, <span class="fu">exp</span>(pred.l)) <span class="sc">==</span> <span class="dv">0</span>)</span>
 <span id="cb276-11"><a href="multi.html#cb276-11" tabindex="-1"></a>}</span></code></pre></div>
-<p>Figure <a href="multi.html#fig:PPZIP">7.6</a> shows a histogram of the posterior predictive distribution of zero’s (<code>nz</code>) from the model compared to the observed number of zeros (<code>oz</code>). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.</p>
+<p>Figure <a href="multi.html#fig:PPZIP">7.7</a> shows a histogram of the posterior predictive distribution of zero’s (<code>nz</code>) from the model compared to the observed number of zeros (<code>oz</code>). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.</p>
 <div class="figure"><span style="display:block;" id="fig:PPZIP"></span>
 <img src="_bookdown_files/fig/PPZIP-1.png" alt="Posterior predictive distribution of zeros from model `m5d.2` with the observed number in red." width="672" />
 <p class="caption">
-Figure 7.6: Posterior predictive distribution of zeros from model <code>m5d.2</code> with the observed number in red.
+Figure 7.7: Posterior predictive distribution of zeros from model <code>m5d.2</code> with the observed number in red.
 </p>
 </div>
 </div>
 </div>
-<div id="Hurdle" class="section level2 hasAnchor" number="7.4">
-<h2><span class="header-section-number">7.4</span> Hurdle Models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="Hurdle" class="section level2 hasAnchor" number="7.7">
+<h2><span class="header-section-number">7.7</span> Hurdle Models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Hurdle models are very similar to zero-inflated models but they can be used to model zero-deflation as well as zero-inflation and seem to have much better mixing properties in <span class="math inline">\(\texttt{MCMCglmm}\)</span>. As in ZIP models each datum
 in the hurdle model is associated with two latent variables. However, whereas in a ZIP model the first latent variable is the mean parameter of a Poisson distribution the equivalent latent variable in the hurdle model is the mean parameter of a zero-truncated Possion distribution (i.e. a Poisson distribution without the zeros observed). In addition the second latent variable in a ZIP model is the probability that an observed zero is due to zero-inflation rather than the Poisson process. In hurdle models the second latent variable is simply the probability (on the logit scale) that the response variable is zero or not. The likelihood is:</p>
 <p><span class="math display">\[\begin{array}{rl}
@@ -782,11 +782,11 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 <div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="multi.html#cb277-1" tabindex="-1"></a>m5d<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
 <span id="cb277-2"><a href="multi.html#cb277-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
 <span id="cb277-3"><a href="multi.html#cb277-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
-<p>Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure <a href="multi.html#fig:ZIP">7.5</a> with Figure <a href="multi.html#fig:HU">7.7</a>).</p>
+<p>Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure <a href="multi.html#fig:ZIP">7.6</a> with Figure <a href="multi.html#fig:HU">7.8</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:HU"></span>
 <img src="_bookdown_files/fig/HU-1.png" alt="Posterior distribution of fixed effects from model `m5d.3` in which trait 1 ($\texttt{art}$) is the zero-truncated Poisson process and trait 2 ($\texttt{hu.art}$) is the binary trait zero or non-zero." width="672" />
 <p class="caption">
-Figure 7.7: Posterior distribution of fixed effects from model <code>m5d.3</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the zero-truncated Poisson process and trait 2 (<span class="math inline">\(\texttt{hu.art}\)</span>) is the binary trait zero or non-zero.
+Figure 7.8: Posterior distribution of fixed effects from model <code>m5d.3</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the zero-truncated Poisson process and trait 2 (<span class="math inline">\(\texttt{hu.art}\)</span>) is the binary trait zero or non-zero.
 </p>
 </div>
 <p>The interpretation of the model is slightly different. Fitting just an intercept in the hurdle model implies that the proportion of zeros observed across different combinations of those fixed effects fitted for the Poisson process is constant. Our 95% credible intervals for this proportion is (See section <a href="#pred-sec"><strong>??</strong></a>):</p>
@@ -826,8 +826,8 @@ Figure 7.7: Posterior distribution of fixed effects from model <code>m5d.3</code
 ## [1] 0.95</code></pre>
 <p>This highlights one of the disadvantages of hurdle models. If explanatory variables have been fitted that affect the expectation of the Poisson process then this implies that the proportion of zero’s observed will also vary across these same explanatory variables, even in the absence of zero-inflation. It may then be necessary to fit an equally complicated model for both processes even though a single parameter would suffice in a ZIP model. However, in the absence of zero-inflation the intercept of the zero-inflation process in a ZIP model is <span class="math inline">\(-\infty\)</span> on the logit scale causing numerical and inferential problems. An alternative type of model are zero-altered models.</p>
 </div>
-<div id="ZAP" class="section level2 hasAnchor" number="7.5">
-<h2><span class="header-section-number">7.5</span> Zero-altered Models<a href="multi.html#ZAP" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="ZAP" class="section level2 hasAnchor" number="7.8">
+<h2><span class="header-section-number">7.8</span> Zero-altered Models<a href="multi.html#ZAP" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Zero-altered Poisson (ZAP) models are identical to Poisson-hurdle models except a complementary log-log link is used instead of the logit link when modelling the proportion of zeros. However for reasons that will become clearer below, the zero-altered process (<code>za</code>) is predicting non-zeros as opposed to the ZIP and hurdle-Poisson models where it is
 the number of zeros. The likelihood is:</p>
 <p><span class="math display">\[\begin{array}{rl}
@@ -890,8 +890,9 @@ Clutton-Brock, T. H., and J. M. Pemberton, eds. 2004. <em>Soay Sheep: Dynamics a
 </div>
 <div class="footnotes">
 <hr />
-<ol start="28">
-<li id="fn28"><p>Earlier versions of the CourseNotes had <code>nu=1.002</code>. In versions <span class="math inline">\(&lt;\)</span><!-- -->2.05 the marginal prior of a variance associated with an <code>idh</code> structure was inverse-Wishart with <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}-1\)</span> where <span class="math inline">\(\texttt{nu}^{\ast}\)</span> is the marginal degree of belief. In versions <span class="math inline">\(&gt;=\)</span><!-- -->2.05 I changed this so that <span class="math inline">\(\texttt{nu}^{\ast}=\texttt{nu}\)</span> as it was leading to confusion.<a href="multi.html#fnref28" class="footnote-back">↩︎</a></p></li>
+<ol start="29">
+<li id="fn29"><p>If the model has &gt;2 responses and you want to regress response <span class="math inline">\(\texttt{i}\)</span> effects on the remainder (i.e. a multiple regression), the coefficients can be obtained as <code>solve(V[-i,-i], V[i,-i])</code> where <span class="math inline">\(\texttt{V}\)</span> is the (co)variance matrix of effects.<a href="multi.html#fnref29" class="footnote-back">↩︎</a></p></li>
+<li id="fn30"><p>We could also have parameterised the model directly as a regression using <span class="math inline">\(\texttt{ante1(trait):id}\)</span> <span class="math inline">\(\texttt{ante1(trait):units}\)</span> - see Section <a href="cont-int.html#ante-sec">6.5</a>.<a href="multi.html#fnref30" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>
