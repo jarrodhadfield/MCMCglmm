@@ -305,7 +305,9 @@ Note that the reported mean (`fit`) differs from that returned by `interval="con
 
 The general concepts introduced for the Poisson GLM extend naturally to Binomial data, albeit with a different link function. However, it is worth spending a little time exploring a Binomial GLM as I think overdispersion, and how we deal with it, is easier to understand with binomial data. However, we'll also see how the 'residuals' defined earlier for capturing overdispersion complicate the analysis of Bernoulli data and result in MCMcglmm using a non-standard parameterisation.
 
-The Binomial distribution has two parameters - the number of trials $n$ and the probability of success, $p$. In a Binomial GLM the number of trials is assumed known leaving only $p$ to be estimated from the number of trials that are 'successes' or 'failures'. When `family="binomial"` is specified (or equivalently `family="multinomial2"`) MCMCglmm uses the standard link function for the Binomial - the logit link - and the logit probability of success is modelled as
+The Binomial distribution has two parameters - the number of trials $n$ and the probability of success, $p$. In a Binomial GLM the number of trials is assumed known leaving only $p$ to be estimated from the number of trials that are 'successes' or 'failures'. When `family="binomial"` is specified (or equivalently `family="multinomial2"`[^binomial]) MCMCglmm uses the standard link function for the Binomial - the logit link - and the logit probability of success is modelled as
+
+[^binomial]: In versions <4.0 family="binomial" was not an option. `family="categorical"` had to be used with Bernoulli data passed as a single column of success/failure and `family="multinomial2"` had to be used with Binomial data passed as two columns of successes and failures. In multi-response models (Chapter \@ref(multi)) "categorical" and "multinomial2" should be used respectively.
 
 $$log\left(\frac{p}{1-p}\right)  = l = \eta+e$$
 
@@ -328,7 +330,7 @@ $\texttt{y}$ gives the average score given by the 122 respondents.  The number o
 
 
 ``` {r mbinom}
-mbinom.1<-MCMCglmm(cbind(g5, l5)~type+ypub, data=Grumpy, family="multinomial2", pl=TRUE)
+mbinom.1<-MCMCglmm(cbind(g5, l5)~type+ypub, data=Grumpy, family="binomial", pl=TRUE)
 summary(mbinom.1)
 ```
 
@@ -409,14 +411,14 @@ If we fit a binomial model to these data in `MCMCglmm` it has exactly the same f
 
 ```{r mbern.1}
 prior.mbern.1=list(R=list(V=1, fix=1))
-mbern.1<-MCMCglmm(mean5~type+ypub, family="categorical", data=Grumpy, prior=prior.mbern.1)
+mbern.1<-MCMCglmm(mean5~type+ypub, family="binomial", data=Grumpy, prior=prior.mbern.1)
 ```
 
 However, it would have been equally valid to fixed the residual variance at three:
 
 ```{r mbern.2}
 prior.mbern.2=list(R=list(V=3, fix=1))
-mbern.2<-MCMCglmm(mean5~type+ypub, family="categorical", data=Grumpy, prior=prior.mbern.2)
+mbern.2<-MCMCglmm(mean5~type+ypub, family="binomial", data=Grumpy, prior=prior.mbern.2)
 ```
 
 and if we compare the MCMC traces for the coefficients we can see that we are sampling different posterior distributions (Figure \@ref(fig:bernoulli)).
@@ -447,7 +449,7 @@ In addition, the posterior distributions are centred on the ML estimates obtaine
 ```{r bernoulli-glm, echo=FALSE, include=TRUE, fig.width=7, fig.height=8, fig.cap="Posterior distributions for rescaled coefficients of a Bernoulli GLM (`mbern.2`). The rescaling gives approximate (but accurate) posterior distributions had the residual variance been set to zero, rather than three. The red lines indicate estimates from `glm` that implicitly assumes the residual variance is zero and the blue lines indicate the unscaled posterior means."}
 par(mfrow=c(3,1))
 m.binom.2.glm<-glm(mean5~type+ypub, family="binomial", data=Grumpy)
-mbern.2.plot<-MCMCglmm(mean5~type+ypub, family="categorical", data=Grumpy, prior=prior.mbern.2, nitt=13000*10)
+mbern.2.plot<-MCMCglmm(mean5~type+ypub, family="binomial", data=Grumpy, prior=prior.mbern.2, nitt=13000*10)
 rescale.3.plot<-mbern.2.plot$Sol*sqrt(1/(1+c2*3))
 
 hist(rescale.3.plot[,1], breaks=50, main=NULL, xlab="(Intercept)")
@@ -695,7 +697,7 @@ Personally, I don't like generic rescaling of inputs - I like my coefficients to
 
 To accommodate non-zero $v$, we can multiply the scales recommended by @Gelman.2008a by $\sqrt{1/(1+c^2\texttt{v})}$ such that the same prior interpretation can be given (approximately) to the marginal effects of the predictors (see earlier). A change of one logit is neither equivalent or proportional to a change of one probit. For example, going from -1 to -2 on the logit scale we move from a probability of `r round(plogis(-1),2)` to `r round(plogis(-2),2)` but on the probit scale a change from -1 to -2 results in a change of probability from `r round(pnorm(-1),2)` to `r round(pnorm(-2),2)`. Around zero (i.e a probability of 0.5 in both cases) the change in probability per logit is `r round(dlogis(0),3)` and the change in probability per probit is `r round(dnorm(0),3)`. Consequently, we can multiply the scales recommended by @Gelman.2008a by $g=$ `r round(dlogis(0),3)` / `r round(dnorm(0),3)`=`dlogis(0)/dnorm(0)`=$\sqrt{2\pi}/4$ to achieve approximate equivalence. Note this was done when determining the regression coefficients to produce Figure \@ref(fig:link) and the two prior densities diverge as the probability moves away from 0.5 (see Figure \@ref(fig:flat-prob-prior) also). When additional variance is present we can multiply the original scales by $\sqrt{g^2/\texttt{v}}$ when `family="threshold"` is used.
 
-The function `gelman.prior` takes the (fixed effect) model formula as its first argument and together with the data.frame the model is to be fitted to (passed in the argument `data`) generates the prior specification (\texttt{mu} and \texttt{V}) for the model parameters, had the inputs been scaled as in @Gelman.2008a. The argument `intercept.scale` specifies the scale of the normal (standard deviation) for the intercept and the argument `coef.scale` specifies the scale of the normal for the remaining parameters - both defined as if inputs were scaled[^3.7]. By default these scales are set to one.  
+The function `gelman.prior` takes the (fixed effect) model formula as its first argument and together with the data.frame the model is to be fitted to (passed in the argument `data`) generates the prior specification ($\texttt{mu}$ and $\texttt{V}$) for the model parameters, had the inputs been scaled as in @Gelman.2008a. The argument `intercept.scale` specifies the scale of the normal (standard deviation) for the intercept and the argument `coef.scale` specifies the scale of the normal for the remaining parameters - both defined as if inputs were scaled[^3.7]. By default these scales are set to one.  
 
 This is all quite confusing and here are the main points and a practical workflow. 
 

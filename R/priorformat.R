@@ -48,7 +48,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
          }
        }
        if(grepl("ante.*v$", vtype[1])){
-           if(!prior$alpha.V[1,1]==0){stop("parameter expanded priors not yet possible with antev structures -  nag j.hadfield@ed.ac.uk")}
+           if(!is.null(prior$alpha.V)){stop("parameter expanded priors not yet possible with antev structures -  nag j.hadfield@ed.ac.uk")}
            if(nrow(prior$V)!=1){stop("prior$V should be a scalar with antev structures")}
            prior$V<-diag(nfl)*as.numeric(prior$V)
        }

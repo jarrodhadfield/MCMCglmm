@@ -77,6 +77,8 @@ rprior<-function(n, prior, vtype="us", k=NULL){
    	}
    }
 
+   if(nrow(prior$V)==1 & vtype=="us"){vtype="idh"}
+
    if(!vtype%in%c("us", "idh", "ante")){
    	   stop("only 'us', 'idh' and 'ante'-types are allowed as arguments for vtype")
    }
@@ -141,8 +143,13 @@ rprior<-function(n, prior, vtype="us", k=NULL){
 
     if(vtype=="ante"){
 
-    	beta<-MASS::mvrnorm(n=n, mu=prior$beta.mu, Sigma=prior$beta.V)	
-
+      
+      beta<-MASS::mvrnorm(n=n, mu=prior$beta.mu, Sigma=prior$beta.V)	
+   
+      if(n==1){
+        beta<-matrix(beta, nrow=lag)
+      }
+      
       I<-diag(k)
 
       ante.v<-matrix(NA, n, k^2)
@@ -154,8 +161,7 @@ rprior<-function(n, prior, vtype="us", k=NULL){
          	V_epsilon<-matrix(v[i,], k, k)
          }
          if(clag){
-         	B<-Matrix::bandSparse(k, k=-(lag:1), diagonals=sapply(lag:1, function(x){rep(beta[i,x,drop=FALSE], k-x)}))
-         	
+         	B<-Matrix::bandSparse(k, k=-(lag:1), diagonals=sapply(lag:1, function(x){rep(beta[i,x], k-x)}))
          }else{
          	B<-Matrix::bandSparse(k, k=-(lag:1), diagonals=rev(split(beta[i,], rep(seq_along(k-1:lag), k-1:lag))))
          }

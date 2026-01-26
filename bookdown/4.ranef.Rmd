@@ -37,7 +37,7 @@ In Section \@ref(binom-sec), the binomial model we fitted only contained fixed e
 ```{r mbinom2}
 prior.mbinom.2=list(R=list(V=1, nu=0.002), G=list(G1=list(V=1, nu=0.002)))
 
-mbinom.2<-MCMCglmm(cbind(g5, l5)~type+ypub, random=~person, data=Grumpy, family="multinomial2", pr=TRUE, prior=prior.mbinom.2)
+mbinom.2<-MCMCglmm(cbind(g5, l5)~type+ypub, random=~person, data=Grumpy, family="binomial", pr=TRUE, prior=prior.mbinom.2)
 summary(mbinom.2)
 ```   
 
@@ -88,7 +88,7 @@ and fit the model
 ```{r mbinom3}
 prior.mbinom.3=list(R=list(V=1, fix=1), G=list(G1=list(V=1, nu=0.002), G2=list(V=1, nu=0.002)))
 
-mbinom.3<-MCMCglmm(g5~type+ypub, random=~person+photo, data=FullGrumpy, family="categorical", prior=prior.mbinom.3)
+mbinom.3<-MCMCglmm(g5~type+ypub, random=~person+photo, data=FullGrumpy, family="binomial", prior=prior.mbinom.3)
 
 summary(mbinom.3)
 ```   

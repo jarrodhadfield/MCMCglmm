@@ -1,16 +1,16 @@
 #include "MCMCglmm.h"
 
-cs *cs_rAnte(const cs *location, int start, int dimG, int nlGR, int nk, const cs *pmuAnte, const cs *pvAnte, const cs *Ainv, int Aterm, double *ivar, int cvar, const cs *pG, double pnG){
+cs *cs_rAnte(const cs *location, int start, int dimG, int nlGR, int nlag, const cs *pmuAnte, const cs *pvAnte, const cs *Ainv, int Aterm, double *ivar, int cvar, const cs *pG, double pnG){
 
     int i, j, k, cnt, cnt2, triangle, nbeta, cbeta;
     cs *X, *tX, *cholGinv, *tcholGinv, *Ginv, *Rinv, *beta_star, *z_star, *tXRinv, *tXRinvX, *MME, *beta, *beta_tmp, *pred, *G, *location_tmp, *tlAl, *tlA, *tl; 
     csn *pvAnteL, *L, *RinvL;
     css *pvAnteS, *S, *RinvS;
 
-    triangle = nk*(nk+1)/2;
+    triangle = nlag*(nlag+1)/2;
     nbeta = pmuAnte->m;
 
-    if(nbeta==nk){
+    if(nbeta==nlag){
       cbeta=1;
     }else{
       cbeta=0;
@@ -20,9 +20,9 @@ cs *cs_rAnte(const cs *location, int start, int dimG, int nlGR, int nk, const cs
     pvAnteL = cs_chol(pvAnte, pvAnteS); 
 
     if(cbeta==1){
-       X = cs_spalloc (nlGR*dimG, nk, nlGR*(dimG*nk-triangle), 1, 0);
+       X = cs_spalloc (nlGR*dimG, nlag, nlGR*(dimG*nlag-triangle), 1, 0);
        cnt = 0;
-       for(k=1; k<=nk; k++){ 
+       for(k=1; k<=nlag; k++){ 
          X->p[k-1] = cnt; 
          for(j=k; j<dimG; j++){ 
            for(i=0; i<nlGR; i++){
@@ -32,12 +32,12 @@ cs *cs_rAnte(const cs *location, int start, int dimG, int nlGR, int nk, const cs
            }
          }
        }
-       X->p[nbeta] = nlGR*(dimG*nk-triangle); 
+       X->p[nbeta] = nlGR*(dimG*nlag-triangle); 
     }else{
        X = cs_spalloc (nlGR*dimG, nbeta, nlGR*nbeta, 1, 0) ;
        cnt = 0;
        cnt2 = 0;
-       for(k=1; k<=nk; k++){ 
+       for(k=1; k<=nlag; k++){ 
          for(j=k; j<dimG; j++){ 
            X->p[cnt2] = cnt; 
            cnt2++;
@@ -234,14 +234,14 @@ cs *cs_rAnte(const cs *location, int start, int dimG, int nlGR, int nk, const cs
     }
 
     if(cbeta==1){
-      for(j=1; j <= nk; j++){
+      for(j=1; j <= nlag; j++){
         for(i=0; i<(dimG-j); i++){ 
           cholGinv->x[i*dimG+i+j] = -beta->x[j-1]/sqrt(ivar[i+j]);
         }
       }
     }else{
       cnt=0;
-      for(j=1; j <= nk; j++){
+      for(j=1; j <= nlag; j++){
         for(i=0; i<(dimG-j); i++){ 
           cholGinv->x[i*dimG+i+j] = -beta->x[cnt]/sqrt(ivar[i+j]);
           cnt++;

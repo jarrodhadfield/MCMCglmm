@@ -11,6 +11,21 @@
   if(!is.null(random)){
     if(!is(random, "formula")){stop("random should be a formula")}
   }
+
+  response.names<-names(get_all_vars(as.formula(paste(as.character(fixed)[2], "~1")), data))       # response variable names
+
+  if("binomial"%in%family){
+     if(length(family)>1){
+        stop("For multi-response models, instead of 'binomial' in the family argument, please use 'categorical' (if passed as single Bernoulli columns) or 'multinomial2' (if passed as two columns of success/failure) instead.") 
+     }else{ 
+       if(length(response.names)==1){
+          family="categorical"
+       }
+       if(length(response.names)==2){
+          family="multinomial2"
+       }
+     }    
+  }
   
   reserved.names<-c("units", "MCMC_y", "MCMC_y.additional","MCMC_y.additional2", "MCMC_mh.weights", "MCMC_liab","MCMC_meta", "MCMC_mev", "MCMC_family.names", "MCMC_error.term", "MCMC_dummy")
   family.types<-c("gaussian", "poisson", "multinomial", "notyet_weibull", "exponential", "cengaussian", "cenpoisson", "notyet_cenweibull", "cenexponential",  "notyet_zigaussian", "zipoisson", "notyet_ziweibull", "notyet_ziexponential", "ordinal", "hupoisson", "ztpoisson", "geometric", "zapoisson", "zibinomial", "threshold", "zitobit", "nzbinom", "ncst", "msst", "hubinomial", "ztmb", "ztmultinomial")
@@ -102,9 +117,9 @@
   original.random<-random 
   original.rcov<-rcov
   original.family<-family
-
-  response.names<-names(get_all_vars(as.formula(paste(as.character(fixed)[2], "~1")), data))       # response variable names 
+ 
   data[,response.names]<-model.frame(as.formula(paste(as.character(fixed)[2], "~1")), data)[[1]]
+
 
   #########################################################################
   # for ginverse analyses form A and augment with missing nodes if needed #
