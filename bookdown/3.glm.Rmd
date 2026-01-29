@@ -88,7 +88,7 @@ $$E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}})$$
 
 where $\textrm{exp}$ is the inverse of the log link function- exponentiating. The second difference is that many distributions are single parameter distributions for which a variance does not need to be estimated because it can be inferred from the mean. For example, we could assume that the number of accidents are Poisson distributed, in which case we also make the assumption that the variance is equal to the expected value. Technically, GLM's only apply to a restricted set of distributions (those in the exponential family) but $\texttt{MCMCglmm}$ can accommodate a range of GLM-like models for other distributions (see Table \@ref(tab:dist)). 
 
-## Poisson GLM
+## Poisson GLM {#poisglm-sec}
 
 For now we will concentrate on a Poisson GLM with log link (the default link function for the Poisson distribution):
 
@@ -121,7 +121,7 @@ and holds true for any given day in either year. The proportional change is iden
 
 So in terms of the reported coefficients, the linear model and the Poisson log-linear model are roughly consistent with each other. However, in terms of accurately quantifying the uncertainty in those coefficients the Poisson model has a serious problem - it is very over confident.
 
-## Overdispersion
+## Overdispersion {#od-sec}
 
 Most count data do not conform to a Poisson distribution because the variance in the response exceeds the expectation.  In the summary to `m2a.2` the ratio of the residual deviance to the residual degrees of freedom is `r formatC(m2a.2$deviance/m2a.2$df.residual, format="f",3)` which means, roughly speaking, there is `r formatC(m2a.2$deviance/m2a.2$df.residual, format="f",1)` times more variation in our response (after conditioning on the model) than what we expect. This is known as overdispersion and it is easy to see how it arises, and why it is so common. 
 
@@ -336,7 +336,7 @@ summary(mbinom.1)
 
 The model coefficients are most easily interpreted after exponentiating as they then give the proportional change in the odds ratio.  The odds of having a score greater than five is `r paste0("exp(", round(mean(mbinom.1$Sol[,"typehappy"]),3), ")=", round(exp(mean(mbinom.1$Sol[,"typehappy"])),3))` times lower when happy, as expected. The odds increases by a factor `r paste0("exp(", round(mean(mbinom.1$Sol[,"ypub"]),3), ")=", round(exp(mean(mbinom.1$Sol[,"ypub"])),3))` for each year in academia. When the coefficient is small in magnitude like this, you can get a rough estimate by looking directly at the coefficient: `r round(mean(mbinom.1$Sol[,"ypub"]),3)` roughly translates into a `r round(mean(mbinom.1$Sol[,"ypub"])*100,1)`% increase and `r -round(mean(mbinom.1$Sol[,"ypub"]),3)` would translate into a `r round(mean(mbinom.1$Sol[,"ypub"])*100,1)`% decrease[^3.3]. The $\texttt{units}$ (residual) variance is also large with credible intervals that are far from zero. 
 
-### Overdispersion
+### Overdispersion {#od-binom}
 
 As with overdispersion in the Poisson model, this excess variation can be attributed to predictors that are not included in the model but cause the probability of success to vary over observations (photos in this case). For example, the 3rd and 25th observation have the same values for every predictor
 
