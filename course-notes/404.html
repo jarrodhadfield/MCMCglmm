@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-26" />
+<meta name="date" content="2026-01-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -222,8 +222,8 @@ div.csl-indent {
 <li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
 <li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
-<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
-<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisglm-sec"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#od-sec"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
 <ul>
 <li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.4.1</b> Multiplicative Overdispersion</a></li>
 <li class="chapter" data-level="3.4.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.4.2</b> Additive Overdispersion</a></li>
@@ -234,7 +234,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#binom-sec"><i class="fa fa-check"></i><b>3.6</b> Binomial and Bernoulli GLM</a>
 <ul>
-<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#overdispersion-1"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
+<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#od-binom"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
 <li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#binom-pred-sec"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
 <li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-sec"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
 <li class="chapter" data-level="3.6.4" data-path="glm.html"><a href="glm.html#probit-link"><i class="fa fa-check"></i><b>3.6.4</b> Probit link</a></li>
@@ -252,16 +252,17 @@ div.csl-indent {
 <li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#ranpred-sec"><i class="fa fa-check"></i><b>4.2</b> Prediction with Random Effects</a></li>
 <li class="chapter" data-level="4.3" data-path="ranef.html"><a href="ranef.html#overdispersed-binomial-as-a-bernoulli-glmm"><i class="fa fa-check"></i><b>4.3</b> Overdispersed Binomial as a Bernoulli GLMM</a></li>
 <li class="chapter" data-level="4.4" data-path="ranef.html"><a href="ranef.html#ICC"><i class="fa fa-check"></i><b>4.4</b> Intra-class Correlations</a></li>
-<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.5</b> Priors for Random Effect Variances</a>
+<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#sec-underdispersion"><i class="fa fa-check"></i><b>4.5</b> Underdispersion</a></li>
+<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Random Effect Variances</a>
 <ul>
-<li class="chapter" data-level="4.5.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.5.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
+<li class="chapter" data-level="4.6.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.6.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
 </ul></li>
-<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.6</b> Prior Generators</a></li>
-<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.7</b> Priors on Functions of Variances</a>
+<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.7</b> Prior Generators</a></li>
+<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.8</b> Priors on Functions of Variances</a>
 <ul>
-<li class="chapter" data-level="4.7.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.7.1</b> Intra-class Correlation</a></li>
+<li class="chapter" data-level="4.8.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.8.1</b> Intra-class Correlation</a></li>
 </ul></li>
-<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.8</b> Fixed or Random?</a></li>
+<li class="chapter" data-level="4.9" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.9</b> Fixed or Random?</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
 <ul>

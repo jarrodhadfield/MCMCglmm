@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-26" />
+<meta name="date" content="2026-01-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -222,8 +222,8 @@ div.csl-indent {
 <li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
 <li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
-<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
-<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisglm-sec"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#od-sec"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
 <ul>
 <li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.4.1</b> Multiplicative Overdispersion</a></li>
 <li class="chapter" data-level="3.4.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.4.2</b> Additive Overdispersion</a></li>
@@ -234,7 +234,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#binom-sec"><i class="fa fa-check"></i><b>3.6</b> Binomial and Bernoulli GLM</a>
 <ul>
-<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#overdispersion-1"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
+<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#od-binom"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
 <li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#binom-pred-sec"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
 <li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-sec"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
 <li class="chapter" data-level="3.6.4" data-path="glm.html"><a href="glm.html#probit-link"><i class="fa fa-check"></i><b>3.6.4</b> Probit link</a></li>
@@ -252,16 +252,17 @@ div.csl-indent {
 <li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#ranpred-sec"><i class="fa fa-check"></i><b>4.2</b> Prediction with Random Effects</a></li>
 <li class="chapter" data-level="4.3" data-path="ranef.html"><a href="ranef.html#overdispersed-binomial-as-a-bernoulli-glmm"><i class="fa fa-check"></i><b>4.3</b> Overdispersed Binomial as a Bernoulli GLMM</a></li>
 <li class="chapter" data-level="4.4" data-path="ranef.html"><a href="ranef.html#ICC"><i class="fa fa-check"></i><b>4.4</b> Intra-class Correlations</a></li>
-<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.5</b> Priors for Random Effect Variances</a>
+<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#sec-underdispersion"><i class="fa fa-check"></i><b>4.5</b> Underdispersion</a></li>
+<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Random Effect Variances</a>
 <ul>
-<li class="chapter" data-level="4.5.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.5.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
+<li class="chapter" data-level="4.6.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.6.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
 </ul></li>
-<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.6</b> Prior Generators</a></li>
-<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.7</b> Priors on Functions of Variances</a>
+<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.7</b> Prior Generators</a></li>
+<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.8</b> Priors on Functions of Variances</a>
 <ul>
-<li class="chapter" data-level="4.7.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.7.1</b> Intra-class Correlation</a></li>
+<li class="chapter" data-level="4.8.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.8.1</b> Intra-class Correlation</a></li>
 </ul></li>
-<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.8</b> Fixed or Random?</a></li>
+<li class="chapter" data-level="4.9" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.9</b> Fixed or Random?</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
 <ul>
@@ -984,7 +985,7 @@ Function
 </div>
 <div id="priors-for-corg-and-corgh-structures" class="section level2 hasAnchor" number="11.4">
 <h2><span class="header-section-number">11.4</span> Priors for <code>corg</code> and <code>corgh</code> structures<a href="technical-details.html#priors-for-corg-and-corgh-structures" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn31" class="footnote-ref" id="fnref31"><sup>31</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
+<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn33" class="footnote-ref" id="fnref33"><sup>33</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
 <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>; and <a href="#ref-Box.1973">Box and Tiao 1973</a>)</span>:</p>
 <p><span class="math display">\[\begin{array}{lr}
 Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, &amp; |r|&lt;1\\
@@ -1062,8 +1063,8 @@ Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <spa
 </div>
 <div class="footnotes">
 <hr />
-<ol start="31">
-<li id="fn31"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref31" class="footnote-back">↩︎</a></p></li>
+<ol start="33">
+<li id="fn33"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref33" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

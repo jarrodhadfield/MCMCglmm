@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-26" />
+<meta name="date" content="2026-01-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -222,8 +222,8 @@ div.csl-indent {
 <li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
 <li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
-<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
-<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisglm-sec"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#od-sec"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
 <ul>
 <li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.4.1</b> Multiplicative Overdispersion</a></li>
 <li class="chapter" data-level="3.4.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.4.2</b> Additive Overdispersion</a></li>
@@ -234,7 +234,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#binom-sec"><i class="fa fa-check"></i><b>3.6</b> Binomial and Bernoulli GLM</a>
 <ul>
-<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#overdispersion-1"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
+<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#od-binom"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
 <li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#binom-pred-sec"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
 <li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-sec"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
 <li class="chapter" data-level="3.6.4" data-path="glm.html"><a href="glm.html#probit-link"><i class="fa fa-check"></i><b>3.6.4</b> Probit link</a></li>
@@ -252,16 +252,17 @@ div.csl-indent {
 <li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#ranpred-sec"><i class="fa fa-check"></i><b>4.2</b> Prediction with Random Effects</a></li>
 <li class="chapter" data-level="4.3" data-path="ranef.html"><a href="ranef.html#overdispersed-binomial-as-a-bernoulli-glmm"><i class="fa fa-check"></i><b>4.3</b> Overdispersed Binomial as a Bernoulli GLMM</a></li>
 <li class="chapter" data-level="4.4" data-path="ranef.html"><a href="ranef.html#ICC"><i class="fa fa-check"></i><b>4.4</b> Intra-class Correlations</a></li>
-<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.5</b> Priors for Random Effect Variances</a>
+<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#sec-underdispersion"><i class="fa fa-check"></i><b>4.5</b> Underdispersion</a></li>
+<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Random Effect Variances</a>
 <ul>
-<li class="chapter" data-level="4.5.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.5.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
+<li class="chapter" data-level="4.6.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.6.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
 </ul></li>
-<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.6</b> Prior Generators</a></li>
-<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.7</b> Priors on Functions of Variances</a>
+<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.7</b> Prior Generators</a></li>
+<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.8</b> Priors on Functions of Variances</a>
 <ul>
-<li class="chapter" data-level="4.7.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.7.1</b> Intra-class Correlation</a></li>
+<li class="chapter" data-level="4.8.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.8.1</b> Intra-class Correlation</a></li>
 </ul></li>
-<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.8</b> Fixed or Random?</a></li>
+<li class="chapter" data-level="4.9" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.9</b> Fixed or Random?</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
 <ul>
@@ -666,7 +667,7 @@ Figure 2.12: Summary plot of the Markov Chain for the logged variance. The logge
 </div>
 <div id="Vprior-sec" class="section level2 hasAnchor" number="2.6">
 <h2><span class="header-section-number">2.6</span> Priors for Residual Variances<a href="bayesian.html#Vprior-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><span class="math inline">\(\texttt{MCMCglmm}\)</span> uses an inverse-Wishart prior for the residual variance and so here will cover the properties of the scalar inverse-Wishart distribution and prior. Section <a href="cat-int.html#VCVprior-sec">5.3</a> can be consulted for inverse-Wishart covariance matrices. For random effect (co)variances it is possible to use scaled non-central <span class="math inline">\(F\)</span>-distribution priors which is strongly recommended (see Section <a href="ranef.html#PXprior-sec">4.5</a>).</p>
+<p><span class="math inline">\(\texttt{MCMCglmm}\)</span> uses an inverse-Wishart prior for the residual variance and so here will cover the properties of the scalar inverse-Wishart distribution and prior. Section <a href="cat-int.html#VCVprior-sec">5.3</a> can be consulted for inverse-Wishart covariance matrices. For random effect (co)variances it is possible to use scaled non-central <span class="math inline">\(F\)</span>-distribution priors which is strongly recommended (see Section <a href="ranef.html#PXprior-sec">4.6</a>).</p>
 <p>For a single variance, the inverse-Wishart prior is parameterised through the parameters <span class="math inline">\(\texttt{V}\)</span> and <span class="math inline">\(\texttt{nu}\)</span> in MCMCglmm. The MCMCglmm parameterisation of the inverse-Wishart is not standard but I find it intuitive: the prior information is equivalent to observing <span class="math inline">\(\texttt{nu}\)</span> residuals with variance <span class="math inline">\(\texttt{V}\)</span>. Consequently, the distribution concentrates on <span class="math inline">\(\texttt{V}\)</span> as the degree of belief parameter, <span class="math inline">\(\texttt{nu}\)</span> increases. The distribution tends to be right skewed when <span class="math inline">\(\texttt{nu}\)</span> is not very large, with a mode of <span class="math inline">\(\texttt{V}\frac{\texttt{nu}}{\texttt{nu}+2}\)</span> but a mean of <span class="math inline">\(\texttt{V}\frac{\texttt{nu}}{\texttt{nu}-2}\)</span> (which is not defined for <span class="math inline">\(\texttt{nu}&lt;2\)</span>). Figure <a href="bayesian.html#fig:dinvgamma">2.13</a> plots the probability density functions holding <span class="math inline">\(\texttt{V}\)</span> equal to one but with <span class="math inline">\(\texttt{nu}\)</span> varying.</p>
 <div class="figure"><span style="display:block;" id="fig:dinvgamma"></span>
 <img src="_bookdown_files/fig/dinvgamma-1.png" alt="Probability density function for a univariate inverse-Wishart with the variance at the limit set to 1 ($\texttt{V}=1$) and varying degree of belief parameter ($\texttt{nu}$). With $\texttt{V}=1$ these distributions are equivalent to inverse gamma distributions with shape and scale parameters set to $\texttt{nu}$/2." width="672" />

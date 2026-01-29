@@ -132,14 +132,14 @@ glm
 linear-model-lm
 lm-sec
 generalised-linear-model-glm
-poisson-glm
-overdispersion
+poisglm-sec
+od-sec
 multiplicative-overdispersion
 addod-sec
 prediction-in-glm
 posterior-predictive-distribution
 binom-sec
-overdispersion-1
+od-binom
 binom-pred-sec
 bernoulli-sec
 probit-link
@@ -152,6 +152,7 @@ GLMM
 ranpred-sec
 overdispersed-binomial-as-a-bernoulli-glmm
 ICC
+sec-underdispersion
 PXprior-sec
 f-and-folded-t-priors
 Vprior-gen-sec

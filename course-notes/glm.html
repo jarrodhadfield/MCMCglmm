@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-26" />
+<meta name="date" content="2026-01-29" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -222,8 +222,8 @@ div.csl-indent {
 <li class="chapter" data-level="3.1.1" data-path="glm.html"><a href="glm.html#lm-sec"><i class="fa fa-check"></i><b>3.1.1</b> Linear Predictors</a></li>
 </ul></li>
 <li class="chapter" data-level="3.2" data-path="glm.html"><a href="glm.html#generalised-linear-model-glm"><i class="fa fa-check"></i><b>3.2</b> Generalised Linear Model (GLM)</a></li>
-<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisson-glm"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
-<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#overdispersion"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
+<li class="chapter" data-level="3.3" data-path="glm.html"><a href="glm.html#poisglm-sec"><i class="fa fa-check"></i><b>3.3</b> Poisson GLM</a></li>
+<li class="chapter" data-level="3.4" data-path="glm.html"><a href="glm.html#od-sec"><i class="fa fa-check"></i><b>3.4</b> Overdispersion</a>
 <ul>
 <li class="chapter" data-level="3.4.1" data-path="glm.html"><a href="glm.html#multiplicative-overdispersion"><i class="fa fa-check"></i><b>3.4.1</b> Multiplicative Overdispersion</a></li>
 <li class="chapter" data-level="3.4.2" data-path="glm.html"><a href="glm.html#addod-sec"><i class="fa fa-check"></i><b>3.4.2</b> Additive Overdispersion</a></li>
@@ -234,7 +234,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.6" data-path="glm.html"><a href="glm.html#binom-sec"><i class="fa fa-check"></i><b>3.6</b> Binomial and Bernoulli GLM</a>
 <ul>
-<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#overdispersion-1"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
+<li class="chapter" data-level="3.6.1" data-path="glm.html"><a href="glm.html#od-binom"><i class="fa fa-check"></i><b>3.6.1</b> Overdispersion</a></li>
 <li class="chapter" data-level="3.6.2" data-path="glm.html"><a href="glm.html#binom-pred-sec"><i class="fa fa-check"></i><b>3.6.2</b> Prediction</a></li>
 <li class="chapter" data-level="3.6.3" data-path="glm.html"><a href="glm.html#bernoulli-sec"><i class="fa fa-check"></i><b>3.6.3</b> Bernoulli GLM</a></li>
 <li class="chapter" data-level="3.6.4" data-path="glm.html"><a href="glm.html#probit-link"><i class="fa fa-check"></i><b>3.6.4</b> Probit link</a></li>
@@ -252,16 +252,17 @@ div.csl-indent {
 <li class="chapter" data-level="4.2" data-path="ranef.html"><a href="ranef.html#ranpred-sec"><i class="fa fa-check"></i><b>4.2</b> Prediction with Random Effects</a></li>
 <li class="chapter" data-level="4.3" data-path="ranef.html"><a href="ranef.html#overdispersed-binomial-as-a-bernoulli-glmm"><i class="fa fa-check"></i><b>4.3</b> Overdispersed Binomial as a Bernoulli GLMM</a></li>
 <li class="chapter" data-level="4.4" data-path="ranef.html"><a href="ranef.html#ICC"><i class="fa fa-check"></i><b>4.4</b> Intra-class Correlations</a></li>
-<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.5</b> Priors for Random Effect Variances</a>
+<li class="chapter" data-level="4.5" data-path="ranef.html"><a href="ranef.html#sec-underdispersion"><i class="fa fa-check"></i><b>4.5</b> Underdispersion</a></li>
+<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#PXprior-sec"><i class="fa fa-check"></i><b>4.6</b> Priors for Random Effect Variances</a>
 <ul>
-<li class="chapter" data-level="4.5.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.5.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
+<li class="chapter" data-level="4.6.1" data-path="ranef.html"><a href="ranef.html#f-and-folded-t-priors"><i class="fa fa-check"></i><b>4.6.1</b> <span class="math inline">\(F\)</span> and folded-<span class="math inline">\(t\)</span> priors</a></li>
 </ul></li>
-<li class="chapter" data-level="4.6" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.6</b> Prior Generators</a></li>
-<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.7</b> Priors on Functions of Variances</a>
+<li class="chapter" data-level="4.7" data-path="ranef.html"><a href="ranef.html#Vprior-gen-sec"><i class="fa fa-check"></i><b>4.7</b> Prior Generators</a></li>
+<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#priors-on-functions-of-variances"><i class="fa fa-check"></i><b>4.8</b> Priors on Functions of Variances</a>
 <ul>
-<li class="chapter" data-level="4.7.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.7.1</b> Intra-class Correlation</a></li>
+<li class="chapter" data-level="4.8.1" data-path="ranef.html"><a href="ranef.html#intra-class-correlation"><i class="fa fa-check"></i><b>4.8.1</b> Intra-class Correlation</a></li>
 </ul></li>
-<li class="chapter" data-level="4.8" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.8</b> Fixed or Random?</a></li>
+<li class="chapter" data-level="4.9" data-path="ranef.html"><a href="ranef.html#fix-or-rand"><i class="fa fa-check"></i><b>4.9</b> Fixed or Random?</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="cat-int.html"><a href="cat-int.html"><i class="fa fa-check"></i><b>5</b> Categorical Random Interactions</a>
 <ul>
@@ -452,8 +453,8 @@ Figure 3.1: Histogram of residuals from model <code>m2a.1</code> which assumed t
 <p><span class="math display">\[E[{\bf y}] = \textrm{exp}({\bf X}{\boldsymbol{\mathbf{\beta}}})\]</span></p>
 <p>where <span class="math inline">\(\textrm{exp}\)</span> is the inverse of the log link function- exponentiating. The second difference is that many distributions are single parameter distributions for which a variance does not need to be estimated because it can be inferred from the mean. For example, we could assume that the number of accidents are Poisson distributed, in which case we also make the assumption that the variance is equal to the expected value. Technically, GLM’s only apply to a restricted set of distributions (those in the exponential family) but <span class="math inline">\(\texttt{MCMCglmm}\)</span> can accommodate a range of GLM-like models for other distributions (see Table <a href="technical-details.html#tab:dist">11.1</a>).</p>
 </div>
-<div id="poisson-glm" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> Poisson GLM<a href="glm.html#poisson-glm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="poisglm-sec" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> Poisson GLM<a href="glm.html#poisglm-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>For now we will concentrate on a Poisson GLM with log link (the default link function for the Poisson distribution):</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="glm.html#cb45-1" tabindex="-1"></a>m2a<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> limit <span class="sc">+</span> year <span class="sc">+</span> day, <span class="at">family =</span> poisson, <span class="at">data =</span> Traffic)</span>
 <span id="cb45-2"><a href="glm.html#cb45-2" tabindex="-1"></a><span class="fu">summary</span>(m2a<span class="fl">.2</span>)</span></code></pre></div>
@@ -493,8 +494,8 @@ Figure 3.1: Histogram of residuals from model <code>m2a.1</code> which assumed t
 <p>and holds true for any given day in either year. The proportional change is identical because the model is <em>linear</em> on the log scale and <span class="math inline">\(exp(\beta+\dots)=exp(\beta)exp(\dots)\)</span>. There is not always a direct relationship with the corresponding coefficients from the linear model but we can reassure ourselves that the parameters have the same qualitative meaning. For example, for <span class="math inline">\(\texttt{day}\)</span> 0 in 1961 the linear model predicts a drop from 21.1 to 17.5 accidents when a speed limit is in place - around 0.83 as many accidents, comparable to that predicted in the log-linear model.</p>
 <p>So in terms of the reported coefficients, the linear model and the Poisson log-linear model are roughly consistent with each other. However, in terms of accurately quantifying the uncertainty in those coefficients the Poisson model has a serious problem - it is very over confident.</p>
 </div>
-<div id="overdispersion" class="section level2 hasAnchor" number="3.4">
-<h2><span class="header-section-number">3.4</span> Overdispersion<a href="glm.html#overdispersion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="od-sec" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> Overdispersion<a href="glm.html#od-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Most count data do not conform to a Poisson distribution because the variance in the response exceeds the expectation. In the summary to <code>m2a.2</code> the ratio of the residual deviance to the residual degrees of freedom is 3.162 which means, roughly speaking, there is 3.2 times more variation in our response (after conditioning on the model) than what we expect. This is known as overdispersion and it is easy to see how it arises, and why it is so common.</p>
 <p>If the predictor data had not been available to us then the only model we could have fitted was one with just an intercept:</p>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="glm.html#cb53-1" tabindex="-1"></a>m2a<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">glm</span>(y <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> Traffic, <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>)</span>
@@ -711,8 +712,8 @@ inverse of the logit transform:</p>
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>The model coefficients are most easily interpreted after exponentiating as they then give the proportional change in the odds ratio. The odds of having a score greater than five is exp(-1.282)=0.278 times lower when happy, as expected. The odds increases by a factor exp(0.021)=1.021 for each year in academia. When the coefficient is small in magnitude like this, you can get a rough estimate by looking directly at the coefficient: 0.021 roughly translates into a 2.1% increase and -0.021 would translate into a 2.1% decrease<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>. The <span class="math inline">\(\texttt{units}\)</span> (residual) variance is also large with credible intervals that are far from zero.</p>
-<div id="overdispersion-1" class="section level3 hasAnchor" number="3.6.1">
-<h3><span class="header-section-number">3.6.1</span> Overdispersion<a href="glm.html#overdispersion-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="od-binom" class="section level3 hasAnchor" number="3.6.1">
+<h3><span class="header-section-number">3.6.1</span> Overdispersion<a href="glm.html#od-binom" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>As with overdispersion in the Poisson model, this excess variation can be attributed to predictors that are not included in the model but cause the probability of success to vary over observations (photos in this case). For example, the 3rd and 25th observation have the same values for every predictor</p>
 <div class="sourceCode" id="cb80"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb80-1"><a href="glm.html#cb80-1" tabindex="-1"></a>Grumpy[<span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">25</span>), ]</span></code></pre></div>
 <pre><code>##           y l5  g5   type photo   person age ypub
