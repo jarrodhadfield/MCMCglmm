@@ -2,8 +2,6 @@
 
 So far we have only fitted models to a single response variable, and even then, each response variable came from a distribution that only required one location parameter to be estimated, such as the mean of the Poisson or the probability of the binomial. In this section we will first cover multi-response models and then move on to models of multi-parameter distributions.
 
-## Gaussian Multi-response Models
-
 Since they are much less widely used than single-response models, let's start by motivating why anyone would want to use them.  Imagine we knew how much money 200 people had spent on their holiday and on their car in each of four years, and we want to know whether a relationship exists between the two. A simple correlation would be one possibility, but then how do we control for the repeated measures? An often used solution to this problem is to choose one variable as the response (lets say the amount spent on a car) and have the other variable as a predictor (the amount spent on a holiday) for which a fixed effect is estimated. The choice is essentially arbitrary, highlighting the belief that any relationship between the two types of spending maybe in part due to unmeasured variables, rather than being completely causal.
 
 In practice does this matter? Let's imagine there was only one unmeasured variable: disposable income. There are repeatable differences between individuals in their disposable income, but also some variation within individuals across the four years. Likewise, people vary in what proportion of their disposable income they are willing to spend on a holiday versus a car, but this also changes from year to year. We can simulate some toy data to get a feel for the issues:
@@ -154,7 +152,7 @@ text(13000, md-0.095, paste("units regression =", formatC(sd(mspending.5$VCV[,6]
 However, it should be noted that the posterior standard deviation is smaller in the simpler model because the more strict assumptions have allowed us to pool information across the two levels to get a more precise answer. This is one of the downsides of multi-response models - if the regressions at each level are the same we can get a more precise estimate using a standard single-response model. The other major benefit of the single-response model is that we only have to worry whether the conditional distribution of the response variable is modelled well ($\texttt{y.car}$ in this case) . In a multi-response model, we have to consider whether the model for the joint distribution of all responses is doing a good job.
 
 
-## Non-Gaussian Multi-response Models
+## Multi-response Non-Gaussian Models
 
 Model specification for multi-response models does not depend on whether the response variables are Gaussian or not. However, there is an important difference between models involving non-Gaussian variables and those involving only Gaussian variables. For Gaussian responses, the linear predictor is defined as
 
@@ -181,6 +179,101 @@ In Section \@ref(od-sec) we saw that overdispersion arises if there are unmeasur
 
 [^pd]: For a $2\times 2$ covariance matrix, positive-definitness requires both variances to be positive and the correlation to lie between -1 and 1. For covariance matrices of larger dimension, the conditions for positive-definitness are more complicated. Perhaps the simplest definition is that all eigenvalues are positive. The function $\textttt{posterior.evals}$ returns the posterior distribution of the $k$ eigenvalues given the posterior samples of a $k$ dimensional covariance matrix (obtained for the appropriate $k^2$ columns of the $\texttt{VCV}$ element of the $\texttt{MCMCglmm}$ model object.) 
 
+## Multi-response Bernoulli Models
+
+As in single-response models, Bernoulli responses require some thought because the $\texttt{unit}$ variance is not identifiable in the likelihood. However, the $\texttt{unit}$ correlation between a Bernoulli response and other responses (including other Bernoulli responses) is identifiable. To explore multi-response Bernoulli models we will use longitudinal data collected on patients with primary biliary cirrhosis from the Mayo Clinic. The data are available from the $\texttt{survival}$ package 
+
+```{r }
+data(pbc)
+head(pbcseq[,c("id", "age", "sex", "ascites", "bili", "hepato")])
+```
+
+The data consist of `r nrow(pbcseq)` records from `r length(unique(pbcseq$id))` patients ($\texttt{id}$). The age and sex of the patient were recorded and whether they suffered from ascites ($\texttt{ascites}$) and hepatomegaly or enlarged liver ($\texttt{hepato}$). The serum concentration of bilirunbin was also recorded ($\texttt{bili}$). 
+
+We will consider two multi-response models. First, we will simultaneously model log($\texttt{bili}$) as Gaussian and $\texttt{ascites}$ as Bernoulli with threshold link (probit). As we will see, in multi-response models, modelling Bernoulli responses as $\texttt{family="threshold"}$ has some nice advantages. 
+
+
+```{r pbc}
+prior.pbc1<-list(R=list(V=diag(2),nu=1.002, fix=2), G=F(2,1000))
+
+m.pbc1<-MCMCglmm(cbind(log(bili), ascites)~trait-1+trait:(age+sex), random=~us(trait):id, rcov=~us(trait):units, data=pbcseq, family=c("gaussian", "threshold"), prior=prior.pbc1, longer=10)
+```
+
+It is also possible to specify response specific fixed-effect models using the function $\texttt{at.level}$.  For example, $\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 1):(sex)}$ would fit an age and sex effect for $\texttt{trait}$ 1 (log($\texttt{bili}$)) and a sex effect for $\texttt{trait}$ 2 ($\texttt{ascites}$)[^at.level]. The main difference, however, from the previous model of two Gaussian responses is that `fix=2` has been added to the prior specification. For a $2\times 2$ covariance matrix this simply fixes the second variance (the $\texttt{unit}$ variance for the Bernoulli trait, $\texttt{ascites}$) at whatever is specified in $\texttt{V}$ (1)[^3.4]. However, the $\texttt{unit}$ variance for the Gaussian trait, and the $\texttt{unit}$ covariance between the Gaussian and Bernoulii trait, are still estimated. 
+
+```{r }
+summary(m.pbc1)
+```
+
+We can see that the covariance between the traits is strongly positive both across and within patients. Patients with constitutively high concentrations of bilirunbin are prone to ascites, and periods when a patient has high concentrations of bilirunbin they are more prone to ascites. Looking at the correlations can give a better feel for the magnitude of the associations. 
+
+```{r pbc1-cor, echo=FALSE, include=TRUE, fig.cap="Posterior distributions for the correlations between log($\\texttt{bili}$) and the presence of ascites (on the latent scale).", fig.width=7, fig.height=5}
+
+col_unit <- rgb(33, 113, 181, maxColorValue = 255, alpha = 120)  # blue,  ~47% opaque
+col_id <- rgb(251, 106,  74, maxColorValue = 255, alpha = 120)  # red/orange
+
+h1<-hist(c(posterior.cor(m.pbc1$VCV[,1:4])[,2],posterior.cor(m.pbc1$VCV[,1:4+4])[,2]), plot=FALSE, breaks=50)
+
+hist(posterior.cor(m.pbc1$VCV[,1:4+4])[,2],
+     breaks = h1$breaks,
+     col    = col_unit,
+     freq   =FALSE,
+     xlab   = "Correlation",
+     main   = "")
+
+
+hist(posterior.cor(m.pbc1$VCV[,1:4])[,2],
+     breaks = h1$breaks,
+     col    = col_id,
+     freq   =FALSE,
+     xlab   = "Correlation",
+     add    = TRUE)
+
+     
+legend("topright",
+       legend = c("unit-level", "id-level"),
+       fill   = c(col_unit, col_id),
+       border = NA,
+       bty    = "n")
+```
+
+biserial 
+
+
+
+It is also possible to specify response specific fixed-effect models using the function $\texttt{at.level}$.  For example, $\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 1):(sex)}$ would fit an age and sex effect for $\texttt{trait}$ 1 (log($\texttt{bili}$)) and a sex effect for $\texttt{trait}$ 2 ($\texttt{ascites}$)[^at.level].
+
+
+
+[^at.level]: $\texttt{at.level}$ takes the name of categorical variable together with a vector of specified levels. It creates an $n\times k$ incidence matrix where $n$ is the length of the categorical variable and $k$ the number of specified levels. The matrix element $ij$ has a one if the categorical variable for observation $i$is of level $j$, and zero otherwise. When $\texttt{at.level}$ is used in a model formula, and interacted with other terms, it restricts those terms to only having effects when the observations are associated with the $k$ specified levels.  For example, imagine a categorical variable $\texttt{fac}$ with three levels $\texttt{a}$, $\texttt{b}$, and $\texttt{c}$ and a continuous variable $\texttt{x}$. $\texttt{at.level(fac, c("a", "c")):x}$ would fit two effects - an effect of $x$ when $\texttt{fac}=\texttt{a}$ and an effect of $x$ when $\texttt{fac}=\texttt{c}$. $\texttt{at.set}$ is similar although it creates an $n\times 1$ incidence matrix where element $i$ is one if the categorical variable for observation $i$ is *any* of the specified levels. The term $\texttt{at.set(fac, c("a", "c")):x}$ would then fit *one* effect - the effect of $x$ when $\texttt{fac}$ is equal to $\texttt{a}$ *or* $\texttt{c}$.
+
+
+```{r tetrachoric, echo=FALSE, include=TRUE, fig.cap="Posterior distributions for the correlations between log($\\texttt{bili}$) and the presence of ascites (on the latent scale).", fig.width=7, fig.height=5}
+
+mu    <- c(2, 3)                                
+V     <- matrix(c(4, 1.5,1.5, 2), 2)                   
+
+ell <- ellipse(V, centre = mu, level = 0.95, npoints = 361)
+plot(ell, type = "n", asp = 1, xlab = "x", ylab = "y")
+
+polygon(ell, border = 1)                       
+points(mu[1], mu[2], pch = 19)           
+abline(v = mu[1], h = mu[2], lty = 2) 
+                  
+idx <- which(ell[, 1] >= mu[1] & ell[, 2] >= mu[2])    
+x<-ell[idx,1]
+y<-ell[idx,2]
+
+pos<-which.min(x)
+
+x<-append(x, mu[1], pos)
+y<-append(y, mu[2], pos)
+
+polygon(x,y,             
+        col    = rgb(0.2, 0.6, 0.8, 0.40),   
+        border = NA)
+
+```
 ## Covariances between random and residual terms ($\texttt{covu}$)
 
 Occasionally, we need to link a set of random effects with a set of residuals. This most commonly occurs in multi-response models when we have repeated measures for one response but only single measures for another response. We can link the set of random effects appearing in the final random term of the `random` specification with the residuals appearing in the first residual term of the `rcov` specification.  The linking is specified by adding a `covu=TRUE` to the prior specification for the first residual term. For example, imagine the random effect model specification:

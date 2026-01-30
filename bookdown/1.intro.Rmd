@@ -33,6 +33,8 @@ library(VisCov)
 library(lmeSplines)
 library(magick)
 library(pdftools)
+library(survival)
+library(ellipse)
 
 knitr::knit_hooks$set(webgl = hook_webgl)
 

@@ -51,6 +51,8 @@ jobs:
             lmeSplines
             magick
             pdftools
+            survival
+            ellipse
             local::.
           needs: website
 
