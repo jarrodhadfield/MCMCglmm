@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-01-29" />
+<meta name="date" content="2026-01-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -303,8 +303,8 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="7" data-path="multi.html"><a href="multi.html"><i class="fa fa-check"></i><b>7</b> Multi-response Models</a>
 <ul>
-<li class="chapter" data-level="7.1" data-path="multi.html"><a href="multi.html#gaussian-multi-response-models"><i class="fa fa-check"></i><b>7.1</b> Gaussian Multi-response Models</a></li>
-<li class="chapter" data-level="7.2" data-path="multi.html"><a href="multi.html#non-gaussian-multi-response-models"><i class="fa fa-check"></i><b>7.2</b> Non-Gaussian Multi-response Models</a></li>
+<li class="chapter" data-level="7.1" data-path="multi.html"><a href="multi.html#multi-response-non-gaussian-models"><i class="fa fa-check"></i><b>7.1</b> Multi-response Non-Gaussian Models</a></li>
+<li class="chapter" data-level="7.2" data-path="multi.html"><a href="multi.html#multi-response-bernoulli-models"><i class="fa fa-check"></i><b>7.2</b> Multi-response Bernoulli Models</a></li>
 <li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#covariances-between-random-and-residual-terms-textttcovu"><i class="fa fa-check"></i><b>7.3</b> Covariances between random and residual terms (<span class="math inline">\(\texttt{covu}\)</span>)</a></li>
 <li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#texttttheta_scale-scaled-linear-predictor-1"><i class="fa fa-check"></i><b>7.4</b> <span class="math inline">\(\texttt{theta_scale}\)</span>: scaled linear predictor</a></li>
 <li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.5</b> Multinomial Models</a></li>
@@ -985,7 +985,7 @@ Function
 </div>
 <div id="priors-for-corg-and-corgh-structures" class="section level2 hasAnchor" number="11.4">
 <h2><span class="header-section-number">11.4</span> Priors for <code>corg</code> and <code>corgh</code> structures<a href="technical-details.html#priors-for-corg-and-corgh-structures" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn33" class="footnote-ref" id="fnref33"><sup>33</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
+<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn36" class="footnote-ref" id="fnref36"><sup>36</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
 <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>; and <a href="#ref-Box.1973">Box and Tiao 1973</a>)</span>:</p>
 <p><span class="math display">\[\begin{array}{lr}
 Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, &amp; |r|&lt;1\\
@@ -1063,8 +1063,8 @@ Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <spa
 </div>
 <div class="footnotes">
 <hr />
-<ol start="33">
-<li id="fn33"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref33" class="footnote-back">↩︎</a></p></li>
+<ol start="36">
+<li id="fn36"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref36" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

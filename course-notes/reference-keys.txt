@@ -86,6 +86,8 @@ fig:spline
 fig:spending
 fig:asUV
 fig:MVvUV2
+fig:pbc1-cor
+fig:tetrachoric
 fig:MN1
 fig:MN2
 fig:ZIP
@@ -185,8 +187,8 @@ user-defined-sec
 splines
 penalised-signal-regression
 multi
-gaussian-multi-response-models
-non-gaussian-multi-response-models
+multi-response-non-gaussian-models
+multi-response-bernoulli-models
 covariances-between-random-and-residual-terms-textttcovu
 texttttheta_scale-scaled-linear-predictor-1
 multinomial-models
