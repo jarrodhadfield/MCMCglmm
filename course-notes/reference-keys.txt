@@ -87,7 +87,8 @@ fig:spending
 fig:asUV
 fig:MVvUV2
 fig:pbc1-cor
-fig:tetrachoric
+fig:pbc1-reg
+fig:pbc1-reg2
 fig:MN1
 fig:MN2
 fig:ZIP
