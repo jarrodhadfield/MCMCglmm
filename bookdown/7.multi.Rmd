@@ -125,7 +125,7 @@ The regression coefficients differ substantially at the within individual (blue)
 individual (red) levels, and neither is entirely consistent with the regression coefficient from the single response models (black). The process by which we generated the data gives rise to this phenomenon - large variation between individuals in their disposable income means that people who are able to spend a lot on their holiday can also afford to spend a lot on their holidays (hence positive covariation between $\texttt{id}$ effects). However, a person that spent a large proportion of their disposable income in a particular year on a holiday, must have less to spend that year on a car (hence negative residual (within year) covariation).
 
 
-When fitting the simpler single-response models we make the assumption that the effect of spending money on a holiday directly effects how much you spend on a car. If this relationship was purely causal then the regression coefficients at the level of $\texttt{id}$ and $\texttt{unit}$ would have the same expectation, and the simpler model would be justified. For example, we could simulate data where the expected car expenditure depends directly on holiday expenditure (using a regression coefficient of -0.3) with some variation around this due to between and within-individual effects: 
+When fitting the simpler single-response models we make the assumption that the effect of spending money on a holiday directly effects how much you spend on a car. If this relationship was purely causal then the regression coefficients at the level of $\texttt{id}$ and $\texttt{units}$ would have the same expectation, and the simpler model would be justified. For example, we could simulate data where the expected car expenditure depends directly on holiday expenditure (using a regression coefficient of -0.3) with some variation around this due to between and within-individual effects: 
 
 ```{r echo=TRUE, eval=TRUE}
 Spending$y.car2<-Spending$y.hol*-0.3+rnorm(200,0,1)[Spending$id]+rnorm(800,0,sqrt(2))
@@ -158,7 +158,7 @@ Model specification for multi-response models does not depend on whether the res
 
 $$\boldsymbol{\eta} = E[{\bf y}|{\bf X}\boldsymbol{\beta}+{\bf Z}{\bf u}]$$  
 
-and any observation-level deviations from this expectation appear as $\texttt{unit}$ effects:
+and any observation-level deviations from this expectation appear as $\texttt{units}$ effects:
 
 $${\bf e} = {\bf y}-\boldsymbol{\eta}$$  
 
@@ -166,22 +166,22 @@ For non-Gaussian data the linear predictor is defined
 
 $$\boldsymbol{\eta} = E[{\bf l}|{\bf X}\boldsymbol{\beta}+{\bf Z}{\bf u}+{\bf e}]$$ 
 
-where ${\bf l}$ is a vector of latent variables (Section \@ref(addod-sec)). Here the $\texttt{unit}$ effects appear inside the linear predictor and model any overdispersion with respect to the named distribution. The 'residual' due to the named distribution is then
+where ${\bf l}$ is a vector of latent variables (Section \@ref(addod-sec)). Here the $\texttt{units}$ effects appear inside the linear predictor and model any overdispersion with respect to the named distribution. The 'residual' due to the named distribution is then
 
 $${\bf y} -\textrm{link}^{-1}(\boldsymbol{\eta})$$
 
 Consequently, with non-Gaussian data the covariances are set up in terms of the underlying parameters of the distribution (on the link scale) not in terms of the response directly. This is not always appropriate. Let's take the example of the Sweedish road accident data analysed in Chapter \@ref(glm). We saw that the number of accidents per day can be modelled using an overdispersed Poisson. Let's say we also had data on how much money car insurance companies paid out each day. A sensible way of modelling insurance pay-outs would to treat it as Gaussian and include the number of accidents as a covariate. However, if we analysed the accident and insurance pay-out data in a multi-response model, we would be measuring the covariance between insurance pay-outs and the *expected* number of accidents per day ($l$). Insurance companies don't pay settlements to hypothetical accidents but actual accidents ($\texttt{y}$) and so the multi-response model is questionable. In contrast, let's say we also had data on how icy the road was on each day. Here, I would be quite happy to say that iciness determines the *expected* number of accidents per day ($l$) but the actual number of accidents ($\texttt{y}$) will vary around this expectation. However, even here care still needs to be taken.
 
-In Section \@ref(od-sec) we saw that overdispersion arises if there are unmeasured variables that affect the response of interest. If iciness ($\texttt{ice}$) was an important predictor of the number of accidents, then including it as a covariate in a single-response model of the number of accidents would bring the overdsipsersion, and hence $\sigma^2_\texttt{unit}$, down.  In a multi-response model we can obtain the shift in the $\texttt{unit}$ variance had we done this. The $\texttt{units}$ variance for road accidents ($\sigma^2_\texttt{traity.unit}$) would be equivalent to the units variance in a single-response model *without* iciness as a covariate. However, $\sigma^2_\texttt{traity.unit}-\sigma^2_\texttt{traity:traitice.unit}/\sigma^2_\texttt{traitice.unit}$ is equivalent to the units variance in the single-response model had iciness been fitted[^schur]. Let's call this $\sigma^2_\texttt{traity|ice.unit}$ since it is the $\texttt{unit}$ variance in $\texttt{y}$ after conditioning on $\texttt{ice}$. If, in the single-response model, the number of accidents had become underdispersed when adding $\texttt{ice}$, the best estimate of $\sigma^2_\texttt{traity|ice.unit}$ is negative (Section \@ref(sec-underdispersion)). However, because covariance matrices are constrained to be positive-definite, $\sigma^2_\texttt{traity|ice.unit}$ is constrained to be positive and we would see that the estimate of $\sigma^2_\texttt{traity|ice.unit}$ is at the boundary (zero) and the residual correlation between the two responses ($\sigma_\texttt{traity:traitice.unit}/\sigma_\texttt{traity.unit}\sigma_\texttt{traitice.unit}$) is at 1 or -1[^pd]. In practice this rarely happens, but when it does I would argue that it arises because the number of accidents, $\texttt{y}$, is incompatible with a Poisson distribution and alternative distribution should be sought (Section \@ref(sec-underdispersion)). 
+In Section \@ref(od-sec) we saw that overdispersion arises if there are unmeasured variables that affect the response of interest. If iciness ($\texttt{ice}$) was an important predictor of the number of accidents, then including it as a covariate in a single-response model of the number of accidents would bring the overdsipsersion, and hence $\sigma^2_\texttt{units}$, down.  In a multi-response model we can obtain the shift in the $\texttt{units}$ variance had we done this. The $\texttt{units}$ variance for road accidents ($\sigma^2_\texttt{traity.unit}$) would be equivalent to the units variance in a single-response model *without* iciness as a covariate. However, $\sigma^2_\texttt{traity.unit}-\sigma^2_\texttt{traity:traitice.unit}/\sigma^2_\texttt{traitice.unit}$ is equivalent to the units variance in the single-response model had iciness been fitted[^schur]. Let's call this $\sigma^2_\texttt{traity|ice.unit}$ since it is the $\texttt{units}$ variance in $\texttt{y}$ after conditioning on $\texttt{ice}$. If, in the single-response model, the number of accidents had become underdispersed when adding $\texttt{ice}$, the best estimate of $\sigma^2_\texttt{traity|ice.unit}$ is negative (Section \@ref(sec-underdispersion)). However, because covariance matrices are constrained to be positive-definite, $\sigma^2_\texttt{traity|ice.unit}$ is constrained to be positive and we would see that the estimate of $\sigma^2_\texttt{traity|ice.unit}$ is at the boundary (zero) and the residual correlation between the two responses ($\sigma_\texttt{traity:traitice.unit}/\sigma_\texttt{traity.unit}\sigma_\texttt{traitice.unit}$) is at 1 or -1[^pd]. In practice this rarely happens, but when it does I would argue that it arises because the number of accidents, $\texttt{y}$, is incompatible with a Poisson distribution and alternative distribution should be sought (Section \@ref(sec-underdispersion)). 
 
 
-[^schur]: If we had an additional covariate, let's say $\texttt{rain}$, we can also obtain the $\texttt{unit}$ variance had we fitted both  $\texttt{rain}$ and $\texttt{ice}$. Define ${\bf c}$ as the $2\times 1$ vector of residual covariances between road accidents and the weather variables and ${\bf V}$ as the  $2\times 2$ residual covariance matrix for the weather variables. Then $\sigma^2_\texttt{traity|weather.unit} = \sigma^2_\texttt{traity.unit}-{\bf c}^{\top}{\bf V}^{-1}{\bf c}$. 
+[^schur]: If we had an additional covariate, let's say $\texttt{rain}$, we can also obtain the $\texttt{units}$ variance had we fitted both  $\texttt{rain}$ and $\texttt{ice}$. Define ${\bf c}$ as the $2\times 1$ vector of residual covariances between road accidents and the weather variables and ${\bf V}$ as the  $2\times 2$ residual covariance matrix for the weather variables. Then $\sigma^2_\texttt{traity|weather.unit} = \sigma^2_\texttt{traity.unit}-{\bf c}^{\top}{\bf V}^{-1}{\bf c}$. 
 
 [^pd]: For a $2\times 2$ covariance matrix, positive-definitness requires both variances to be positive and the correlation to lie between -1 and 1. For covariance matrices of larger dimension, the conditions for positive-definitness are more complicated. Perhaps the simplest definition is that all eigenvalues are positive. The function $\textttt{posterior.evals}$ returns the posterior distribution of the $k$ eigenvalues given the posterior samples of a $k$ dimensional covariance matrix (obtained for the appropriate $k^2$ columns of the $\texttt{VCV}$ element of the $\texttt{MCMCglmm}$ model object.) 
 
 ## Multi-response Bernoulli Models
 
-As in single-response models, Bernoulli responses require some thought because the $\texttt{unit}$ variance is not identifiable in the likelihood. However, the $\texttt{unit}$ correlation between a Bernoulli response and other responses (including other Bernoulli responses) is identifiable. To explore multi-response Bernoulli models we will use longitudinal data collected on patients with primary biliary cirrhosis from the Mayo Clinic. The data are available from the $\texttt{survival}$ package 
+As in single-response models, Bernoulli responses require some thought because the $\texttt{units}$ variance is not identifiable in the likelihood. However, the $\texttt{units}$ correlation between a Bernoulli response and other responses (including other Bernoulli responses) is identifiable. To explore multi-response Bernoulli models we will use longitudinal data collected on patients with primary biliary cirrhosis from the Mayo Clinic. The data are available from the $\texttt{survival}$ package 
 
 ```{r }
 data(pbc)
@@ -199,7 +199,10 @@ prior.pbc1<-list(R=list(V=diag(2),nu=1.002, fix=2), G=F(2,1000))
 m.pbc1<-MCMCglmm(cbind(log(bili), ascites)~trait-1+trait:(age+sex), random=~us(trait):id, rcov=~us(trait):units, data=pbcseq, family=c("gaussian", "threshold"), prior=prior.pbc1, longer=10)
 ```
 
-It is also possible to specify response specific fixed-effect models using the function $\texttt{at.level}$.  For example, $\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 1):(sex)}$ would fit an age and sex effect for $\texttt{trait}$ 1 (log($\texttt{bili}$)) and a sex effect for $\texttt{trait}$ 2 ($\texttt{ascites}$)[^at.level]. The main difference, however, from the previous model of two Gaussian responses is that `fix=2` has been added to the prior specification. For a $2\times 2$ covariance matrix this simply fixes the second variance (the $\texttt{unit}$ variance for the Bernoulli trait, $\texttt{ascites}$) at whatever is specified in $\texttt{V}$ (1)[^3.4]. However, the $\texttt{unit}$ variance for the Gaussian trait, and the $\texttt{unit}$ covariance between the Gaussian and Bernoulii trait, are still estimated. 
+One difference from the previous model on car and holiday expenditure is that I've added some predictors to the fixed effect model. Interacting $\texttt{trait}$ with `age+sex` fits an $\texttt{age}$ effect for each trait and a $\texttt{sex}$ effect for each trait. If `age+sex` had not been interacted with $\texttt{trait}$ the effects of the predictors are assumed to be the same for the two traits. It is also possible to specify response specific fixed-effect models using the function $\texttt{at.level}$.  For example, $\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 1):(sex)}$ would fit an age and sex effect for $\texttt{trait}$ 1 (log($\texttt{bili}$)) and a sex effect for $\texttt{trait}$ 2 ($\texttt{ascites}$)[^at.level]. The main difference, however, from the previous model of two Gaussian responses is that `fix=2` has been added to the prior specification. For a $2\times 2$ covariance matrix this simply fixes the second variance (the $\texttt{units}$ variance for the Bernoulli trait, $\texttt{ascites}$) at whatever is specified in $\texttt{V}$ (1)[^3.4]. However, the $\texttt{units}$ variance for the Gaussian trait, and the $\texttt{units}$ covariance between the Gaussian and Bernoulii trait, are still estimated. 
+
+[^at.level]: $\texttt{at.level}$ takes the name of categorical variable together with a vector of specified levels. It creates an $n\times k$ incidence matrix where $n$ is the length of the categorical variable and $k$ the number of specified levels. The matrix element $ij$ has a one if the categorical variable for observation $i$is of level $j$, and zero otherwise. When $\texttt{at.level}$ is used in a model formula, and interacted with other terms, it restricts those terms to only having effects when the observations are associated with the $k$ specified levels.  For example, imagine a categorical variable $\texttt{fac}$ with three levels $\texttt{a}$, $\texttt{b}$, and $\texttt{c}$ and a continuous variable $\texttt{x}$. $\texttt{at.level(fac, c("a", "c")):x}$ would fit two effects - an effect of $x$ when $\texttt{fac}=\texttt{a}$ and an effect of $x$ when $\texttt{fac}=\texttt{c}$. $\texttt{at.set}$ is similar although it creates an $n\times 1$ incidence matrix where element $i$ is one if the categorical variable for observation $i$ is *any* of the specified levels. The term $\texttt{at.set(fac, c("a", "c")):x}$ would then fit *one* effect - the effect of $x$ when $\texttt{fac}$ is equal to $\texttt{a}$ *or* $\texttt{c}$.
+
 
 ```{r }
 summary(m.pbc1)
@@ -237,43 +240,136 @@ legend("topright",
        bty    = "n")
 ```
 
-biserial 
+In the model with two Gaussian responses we also thought about the association between the two traits in terms of regression. If we follow the same recipe for the Bernoulii response ($\texttt{ascites}$) regressed on the Gaussian response (log($\texttt{bili}$)) we end up with the regression coefficients we would obtain from probit regression had we fitted log($\texttt{bili}$) as a predictor and also the true expected log($\texttt{bili}$) of each patient (which of course we don't know, but constitute the $\texttt{id}$ effects for that trait). We can see that the regression is stronger within individuals than between (Figure \@ref(pbc1-reg)). The change in risk of $\texttt{acites}$ when increasing a patient's log($\texttt{bili}$) by one unit is greater than the difference in risk than between two patient's that on average differ in log($\texttt{bili}$) by one unit. 
+
+
+```{r label=pbc1-reg, echo=FALSE, include=TRUE, fig.cap="MCMC trace plot of the coefficient from a probit regression of ascites presence ($\\texttt{ascites}$) on log serum concentration of bilirunbin ($\\texttt{bili}$). The red and blue traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red).", fig.width=7, fig.height=5}
+
+plot(mcmc.list(m.pbc1$VCV[,2]/m.pbc1$VCV[,1],m.pbc1$VCV[,6]/m.pbc1$VCV[,5]), density=FALSE, col=c("red", "blue"), ylab="Probit regression coefficient")
+```
+
+
+Note that this conclusion is opposite to the one you might draw from looking at the correlations. Why? The reason is that the proportion of variation that is within patients (Section \@ref(ICC)) is quite different for the two traits: for log($\texttt{bili}$) the posterior mean is `r round(mean(m.pbc1$VCV[,5]/(m.pbc1$VCV[,1]+m.pbc1$VCV[,5])),2)` and for $\texttt{acites}$ it is `r round(mean(m.pbc1$VCV[,8]/(m.pbc1$VCV[,4]+m.pbc1$VCV[,8])),2)`. The within-patient effects for log($\texttt{bili}$) have proportionally little variation yet they still strongly correlate with the within-patient $\texttt{acites}$ effects which have proportionally greater variation. We can also more formally assess whether the within-patient ($\texttt{units}$) regression is stronger than the between-patient regression:
+
+
+```{r }
+preg.id<-m.pbc1$VCV[,"traitbili:traitascites.id"]/m.pbc1$VCV[,"traitbili:traitbili.id"]
+preg.units<-m.pbc1$VCV[,"traitbili:traitascites.units"]/m.pbc1$VCV[,"traitbili:traitbili.units"]
+HPDinterval(preg.units-preg.id)
+```
+
+The 95% credible interval overlaps zero, just.
+
+If we consider the opposite regression -  the Gaussian response (log($\texttt{bili}$)) on the Bernoulii response ($\texttt{ascites}$) things aren't quite as straight forward. In a single response-model the actual presence or not of $\texttt{ascites}$ would be fitted, yet in the multi response-model the association is at the level of the latent variable. As noted above for car accidents and insurance payouts, there is an important distinction between measuring an association directly on the data scale versus the latent scale. However, when Bernoulli models are conceptualised in terms of threshold models we can make this distinction disappear.  If we designate the Gaussian response as $x$ and the latent variable for the Bernoulli response as $l$ we can calculate the expected value of $x$ given $l$ is less than zero or greater than zero using the law of total expectation
+
+$$E[x | l>0] = E[E[x|l] | l>0]$$
+
+and
+
+$$E[x | l<0] = E[E[x|l] | l<0]$$
+
+
+$E[x|l]$ is the mean of the conditional normal, $\mu_x+\frac{Cov(x,l)}{var(l)}(l-\mu_l)$. The expectation of this when $l>0$ is then $\mu_x+\frac{Cov(x,l)}{var(l)}(E[l|l>0]-\mu_l)$ and $E[l|l>0]$ can be obtained using the inverse Mills ratio. <details><summary>See code</summary>
+
+```{r condE}
+condE <- function(mu, V, c, greater=TRUE) {
+
+  # bivariate normal with mean vector mu and covariance matrix V
+  # expectation of 1st variable given 2nd variable is
+  # > c (greater=TRUE) or < c (greater=FALSE)
+
+  if(nrow(V)!=ncol(V) | nrow(V)!=2){
+	stop("V should be a 2x2 matrix")
+  }
+  
+  if(length(mu)!=2){
+    stop("mu should be length 2")
+  }
+
+  alpha  <- (c - mu[2]) /sqrt(V[2,2])
+  if(greater){ 
+  	lambda <- dnorm(alpha)/(1 - pnorm(alpha))
+  	# inverse Mills ratio
+  	expectation<- mu[2] + sqrt(V[2,2])*lambda
+  }else{
+  	lambda <- dnorm(alpha)/pnorm(alpha)
+  	expectation<- mu[2] - sqrt(V[2,2])*lambda 
+  }
+  # Expectation that E[l|l>0] or E[l|l<0]
+
+  expectation<-mu[1]+(expectation-mu[2])*V[1,2]/V[2,2]
+  # Expectation of x given l|l>0.
+
+  # The whole thing simplifies to 
+  # mu[1] \pm lambda*V[1,2]/sqrt(V[2,2])
+  # but easier to see the logic without the simplification
+
+  return(expectation)  
+}
+```
+</details><br>
+
+
+```{r label=pbc1-reg2, echo=FALSE, include=TRUE, fig.cap="MCMC trace plot of the regression coefficient of log serum concentration of bilirunbin ($\\texttt{bili}$) on ascites presence ($\\texttt{ascites}$) as obtained from a multi-response model (red). ", fig.width=7, fig.height=5}
+post.reg<-1:1000
+
+for(i in 1:1000){
+
+	mu<-tapply(m.pbc1$X%*%m.pbc1$Sol[i,],  m.pbc1$error.term, mean)
+
+	V.id<-matrix(m.pbc1$VCV[i,1:4],2,2)
+    V.units<-matrix(m.pbc1$VCV[i,1:4+4],2,2)
+
+	post.reg[i]<-condE(mu, V.id+V.units, c=0, greater=TRUE)-condE(mu, V.id+V.units, 0, greater=FALSE)
+}
+
+plot(as.mcmc(post.reg), col="red")
+```
 
 
 
-It is also possible to specify response specific fixed-effect models using the function $\texttt{at.level}$.  For example, $\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 1):(sex)}$ would fit an age and sex effect for $\texttt{trait}$ 1 (log($\texttt{bili}$)) and a sex effect for $\texttt{trait}$ 2 ($\texttt{ascites}$)[^at.level].
+```{r biserial, echo=FALSE, include=TRUE, fig.cap="", fig.width=7, fig.height=5}
 
+mu<-c(0,0)
 
+mu[1]<-mean(predict(m.pbc1, type="terms")[1:nrow(pbcseq)])
+mu[2]<-mean(predict(m.pbc1, type="terms")[nrow(pbcseq)+1:nrow(pbcseq)]) 
 
-[^at.level]: $\texttt{at.level}$ takes the name of categorical variable together with a vector of specified levels. It creates an $n\times k$ incidence matrix where $n$ is the length of the categorical variable and $k$ the number of specified levels. The matrix element $ij$ has a one if the categorical variable for observation $i$is of level $j$, and zero otherwise. When $\texttt{at.level}$ is used in a model formula, and interacted with other terms, it restricts those terms to only having effects when the observations are associated with the $k$ specified levels.  For example, imagine a categorical variable $\texttt{fac}$ with three levels $\texttt{a}$, $\texttt{b}$, and $\texttt{c}$ and a continuous variable $\texttt{x}$. $\texttt{at.level(fac, c("a", "c")):x}$ would fit two effects - an effect of $x$ when $\texttt{fac}=\texttt{a}$ and an effect of $x$ when $\texttt{fac}=\texttt{c}$. $\texttt{at.set}$ is similar although it creates an $n\times 1$ incidence matrix where element $i$ is one if the categorical variable for observation $i$ is *any* of the specified levels. The term $\texttt{at.set(fac, c("a", "c")):x}$ would then fit *one* effect - the effect of $x$ when $\texttt{fac}$ is equal to $\texttt{a}$ *or* $\texttt{c}$.
+V.id<-matrix(colMeans(m.pbc1$VCV[,1:4]),2,2)                   
+V.units<-matrix(colMeans(m.pbc1$VCV[,4+1:4]),2,2)                   
 
+ell.id <- ellipse(V.id, centre = mu, level = 0.95, npoints = 361)
+ell.units <- ellipse(V.units, centre = mu, level = 0.95, npoints = 361)
 
-```{r tetrachoric, echo=FALSE, include=TRUE, fig.cap="Posterior distributions for the correlations between log($\\texttt{bili}$) and the presence of ascites (on the latent scale).", fig.width=7, fig.height=5}
+par(mfrow=c(1,2))
 
-mu    <- c(2, 3)                                
-V     <- matrix(c(4, 1.5,1.5, 2), 2)                   
+plot(ell.id, type = "n", xlab = "log(bili)", ylab = "ascites", xlim=1.1*range(c(ell.id[,"x"], ell.units[,"x"])), , ylim=1.1*range(c(ell.id[,"y"], ell.units[,"y"])))
 
-ell <- ellipse(V, centre = mu, level = 0.95, npoints = 361)
-plot(ell, type = "n", asp = 1, xlab = "x", ylab = "y")
-
-polygon(ell, border = 1)                       
+polygon(ell.id, border = 1)                       
 points(mu[1], mu[2], pch = 19)           
-abline(v = mu[1], h = mu[2], lty = 2) 
+abline(h = 0, lty = 2) 
                   
-idx <- which(ell[, 1] >= mu[1] & ell[, 2] >= mu[2])    
-x<-ell[idx,1]
-y<-ell[idx,2]
-
-pos<-which.min(x)
-
-x<-append(x, mu[1], pos)
-y<-append(y, mu[2], pos)
-
-polygon(x,y,             
+polygon(ell.id[which(ell.id[, 2]>0),1],ell.id[which(ell.id[, 2]>0),2],             
         col    = rgb(0.2, 0.6, 0.8, 0.40),   
         border = NA)
 
+abline(v=condE(mu, V.id, c=0, greater=TRUE))
+abline(v=condE(mu, V.id, c=0, greater=FALSE))
+
+plot(ell.units, type = "n", xlab = "log(bili)", ylab = "ascites", xlim=1.1*range(c(ell.id[,"x"], ell.units[,"x"])), , ylim=1.1*range(c(ell.id[,"y"], ell.units[,"y"])))
+
+polygon(ell.units, border = 1)                       
+points(mu[1], mu[2], pch = 19)           
+abline(h = 0, lty = 2) 
+
+polygon(ell.units[which(ell.units[, 2]>0),1],ell.units[which(ell.units[, 2]>0),2],             
+        col    = rgb(0.2, 0.6, 0.8, 0.40),   
+        border = NA)
+
+abline(v=condE(mu, V.units, c=0, greater=TRUE))
+abline(v=condE(mu, V.units, c=0, greater=FALSE))
 ```
+
 ## Covariances between random and residual terms ($\texttt{covu}$)
 
 Occasionally, we need to link a set of random effects with a set of residuals. This most commonly occurs in multi-response models when we have repeated measures for one response but only single measures for another response. We can link the set of random effects appearing in the final random term of the `random` specification with the residuals appearing in the first residual term of the `rcov` specification.  The linking is specified by adding a `covu=TRUE` to the prior specification for the first residual term. For example, imagine the random effect model specification:
