@@ -88,7 +88,9 @@ fig:asUV
 fig:MVvUV2
 fig:pbc1-cor
 fig:pbc1-reg
+fig:biserial
 fig:pbc1-reg2
+fig:terachoric
 fig:MN1
 fig:MN2
 fig:ZIP
@@ -146,7 +148,7 @@ od-binom
 binom-pred-sec
 bernoulli-sec
 probit-link
-ordinal-data
+ordinal-sec
 non-zero-binomial-data
 complete-separation
 gelman-prior-sec
@@ -190,6 +192,9 @@ penalised-signal-regression
 multi
 multi-response-non-gaussian-models
 multi-response-bernoulli-models
+bernoulli-gaussian
+all-bernoulli
+long-format
 covariances-between-random-and-residual-terms-textttcovu
 texttttheta_scale-scaled-linear-predictor-1
 multinomial-models
