@@ -199,7 +199,7 @@ prior.pbc1<-list(R=list(V=diag(2),nu=1.002, fix=2), G=F(2,1000))
 m.pbc1<-MCMCglmm(cbind(log(bili), ascites)~trait-1+trait:(age+sex), random=~us(trait):id, rcov=~us(trait):units, data=pbcseq, family=c("gaussian", "threshold"), prior=prior.pbc1, longer=10)
 ```
 
-One difference from the previous model on car and holiday expenditure is that I've added some predictors to the fixed effect model. Interacting $\texttt{trait}$ with `age+sex` fits an $\texttt{age}$ effect for each trait and a $\texttt{sex}$ effect for each trait. If `age+sex` had not been interacted with $\texttt{trait}$ the effects of the predictors are assumed to be the same for the two traits. It is also possible to specify response specific fixed-effect models using the function $\texttt{at.level}$.  For example, $\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 1):(sex)}$ would fit an age and sex effect for $\texttt{trait}$ 1 (log($\texttt{bili}$)) and a sex effect for $\texttt{trait}$ 2 ($\texttt{ascites}$)[^at.level]. The main difference, however, from the previous model of two Gaussian responses is that `fix=2` has been added to the prior specification. For a $2\times 2$ covariance matrix this simply fixes the second variance (the $\texttt{units}$ variance for the Bernoulli trait, $\texttt{ascites}$) at whatever is specified in $\texttt{V}$ (1)[^3.4]. However, the $\texttt{units}$ variance for the Gaussian trait, and the $\texttt{units}$ covariance between the Gaussian and Bernoulii trait, are still estimated. 
+One difference from the previous model on car and holiday expenditure is that I've added some predictors to the fixed effect model. Interacting $\texttt{trait}$ with `age+sex` fits an $\texttt{age}$ effect for each trait and a $\texttt{sex}$ effect for each trait. If `age+sex` had not been interacted with $\texttt{trait}$ the effects of the predictors are assumed to be the same for the two traits. It is also possible to specify response-specific fixed-effect models using the function $\texttt{at.level}$.  For example, $\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 2):(sex)}$ would fit an age and sex effect for $\texttt{trait}$ 1 (log($\texttt{bili}$)) and a sex effect for $\texttt{trait}$ 2 ($\texttt{ascites}$)[^at.level]. The main difference, however, from the previous model of two Gaussian responses is that `fix=2` has been added to the prior specification. For a $2\times 2$ covariance matrix this simply fixes the second variance (the $\texttt{units}$ variance for the Bernoulli trait, $\texttt{ascites}$) at whatever is specified in $\texttt{V}$ (1 in this case)[^3.4]. However, the $\texttt{units}$ variance for the Gaussian trait, and the $\texttt{units}$ covariance between the Gaussian and Bernoulii trait, are still estimated. 
 
 [^at.level]: $\texttt{at.level}$ takes the name of categorical variable together with a vector of specified levels. It creates an $n\times k$ incidence matrix where $n$ is the length of the categorical variable and $k$ the number of specified levels. The matrix element $ij$ has a one if the categorical variable for observation $i$is of level $j$, and zero otherwise. When $\texttt{at.level}$ is used in a model formula, and interacted with other terms, it restricts those terms to only having effects when the observations are associated with the $k$ specified levels.  For example, imagine a categorical variable $\texttt{fac}$ with three levels $\texttt{a}$, $\texttt{b}$, and $\texttt{c}$ and a continuous variable $\texttt{x}$. $\texttt{at.level(fac, c("a", "c")):x}$ would fit two effects - an effect of $x$ when $\texttt{fac}=\texttt{a}$ and an effect of $x$ when $\texttt{fac}=\texttt{c}$. $\texttt{at.set}$ is similar although it creates an $n\times 1$ incidence matrix where element $i$ is one if the categorical variable for observation $i$ is *any* of the specified levels. The term $\texttt{at.set(fac, c("a", "c")):x}$ would then fit *one* effect - the effect of $x$ when $\texttt{fac}$ is equal to $\texttt{a}$ *or* $\texttt{c}$.
 
@@ -240,7 +240,7 @@ legend("topright",
        bty    = "n")
 ```
 
-In the model with two Gaussian responses we also thought about the association between the two traits in terms of regression. If we follow the same recipe for the Bernoulii response ($\texttt{ascites}$) regressed on the Gaussian response (log($\texttt{bili}$)) we end up with the regression coefficients we would obtain from probit regression had we fitted log($\texttt{bili}$) as a predictor and also the true expected log($\texttt{bili}$) of each patient (which of course we don't know, but constitute the $\texttt{id}$ effects for that trait). We can see that the regression is stronger within individuals than between (Figure \@ref(pbc1-reg)). The change in risk of $\texttt{acites}$ when increasing a patient's log($\texttt{bili}$) by one unit is greater than the difference in risk than between two patient's that on average differ in log($\texttt{bili}$) by one unit. 
+In the model with two Gaussian responses we also thought about the association between the two traits in terms of regression. If we follow the same recipe for the Bernoulii response ($\texttt{ascites}$) regressed on the Gaussian response (log($\texttt{bili}$)) we end up with the regression coefficients we would obtain from probit regression had we fitted log($\texttt{bili}$) as a predictor and also the true expected log($\texttt{bili}$) of each patient (which of course we don't know, but constitute the $\texttt{id}$ effects for that trait). We can see that the regression is stronger within individuals than between (Figure \@ref(pbc1-reg)). The change in the risk of $\texttt{acites}$ when increasing a patient's log($\texttt{bili}$) by one unit is greater than the difference in risk between two patient's that on average differ in log($\texttt{bili}$) by one unit. 
 
 
 ```{r label=pbc1-reg, echo=FALSE, include=TRUE, fig.cap="MCMC trace plot of the coefficient from a probit regression of ascites presence ($\\texttt{ascites}$) on log serum concentration of bilirunbin ($\\texttt{bili}$). The red and blue traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red).", fig.width=7, fig.height=5}
@@ -260,54 +260,76 @@ HPDinterval(preg.units-preg.id)
 
 The 95% credible interval overlaps zero, just.
 
-If we consider the opposite regression -  the Gaussian response (log($\texttt{bili}$)) on the Bernoulii response ($\texttt{ascites}$) things aren't quite as straight forward. In a single response-model the actual presence or not of $\texttt{ascites}$ would be fitted, yet in the multi response-model the association is at the level of the latent variable. As noted above for car accidents and insurance payouts, there is an important distinction between measuring an association directly on the data scale versus the latent scale. However, when Bernoulli models are conceptualised in terms of threshold models we can make this distinction disappear.  If we designate the Gaussian response as $x$ and the latent variable for the Bernoulli response as $l$ we can calculate the expected value of $x$ given $l$ is less than zero or greater than zero using the law of total expectation
+If we consider the opposite regression -  the Gaussian response (log($\texttt{bili}$)) on the Bernoulii response ($\texttt{ascites}$) things aren't quite as straight forward. In a single response-model the actual presence or not of $\texttt{ascites}$ would be fitted, yet in the multi response-model the association is at the level of the latent variable. As noted above for car accidents and insurance payouts, there is an important distinction between measuring an association directly on the data scale versus the latent scale. However, when Bernoulli models are conceptualised in terms of threshold models we can make this distinction disappear.  If we designate the Gaussian response as $y$ and the Bernoulli response as $x$ (0 or 1) with associated latent variable $l$, we can calculate the two expectations 
 
-$$E[x | l>0] = E[E[x|l] | l>0]$$
+$$E[y|x=1]=E[y | l>0]$$
 
-and
+and 
 
-$$E[x | l<0] = E[E[x|l] | l<0]$$
+$$E[y|x=0]=E[y | l<0]$$
+
+The difference between these expectations is the coefficient you would obtain by fitting the Bernoulli variable ($\texttt{ascites}$) as a predictor in a model for the Gaussian response (log($\texttt{bili}$)).  The difference is given by
+
+$$E[y|x=1]-E[y|x=0]=\frac{f_N(\alpha)\sigma^2_{y,l}}{F_N(\alpha)(1-F_N(\alpha))\sigma_{l}}$$
+
+where $f_N$ and $F_N$ are the density and cumulative density functions for the unit normal, and $\alpha = \mu_l/\sigma_{l}$[^condE].
 
 
-$E[x|l]$ is the mean of the conditional normal, $\mu_x+\frac{Cov(x,l)}{var(l)}(l-\mu_l)$. The expectation of this when $l>0$ is then $\mu_x+\frac{Cov(x,l)}{var(l)}(E[l|l>0]-\mu_l)$ and $E[l|l>0]$ can be obtained using the inverse Mills ratio. <details><summary>See code</summary>
+[^condE]: Obtaining this expression is involved. We can express the expected value of $y$ given $l$ is less than, or greater than, some value $c$ using the law of total expectation
 
-```{r condE}
-condE <- function(mu, V, c, greater=TRUE) {
+	$$E[y | l>c] = E[E[y|l] | l>c]$$
 
-  # bivariate normal with mean vector mu and covariance matrix V
-  # expectation of 1st variable given 2nd variable is
-  # > c (greater=TRUE) or < c (greater=FALSE)
+	and
 
-  if(nrow(V)!=ncol(V) | nrow(V)!=2){
-	stop("V should be a 2x2 matrix")
-  }
+	$$E[y | l<c] = E[E[y|l] | l<c]$$
+
+	$E[y|l]$ is the mean of a conditional normal which has a well known form: $\mu_y+\frac{\sigma_{y,l}}{\sigma^2_{l}}(l-\mu_l)$. The expectation of this when $l>c$ is then $\mu_y+\frac{\sigma_{y,l}}{\sigma^2_{l}}(E[l|l>c]-\mu_l)$.  $E[l|l>c]$ can be obtained using the inverse Mills ratio:
+
+	$$E[l|l>c] = \mu_l + \sigma_{l}\frac{f_N(\alpha)}{(1 - F_N(\alpha))}$$
+
+	and when $l<c$ we have 
+
+	$$E[l|l<c] = \mu_l - \sigma_{l}\frac{f_N(\alpha)}{F_N(\alpha)}$$
+
+	where $f_N$ and $F_N$ are the density and cumulative density functions for the unit normal, and $\alpha = \mu_l/\sigma_{l}$. Code for obtaining $E[y | l>c]$ and $E[y | l>c]$ can be found <details><summary>here</summary>
+
+	```{r condE}
+	condE <- function(mu, V, c=0, greater=TRUE) {
+
+  		# A bivariate normal with mean vector mu and covariance matrix V is assumed.
+  		# condE give expectation of 1st variable given 2nd variable is > c (greater=TRUE) or < c (greater=FALSE)
+
+  		if(nrow(V)!=ncol(V) | nrow(V)!=2){
+			stop("V should be a 2x2 matrix")
+  		}
   
-  if(length(mu)!=2){
-    stop("mu should be length 2")
-  }
+  		if(length(mu)!=2){
+    		stop("mu should be length 2")
+  		}
 
-  alpha  <- (c - mu[2]) /sqrt(V[2,2])
-  if(greater){ 
-  	lambda <- dnorm(alpha)/(1 - pnorm(alpha))
-  	# inverse Mills ratio
-  	expectation<- mu[2] + sqrt(V[2,2])*lambda
-  }else{
-  	lambda <- dnorm(alpha)/pnorm(alpha)
-  	expectation<- mu[2] - sqrt(V[2,2])*lambda 
-  }
-  # Expectation that E[l|l>0] or E[l|l<0]
+  		alpha  <- (c - mu[2]) /sqrt(V[2,2])
 
-  expectation<-mu[1]+(expectation-mu[2])*V[1,2]/V[2,2]
-  # Expectation of x given l|l>0.
+  		if(greater){ 
+  			lambda <- dnorm(alpha)/(1 - pnorm(alpha))
+  			# inverse Mills ratio
+  			expectation<- mu[2] + sqrt(V[2,2])*lambda
+  		}else{
+  			lambda <- dnorm(alpha)/pnorm(alpha)
+  			expectation<- mu[2] - sqrt(V[2,2])*lambda 
+  		}
+  		# Expectation that E[l|l>0] or E[l|l<0]
 
-  # The whole thing simplifies to 
-  # mu[1] \pm lambda*V[1,2]/sqrt(V[2,2])
-  # but easier to see the logic without the simplification
+  		expectation<-mu[1]+(expectation-mu[2])*V[1,2]/V[2,2]
+  		# Expectation of x given l|l>0.
 
-  return(expectation)  
-}
-```
-</details><br>
+  		# The whole thing simplifies to 
+  		# mu[1] \pm lambda*V[1,2]/sqrt(V[2,2])
+  		# but easier to see the logic without the simplification
+
+  		return(expectation)  
+	}
+	```
+	</details><br> 
 
 
 ```{r label=pbc1-reg2, echo=FALSE, include=TRUE, fig.cap="MCMC trace plot of the regression coefficient of log serum concentration of bilirunbin ($\\texttt{bili}$) on ascites presence ($\\texttt{ascites}$) as obtained from a multi-response model (red). ", fig.width=7, fig.height=5}
@@ -320,7 +342,7 @@ for(i in 1:1000){
 	V.id<-matrix(m.pbc1$VCV[i,1:4],2,2)
     V.units<-matrix(m.pbc1$VCV[i,1:4+4],2,2)
 
-	post.reg[i]<-condE(mu, V.id+V.units, c=0, greater=TRUE)-condE(mu, V.id+V.units, 0, greater=FALSE)
+	post.reg[i]<-condE(mu=mu, V=V.id+V.units, c=0, greater=TRUE)-condE(mu=mu, V=V.id+V.units, 0, greater=FALSE)
 }
 
 plot(as.mcmc(post.reg), col="red")
