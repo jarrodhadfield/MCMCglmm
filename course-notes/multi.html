@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-02-02" />
+<meta name="date" content="2026-02-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -57,27 +57,10 @@
 <link href="libs/bsTable-3.3.7/bootstrapTable.min.css" rel="stylesheet" />
 <script src="libs/bsTable-3.3.7/bootstrapTable.js"></script>
 <script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
-<script src="libs/rglWebGL-binding-1.3.31/rglWebGL.js"></script>
-<link href="libs/rglwidgetClass-1.3.31/rgl.css" rel="stylesheet" />
-<script src="libs/rglwidgetClass-1.3.31/rglClass.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/utils.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/buffer.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/subscenes.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/shaders.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/shadersrc.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/textures.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/projection.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/mouse.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/init.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/pieces.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/draw.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/controls.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/selection.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/rglTimer.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/pretty.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/axes.src.js"></script>
-<script src="libs/rglwidgetClass-1.3.31/animation.src.js"></script>
-<script src="libs/CanvasMatrix4-1.3.31/CanvasMatrix.src.js"></script>
+<script src="libs/rglWebGL-binding-1.3.34/rglWebGL.js"></script>
+<link href="libs/rglwidgetClass-1.3.34/rgl.css" rel="stylesheet" />
+<script src="libs/rglwidgetClass-1.3.34/rglClass.min.js"></script>
+<script src="libs/CanvasMatrix4-1.3.34/CanvasMatrix.min.js"></script>
 
 
 <style type="text/css">
@@ -573,7 +556,7 @@ Figure 7.3: MCMC trace plot of the coefficient from a regression of car spending
 <span id="cb245-3"><a href="multi.html#cb245-3" tabindex="-1"></a>m.pbc1 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(<span class="fu">log</span>(bili), ascites) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> trait<span class="sc">:</span>(age <span class="sc">+</span> sex), <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id,</span>
 <span id="cb245-4"><a href="multi.html#cb245-4" tabindex="-1"></a>    <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> pbcseq, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;threshold&quot;</span>),</span>
 <span id="cb245-5"><a href="multi.html#cb245-5" tabindex="-1"></a>    <span class="at">prior =</span> prior.pbc1, <span class="at">longer =</span> <span class="dv">10</span>)</span></code></pre></div>
-<p>One difference from the previous model on car and holiday expenditure is that I’ve added some predictors to the fixed effect model. Interacting <span class="math inline">\(\texttt{trait}\)</span> with <code>age+sex</code> fits an <span class="math inline">\(\texttt{age}\)</span> effect for each trait and a <span class="math inline">\(\texttt{sex}\)</span> effect for each trait. If <code>age+sex</code> had not been interacted with <span class="math inline">\(\texttt{trait}\)</span> the effects of the predictors are assumed to be the same for the two traits. It is also possible to specify response specific fixed-effect models using the function <span class="math inline">\(\texttt{at.level}\)</span>. For example, <span class="math inline">\(\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 1):(sex)}\)</span> would fit an age and sex effect for <span class="math inline">\(\texttt{trait}\)</span> 1 (log(<span class="math inline">\(\texttt{bili}\)</span>)) and a sex effect for <span class="math inline">\(\texttt{trait}\)</span> 2 (<span class="math inline">\(\texttt{ascites}\)</span>)<a href="#fn33" class="footnote-ref" id="fnref33"><sup>33</sup></a>. The main difference, however, from the previous model of two Gaussian responses is that <code>fix=2</code> has been added to the prior specification. For a <span class="math inline">\(2\times 2\)</span> covariance matrix this simply fixes the second variance (the <span class="math inline">\(\texttt{units}\)</span> variance for the Bernoulli trait, <span class="math inline">\(\texttt{ascites}\)</span>) at whatever is specified in <span class="math inline">\(\texttt{V}\)</span> (1)<a href="#fn34" class="footnote-ref" id="fnref34"><sup>34</sup></a>. However, the <span class="math inline">\(\texttt{units}\)</span> variance for the Gaussian trait, and the <span class="math inline">\(\texttt{units}\)</span> covariance between the Gaussian and Bernoulii trait, are still estimated.</p>
+<p>One difference from the previous model on car and holiday expenditure is that I’ve added some predictors to the fixed effect model. Interacting <span class="math inline">\(\texttt{trait}\)</span> with <code>age+sex</code> fits an <span class="math inline">\(\texttt{age}\)</span> effect for each trait and a <span class="math inline">\(\texttt{sex}\)</span> effect for each trait. If <code>age+sex</code> had not been interacted with <span class="math inline">\(\texttt{trait}\)</span> the effects of the predictors are assumed to be the same for the two traits. It is also possible to specify response-specific fixed-effect models using the function <span class="math inline">\(\texttt{at.level}\)</span>. For example, <span class="math inline">\(\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 2):(sex)}\)</span> would fit an age and sex effect for <span class="math inline">\(\texttt{trait}\)</span> 1 (log(<span class="math inline">\(\texttt{bili}\)</span>)) and a sex effect for <span class="math inline">\(\texttt{trait}\)</span> 2 (<span class="math inline">\(\texttt{ascites}\)</span>)<a href="#fn33" class="footnote-ref" id="fnref33"><sup>33</sup></a>. The main difference, however, from the previous model of two Gaussian responses is that <code>fix=2</code> has been added to the prior specification. For a <span class="math inline">\(2\times 2\)</span> covariance matrix this simply fixes the second variance (the <span class="math inline">\(\texttt{units}\)</span> variance for the Bernoulli trait, <span class="math inline">\(\texttt{ascites}\)</span>) at whatever is specified in <span class="math inline">\(\texttt{V}\)</span> (1 in this case)<a href="#fn34" class="footnote-ref" id="fnref34"><sup>34</sup></a>. However, the <span class="math inline">\(\texttt{units}\)</span> variance for the Gaussian trait, and the <span class="math inline">\(\texttt{units}\)</span> covariance between the Gaussian and Bernoulii trait, are still estimated.</p>
 <div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="multi.html#cb246-1" tabindex="-1"></a><span class="fu">summary</span>(m.pbc1)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 30001:129901
@@ -616,7 +599,7 @@ Figure 7.3: MCMC trace plot of the coefficient from a regression of car spending
 Figure 7.4: Posterior distributions for the correlations between log(<span class="math inline">\(\texttt{bili}\)</span>) and the presence of ascites (on the latent scale).
 </p>
 </div>
-<p>In the model with two Gaussian responses we also thought about the association between the two traits in terms of regression. If we follow the same recipe for the Bernoulii response (<span class="math inline">\(\texttt{ascites}\)</span>) regressed on the Gaussian response (log(<span class="math inline">\(\texttt{bili}\)</span>)) we end up with the regression coefficients we would obtain from probit regression had we fitted log(<span class="math inline">\(\texttt{bili}\)</span>) as a predictor and also the true expected log(<span class="math inline">\(\texttt{bili}\)</span>) of each patient (which of course we don’t know, but constitute the <span class="math inline">\(\texttt{id}\)</span> effects for that trait). We can see that the regression is stronger within individuals than between (Figure <a href="#pbc1-reg"><strong>??</strong></a>). The change in risk of <span class="math inline">\(\texttt{acites}\)</span> when increasing a patient’s log(<span class="math inline">\(\texttt{bili}\)</span>) by one unit is greater than the difference in risk than between two patient’s that on average differ in log(<span class="math inline">\(\texttt{bili}\)</span>) by one unit.</p>
+<p>In the model with two Gaussian responses we also thought about the association between the two traits in terms of regression. If we follow the same recipe for the Bernoulii response (<span class="math inline">\(\texttt{ascites}\)</span>) regressed on the Gaussian response (log(<span class="math inline">\(\texttt{bili}\)</span>)) we end up with the regression coefficients we would obtain from probit regression had we fitted log(<span class="math inline">\(\texttt{bili}\)</span>) as a predictor and also the true expected log(<span class="math inline">\(\texttt{bili}\)</span>) of each patient (which of course we don’t know, but constitute the <span class="math inline">\(\texttt{id}\)</span> effects for that trait). We can see that the regression is stronger within individuals than between (Figure <a href="#pbc1-reg"><strong>??</strong></a>). The change in the risk of <span class="math inline">\(\texttt{acites}\)</span> when increasing a patient’s log(<span class="math inline">\(\texttt{bili}\)</span>) by one unit is greater than the difference in risk between two patient’s that on average differ in log(<span class="math inline">\(\texttt{bili}\)</span>) by one unit.</p>
 <div class="figure"><span style="display:block;" id="fig:pbc1-reg"></span>
 <img src="_bookdown_files/fig/pbc1-reg-1.png" alt="MCMC trace plot of the coefficient from a probit regression of ascites presence ($\texttt{ascites}$) on log serum concentration of bilirunbin ($\texttt{bili}$). The red and blue traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red)." width="672" />
 <p class="caption">
@@ -632,50 +615,13 @@ Figure 7.5: MCMC trace plot of the coefficient from a probit regression of ascit
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>The 95% credible interval overlaps zero, just.</p>
-<p>If we consider the opposite regression - the Gaussian response (log(<span class="math inline">\(\texttt{bili}\)</span>)) on the Bernoulii response (<span class="math inline">\(\texttt{ascites}\)</span>) things aren’t quite as straight forward. In a single response-model the actual presence or not of <span class="math inline">\(\texttt{ascites}\)</span> would be fitted, yet in the multi response-model the association is at the level of the latent variable. As noted above for car accidents and insurance payouts, there is an important distinction between measuring an association directly on the data scale versus the latent scale. However, when Bernoulli models are conceptualised in terms of threshold models we can make this distinction disappear. If we designate the Gaussian response as <span class="math inline">\(x\)</span> and the latent variable for the Bernoulli response as <span class="math inline">\(l\)</span> we can calculate the expected value of <span class="math inline">\(x\)</span> given <span class="math inline">\(l\)</span> is less than zero or greater than zero using the law of total expectation</p>
-<p><span class="math display">\[E[x | l&gt;0] = E[E[x|l] | l&gt;0]\]</span></p>
+<p>If we consider the opposite regression - the Gaussian response (log(<span class="math inline">\(\texttt{bili}\)</span>)) on the Bernoulii response (<span class="math inline">\(\texttt{ascites}\)</span>) things aren’t quite as straight forward. In a single response-model the actual presence or not of <span class="math inline">\(\texttt{ascites}\)</span> would be fitted, yet in the multi response-model the association is at the level of the latent variable. As noted above for car accidents and insurance payouts, there is an important distinction between measuring an association directly on the data scale versus the latent scale. However, when Bernoulli models are conceptualised in terms of threshold models we can make this distinction disappear. If we designate the Gaussian response as <span class="math inline">\(y\)</span> and the Bernoulli response as <span class="math inline">\(x\)</span> (0 or 1) with associated latent variable <span class="math inline">\(l\)</span>, we can calculate the two expectations</p>
+<p><span class="math display">\[E[y|x=1]=E[y | l&gt;0]\]</span></p>
 <p>and</p>
-<p><span class="math display">\[E[x | l&lt;0] = E[E[x|l] | l&lt;0]\]</span></p>
-<span class="math inline">\(E[x|l]\)</span> is the mean of the conditional normal, <span class="math inline">\(\mu_x+\frac{Cov(x,l)}{var(l)}(l-\mu_l)\)</span>. The expectation of this when <span class="math inline">\(l&gt;0\)</span> is then <span class="math inline">\(\mu_x+\frac{Cov(x,l)}{var(l)}(E[l|l&gt;0]-\mu_l)\)</span> and <span class="math inline">\(E[l|l&gt;0]\)</span> can be obtained using the inverse Mills ratio.
-<details>
-<summary>
-See code
-</summary>
-<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="multi.html#cb250-1" tabindex="-1"></a>condE <span class="ot">&lt;-</span> <span class="cf">function</span>(mu, V, c, <span class="at">greater =</span> <span class="cn">TRUE</span>) {</span>
-<span id="cb250-2"><a href="multi.html#cb250-2" tabindex="-1"></a></span>
-<span id="cb250-3"><a href="multi.html#cb250-3" tabindex="-1"></a>    <span class="co"># bivariate normal with mean vector mu and covariance matrix V expectation</span></span>
-<span id="cb250-4"><a href="multi.html#cb250-4" tabindex="-1"></a>    <span class="co"># of 1st variable given 2nd variable is &gt; c (greater=TRUE) or &lt; c</span></span>
-<span id="cb250-5"><a href="multi.html#cb250-5" tabindex="-1"></a>    <span class="co"># (greater=FALSE)</span></span>
-<span id="cb250-6"><a href="multi.html#cb250-6" tabindex="-1"></a></span>
-<span id="cb250-7"><a href="multi.html#cb250-7" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(V) <span class="sc">!=</span> <span class="fu">ncol</span>(V) <span class="sc">|</span> <span class="fu">nrow</span>(V) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
-<span id="cb250-8"><a href="multi.html#cb250-8" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;V should be a 2x2 matrix&quot;</span>)</span>
-<span id="cb250-9"><a href="multi.html#cb250-9" tabindex="-1"></a>    }</span>
-<span id="cb250-10"><a href="multi.html#cb250-10" tabindex="-1"></a></span>
-<span id="cb250-11"><a href="multi.html#cb250-11" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(mu) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
-<span id="cb250-12"><a href="multi.html#cb250-12" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;mu should be length 2&quot;</span>)</span>
-<span id="cb250-13"><a href="multi.html#cb250-13" tabindex="-1"></a>    }</span>
-<span id="cb250-14"><a href="multi.html#cb250-14" tabindex="-1"></a></span>
-<span id="cb250-15"><a href="multi.html#cb250-15" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> (c <span class="sc">-</span> mu[<span class="dv">2</span>])<span class="sc">/</span><span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>])</span>
-<span id="cb250-16"><a href="multi.html#cb250-16" tabindex="-1"></a>    <span class="cf">if</span> (greater) {</span>
-<span id="cb250-17"><a href="multi.html#cb250-17" tabindex="-1"></a>        lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(alpha))</span>
-<span id="cb250-18"><a href="multi.html#cb250-18" tabindex="-1"></a>        <span class="co"># inverse Mills ratio</span></span>
-<span id="cb250-19"><a href="multi.html#cb250-19" tabindex="-1"></a>        expectation <span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">+</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> lambda</span>
-<span id="cb250-20"><a href="multi.html#cb250-20" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb250-21"><a href="multi.html#cb250-21" tabindex="-1"></a>        lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span><span class="fu">pnorm</span>(alpha)</span>
-<span id="cb250-22"><a href="multi.html#cb250-22" tabindex="-1"></a>        expectation <span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">-</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> lambda</span>
-<span id="cb250-23"><a href="multi.html#cb250-23" tabindex="-1"></a>    }</span>
-<span id="cb250-24"><a href="multi.html#cb250-24" tabindex="-1"></a>    <span class="co"># Expectation that E[l|l&gt;0] or E[l|l&lt;0]</span></span>
-<span id="cb250-25"><a href="multi.html#cb250-25" tabindex="-1"></a></span>
-<span id="cb250-26"><a href="multi.html#cb250-26" tabindex="-1"></a>    expectation <span class="ot">&lt;-</span> mu[<span class="dv">1</span>] <span class="sc">+</span> (expectation <span class="sc">-</span> mu[<span class="dv">2</span>]) <span class="sc">*</span> V[<span class="dv">1</span>, <span class="dv">2</span>]<span class="sc">/</span>V[<span class="dv">2</span>, <span class="dv">2</span>]</span>
-<span id="cb250-27"><a href="multi.html#cb250-27" tabindex="-1"></a>    <span class="co"># Expectation of x given l|l&gt;0.</span></span>
-<span id="cb250-28"><a href="multi.html#cb250-28" tabindex="-1"></a></span>
-<span id="cb250-29"><a href="multi.html#cb250-29" tabindex="-1"></a>    <span class="co"># The whole thing simplifies to mu[1] \pm lambda*V[1,2]/sqrt(V[2,2]) but</span></span>
-<span id="cb250-30"><a href="multi.html#cb250-30" tabindex="-1"></a>    <span class="co"># easier to see the logic without the simplification</span></span>
-<span id="cb250-31"><a href="multi.html#cb250-31" tabindex="-1"></a></span>
-<span id="cb250-32"><a href="multi.html#cb250-32" tabindex="-1"></a>    <span class="fu">return</span>(expectation)</span>
-<span id="cb250-33"><a href="multi.html#cb250-33" tabindex="-1"></a>}</span></code></pre></div>
-</details>
-<p><br></p>
+<p><span class="math display">\[E[y|x=0]=E[y | l&lt;0]\]</span></p>
+<p>The difference between these expectations is the coefficient you would obtain by fitting the Bernoulli variable (<span class="math inline">\(\texttt{ascites}\)</span>) as a predictor in a model for the Gaussian response (log(<span class="math inline">\(\texttt{bili}\)</span>)). The difference is given by</p>
+<p><span class="math display">\[E[y|x=1]-E[y|x=0]=\frac{f_N(\alpha)\sigma^2_{y,l}}{F_N(\alpha)(1-F_N(\alpha))\sigma_{l}}\]</span></p>
+<p>where <span class="math inline">\(f_N\)</span> and <span class="math inline">\(F_N\)</span> are the density and cumulative density functions for the unit normal, and <span class="math inline">\(\alpha = \mu_l/\sigma_{l}\)</span><a href="#fn35" class="footnote-ref" id="fnref35"><sup>35</sup></a>.</p>
 <div class="figure"><span style="display:block;" id="fig:pbc1-reg2"></span>
 <img src="_bookdown_files/fig/pbc1-reg2-1.png" alt="MCMC trace plot of the regression coefficient of log serum concentration of bilirunbin ($\texttt{bili}$) on ascites presence ($\texttt{ascites}$) as obtained from a multi-response model (red). " width="672" />
 <p class="caption">
@@ -1066,6 +1012,55 @@ Clutton-Brock, T. H., and J. M. Pemberton, eds. 2004. <em>Soay Sheep: Dynamics a
 <li id="fn32"><p>For a <span class="math inline">\(2\times 2\)</span> covariance matrix, positive-definitness requires both variances to be positive and the correlation to lie between -1 and 1. For covariance matrices of larger dimension, the conditions for positive-definitness are more complicated. Perhaps the simplest definition is that all eigenvalues are positive. The function <span class="math inline">\(\textttt{posterior.evals}\)</span> returns the posterior distribution of the <span class="math inline">\(k\)</span> eigenvalues given the posterior samples of a <span class="math inline">\(k\)</span> dimensional covariance matrix (obtained for the appropriate <span class="math inline">\(k^2\)</span> columns of the <span class="math inline">\(\texttt{VCV}\)</span> element of the <span class="math inline">\(\texttt{MCMCglmm}\)</span> model object.)<a href="multi.html#fnref32" class="footnote-back">↩︎</a></p></li>
 <li id="fn33"><p><span class="math inline">\(\texttt{at.level}\)</span> takes the name of categorical variable together with a vector of specified levels. It creates an <span class="math inline">\(n\times k\)</span> incidence matrix where <span class="math inline">\(n\)</span> is the length of the categorical variable and <span class="math inline">\(k\)</span> the number of specified levels. The matrix element <span class="math inline">\(ij\)</span> has a one if the categorical variable for observation <span class="math inline">\(i\)</span>is of level <span class="math inline">\(j\)</span>, and zero otherwise. When <span class="math inline">\(\texttt{at.level}\)</span> is used in a model formula, and interacted with other terms, it restricts those terms to only having effects when the observations are associated with the <span class="math inline">\(k\)</span> specified levels. For example, imagine a categorical variable <span class="math inline">\(\texttt{fac}\)</span> with three levels <span class="math inline">\(\texttt{a}\)</span>, <span class="math inline">\(\texttt{b}\)</span>, and <span class="math inline">\(\texttt{c}\)</span> and a continuous variable <span class="math inline">\(\texttt{x}\)</span>. <span class="math inline">\(\texttt{at.level(fac, c(&quot;a&quot;, &quot;c&quot;)):x}\)</span> would fit two effects - an effect of <span class="math inline">\(x\)</span> when <span class="math inline">\(\texttt{fac}=\texttt{a}\)</span> and an effect of <span class="math inline">\(x\)</span> when <span class="math inline">\(\texttt{fac}=\texttt{c}\)</span>. <span class="math inline">\(\texttt{at.set}\)</span> is similar although it creates an <span class="math inline">\(n\times 1\)</span> incidence matrix where element <span class="math inline">\(i\)</span> is one if the categorical variable for observation <span class="math inline">\(i\)</span> is <em>any</em> of the specified levels. The term <span class="math inline">\(\texttt{at.set(fac, c(&quot;a&quot;, &quot;c&quot;)):x}\)</span> would then fit <em>one</em> effect - the effect of <span class="math inline">\(x\)</span> when <span class="math inline">\(\texttt{fac}\)</span> is equal to <span class="math inline">\(\texttt{a}\)</span> <em>or</em> <span class="math inline">\(\texttt{c}\)</span>.<a href="multi.html#fnref33" class="footnote-back">↩︎</a></p></li>
 <li id="fn34"><p>For more complicated models a (co)variance matrix may be estimated for a particular random component rather than just a single variance as here. In such cases, <code>V</code> is a matrix. The value at which (part of) the (co)variance matrix is fixed at is determined by <code>V</code>. Any elements of the covariance matrix in rows and/or columns equal to or greater than <code>fix</code> are fixed. In the case of a single variance <code>fix=1</code> simply fixes the variance (element 1,1 of the (co)variance matrix) at whatever is specified in <code>V</code> (one in this example).<a href="multi.html#fnref34" class="footnote-back">↩︎</a></p></li>
+<li id="fn35"><p>Obtaining this expression is involved. We can express the expected value of <span class="math inline">\(y\)</span> given <span class="math inline">\(l\)</span> is less than, or greater than, some value <span class="math inline">\(c\)</span> using the law of total expectation</p>
+<p><span class="math display">\[E[y | l&gt;c] = E[E[y|l] | l&gt;c]\]</span></p>
+<p>and</p>
+<p><span class="math display">\[E[y | l&lt;c] = E[E[y|l] | l&lt;c]\]</span></p>
+<p><span class="math inline">\(E[y|l]\)</span> is the mean of a conditional normal which has a well known form: <span class="math inline">\(\mu_y+\frac{\sigma_{y,l}}{\sigma^2_{l}}(l-\mu_l)\)</span>. The expectation of this when <span class="math inline">\(l&gt;c\)</span> is then <span class="math inline">\(\mu_y+\frac{\sigma_{y,l}}{\sigma^2_{l}}(E[l|l&gt;c]-\mu_l)\)</span>. <span class="math inline">\(E[l|l&gt;c]\)</span> can be obtained using the inverse Mills ratio:</p>
+<p><span class="math display">\[E[l|l&gt;c] = \mu_l + \sigma_{l}\frac{f_N(\alpha)}{(1 - F_N(\alpha))}\]</span></p>
+<p>and when <span class="math inline">\(l&lt;c\)</span> we have</p>
+<p><span class="math display">\[E[l|l&lt;c] = \mu_l - \sigma_{l}\frac{f_N(\alpha)}{F_N(\alpha)}\]</span></p>
+where <span class="math inline">\(f_N\)</span> and <span class="math inline">\(F_N\)</span> are the density and cumulative density functions for the unit normal, and <span class="math inline">\(\alpha = \mu_l/\sigma_{l}\)</span>. Code for obtaining <span class="math inline">\(E[y | l&gt;c]\)</span> and <span class="math inline">\(E[y | l&gt;c]\)</span> can be found
+<details>
+<summary>
+here
+</summary>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="#cb250-1" tabindex="-1"></a>condE <span class="ot">&lt;-</span> <span class="cf">function</span>(mu, V, <span class="at">c =</span> <span class="dv">0</span>, <span class="at">greater =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb250-2"><a href="#cb250-2" tabindex="-1"></a></span>
+<span id="cb250-3"><a href="#cb250-3" tabindex="-1"></a>    <span class="co"># A bivariate normal with mean vector mu and covariance matrix V is</span></span>
+<span id="cb250-4"><a href="#cb250-4" tabindex="-1"></a>    <span class="co"># assumed.  condE give expectation of 1st variable given 2nd variable is &gt;</span></span>
+<span id="cb250-5"><a href="#cb250-5" tabindex="-1"></a>    <span class="co"># c (greater=TRUE) or &lt; c (greater=FALSE)</span></span>
+<span id="cb250-6"><a href="#cb250-6" tabindex="-1"></a></span>
+<span id="cb250-7"><a href="#cb250-7" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(V) <span class="sc">!=</span> <span class="fu">ncol</span>(V) <span class="sc">|</span> <span class="fu">nrow</span>(V) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
+<span id="cb250-8"><a href="#cb250-8" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;V should be a 2x2 matrix&quot;</span>)</span>
+<span id="cb250-9"><a href="#cb250-9" tabindex="-1"></a>    }</span>
+<span id="cb250-10"><a href="#cb250-10" tabindex="-1"></a></span>
+<span id="cb250-11"><a href="#cb250-11" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(mu) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
+<span id="cb250-12"><a href="#cb250-12" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;mu should be length 2&quot;</span>)</span>
+<span id="cb250-13"><a href="#cb250-13" tabindex="-1"></a>    }</span>
+<span id="cb250-14"><a href="#cb250-14" tabindex="-1"></a></span>
+<span id="cb250-15"><a href="#cb250-15" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> (c <span class="sc">-</span> mu[<span class="dv">2</span>])<span class="sc">/</span><span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>])</span>
+<span id="cb250-16"><a href="#cb250-16" tabindex="-1"></a></span>
+<span id="cb250-17"><a href="#cb250-17" tabindex="-1"></a>    <span class="cf">if</span> (greater) {</span>
+<span id="cb250-18"><a href="#cb250-18" tabindex="-1"></a>        lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(alpha))</span>
+<span id="cb250-19"><a href="#cb250-19" tabindex="-1"></a>        <span class="co"># inverse Mills ratio</span></span>
+<span id="cb250-20"><a href="#cb250-20" tabindex="-1"></a>        expectation <span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">+</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> lambda</span>
+<span id="cb250-21"><a href="#cb250-21" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
+<span id="cb250-22"><a href="#cb250-22" tabindex="-1"></a>        lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span><span class="fu">pnorm</span>(alpha)</span>
+<span id="cb250-23"><a href="#cb250-23" tabindex="-1"></a>        expectation <span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">-</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> lambda</span>
+<span id="cb250-24"><a href="#cb250-24" tabindex="-1"></a>    }</span>
+<span id="cb250-25"><a href="#cb250-25" tabindex="-1"></a>    <span class="co"># Expectation that E[l|l&gt;0] or E[l|l&lt;0]</span></span>
+<span id="cb250-26"><a href="#cb250-26" tabindex="-1"></a></span>
+<span id="cb250-27"><a href="#cb250-27" tabindex="-1"></a>    expectation <span class="ot">&lt;-</span> mu[<span class="dv">1</span>] <span class="sc">+</span> (expectation <span class="sc">-</span> mu[<span class="dv">2</span>]) <span class="sc">*</span> V[<span class="dv">1</span>, <span class="dv">2</span>]<span class="sc">/</span>V[<span class="dv">2</span>, <span class="dv">2</span>]</span>
+<span id="cb250-28"><a href="#cb250-28" tabindex="-1"></a>    <span class="co"># Expectation of x given l|l&gt;0.</span></span>
+<span id="cb250-29"><a href="#cb250-29" tabindex="-1"></a></span>
+<span id="cb250-30"><a href="#cb250-30" tabindex="-1"></a>    <span class="co"># The whole thing simplifies to mu[1] \pm lambda*V[1,2]/sqrt(V[2,2]) but</span></span>
+<span id="cb250-31"><a href="#cb250-31" tabindex="-1"></a>    <span class="co"># easier to see the logic without the simplification</span></span>
+<span id="cb250-32"><a href="#cb250-32" tabindex="-1"></a></span>
+<span id="cb250-33"><a href="#cb250-33" tabindex="-1"></a>    <span class="fu">return</span>(expectation)</span>
+<span id="cb250-34"><a href="#cb250-34" tabindex="-1"></a>}</span></code></pre></div>
+</details>
+<p><br><a href="multi.html#fnref35" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>
