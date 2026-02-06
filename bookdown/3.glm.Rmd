@@ -531,7 +531,7 @@ Unfortunately the same trick can't be used for other link functions because the 
  abline(0,1)
 ```
 
-## Ordinal Data  
+## Ordinal Data  {#ordinal-sec}
 
 Thinking about Bernoulli GLM's in terms of thresholds provides a natural way of thinking about how we could model categorical data that falls into a natural ordering. For example, rather than dichotomising our outcome into those that had a mean score greater than, or less than, five, lets place the observations into three categories: (1, 4], (4, 6], (6, 10]. 
 

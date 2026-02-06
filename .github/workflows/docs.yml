@@ -53,6 +53,7 @@ jobs:
             pdftools
             survival
             ellipse
+            mnorm
             local::.
           needs: website
 

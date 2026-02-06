@@ -188,9 +188,11 @@ data(pbc)
 head(pbcseq[,c("id", "age", "sex", "ascites", "bili", "hepato")])
 ```
 
-The data consist of `r nrow(pbcseq)` records from `r length(unique(pbcseq$id))` patients ($\texttt{id}$). The age and sex of the patient were recorded and whether they suffered from ascites ($\texttt{ascites}$) and hepatomegaly or enlarged liver ($\texttt{hepato}$). The serum concentration of bilirunbin was also recorded ($\texttt{bili}$). 
+The data consist of `r nrow(pbcseq)` records from `r length(unique(pbcseq$id))` patients ($\texttt{id}$). The age and sex of the patient were recorded and whether they suffered from ascites ($\texttt{ascites}$) and hepatomegaly or enlarged liver ($\texttt{hepato}$). The serum concentration of bilirunbin was also recorded ($\texttt{bili}$). We will consider two multi-response models. 
 
-We will consider two multi-response models. First, we will simultaneously model log($\texttt{bili}$) as Gaussian and $\texttt{ascites}$ as Bernoulli with threshold link (probit). As we will see, in multi-response models, modelling Bernoulli responses as $\texttt{family="threshold"}$ has some nice advantages. 
+### Bernoulli-Gaussian
+
+First, we will simultaneously model log($\texttt{bili}$) as Gaussian and $\texttt{ascites}$ as Bernoulli with threshold link (probit). As we will see, in multi-response models, modelling Bernoulli responses as $\texttt{family="threshold"}$ has some nice advantages. 
 
 
 ```{r pbc}
@@ -272,7 +274,7 @@ The difference between these expectations is the coefficient you would obtain by
 
 $$E[y|x=1]-E[y|x=0]=\frac{f_N(\alpha)\sigma^2_{y,l}}{F_N(\alpha)(1-F_N(\alpha))\sigma_{l}}$$
 
-where $f_N$ and $F_N$ are the density and cumulative density functions for the unit normal, and $\alpha = \mu_l/\sigma_{l}$[^condE].
+where $f_N$ and $F_N$ are the density and cumulative density functions for the unit normal, and $\alpha = \mu_l/\sigma_{l}$[^condE]. 
 
 
 [^condE]: Obtaining this expression is involved. We can express the expected value of $y$ given $l$ is less than, or greater than, some value $c$ using the law of total expectation
@@ -331,8 +333,39 @@ where $f_N$ and $F_N$ are the density and cumulative density functions for the u
 	```
 	</details><br> 
 
+We can visualise what we have done. Figure \@ref(fig:biserial) plots the 95% prediction interval for the latent variable associated with $\texttt{ascites}$ presence (x-axis) and log($\texttt{bili}$) (y-axis) assuming the mean is at the central black point (this is the posterior mean prediction for the data). Conditioning on the posterior mean estimates of ${\bf V}_{\texttt{id}}$ and ${\bf V}_{\texttt{units}}$, the predictive distribution is multivariate normal with covariance matrix ${\bf V}_{\texttt{id}}+{\bf V}_{\texttt{units}}$ and so the 95% prediction interval is an ellipse. When the latent variable exceeds zero (vertical dashed line) the $y=1$ ($\texttt{ascites}$ is present). Consequently, the blue shaded area is the region of the predictive distribution for individuals with $\texttt{ascites}$ and the white region of the ellipse is for individuals without $\texttt{ascites}$. The expectation of $log(\texttt{bili})$ for these two groups are plotted as arrows. 
 
-```{r label=pbc1-reg2, echo=FALSE, include=TRUE, fig.cap="MCMC trace plot of the regression coefficient of log serum concentration of bilirunbin ($\\texttt{bili}$) on ascites presence ($\\texttt{ascites}$) as obtained from a multi-response model (red). ", fig.width=7, fig.height=5}
+
+```{r biserial, echo=FALSE, include=TRUE, fig.cap="", fig.width=7, fig.height=5, fig.cap="Representation of a Gaussian ($log(\\texttt{bili})$) and Bernoulli ($\\texttt{ascites}$) multi-response model. The ellipse is the 95% prediction interval for the Gaussian trait and the Bernoulli latent variable (on the probit scale). Observations to the right of the threshold (vertical dashed line) are successes and have $\\texttt{ascites}$ and those to the left do not. The means of the Gaussian variable in these two groups are plotted as arrows."}
+
+mu<-c(0,0)
+
+mu[1]<-mean(predict(m.pbc1, type="terms")[1:nrow(pbcseq)])
+mu[2]<-mean(predict(m.pbc1, type="terms")[nrow(pbcseq)+1:nrow(pbcseq)]) 
+
+V<-matrix(colMeans(m.pbc1$VCV[,1:4]),2,2)+matrix(colMeans(m.pbc1$VCV[,4+1:4]),2,2)                        
+                  
+ell <- ellipse(V, centre = mu, level = 0.95, npoints = 361)
+
+
+plot(ell[,2:1], type = "n", ylab = "log(bili)", xlab = "ascites", xlim=1.1*range(ell[,2]) , ylim=1.1*range(ell[,1]))
+
+polygon(ell[,2:1], border = 1)                       
+points(mu[2], mu[1], pch = 19)           
+abline(v = 0, lty = 2) 
+                  
+polygon(ell[which(ell[,2]>=0),2], ell[which(ell[,2]>=0),1],             
+        col    = rgb(0.2, 0.6, 0.8, 0.40),   
+        border = NA)
+
+arrows(x0=0, y0=condE(mu, V, c=0, greater=TRUE), x1 = 1.1*min(ell[,2]), col=rgb(0.2, 0.6, 0.8, 0.40))
+arrows(x0=0, y0=condE(mu, V, c=0, greater=FALSE), x1 = 1.1*min(ell[,2]))
+```
+
+We can also plot the MCMC trace of the difference, and we can see that the difference is large and certainly not zero.
+
+
+```{r label=pbc1-reg2, echo=FALSE, include=TRUE, fig.cap="MCMC trace plot of the regression coefficient of log serum concentration of bilirunbin ($\\texttt{bili}$) on ascites presence ($\\texttt{ascites}$) as obtained from a multi-response model. ", fig.width=7, fig.height=5}
 post.reg<-1:1000
 
 for(i in 1:1000){
@@ -345,52 +378,107 @@ for(i in 1:1000){
 	post.reg[i]<-condE(mu=mu, V=V.id+V.units, c=0, greater=TRUE)-condE(mu=mu, V=V.id+V.units, 0, greater=FALSE)
 }
 
-plot(as.mcmc(post.reg), col="red")
+plot(as.mcmc(post.reg))
 ```
 
+### All Bernoulli
 
+We can also consider a bivariate model of the two Bernoulli variables $\texttt{ascites}$ and $\texttt{hepato}$. The model set-up is almost identical, although we need to add the constraint that the residual variances of both traits are not identifiable in the likelihood but the residual correlation is: we need o restrict the residual covariance matrix to a residual correlation matrix. Replacing the $\texttt{us}$ variance structure with $\texttt{corg}$ achieves this. The prior specification only requires a degree-belief parameter $\texttt{nu}$ which results in a beta distribution for each correlation with shape and scale equal to $(\texttt{nu}-k+1)/2$. Since $k=2$, I set $\texttt{nu}=3$ which results in a flat prior for the correlation. Note that specifying the marginal prior `F(2,1000)` for the (co)variance matrix of $\texttt{id}$ effects also results in $\texttt{nu}=3$ (See Section \@ref(VCVprior-r-sec)). 
 
-```{r biserial, echo=FALSE, include=TRUE, fig.cap="", fig.width=7, fig.height=5}
+```{r }
+prior.pbc2<-list(R=list(V=diag(2),nu=3), G=F(2,1000))
 
+m.pbc2<-MCMCglmm(cbind(hepato, ascites)~trait-1+trait:(age+sex), random=~us(trait):id, rcov=~corg(trait):units, data=pbcseq, family=c("threshold", "threshold"), prior=prior.pbc2, longer=10)
+```
+
+On the latent scale we see a reasonably strong correlation between the two outcomes:
+
+```{r }
+summary(m.pbc2)
+```
+
+If we wish, we can also characterise the relationship in terms of a contingency table. The model defines a multivariate normal distribution of latent variables around the fixed-effect prediction, and the probability of falling in any of the four quadrants defined by the origin can be calculated. We can imagine a population of individuals all of which have the same expected latent variables (the weighted average of the male and female means at the average age, where the weights are the frequencies of males and females in the data frame): 
+
+```{r }
 mu<-c(0,0)
+nobs<-nrow(pbcseq) # number of obseravtions
 
-mu[1]<-mean(predict(m.pbc1, type="terms")[1:nrow(pbcseq)])
-mu[2]<-mean(predict(m.pbc1, type="terms")[nrow(pbcseq)+1:nrow(pbcseq)]) 
+mu[1]<-mean(predict(m.pbc2, type="terms")[1:nobs])
+# predicted mean for hepato latent variable
 
-V.id<-matrix(colMeans(m.pbc1$VCV[,1:4]),2,2)                   
-V.units<-matrix(colMeans(m.pbc1$VCV[,4+1:4]),2,2)                   
-
-ell.id <- ellipse(V.id, centre = mu, level = 0.95, npoints = 361)
-ell.units <- ellipse(V.units, centre = mu, level = 0.95, npoints = 361)
-
-par(mfrow=c(1,2))
-
-plot(ell.id, type = "n", xlab = "log(bili)", ylab = "ascites", xlim=1.1*range(c(ell.id[,"x"], ell.units[,"x"])), , ylim=1.1*range(c(ell.id[,"y"], ell.units[,"y"])))
-
-polygon(ell.id, border = 1)                       
-points(mu[1], mu[2], pch = 19)           
-abline(h = 0, lty = 2) 
-                  
-polygon(ell.id[which(ell.id[, 2]>0),1],ell.id[which(ell.id[, 2]>0),2],             
-        col    = rgb(0.2, 0.6, 0.8, 0.40),   
-        border = NA)
-
-abline(v=condE(mu, V.id, c=0, greater=TRUE))
-abline(v=condE(mu, V.id, c=0, greater=FALSE))
-
-plot(ell.units, type = "n", xlab = "log(bili)", ylab = "ascites", xlim=1.1*range(c(ell.id[,"x"], ell.units[,"x"])), , ylim=1.1*range(c(ell.id[,"y"], ell.units[,"y"])))
-
-polygon(ell.units, border = 1)                       
-points(mu[1], mu[2], pch = 19)           
-abline(h = 0, lty = 2) 
-
-polygon(ell.units[which(ell.units[, 2]>0),1],ell.units[which(ell.units[, 2]>0),2],             
-        col    = rgb(0.2, 0.6, 0.8, 0.40),   
-        border = NA)
-
-abline(v=condE(mu, V.units, c=0, greater=TRUE))
-abline(v=condE(mu, V.units, c=0, greater=FALSE))
+mu[2]<-mean(predict(m.pbc2, type="terms")[nobs+1:nobs])
+# predicted mean for ascites latent variable
 ```
+
+Around these means the latent variables for a particular individual at a particular time (as a vector are) ${\bf u}_i+{\bf e}_{ij}$. These vectors are a drawn from a multivariate normal with zero mean and (co)variance ${\bf V}_{\texttt{id}}+{\bf V}_{\texttt{units}}$:
+
+
+```{r }
+V<-matrix(colMeans(m.pbc2$VCV[,1:4]+m.pbc2$VCV[,4+1:4]),2,2)
+# posterior mean covariance matrix
+```  
+
+Figure \@ref(fig:terachoric) gives a visual representation of this distribution, and the quadrants that correspond to different outcomes.
+
+
+```{r terachoric, echo=FALSE, include=TRUE, fig.cap="", fig.width=7, fig.height=5, fig.cap="Representation of a bivariate Bernoulli model. The solid point  represents the means of the two Bernoulli latent variables and the ellipse is the 95% prediction interval for the latent variables. The pair of latent variable lie in one of the four quadrants corresponding to the observed outcome (white: hepato=0 and ascites=0, pink: 1/0, blue: 0/1 and purple: 1/1)."}
+                                    
+ell <- ellipse(V, centre = mu, level = 0.95, npoints = 361)
+
+plot(ell[,2:1], type = "n", ylab = "hepato", xlab = "ascites", xlim=1.1*range(ell[,2]) , ylim=1.1*range(ell[,1]))
+
+polygon(ell[,2:1], border = 1)                       
+points(mu[2], mu[1], pch = 19)           
+abline(v = 0, lty = 2) 
+abline(h = 0, lty = 2)      
+
+polygon(ell[which(ell[,2]>=0),2], ell[which(ell[,2]>=0),1],             
+        col    = rgb(0.2, 0.6, 0.8, 0.40),   
+        border = NA)
+
+polygon(ell[which(ell[,1]>=0),2], ell[which(ell[,1]>=0),1],             
+        col    = rgb(0.8, 0.6, 0.8, 0.40),   
+        border = NA)
+```
+
+The raw contingency table for the data is: 
+
+```{r }
+prop.table(table(hepato=pbcseq$hepato, ascites=pbcseq$ascites))
+```
+
+The $\texttt{pmnorm}$ function in the package $\texttt{mnorm}$ calculates the cumulative density function for the multivariate normal, and we can use this to calculate the four probabilities. I've done this in a rather long winded way so that the code could be extended to ordinal data that falls into more than two categories (Section \@ref(ordinal-sec)):
+
+```{r }
+n<-2
+m<-2
+P<-matrix(NA, n, m)
+
+thresh1<-c(-Inf, 0, Inf)
+thresh2<-c(-Inf, 0, Inf)
+
+for(i in 1:n){
+	for(j in 1:m){
+		lower<-c(thresh1[i], thresh2[j])
+		upper<-c(thresh1[i+1], thresh2[j+1])
+		P[i,j]<-pmnorm(lower, upper, mean = mu, sigma = V)$prob
+	}
+}
+```
+
+We don't expect the predicted probabilities to perfectly match what is observed since the data are unbalanced (individuals vary in how many times they are observed) and individuals vary in their sex and age but our prediction is for a population of individuals that are in some way average. Nevertheless, the predicted probabilities are close:    
+
+```{r }
+P
+```
+
+## Long-format
+
+In the multi-response models we have fitted so far, all responses have been observed for every unit of observation. For example, there were no cases where a patient was assessed for $\texttt{ascites}$ but $\texttt{bili}$ was not measured. If there had been missing observations, these could have been recorded as NA and $\texttt{MCMCglmm}$ will treat them as unknown observations to be sampled and averaged over. If the amount of missingness is low then this is generally not an issue. However, if there is a lot of missing data then updating the missing observations can be slow and result in poor mixing. In these cases it is usually best to store the data in long-format and remove the missing values [^missing].
+
+[^missing]: I should really have an na.option in the call to $\texttt{MCMCglmm}$ that simply ignores missing values in the wide-format. 
+
+
 
 ## Covariances between random and residual terms ($\texttt{covu}$)
 
