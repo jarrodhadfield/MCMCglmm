@@ -92,6 +92,8 @@ fig:pbc1-reg
 fig:biserial
 fig:pbc1-reg2
 fig:terachoric
+fig:covu-r
+fig:mu-vs-sing
 fig:MN1
 fig:MN2
 fig:ZIP
@@ -196,8 +198,8 @@ multi-response-bernoulli-models
 bern-gaus-sec
 all-bernoulli
 wide-versus-long-format
-covariances-between-random-and-residual-terms-textttcovu
-texttttheta_scale-scaled-linear-predictor-1
+covu-sec
+scaled-linear-predictors-texttttheta_scale
 multinomial-models
 zero-inflated-models
 posterior-predictive-checks
