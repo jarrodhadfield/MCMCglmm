@@ -84,6 +84,7 @@ fig:equil-ante
 fig:pred-int4
 fig:spline
 fig:spending
+eq:multi
 fig:asUV
 fig:MVvUV2
 fig:pbc1-cor
@@ -169,7 +170,7 @@ vstruct-sec
 idh-sec
 us-sec
 other-variance-structures
-linking-functions
+link-func-sec
 textttstr-covariances-between-random-terms
 multim-sec
 textttcovu-covariances-between-random-and-residual-terms
@@ -192,9 +193,9 @@ penalised-signal-regression
 multi
 multi-response-non-gaussian-models
 multi-response-bernoulli-models
-bernoulli-gaussian
+bern-gaus-sec
 all-bernoulli
-long-format
+wide-versus-long-format
 covariances-between-random-and-residual-terms-textttcovu
 texttttheta_scale-scaled-linear-predictor-1
 multinomial-models
