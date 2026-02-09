@@ -54,6 +54,7 @@ jobs:
             survival
             ellipse
             mnorm
+            tidyr
             local::.
           needs: website
 

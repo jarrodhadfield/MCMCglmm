@@ -4,6 +4,9 @@
   options("na.action"="na.pass")	
 
   if(missing(data)){stop("data argument is missing")}
+  if(inherits(data, "tbl_df")){
+     data<-as.data.frame(data)
+  }
   if(missing(fixed)){stop("fixed is missing")}
 
   if(!is(fixed, "formula")){stop("fixed should be a formula")}

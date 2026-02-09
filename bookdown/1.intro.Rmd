@@ -36,6 +36,7 @@ library(pdftools)
 library(survival)
 library(ellipse)
 library(mnorm)
+library(tidyr)
 
 knitr::knit_hooks$set(webgl = hook_webgl)
 

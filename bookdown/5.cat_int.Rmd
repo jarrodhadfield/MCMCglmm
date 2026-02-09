@@ -252,7 +252,7 @@ kable(df, "html", escape = FALSE, caption = "Different random effect specificati
   scroll_box(width = "100%", box_css = "border: 0px;")
 ```
 
-## Linking Functions
+## Linking Functions {#link-func-sec}
 
 In some models we would like to estimate covariances between sets of random effects (or random effects and residuals) in a way that is conceptually very similar to that discussed in Section \@ref(vstruct-sec) using variance structures. However, the way that we would like the (co)variances to be set up cannot be achieved by forming interactions. This happens when the predictors associated with the two or more sets of random effects are in different columns of the data frame, despite sharing the same set of levels, and we need some way to link them. Again, this is perhaps best illustrated through an example. 
 
