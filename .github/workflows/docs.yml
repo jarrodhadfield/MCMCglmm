@@ -55,6 +55,7 @@ jobs:
             ellipse
             mnorm
             tidyr
+            dplyr
             local::.
           needs: website
 

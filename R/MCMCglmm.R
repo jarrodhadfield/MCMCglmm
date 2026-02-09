@@ -196,7 +196,7 @@ if(is.null(family)){
    }
  }
 }else{
- if(is.null(data$family)==FALSE){
+ if(!is.null(data$family)){
   stop("family column exists in data and in family argument to MCMCglmm: specify family=NULL")
 }else{
   family.names<-family 
@@ -527,15 +527,29 @@ if(grepl("^ztmb", family[i])){
 nt<-nt-1
 }
 
-
 if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names[which((family.names%in%family.types)==FALSE)]), "not a supported distribution"))}
-
 
 rcov_terms<-split.direct.sum(as.character(rcov)[2])
 convert_rcov<-rep(0, length(rcov_terms))
 
+id2M<-FALSE
+if(any(grepl("hu|zi|za|ztmb", family.names))){
+  id2M<-TRUE
+}
+if(any(grepl("path\\(", fixed))){
+  id2M<-TRUE
+}
+if(MVasUV){
+  if(any(grepl("multinomial",  family.names[match(levels(data$trait), data$trait)]) & mfac!=0)){
+    id2M<-TRUE
+  }
+}else{
+  if(any(grepl("multinomial", family.names) & mfac!=0)){
+    id2M<-TRUE
+  }
+}
 
-if(any(c(grepl("hu|zi|za|ztmb", family.names), (grepl("multinomial", family.names) & mfac!=0), grepl("path\\(", fixed)))){ 
+if(id2M){ 
 
 # for back-compatibility need to turn idh/idv/trait:units R structures 
 # into their matrix equivalents when super.traits or path terms fitted 

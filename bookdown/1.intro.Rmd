@@ -37,6 +37,7 @@ library(survival)
 library(ellipse)
 library(mnorm)
 library(tidyr)
+library(dplyr)
 
 knitr::knit_hooks$set(webgl = hook_webgl)
 

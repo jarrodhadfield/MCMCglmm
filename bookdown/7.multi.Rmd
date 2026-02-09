@@ -244,7 +244,7 @@ legend("topright",
        bty    = "n")
 ```
 
-In the model with two Gaussian responses we also thought about the association between the two traits in terms of regression. If we follow the same recipe for the Bernoulii response ($\texttt{ascites}$) regressed on the Gaussian response (log($\texttt{bili}$)) we end up with the regression coefficients we would obtain from probit regression had we fitted log($\texttt{bili}$) as a predictor and also the true expected log($\texttt{bili}$) of each patient (which of course we don't know, but constitute the $\texttt{id}$ effects for that trait). We can see that the regression is stronger within individuals than between (Figure \@ref(pbc1-reg)). The change in the risk of $\texttt{acites}$ when increasing a patient's log($\texttt{bili}$) by one unit is greater than the difference in risk between two patient's that on average differ in log($\texttt{bili}$) by one unit. 
+In the model with two Gaussian responses we also thought about the association between the two traits in terms of regression. If we follow the same recipe for the Bernoulii response ($\texttt{ascites}$) regressed on the Gaussian response (log($\texttt{bili}$)) we end up with regression coefficients had we fitted log($\texttt{bili}$) as a predictor and also the true expected log($\texttt{bili}$) of each patient (which of course we don't know, but constitute the $\texttt{id}$ effects for that trait). The change in the risk of $\texttt{acites}$ when increasing a patient's log($\texttt{bili}$) by one unit is greater than the difference in risk between two patient's that on average differ in log($\texttt{bili}$) by one unit (Figure \@ref(fig:pbc1-reg)). 
 
 
 ```{r label=pbc1-reg, echo=FALSE, include=TRUE, fig.cap="MCMC trace plot of the coefficient from a probit regression of ascites presence ($\\texttt{ascites}$) on log serum concentration of bilirunbin ($\\texttt{bili}$). The red and blue traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red).", fig.width=7, fig.height=5}
@@ -262,7 +262,7 @@ preg.units<-m.pbc1$VCV[,"traitbili:traitascites.units"]/m.pbc1$VCV[,"traitbili:t
 HPDinterval(preg.units-preg.id)
 ```
 
-The 95% credible interval overlaps zero, just.
+The 95% credible interval overlaps zero, just. 
 
 If we consider the opposite regression -  the Gaussian response (log($\texttt{bili}$)) on the Bernoulii response ($\texttt{ascites}$) things aren't quite as straight forward. In a single response-model the actual presence or not of $\texttt{ascites}$ would be fitted, yet in the multi response-model the association is at the level of the latent variable. As noted above for car accidents and insurance payouts, there is an important distinction between measuring an association directly on the data scale versus the latent scale. However, when Bernoulli models are conceptualised in terms of threshold models we can make this distinction disappear.  If we designate the Gaussian response as $y$ and the Bernoulli response as $x$ (0 or 1) with associated latent variable $l$, we can calculate the two expectations 
 
@@ -476,61 +476,118 @@ P
 
 ## Wide versus Long Format
 
-In the multi-response models we have fitted so far, all responses have been observed for every unit of observation. For example, there were no cases where a patient was assessed for $\texttt{ascites}$ but $\texttt{bili}$ was not measured. If there had been missing observations, these could have been recorded as $\texttt{NA}$ and $\texttt{MCMCglmm}$ will treat them as unknown observations to be sampled and averaged over. If the amount of missingness is low then this is generally not an issue. However, if there is a lot of missing data then updating the missing observations can be slow and result in poor mixing. In these cases it is usually best to store the data in long-format and remove the missing values [^missing]. When fitting multi-response models to long-format data it needs to be in format shown in Equation \@ref(eq:multi). There needs to be two columns in the data-frame: $\texttt{family}$ specifying the distribution for each observation and $\texttt{trait}$ which has factors indexing the observation type. In the next section we will fit a bivariate model to log($\texttt{bili}$) and the categorical variable $\texttt{status}$. $\texttt{status}$ has three levels indicating whether the final outcome for the patient was censored (0) had a liver transplant (1) or died (2). Let's reshape the data and add the necessary columns:
+In the multi-response models we have fitted so far, all responses have been observed for every unit of observation. For example, there were no cases where a patient was assessed for $\texttt{ascites}$ but $\texttt{bili}$ was not measured. If there had been missing observations, these could have been recorded as $\texttt{NA}$ and $\texttt{MCMCglmm}$ will treat them as unknown observations to be sampled and averaged over. If the amount of missingness is low then this is generally not an issue. However, if there is a lot of missing data then updating the missing observations can be slow and result in poor mixing. In these cases it is usually best to store the data in long-format and remove the missing values [^missing]. When fitting multi-response models to long-format data it needs to be in a format shown in Equation \@ref(eq:multi). There needs to be two columns in the data-frame: $\texttt{family}$ specifying the distribution for each observation and $\texttt{trait}$ which has factors indexing the observation type. In such cases the $\texttt{family}$ argument to $\texttt{family}$ should be $\texttt{NULL}$.
+
+In the next section we will fit a bivariate model to log($\texttt{bili}$) and the categorical variable $\texttt{status}$. $\texttt{status}$ has three levels indicating whether the final outcome for the patient was censored (0) had a liver transplant (1) or died (2). Let's reshape the data and add the necessary columns:
 
 [^missing]: I should really have an na.option in the call to $\texttt{MCMCglmm}$ that simply ignores missing values in the wide-format. 
 
 
-```{r }
+```{r tidy = FALSE}
 pbcseq_long <- tidyr::pivot_longer(pbcseq,
   cols      = c(status, bili),
   values_to = "y",
   names_to = "trait",
   cols_vary = "slowest")
+# merge status and bili columns into a single column: y
+# trait is the column indicating if y belongs to status or bili
 
 pbcseq_long$trait<-as.factor(pbcseq_long$trait)
+
 pbcseq_long$family <- dplyr::recode(pbcseq_long$trait, bili = "gaussian", status = "threshold")
+# family specifies the distribution type for the two sets of observations.
 ```  
 
-## Covariances between random and residual terms ($\texttt{covu}$)
+## Covariances between random and residual terms ($\texttt{covu}$) {#covu-sec}
 
-In the previous section we generated a long-format data-frame $\texttt{pbcseq_long}$ with two traits: $\texttt{status}$ first with three levels and then the continuous variable $\texttt{bili}$. In reality, $\texttt{status}$ is not a repeat-measure trait, it is the final outcome (censored, transplant or dead) duplicated across all of the patients records. Consequently we should only retain a single record. 
+In the previous section we generated a long-format data-frame $\texttt{pbcseq_long}$ with the response variable $\texttt{y}$ being associated with two traits: $\texttt{status}$ with three levels and then the continuous variable $\texttt{bili}$. In reality, $\texttt{status}$ is not a repeat-measure trait, it is the final outcome (censored, transplant or dead) duplicated across all of the patients records. Consequently we should only retain a single record: 
 
-```{r }
+```{r tidy=FALSE}
 remove<-with(pbcseq_long, duplicated(id) & trait=="status")
+# cols_vary = "slowest" in pivot_longer means status records are followed by bili
+# Then, `remove` is TRUE for all status observations except the first for each id.
 
 pbcseq_long<-pbcseq_long[-which(remove),]
 
+# rows of data-frame for first patient
 subset(pbcseq_long[,c("y", "trait", "family", "id")], id==1)
 ```
 
 In addition lets log transform $\texttt{bili}$ and turn  $\texttt{status}$ into a 2-level outcome dead (1) or not (0):
 
 ```{r }
-pbcseq_long$y[which(pbcseq_long$trait=="bili")]<-log(pbcseq_long$y[which(pbcseq_long$trait=="bili")])
-pbcseq_long$y[which(pbcseq_long$trait=="status" & pbcseq_long$y==1)]<-0
-pbcseq_long$y[which(pbcseq_long$trait=="status" & pbcseq_long$y==2)]<-1
+pbcseq_long <- pbcseq_long %>% mutate(y = if_else(trait == "bili", log(y),y))
+pbcseq_long <- pbcseq_long %>% mutate(y = if_else(trait == "status", as.numeric(y == 2),y))
 ```
 
-If we wish to model death and $\texttt{bili}$ simultaneously the Bernoulli-Gaussian model covered in Section \@ref(bern-gaus-sec) seems appropriate. However, since we only have a single-record of $\texttt{status}$ for each patient, it doesn't make sense to fit $\texttt{id}$ effects for $\texttt{status}$ as they are not identifiable from the $\texttt{unit}$ effects (which themselves have non-identifiable variance because $\texttt{status}$ is Bernoulli. However, $\texttt{bili}$ is repeat-measure and so it does make sense to fit $\texttt{id}$ effects for this traits. In addition, allowing the $\texttt{id}$ effects for $\texttt{bili}$ to be correlated with the $\texttt{unit}$ effects also seems reasonable - perhaps the long-term concentration of bilirunbin dictates whether a patient will live or not.  In Section \@ref(link-func-sec) we covered ways in which we could link two (or more) sets of random effects and estimate their covariance matrix. Here, we need to link a set of random effects with a set of residuals. $\texttt{MCMCglmm}$ allows the set of random effects appearing in the final random term of the `random` specification to be correlated with the set of residuals appearing in the first residual term of the `rcov` specification.  The linking is specified by adding a `covu=TRUE` to the prior specification for the first residual term. 
+If we wish to model death and $\texttt{bili}$ simultaneously, the Bernoulli-Gaussian model covered in Section \@ref(bern-gaus-sec) seems appropriate. However, since we only have a single-record of $\texttt{status}$ for each patient, it doesn't make sense to fit $\texttt{id}$ effects for $\texttt{status}$ as they are not identifiable from the $\texttt{unit}$ effects (which themselves have non-identifiable variance because $\texttt{status}$ is Bernoulli). However, $\texttt{bili}$ is repeat-measure and so it does make sense to fit $\texttt{id}$ effects for this traits. In addition, allowing the $\texttt{id}$ effects for $\texttt{bili}$ to be correlated with the $\texttt{unit}$ effects of $\texttt{status}$ also seems reasonable - perhaps the long-term concentration of bilirunbin dictates whether a patient will live or not.  In Section \@ref(link-func-sec) we covered ways in which we could link two (or more) sets of random effects and estimate their covariance matrix. Here, we need to link a set of random effects with a set of residuals. $\texttt{MCMCglmm}$ allows the set of random effects appearing in the final random term of the `random` specification to be correlated with the set of residuals appearing in the first residual term of the `rcov` specification.  The linking is specified by adding a `covu=TRUE` to the prior specification for the first residual term. 
 
-```{r covu}
-prior.pbc_long<-list(R=list(R1=list(V=diag(2),nu=3, covu=TRUE, fix=2), R1=IW(1, 0.002)))
+```{r covu, tidy=FALSE}
+prior.pbc_long<-list(R=list(R1=list(V=diag(2),nu=3, covu=TRUE, fix=2), 
+							R2=IW(1, 0.002)))
 
-#mpbc_long<-MCMCglmm(y~at.level(trait, "bili"):(1+age+sex)+at.level(trait, "status"):(1+sex), random=~us(at.level(trait, "bili")):id, rcov=~us(at.level(trait, "status")):id+us(at.level(trait, "bili")):units, data=pbcseq_long, family=NULL, prior=prior.pbc_long)
+m.pbc_long<-MCMCglmm(y~trait-1+at.level(trait, "bili"):(age+sex)-1+at.level(trait, "status"):sex, 
+     			random=~us(at.level(trait, "bili")):id, 
+         		rcov=~us(at.level(trait, "status")):id+us(at.level(trait, "bili")):units, 
+             	data=pbcseq_long, family=NULL, prior=prior.pbc_long)
 ```
 
+The model specification requires a bit of unpacking. `trait-1` fits intercepts for both traits. `at.level(trait, "bili"):(age+sex)` fits an age effect and a sex effect to (log) $\texttt{bili}$ and `at.level(trait, "status"):sex` fits a sex effect for $\texttt{status}$. `random=~us(at.level(trait, "bili")):id` fits $\texttt{id}$ effects for $\texttt{bili}$. This works because `at.level(trait, "bili")` defines a vector of zero's (if $\texttt{trait}=\texttt{status}$) and one's (if $\texttt{trait}=\texttt{bili}$) for which random slopes are defined (see Chapter \@ref(cont-int)). Consequently, when $\texttt{trait}=\texttt{status}$ the model is $0\times u =0$ and when $\texttt{trait}=\texttt{bili}$ the model is $1\times u =u$, where $u$ is the $\texttt{id}$ effect.  Similarly, the first part of the residual specification `us(at.level(trait, "status")):id` defines a complementary set of residuals for $\texttt{status}$. This works because for $\texttt{status}$ there is only one observation per level of $\texttt{id}$ and so the specification satisfies the condition for a residual: the effect must be unique to an observation.  Using `us(at.level(trait, "status")):units` would also have satisfied this condition, but the levels in the residual specification need to correspond to those in the random term for them to be linked, hence $\texttt{id}$ was used rather than $\texttt{units}$. Finally, we have a second residual component that defines the residuals for $\texttt{bili}$: `us(at.level(trait, "bili")):units`. The prior for the first residual term ($\texttt{R1}$) contains the argument `covu=TRUE` indicating that covariances between the set of residuals and the set of random effects defined by the final random term are present. The prior for the resulting ($2\times 2$) covariance matrix is also specified here and the prior for the final random term (the only random term in this model) is omitted. Note that the variance structure is that specified by the residual term ($\texttt{us}$ in this instance). We have fixed the second variance in this covariance matrix to one, since these are the $\texttt{unit}$ effects for a Bernoulli trait and so the variance isn't identified. Using $\texttt{nu=3}$ places a flat prior on the correlation (Section \@ref(VCVprior-r-sec)) but the marginal prior for the variance of the $\texttt{id}$ effects on $\texttt{bili}$ is inverse-Wishart with $\texttt{V=1.5}$ and $\texttt{nu=2}$. Not ideal, but it is not possible to use parameter-expansion (Section \@ref(PXprior-sec)) with $\texttt{covu}$ structures.
 
-The first term, which again looks rather complicated, is simply fitting residuals for the single-measure response only. This can be achieved by using $\texttt{individual}$ effects since each individual only has one observation for this response. The second term fits residuals for the repeat-measure response and here we use $\texttt{units}$ to specify a residual for each of an individual's repeat measure observations. Note we could also have used $\texttt{units}$ in place of $\texttt{individual}$ for the first term, but then the levels of $\texttt{units}$ would not agree with the levels of $\texttt{individual}$ appearing in the random term and so, as with $\texttt{str}$ linking functions, the two sets of effects could not be linked. The prior specification for the residual term would then look something like:
 
 ```{r }
-R=list(R1=list(V=diag(2), nu=2, alpha.mu=c(0,0), alpha.V=diag(2)*1000, covu=TRUE), 
-       R2=list(V=1, nu=1, alpha.mu=0, alpha.V=1000))
+summary(m.pbc_long)
 ```
 
-The first prior specifies a $2\times 2$ covariance matrix for the two sets of $\texttt{individual}$ effects. Since the prior for the last set of random effects is absorbed into the residual prior specification, it should be omitted from the random-effect (G-structure) prior specification. The covariance matrix inherits the variance function of the first residual term, in this case $\texttt{us}$.   
+There is a strong positive association between the expected long-term value of (log) $\texttt{bili}$ and whether a patient dies before the end of the study. Figure \@ref(fig:covu-r) shows the posterior distribution for the correlation in $\texttt{id}$ effects.
 
-## $\texttt{theta_scale}$: scaled linear predictor 
+```{r covu-r, echo=FALSE, include=TRUE, fig.cap="Posterior distribution of the correlation between patient effects on (log) $\\texttt{bili}$ and residual $\\texttt{status}$ (death) from model $\\texttt{m.pbc_long}$.", fig.width=7, fig.height=5}
+
+hist(posterior.cor(m.pbc_long$VCV[,1:4])[,2], main="", freq=FALSE, xlab="Correlation")
+```
+
+A more usual way to fit this type of model is to use a single-response for death and simply fit the average of each patient's (log) $\texttt{bili}$ as a predictor.
+
+```{r }
+pbcseq_status<-subset(pbcseq_long, trait=="status")
+pbcseq_status$mean.bili<-with(pbcseq, tapply(log(bili), id, mean))[pbcseq_status$id]
+
+m.pbc_status<-MCMCglmm(y~mean.bili, data=pbcseq_status, family=NULL, prior=list(R=list(V=1, fix=1)))
+```
+
+In Figure \@ref(fig:mu-vs-sing) the regression coefficient from the multi-response model (in black) is compared to that from the single-response model (in red) and we can see that the multi-response model gives a regression coefficient that is greater in magnitude[^probit-rescale]. 
+
+[^probit-rescale]: Obtaining comparable regression coefficients between the single and multi-response models is fairly involved. The reason for this is that the standard single-response probit model assumes a $\texttt{units}$ variance of one after conditioning on the predictors, yet the multiple-response model assumes a $\texttt{units}$ variance of one before conditioning on the predictors. Nevertheless, we can easily move between the two parameterisations. As detailed at the start of this Chapter and in the footnote[^schur], the  $\texttt{units} variance for death after conditioning on the $\texttt{id}$ effects for $log(\texttt{bili})$ is $V_{2|1}=V_{2,2}-V_{1,2}^2/V_{1,1}$ where ${\bf V}$ is the \texttt{id-units} covariance matrix.  As covered in Section \@ref(bernoulli-sec) and in footnote[^3.5] we can then rescale the regression coefficient from the multi-response model by $\sqrt{2/(1+V_{2|1})}$ to obtain the value we get if we could have set $V_{2|1}=1$ as in the single-response model.
+
+
+```{r mu-vs-sing, echo=FALSE, include=TRUE, fig.cap="Posterior distributions for the probit regression of $\\texttt{status}$ (death) on a patient's (log) $\\texttt{bili}$ value. The black trace is obtained from a multi-response model and the predictor is the expected value of log $\\texttt{bili}$ for each patient, whereas the red trace is obtained from a single-response model and the predictor is the sample mean of log $\\texttt{bili}$ for each patient.", fig.width=7, fig.height=5}
+
+multi.reg<-m.pbc_long$VCV[,2]/m.pbc_long$VCV[,1]
+uni.reg<-m.pbc_status$Sol[,"mean.bili"]
+# regression coefficients from multi and uni models.
+
+V2.1.multi<-1-(m.pbc1$VCV[,2]^2)/m.pbc1$VCV[,2] 
+V2.1.uni<-1
+# conditional variances from multi and uni models.									
+
+rescale<-sqrt((1+V2.1.uni)/(1+V2.1.multi))
+# scaling factor to make multi.reg comparable to uni.reg 
+
+multi.reg<-multi.reg*rescale
+
+plot(mcmc.list(multi.reg,uni.reg), density=FALSE, ylab="Probit regression of death on log(bili)")
+```
+
+The reason for this pattern is that the coefficient in the single-response model is attenuated because of the measurement error in the expected (log) $\texttt{bili}$. If $r$ is the correlation between the true value of a predictor and its measured value, we expect the regression using measured values to be equal to the regression obtained from the true values multiplied by $r^2$ (see Chapter \@ref(measurement)).  However, the attenuation is small in this example because on average $\texttt{bili}$ has been measured `r round(mean(with(pbcseq, tapply(log(bili), id, length))))` times per patient and the within-patient variability is quite low - the intra-class correlation for log $\texttt{bili}$ from the multi-response model is `r round(mean(m.pbc_long$VCV[,1]/(m.pbc_long$VCV[,1]+m.pbc_long$VCV[,5])),2)`. Together the $r^2$ is predicted to be `r round(mean(m.pbc_long$VCV[,1]/(m.pbc_long$VCV[,1]+m.pbc_long$VCV[,5]/6)),2)` ($\sigma^2_\texttt{bili.id}/(\sigma^2_\texttt{bili.id}+\sigma^2_\texttt{bili.units}/6)$) - almost identical to the attenuation seen. In addition to dealing with the attenuation, the multi-response model also makes more efficient use of the data when the design is unbalanced (some patients only have a single measurement whereas others have up to `r round(max(with(pbcseq, tapply(log(bili), id, length))))`) and the posterior standard deviation of the regression coefficient is `r round(sd(multi.reg),2)` from the multi-response model but `r round(sd(uni.reg),2)` from the standard single response model. 
+
+## Scaled linear predictors: $\texttt{theta_scale}$
+
+In the previous sections of this Chapter we've often thought about multi-response models in terms of regression. In some cases, the regression coefficient was different at different levels. For example, in Section \@ref(bern-gaus-sec) the regression within patients differed from the regression across patients. In other cases, the regression coefficient was only fitted for specific levels.  For example, in Section \@ref(covu-sec) the regression was only fitted across patients not within. Sometimes, however, we would like a model where the regression is held constant across two or more levels but is allowed to be different (or zero) at others.  
+
+```{r }
+#library(mlmRev)
+#data(star)
+```
 
 Occasionally, we need to force a common relationship between two sets of multiple random effects. To give a brief overview, imagine that we have individuals with repeat measures for variables $x$ and $y$ and these individuals can be grouped into families. We would like to know the regression of $y$ on $x$ but the issue is that the within-individual variance is believed to be simply measurement error. As in the $\texttt{covu}$ model what we would really like to do is regress an individuals true average value for $y$ on the individuals true average value for $x$. If we only had one set of random effects (e.g. $\texttt{individual}$) this would be straightforward because we could fit the $2\times 2$ covariance matrix for individual effects and obtain the regression as $\sigma_\texttt{individual:x, individual:y}/\sigma_\texttt{individual:x}$. With the two sets of random effects, $\texttt{individual}$ and $\texttt{family}$, we would need to somehow enforce  $\sigma_\texttt{individual:x, individual:y}/\sigma_\texttt{individual:x}$=$\sigma_\texttt{family:x, family:y}/\sigma_\texttt{family:x}$ unless we though the regression might differ at these two levels. The argument $\texttt{theta_scale}$ allows you to do this by specifying which fixed and/or random effects should be duplicated and scaled.
 
