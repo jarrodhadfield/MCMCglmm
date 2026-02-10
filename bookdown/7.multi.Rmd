@@ -615,7 +615,9 @@ colnames(tufted_mm)<-gsub("Walleye pollock", "Pollock", colnames(tufted_mm))
 colnames(tufted_mm)<-gsub("Pacific herring", "Herring", colnames(tufted_mm))
 colnames(tufted_mm)<-gsub("Pacific sand lance", "SandLance", colnames(tufted_mm))
 
-m.tufted<-MCMCglmm(cbind(Other, Herring, SandLance, Pollock, Capelin)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20)
+m.tufted.a<-MCMCglmm(cbind(Other, Herring, SandLance, Pollock, Capelin)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20)
+
+m.tufted.b<-MCMCglmm(cbind(Capelin, Herring, SandLance, Pollock, Other)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20)
 
 
 ```
