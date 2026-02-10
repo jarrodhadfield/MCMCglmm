@@ -582,17 +582,43 @@ The reason for this pattern is that the coefficient in the single-response model
 
 ## Scaled linear predictors: $\texttt{theta_scale}$
 
-In the previous sections of this Chapter we've often thought about multi-response models in terms of regression. In some cases, the regression coefficient was different at different levels. For example, in Section \@ref(bern-gaus-sec) the regression within patients differed from the regression across patients. In other cases, the regression coefficient was only fitted for specific levels.  For example, in Section \@ref(covu-sec) the regression was only fitted across patients not within. Sometimes, however, we would like a model where the regression is held constant across two or more levels but is allowed to be different (or zero) at others.  
+In the previous sections of this Chapter we've often thought about multi-response models in terms of regression. In some cases, the regression coefficient was different at different levels. For example, in Section \@ref(bern-gaus-sec) the regression within patients differed from the regression across patients. In other cases, the regression coefficient was only fitted for specific levels.  For example, in Section \@ref(covu-sec) the regression was only fitted across patients not within. Although we parameterised the model in terms of unstructured covariance matrices ($\texttt{us}$) we could have fitted the same model parameterised in terms of regression coefficients and innovation variances using antedependence structures (see Section \@ref(ante-sec)). Sometimes, however, we would like a model where the regression is held constant across two or more levels but is allowed to be different (or zero) at others.  The $\texttt{theta_scale}$ argument in $\texttt{MCMCglmm}$ allows two sets of parameters to be fitted that differ by a common scaling factor. For example, we may have two vectors of random effects $\{{\bf u}_1 {\bf u}_2\}$ that appear in the linear predictor of one set of observations and would like to fit the effects $\{\theta_s{\bf u}_1 \theta_s{\bf u}_2\}$ for another set of observations. By fitting the first set of effects for one trait (the predictor) and the second set of effects to the other trait (the response) we can hold the regression constant ($\theta_s$) at the two levels defined by the random effects.
 
 ```{r }
 #library(mlmRev)
 #data(star)
 ```
 
-Occasionally, we need to force a common relationship between two sets of multiple random effects. To give a brief overview, imagine that we have individuals with repeat measures for variables $x$ and $y$ and these individuals can be grouped into families. We would like to know the regression of $y$ on $x$ but the issue is that the within-individual variance is believed to be simply measurement error. As in the $\texttt{covu}$ model what we would really like to do is regress an individuals true average value for $y$ on the individuals true average value for $x$. If we only had one set of random effects (e.g. $\texttt{individual}$) this would be straightforward because we could fit the $2\times 2$ covariance matrix for individual effects and obtain the regression as $\sigma_\texttt{individual:x, individual:y}/\sigma_\texttt{individual:x}$. With the two sets of random effects, $\texttt{individual}$ and $\texttt{family}$, we would need to somehow enforce  $\sigma_\texttt{individual:x, individual:y}/\sigma_\texttt{individual:x}$=$\sigma_\texttt{family:x, family:y}/\sigma_\texttt{family:x}$ unless we though the regression might differ at these two levels. The argument $\texttt{theta_scale}$ allows you to do this by specifying which fixed and/or random effects should be duplicated and scaled.
-
 
 ## Multinomial Models
+
+The previous sections of this chapter have covered multi-response models where each response comes from a single parameter distribution.  $\texttt{MCMCglmm}$ also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with $\texttt{trait}$ indexing the different parameters of the distribution and $\texttt{units}$ indexing the observation.
+
+We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section \@ref(binom-sec). In binomial models we condition on the total number of counts (the size) and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and chose a base-line category to which the other categories are compared to. Consequently with $K$ categories we work with $K-1$ comparisons. As with binomial models the number in each category can be passed as columns using cbind or, if the total number of counts is one, the response can be passed as a single vector of categories for each observation. In both cases a logit-link is used and the base-line category is either the category associated with the final column or the first level.   
+
+[^multinomial]: As with the binomial, in versions <4.0 family="multinomial" was not an option. `family="categorical"` had to be used when a single column of outcomes was specified as the response and `family="multinomialK"` had to be used when $\texttt{K}$ columns of counts were specified. In multi-response models where additional traits are also fitted, "categorical" and "multinomialK" still need to be used.
+
+```{r eval=FALSE}
+seabird<-read.csv("~/Downloads/gulfWatchAlaska_seabirdDiets_preyItems_middletonIsland.csv")
+# https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82
+# https://doi.org/10.5066/P93I0P67
+tufted<-subset(seabird, BirdSpecies=="TUPU")
+
+tufted$prey<-tufted$CommonName
+tufted$prey[!tufted$prey%in%c("Walleye pollock","Pacific herring","Pacific sand lance","Capelin")]<-"Other"      
+
+tufted_mm<-as.data.frame.matrix(table(tufted$SampleReference, tufted$prey))
+tufted_mm$CollectionMonth<-tufted$CollectionMonth[match(rownames(tufted_mm), tufted$SampleReference)]
+tufted_mm$CollectionYear<-tufted$CollectionYear[match(rownames(tufted_mm), tufted$SampleReference)]
+
+colnames(tufted_mm)<-gsub("Walleye pollock", "Pollock", colnames(tufted_mm))
+colnames(tufted_mm)<-gsub("Pacific herring", "Herring", colnames(tufted_mm))
+colnames(tufted_mm)<-gsub("Pacific sand lance", "SandLance", colnames(tufted_mm))
+
+m.tufted<-MCMCglmm(cbind(Other, Herring, SandLance, Pollock, Capelin)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20)
+
+
+```
 
 Multinomial models are difficult - both to fit and interpret. This is particularly true when each unit of observation only has a single realisation from the multinomial. In these instances the data can be expressed as a single vector of factors, and the family argument can be specified as `categorical`. To illustrate, using a very simple example, we'll use data collected on 666 Soay sheep from the island of Hirta in the St. Kilda archipelago [@Clutton-Brock.2004 Table A2.5].
 

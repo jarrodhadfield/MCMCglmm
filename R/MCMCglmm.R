@@ -17,15 +17,14 @@
 
   response.names<-names(get_all_vars(as.formula(paste(as.character(fixed)[2], "~1")), data))       # response variable names
 
-  if("binomial"%in%family){
+  if(any(c("binomial", "multinomial")%in%family)){
      if(length(family)>1){
-        stop("For multi-response models, instead of 'binomial' in the family argument, please use 'categorical' (if passed as single Bernoulli columns) or 'multinomial2' (if passed as two columns of success/failure) instead.") 
+        stop("For multi-response models, instead of 'binomial' or 'multinomial' in the family argument, please use 'categorical' (if the response is passed as single column) or 'multinomialK' (if passed as K columns).") 
      }else{ 
        if(length(response.names)==1){
           family="categorical"
-       }
-       if(length(response.names)==2){
-          family="multinomial2"
+       }else{
+          family=paste0("multinomial", length(response.names))
        }
      }    
   }
@@ -527,7 +526,7 @@ if(grepl("^ztmb", family[i])){
 nt<-nt-1
 }
 
-if(sum((family.names%in%family.types)==FALSE)!=0){stop(paste(unique(family.names[which((family.names%in%family.types)==FALSE)]), "not a supported distribution"))}
+if(any(!family.names%in%family.types)){stop(paste(unique(family.names[which((family.names%in%family.types)==FALSE)]), "not a supported distribution"))}
 
 rcov_terms<-split.direct.sum(as.character(rcov)[2])
 convert_rcov<-rep(0, length(rcov_terms))
