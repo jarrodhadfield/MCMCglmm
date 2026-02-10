@@ -594,11 +594,14 @@ In the previous sections of this Chapter we've often thought about multi-respons
 
 The previous sections of this chapter have covered multi-response models where each response comes from a single parameter distribution.  $\texttt{MCMCglmm}$ also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with $\texttt{trait}$ indexing the different parameters of the distribution and $\texttt{units}$ indexing the observation.
 
-We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section \@ref(binom-sec). In binomial models we condition on the total number of counts (the size) and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and chose a base-line category to which the other categories are compared to. Consequently with $K$ categories we work with $K-1$ comparisons. As with binomial models the number in each category can be passed as columns using cbind or, if the total number of counts is one, the response can be passed as a single vector of categories for each observation. In both cases a logit-link is used and the base-line category is either the category associated with the final column or the first level.   
+We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section \@ref(binom-sec). In binomial models we condition on the total number of counts (the size) and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and chose a base-line category to which the other categories are compared to. Consequently with $K$ categories we work with $K-1$ comparisons. As with binomial models the number in each category can be passed as columns using cbind or, if the total number of counts is one, the response can be passed as a single vector of categories for each observation. In both cases a logit-link is used and the base-line category is either the category associated with the final column or the first factor level if a single column is passed as the response.   
 
 [^multinomial]: As with the binomial, in versions <4.0 family="multinomial" was not an option. `family="categorical"` had to be used when a single column of outcomes was specified as the response and `family="multinomialK"` had to be used when $\texttt{K}$ columns of counts were specified. In multi-response models where additional traits are also fitted, "categorical" and "multinomialK" still need to be used.
 
-```{r eval=FALSE}
+
+
+```{r tufted, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5}
+
 seabird<-read.csv("~/Downloads/gulfWatchAlaska_seabirdDiets_preyItems_middletonIsland.csv")
 # https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82
 # https://doi.org/10.5066/P93I0P67
@@ -615,10 +618,30 @@ colnames(tufted_mm)<-gsub("Walleye pollock", "Pollock", colnames(tufted_mm))
 colnames(tufted_mm)<-gsub("Pacific herring", "Herring", colnames(tufted_mm))
 colnames(tufted_mm)<-gsub("Pacific sand lance", "SandLance", colnames(tufted_mm))
 
-m.tufted.a<-MCMCglmm(cbind(Other, Herring, SandLance, Pollock, Capelin)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20)
+barplot(t(tufted_mm[sample(1:nrow(tufted_mm), 150),c("Other", "Herring", "SandLance", "Pollock", "Capelin")]),         # transpose so categories are stacked
+        beside      = FALSE,          # FALSE = stacked
+        col         = rainbow(5),
+        ylab        = "Counts",
+        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,50))
 
-m.tufted.b<-MCMCglmm(cbind(Capelin, Herring, SandLance, Pollock, Other)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20)
+legend("top",                       # or "bottom", a coordinate, …
+       legend = c("Other", "Herring", "SandLance", "Pollock", "Capelin"),
+       fill   = rainbow(5),
+       ncol   = 5) 
+```
 
+```{r eval=FALSE}
+m.tufted.a<-MCMCglmm(cbind(Other, Herring, SandLance, Pollock, Capelin)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20, pl=TRUE)
+
+m.tufted.b<-MCMCglmm(cbind(Capelin, Herring, SandLance, Pollock, Other)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20, pl=TRUE)
+
+counts<-tufted_mm[,c("Other", "Herring", "SandLance", "Pollock", "Capelin")]
+probs<-counts/rowSums(counts)
+
+p.a<-predict(m.tufted.a, interval="prediction")[,1]
+s.a<-t(t(matrix(p.a,nrow(tufted_mm), 4))/rowSums(counts))
+
+plot(s.a, unlist(counts[,-5]))
 
 ```
 
