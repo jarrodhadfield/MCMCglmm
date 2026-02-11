@@ -274,7 +274,7 @@
         et<-0
         for(j in 1:length(ncat)){
           trans<-which(grepl("multinomial", object$family) & object$error.term%in%eterms[et+1:(ncat[j]-1)])
-          size<-object$y.additional[trans[seq(1, by=ncat[j]-1, length(trans))],1]
+          size<-object$y.additional[trans[1:(length(trans)/(ncat[j]-1))],1]
           prob<-matrix(ynew[trans,i], ncol=ncat[j]-1)
           ynew[trans,i]<-t(sapply(1:nrow(prob), function(x){rmultinom(1, size=size[x], prob= c(1,exp(prob[x,]))/(1+sum(exp(prob[x,]))))}))[,-1]
           et<-cumsum(ncat[1:j]-1) # end point of the multinomial super.trait in eterms

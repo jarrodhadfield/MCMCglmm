@@ -598,44 +598,37 @@ We will start with multinomial models where the response is the number of counts
 
 [^multinomial]: As with the binomial, in versions <4.0 family="multinomial" was not an option. `family="categorical"` had to be used when a single column of outcomes was specified as the response and `family="multinomialK"` had to be used when $\texttt{K}$ columns of counts were specified. In multi-response models where additional traits are also fitted, "categorical" and "multinomialK" still need to be used.
 
-```{r tufted-mm, echo=FALSE}
-
-seabird<-read.csv("https://www.sciencebase.gov/catalog/file/get/64134381d34eb496d1ce3c82?f=__disk__00%2F91%2F53%2F009153966acb7a5d106004a9a01fcfdfb4504399")
-
-tufted<-subset(seabird, BirdSpecies=="TUPU")
-
-tufted$prey<-tufted$CommonName
-tufted$prey[!tufted$prey%in%c("Walleye pollock","Pacific herring","Pacific sand lance","Capelin")]<-"Other"      
-
-tufted_mm<-as.data.frame.matrix(table(tufted$SampleReference, tufted$prey))
-tufted_mm$year<-tufted$CollectionYear[match(rownames(tufted_mm), tufted$SampleReference)]
-tufted_mm$month<-tufted$CollectionMonth[match(rownames(tufted_mm), tufted$SampleReference)]
-
-colnames(tufted_mm)<-gsub("Walleye pollock", "Pollock", colnames(tufted_mm))
-colnames(tufted_mm)<-gsub("Pacific herring", "Herring", colnames(tufted_mm))
-colnames(tufted_mm)<-gsub("Pacific sand lance", "SandLance", colnames(tufted_mm))
-rownames(tufted_mm)<-NULL
-```
-
-To explore multinomial models we will analyse data collected by the Alaska Science Center on the prey items of seabirds breeding on Middleton Island in the Gulf of Alaska (soon to be renamed the Gulf of Canada) - [see here](https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82). We will restrict ourselves to data obtained on the chicks of the wonderful Tufted Puffin. `r length(unique(seabird$CommonName))` different prey items were recorded but we will lump all but the top four prey items (Walleye pollock, Pacific herring, Pacific sand lance and Capelin) into a single category, $\texttt{other}$. After a little formatting we have the data-frame $\texttt{tufted_mm}$:
+To explore multinomial models we will analyse data collected by the Alaska Science Center on the prey items of seabirds breeding on Middleton Island in the Gulf of Alaska - [see here](https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82). We will restrict ourselves to data obtained on the chicks of the wonderful Tufted Puffin:
 
 ```{r }
-head(tufted_mm)
+data(tufted_puffin)
+head(tufted_puffin)
 ```
 
-Each row corresponds to one of `r nrow(tufted_mm)` samples and the first 5 columns are the counts of each prey item in the sample. The final two columns are the collection year (of which there are `r length(unique(tufted_mm$CollectionYear))`) and collection month (July or August). Figure \@ref(fig:tufted-num) plots the number of prey items for 150 random samples. 
+Each row corresponds to one of `r nrow(tufted_puffin)` samples with their collection year and month recorded.  The following four columns are the number of Capelin ($\texttt{Capelin}$), Pacific herring ($\texttt{Herring}$), Walleye pollock ($\texttt{Pollock}$) and Pacific sand lance ($\texttt{SandLance}$) in each sample. An additional 40 prey taxa were also recorded and their combined counts per sample are in the final column ($\texttt{Other}$). Figure \@ref(fig:tufted-num) plots the number of prey items for 150 random samples.
 
 
 ```{r tufted-num, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year."}
 
-sample_save<-sort(sample(1:nrow(tufted_mm), 150))
-xmid <-barplot(t(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]),  
+mean_prop<-colMeans(prop_counts)
+
+tot_counts<-rowSums(tufted_puffin[,-c(1:2)])
+prop_counts<-tufted_puffin[,-c(1:2)]/tot_counts
+
+ranking<-rank(tufted_puffin$year*1.1+prop_counts[,"SandLance"], ties.method="random")
+sample_save<-sample(1:nrow(tufted_puffin), 150)
+sample_save<-sample_save[order(ranking[sample_save])]
+
+tot_counts<-tot_counts[sample_save]
+prop_counts<-prop_counts[sample_save,]
+
+xmid <-barplot(t(tufted_puffin[sample_save,-c(1:2)]),  
         beside      = FALSE,        
         col         = rainbow(5),
         ylab        = "Counts",
-        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,50))
+        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,45))
 
-years           <- tufted_mm$year[sample_save] 
+years           <- tufted_puffin$year[sample_save] 
 year_centres    <- tapply(xmid, years, mean)            
 year_separators <- tapply(xmid, years, max) + 0.5     
 
@@ -647,7 +640,7 @@ axis(1,
      tcl  = -0.6)                             
 
 legend("top",                       
-       legend = c("Other", "Herring", "Pollock", "SandLance", "Capelin"),
+       legend = colnames(tufted_puffin)[-c(1:2)],
        fill   = rainbow(5),
        ncol   = 5) 
 ```
@@ -655,7 +648,7 @@ legend("top",
 In terms of numbers, Capelin and the Pacific sand lance are the most common prey items, with 'Other' being the rarest
 
 ```{r }
-colMeans(tufted_mm[,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
+colMeans(tufted_puffin[,-c(1:2)])
 ```
 
 However, there is tremendous variation in the total number of prey items per sample and it looks as if those samples with many prey items are dominated by Capelin. The multinomial ignores (conditions on) the total number of prey items and essentially works with the proportions of each prey item, as shown in Figure \@ref(fig:tufted-prop). 
@@ -663,20 +656,18 @@ However, there is tremendous variation in the total number of prey items per sam
 
 ```{r tufted-prop, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year."}
 
-tot_counts<-rowSums(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
-
-xmid<-barplot(t(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]/tot_counts),    
+xmid<-barplot(t(prop_counts),    
         beside      = FALSE,       
         col         = rainbow(5),
         ylab        = "Counts",
         xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
 
 legend("top",                     
-       legend = c("Other", "Herring", "Pollock", "SandLance", "Capelin"),
+       legend = colnames(tufted_puffin)[-c(1:2)],
        fill   = rainbow(5),
        ncol   = 5) 
 
-years           <- tufted_mm$year[sample_save] 
+years           <- tufted_puffin$year[sample_save] 
 year_centres    <- tapply(xmid, years, mean)            
 year_separators <- tapply(xmid, years, max) + 0.5     
 
@@ -686,25 +677,21 @@ axis(1,
      at   = year_separators[-length(year_separators)],    
      labels = FALSE,
      tcl  = -0.6)                             
-
-
 ```
 
 Once we control for the total number of prey items we see that Capelin actually makes up the lowest proportion of the diet and Pacific sand lance dominates:
 
 ```{r }
-tot_counts<-rowSums(tufted_mm[,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
-colMeans(tufted_mm[,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]/tot_counts)
+total_counts<-rowSums(tufted_puffin[,-c(1:2)])
+colMeans(tufted_puffin[,-c(1:2)]/total_counts)
 ```
 
-It is also apparent from Figure \@ref(fig:tufted-prop) (and Figure \@ref(fig:tufted-num)) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure \@ref(fig:tufted-sim) I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples. It is clear that the simulated data are much less structured than the real data.
+It is also apparent from Figure \@ref(fig:tufted-prop) (and Figure \@ref(fig:tufted-num)) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years, samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure \@ref(fig:tufted-sim) I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples. It is clear that the simulated data are much less structured than the real data.
 
 
 ```{r tufted-sim, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year."}
 
-tot_counts<-rowSums(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
-prop_counts<-colMeans(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]/tot_counts)
-sim_counts<-t(sapply(tot_counts, FUN=function(x){rmultinom(1, prob=prop_counts, size=x)}))
+sim_counts<-t(sapply(tot_counts, FUN=function(x){rmultinom(1, prob=mean_prop, size=x)}))
 
 xmid<-barplot(t(sim_counts/tot_counts),    
         beside      = FALSE,       
@@ -713,11 +700,11 @@ xmid<-barplot(t(sim_counts/tot_counts),
         xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
 
 legend("top",                     
-       legend = c("Other", "Herring", "Pollock", "SandLance", "Capelin"),
+       legend = colnames(tufted_puffin)[-c(1:2)],
        fill   = rainbow(5),
        ncol   = 5) 
 
-years           <- tufted_mm$year[sample_save] 
+years           <- tufted_puffin$year[sample_save] 
 year_centres    <- tapply(xmid, years, mean)            
 year_separators <- tapply(xmid, years, max) + 0.5     
 
@@ -731,70 +718,159 @@ axis(1,
 
 ```
 
+Let's fit a multinomial model to these data, using $\texttt{Other}$ as the base-line category. We will also fit fully unstructured, $4\times 4$, covariance matrices at the level of year and sample ($\texttt{unit}$): 
 
 ```{r m-tufted}
 prior.tufted<-list(R=IW(1, 2), G=F(2,1000))
-m.tufted<-MCMCglmm(cbind(Herring, Pollock, Capelin, SandLance, Other)~trait-1, data=tufted_mm, random=~us(trait):year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
+m.tufted<-MCMCglmm(cbind(Capelin, Herring, Pollock, SandLance, Other)~trait-1, data=tufted_puffin, random=~us(trait):year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
 ```
 
+With two $4\times 4$ covariance matrices, the model summary is pretty overwhelming. To get a feel for the broad patterns, in Table \@ref(tab:puffin) I have summarised the two matrices in terms of correlations (off-diagonals) and variances (diagonals). The posterior means together with the 95% credible interval (in square brackets) are reported.
+
+```{r echo=FALSE, results="asis"}
+
+sum.post<-function(x, digits=2){paste0(formatC(round(mean(x),digits), digits=digits, format="f"), " [",formatC(round(HPDinterval(x)[1],digits), digits=digits, format="f"), "-", formatC(round(HPDinterval(x)[2],digits), digits=digits, format="f"), "]")}
+
+V_year<-V_units<-matrix("", 4, 4)
+for(i in 1:4){
+	for(j in i:4){
+		if(i==j){
+			V_year[i,j]<-sum.post(m.tufted$VCV[,(i-1)*4+i])
+			V_units[i,j]<-sum.post(m.tufted$VCV[,16+(i-1)*4+i])
+		}else{
+			V_year[i,j]<-sum.post(m.tufted$VCV[,(i-1)*4+j]/sqrt(m.tufted$VCV[,(i-1)*4+i]*m.tufted$VCV[,(j-1)*4+j]))
+			V_units[i,j]<-sum.post(m.tufted$VCV[,16+(i-1)*4+j]/sqrt(m.tufted$VCV[,16+(i-1)*4+i]*m.tufted$VCV[,16+(j-1)*4+j]))
+		}
+	}		
+}
+
+V<-rbind(V_year, V_units)
+rownames(V)<-rep(colnames(tufted_puffin)[3:6],2)
+colnames(V)<-colnames(tufted_puffin)[3:6]
+
+kable(V, "html", escape = FALSE, row.names = TRUE, caption = "Posterior mean and 95\\% credible intervals for the variances (diagonal) and correlations (off-diagonal) in year effects (top) and sample effects (bottom) from model $\\texttt{m.tufted}$", label="puffin") %>%
+  pack_rows("${\\bf V}_\\texttt{year}$",  1, 4) %>%         
+  pack_rows("${\\bf V}_\\texttt{units}$",  5, 8) %>%   
+	column_spec(1, bold = TRUE) %>%
+  kable_styling(full_width = FALSE, font_size=14)
+```
+<br>
+
+There seems to be substantial variation, both between years and between samples for the linear predictors for each prey item. Although credible intervals are wide, it seems generally that between year variation exceeds the between sample variation.  Correlations between the linear predictors for different prey items have wide credible intervals, but in generally are fairly modest. The exception to this is between the $\texttt{Herring}$ and $\texttt{SandLance}$ predictors where the correlation is moderately positive particular at the level of samples ($\texttt{units}$).
+
+
+
+```{r tufted-sim2, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="A posterior predictive simulation using model $\\texttt{m.tufted}$ for the proportion of prey items that are of each type in 150 randomly selected samples. The tick-marks on the x-axis delimit samples taken in the same year and samples within years have been sorted in increasing proportion of Pacific sand lance."}
+
+sim_counts<-matrix(simulate(m.tufted, marginal=NULL), nrow(tufted_puffin), 4)[sample_save,]
+sim_counts<-cbind(sim_counts, tot_counts-rowSums(sim_counts))
+
+xmid<-barplot(t(sim_counts/tot_counts),    
+        beside      = FALSE,       
+        col         = rainbow(5),
+        ylab        = "Counts",
+        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+
+legend("top",                     
+       legend = colnames(tufted_puffin)[-c(1:2)],
+       fill   = rainbow(5),
+       ncol   = 5) 
+
+years           <- tufted_puffin$year[sample_save] 
+year_centres    <- tapply(xmid, years, mean)            
+year_separators <- tapply(xmid, years, max) + 0.5     
+
+axis(1, at = year_centres , labels = unique(years), tick = FALSE, line = 0.5)
+
+axis(1,                                         
+     at   = year_separators[-length(year_separators)],    
+     labels = FALSE,
+     tcl  = -0.6)                             
+
+
+xmid<-barplot(t(prop_counts),    
+        beside      = FALSE,       
+        col         = rainbow(5),
+        ylab        = "Counts",
+        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+
+legend("top",                     
+       legend = colnames(tufted_puffin)[-c(1:2)],
+       fill   = rainbow(5),
+       ncol   = 5) 
+
+years           <- tufted_puffin$year[sample_save] 
+year_centres    <- tapply(xmid, years, mean)            
+year_separators <- tapply(xmid, years, max) + 0.5     
+
+axis(1, at = year_centres , labels = unique(years), tick = FALSE, line = 0.5)
+
+axis(1,                                         
+     at   = year_separators[-length(year_separators)],    
+     labels = FALSE,
+     tcl  = -0.6)                             
+
+
+
+```
 
 Multinomial models are difficult - both to fit and interpret. With $K=5$ categories we have $K-1=4$ latent variables (traits) that are the log-odds ratio of observing a particular prey item versus the base-line prey item, in this case $\texttt{Other}$. Abbreviating the prey types by their initial the latent variables for sample $i$ in year $j$ are
 
 $$
 \begin{array}{rcl}
+l_{ij,\texttt{C}} =& \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij}}\right)&= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
 l_{ij,\texttt{H}} =& \textrm{log}\left(\frac{Pr(\texttt{H}_{ij})}{Pr(\texttt{O}_{ij})}\right)&= \beta^{(0)}_\texttt{H}+u_{j, \texttt{H}}+e_{ij, \texttt{H}}\\
 l_{ij,\texttt{P}} =& \textrm{log}\left(\frac{Pr(\texttt{P}_{ij})}{Pr(\texttt{O}_{ij})}\right)&= \beta^{(0)}_\texttt{P}+u_{j, \texttt{P}}+e_{ij, \texttt{P}}\\
-l_{ij,\texttt{C}} =& \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij}}\right)&= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
 l_{ij,\texttt{S}} =& \textrm{log}\left(\frac{Pr(\texttt{S}_{ij})}{Pr(\texttt{O}_{ij}}\right)&= \beta^{(0)}_\texttt{S}+u_{j, \texttt{S}}+e_{ij, \texttt{S}}\\
 \end{array}
 $$
 
 where the $\beta^{(0)}$ are trait-specific intercepts, the $u$ are trait-specific year effects and and the $e$ are trait-observation specific $\texttt{unit}$ effects that capture overdispersion.  
 
-The difficulty, I think, is that the effects are comparisons with the base-line category, yet it is easy to forget this. For example, let's imagine that Pollock and Herring appear in the diet completely independently of each other and so knowing there are many Pollock in a particular year is not informative about the abundance of Herring. It might then be tempting to assume that two sets of year effects, $u_{\texttt{P}}$ and $u_{\texttt{H}}$ are uncorrelated. However, they may be correlated through their shared dependence on 'Other' prey items: 
+The difficulty, I think, is that the effects are comparisons with the base-line category, yet it is easy to forget this. For example, let's imagine that Capelin and Herring appear in the diet completely independently of each other and so knowing there are many Capelin in a particular year is not informative about the abundance of Herring. It might then be tempting to assume that two sets of year effects, $u_{\texttt{C}}$ and $u_{\texttt{H}}$ are uncorrelated. However, they may be correlated through their shared dependence on 'Other' prey items: 
 
 $$
 \begin{array}{rl}
-Cov(l_{\texttt{H}}, l_{\texttt{P}}) =& Cov(\textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{P}))-\textrm{log}(Pr(\texttt{O})))\\
-=& Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{P})))-Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{O})))\\
- &-Cov(\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{P})))+Var(\textrm{log}(Pr(\texttt{O})))\\
+Cov(l_{\texttt{C}}, l_{\texttt{H}}) =& Cov(\textrm{log}(Pr(\texttt{C}))-\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O})))\\
+=& Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{H})))-Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{O})))\\
+ &-Cov(\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))\\
 \end{array}
 $$
 
-Even if the (log) probabilities are uncorrelated between all pairs of prey items, the log-contrasts between pairs (the latent variables) are expected to be correlated. For example, if the probabilities of Pollock, Herring and Other are all uncorrelated the above equation simplifies to  
+Even if the (log) probabilities are uncorrelated between all pairs of prey items, the log-contrasts between pairs (the latent variables) are expected to be correlated. For example, if the probabilities of Capelin, Herring and Other are all uncorrelated the above equation simplifies to  
 
 $$
-Cov(l_{\texttt{H}}, l_{\texttt{P}}) =Var(\textrm{log}(Pr(\texttt{O})))\\
+Cov(l_{\texttt{C}}, l_{\texttt{H}}) =Var(\textrm{log}(Pr(\texttt{O})))\\
 $$
 
 and a non-zero covariance exists whenever there is variation in the probability of success in the base-line category. Similarly, if we look at the variability in a particular latent variable we have:
 
 $$
 \begin{array}{rl}
-Var(l_{\texttt{H}})=&Var(\textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O}))\\
-=&Var(\textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))-2Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{O}))) \\
+Var(l_{\texttt{C}})=&Var(\textrm{log}(Pr(\texttt{C}))-\textrm{log}(Pr(\texttt{O}))\\
+=&Var(\textrm{log}(Pr(\texttt{C})))+Var(\textrm{log}(Pr(\texttt{O})))-2Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{O}))) \\
 \end{array}
 $$
 
 which simplifies to
 
 $$
-Var(l_{\texttt{H}})=Var(\textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))
+Var(l_{\texttt{C}})=Var(\textrm{log}(Pr(\texttt{C})))+Var(\textrm{log}(Pr(\texttt{O})))
 $$
 
-when the probabilities of Herring and Other are uncorrelated. When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log probabilities have the same yearly variation for all categories, and categories are independent then our null for the covariance matrix of year effects would have $2\sigma^2_{u}$ along the diagonal and $\sigma^2_{u}$ on the off-diagonals. We can represent this as ${\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})$ where ${\bf I}$ and ${\bf J}$ are $4\times 4$ identity and unit matrices, respectively[^unit]. If we believe that the amount of yearly variation differs across categories, yet the categories remain independent then our null would be  ${\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}$ where ${\bf D}$ is a diagonal matrix with four variances to be estimated in addition to $\sigma^2_{\texttt{O}}$. 
+when the probabilities of Capelin and Other are uncorrelated. When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log probabilities have the same yearly variation for all categories, and categories are independent then our null for the covariance matrix of year effects would have $2\sigma^2_{u}$ along the diagonal and $\sigma^2_{u}$ on the off-diagonals. We can represent this as ${\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})$ where ${\bf I}$ and ${\bf J}$ are $4\times 4$ identity and unit matrices, respectively[^unit]. If we believe that the amount of yearly variation differs across categories, yet the categories remain independent then our null would be  ${\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}$ where ${\bf D}$ is a diagonal matrix with four variances to be estimated in addition to $\sigma^2_{\texttt{O}}$. 
 
 [^unit]: An identity matrix has ones along the diagonal and zero's on the off-diagonals. A unit matrix is a matrix of all ones.
 
 
 
 ```{r m-tuftedb}
-m.tuftedb<-MCMCglmm(cbind(Herring, Pollock, Capelin, SandLance, Other)~trait-1, data=tufted_mm, random=~idv(1+trait):year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
+m.tuftedb<-MCMCglmm(cbind(Capelin, Herring, Pollock, SandLance, Other)~trait-1, data=tufted_puffin, random=~idv(1+trait):year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
 ```
 
 
 ```{r m-tuftedc}
-m.tuftedc<-MCMCglmm(cbind(Herring, Pollock, Capelin, SandLance, Other)~trait-1, data=tufted_mm, random=~idh(trait):year+year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
+m.tuftedc<-MCMCglmm(cbind(Capelin, Herring, Pollock, SandLance, Other)~trait-1, data=tufted_puffin, random=~idh(trait):year+year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
 ```
 
 
