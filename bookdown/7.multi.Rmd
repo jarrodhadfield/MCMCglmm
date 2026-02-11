@@ -594,119 +594,221 @@ In the previous sections of this Chapter we've often thought about multi-respons
 
 The previous sections of this chapter have covered multi-response models where each response comes from a single parameter distribution.  $\texttt{MCMCglmm}$ also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with $\texttt{trait}$ indexing the different parameters of the distribution and $\texttt{units}$ indexing the observation.
 
-We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section \@ref(binom-sec). In binomial models we condition on the total number of counts (the size) and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and chose a base-line category to which the other categories are compared to. Consequently with $K$ categories we work with $K-1$ comparisons. As with binomial models the number in each category can be passed as columns using cbind or, if the total number of counts is one, the response can be passed as a single vector of categories for each observation. In both cases a logit-link is used and the base-line category is either the category associated with the final column or the first factor level if a single column is passed as the response.   
+We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section \@ref(binom-sec). In binomial models we condition on the total number of counts (the size) and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and model the probabilities of belonging to each category. However, as with the binomial, if we have $K$ categories we only need to model $K-1$ parameters: if we know $K-1$ probabilities the final probability is known since the sum of all probabilities must equal one. Consequently, we chose a base-line category to which the other categories are compared to. As with binomial models the number in each category can be passed as columns using cbind or, if the total number of counts is one, the response can be passed as a single vector of categories for each observation. In both cases a logit-link is used and the base-line category is either the category associated with the final column or the first factor level if a single column is passed as the response.   
 
 [^multinomial]: As with the binomial, in versions <4.0 family="multinomial" was not an option. `family="categorical"` had to be used when a single column of outcomes was specified as the response and `family="multinomialK"` had to be used when $\texttt{K}$ columns of counts were specified. In multi-response models where additional traits are also fitted, "categorical" and "multinomialK" still need to be used.
 
+```{r tufted-mm, echo=FALSE}
 
+seabird<-read.csv("https://www.sciencebase.gov/catalog/file/get/64134381d34eb496d1ce3c82?f=__disk__00%2F91%2F53%2F009153966acb7a5d106004a9a01fcfdfb4504399")
 
-```{r tufted, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5}
-
-seabird<-read.csv("~/Downloads/gulfWatchAlaska_seabirdDiets_preyItems_middletonIsland.csv")
-# https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82
-# https://doi.org/10.5066/P93I0P67
 tufted<-subset(seabird, BirdSpecies=="TUPU")
 
 tufted$prey<-tufted$CommonName
 tufted$prey[!tufted$prey%in%c("Walleye pollock","Pacific herring","Pacific sand lance","Capelin")]<-"Other"      
 
 tufted_mm<-as.data.frame.matrix(table(tufted$SampleReference, tufted$prey))
-tufted_mm$CollectionMonth<-tufted$CollectionMonth[match(rownames(tufted_mm), tufted$SampleReference)]
-tufted_mm$CollectionYear<-tufted$CollectionYear[match(rownames(tufted_mm), tufted$SampleReference)]
+tufted_mm$year<-tufted$CollectionYear[match(rownames(tufted_mm), tufted$SampleReference)]
+tufted_mm$month<-tufted$CollectionMonth[match(rownames(tufted_mm), tufted$SampleReference)]
 
 colnames(tufted_mm)<-gsub("Walleye pollock", "Pollock", colnames(tufted_mm))
 colnames(tufted_mm)<-gsub("Pacific herring", "Herring", colnames(tufted_mm))
 colnames(tufted_mm)<-gsub("Pacific sand lance", "SandLance", colnames(tufted_mm))
+rownames(tufted_mm)<-NULL
+```
 
-barplot(t(tufted_mm[sample(1:nrow(tufted_mm), 150),c("Other", "Herring", "SandLance", "Pollock", "Capelin")]),         # transpose so categories are stacked
-        beside      = FALSE,          # FALSE = stacked
+To explore multinomial models we will analyse data collected by the Alaska Science Center on the prey items of seabirds breeding on Middleton Island in the Gulf of Alaska (soon to be renamed the Gulf of Canada) - [see here](https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82). We will restrict ourselves to data obtained on the chicks of the wonderful Tufted Puffin. `r length(unique(seabird$CommonName))` different prey items were recorded but we will lump all but the top four prey items (Walleye pollock, Pacific herring, Pacific sand lance and Capelin) into a single category, $\texttt{other}$. After a little formatting we have the data-frame $\texttt{tufted_mm}$:
+
+```{r }
+head(tufted_mm)
+```
+
+Each row corresponds to one of `r nrow(tufted_mm)` samples and the first 5 columns are the counts of each prey item in the sample. The final two columns are the collection year (of which there are `r length(unique(tufted_mm$CollectionYear))`) and collection month (July or August). Figure \@ref(fig:tufted-num) plots the number of prey items for 150 random samples. 
+
+
+```{r tufted-num, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year."}
+
+sample_save<-sort(sample(1:nrow(tufted_mm), 150))
+xmid <-barplot(t(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]),  
+        beside      = FALSE,        
         col         = rainbow(5),
         ylab        = "Counts",
         xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,50))
 
-legend("top",                       # or "bottom", a coordinate, …
-       legend = c("Other", "Herring", "SandLance", "Pollock", "Capelin"),
+years           <- tufted_mm$year[sample_save] 
+year_centres    <- tapply(xmid, years, mean)            
+year_separators <- tapply(xmid, years, max) + 0.5     
+
+axis(1, at = year_centres , labels = unique(years), tick = FALSE, line = 0.5)
+
+axis(1,                                         
+     at   = year_separators[-length(year_separators)],    
+     labels = FALSE,
+     tcl  = -0.6)                             
+
+legend("top",                       
+       legend = c("Other", "Herring", "Pollock", "SandLance", "Capelin"),
        fill   = rainbow(5),
        ncol   = 5) 
 ```
 
-```{r eval=FALSE}
-m.tufted.a<-MCMCglmm(cbind(Other, Herring, SandLance, Pollock, Capelin)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20, pl=TRUE)
+In terms of numbers, Capelin and the Pacific sand lance are the most common prey items, with 'Other' being the rarest
 
-m.tufted.b<-MCMCglmm(cbind(Capelin, Herring, SandLance, Pollock, Other)~trait-1, data=tufted_mm, rcov=~us(trait):units, family="multinomial", longer=20, pl=TRUE)
+```{r }
+colMeans(tufted_mm[,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
+```
 
-counts<-tufted_mm[,c("Other", "Herring", "SandLance", "Pollock", "Capelin")]
-probs<-counts/rowSums(counts)
+However, there is tremendous variation in the total number of prey items per sample and it looks as if those samples with many prey items are dominated by Capelin. The multinomial ignores (conditions on) the total number of prey items and essentially works with the proportions of each prey item, as shown in Figure \@ref(fig:tufted-prop). 
 
-p.a<-predict(m.tufted.a, interval="prediction")[,1]
-s.a<-t(t(matrix(p.a,nrow(tufted_mm), 4))/rowSums(counts))
 
-plot(s.a, unlist(counts[,-5]))
+```{r tufted-prop, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year."}
+
+tot_counts<-rowSums(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
+
+xmid<-barplot(t(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]/tot_counts),    
+        beside      = FALSE,       
+        col         = rainbow(5),
+        ylab        = "Counts",
+        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+
+legend("top",                     
+       legend = c("Other", "Herring", "Pollock", "SandLance", "Capelin"),
+       fill   = rainbow(5),
+       ncol   = 5) 
+
+years           <- tufted_mm$year[sample_save] 
+year_centres    <- tapply(xmid, years, mean)            
+year_separators <- tapply(xmid, years, max) + 0.5     
+
+axis(1, at = year_centres , labels = unique(years), tick = FALSE, line = 0.5)
+
+axis(1,                                         
+     at   = year_separators[-length(year_separators)],    
+     labels = FALSE,
+     tcl  = -0.6)                             
+
 
 ```
 
-Multinomial models are difficult - both to fit and interpret. This is particularly true when each unit of observation only has a single realisation from the multinomial. In these instances the data can be expressed as a single vector of factors, and the family argument can be specified as `categorical`. To illustrate, using a very simple example, we'll use data collected on 666 Soay sheep from the island of Hirta in the St. Kilda archipelago [@Clutton-Brock.2004 Table A2.5].
+Once we control for the total number of prey items we see that Capelin actually makes up the lowest proportion of the diet and Pacific sand lance dominates:
 
-```{r echo=FALSE, eval=FALSE}
-counts<-c(4,2,1,45,27,28,0,7,0,25,25,3,0,2,2,22,2,49,3,13,27,147,3,3,35,62,1,15,1,112)
-sex<-as.factor(rep(c(rep("female", 18), rep("male", 12)), counts))
-horn<-as.factor(rep(c(rep(c("scurred", "polled", "normal"),6),rep(c("scurred", "normal"),6)), counts))
-id<-as.factor(1:666)
-SShorns<-data.frame(id=id, horn=horn, sex=sex)
-write.table(SShorns, "~/Work/AManal/MCMCglmm_1.12/data/SShorns.tab", row.names=FALSE, quote=FALSE)
+```{r }
+tot_counts<-rowSums(tufted_mm[,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
+colMeans(tufted_mm[,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]/tot_counts)
 ```
 
-```{r echo=TRUE}
-data(SShorns)
-head(SShorns)
+It is also apparent from Figure \@ref(fig:tufted-prop) (and Figure \@ref(fig:tufted-num)) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure \@ref(fig:tufted-sim) I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples. It is clear that the simulated data are much less structured than the real data.
+
+
+```{r tufted-sim, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year."}
+
+tot_counts<-rowSums(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")])
+prop_counts<-colMeans(tufted_mm[sample_save,c("Other", "Herring", "Pollock", "SandLance", "Capelin")]/tot_counts)
+sim_counts<-t(sapply(tot_counts, FUN=function(x){rmultinom(1, prob=prop_counts, size=x)}))
+
+xmid<-barplot(t(sim_counts/tot_counts),    
+        beside      = FALSE,       
+        col         = rainbow(5),
+        ylab        = "Counts",
+        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+
+legend("top",                     
+       legend = c("Other", "Herring", "Pollock", "SandLance", "Capelin"),
+       fill   = rainbow(5),
+       ncol   = 5) 
+
+years           <- tufted_mm$year[sample_save] 
+year_centres    <- tapply(xmid, years, mean)            
+year_separators <- tapply(xmid, years, max) + 0.5     
+
+axis(1, at = year_centres , labels = unique(years), tick = FALSE, line = 0.5)
+
+axis(1,                                         
+     at   = year_separators[-length(year_separators)],    
+     labels = FALSE,
+     tcl  = -0.6)                             
+
+
 ```
 
-The sex and horn morph were recorded for each individual, giving the contingency table:
 
-```{r echo=TRUE}
-Ctable<-table(SShorns$horn, SShorns$sex)
-Ctable
+```{r m-tufted}
+prior.tufted<-list(R=IW(1, 2), G=F(2,1000))
+m.tufted<-MCMCglmm(cbind(Herring, Pollock, Capelin, SandLance, Other)~trait-1, data=tufted_mm, random=~us(trait):year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
 ```
 
-and we'll see if the frequencies of the three `horn` types differ, and if the trait is sex dependent. The usual way to do this would be to use a Chi square test, and to address the first question we could add the counts of the two sexes:
 
-```{r echo=TRUE}
-chisq.test(rowSums(Ctable))
+Multinomial models are difficult - both to fit and interpret. With $K=5$ categories we have $K-1=4$ latent variables (traits) that are the log-odds ratio of observing a particular prey item versus the base-line prey item, in this case $\texttt{Other}$. Abbreviating the prey types by their initial the latent variables for sample $i$ in year $j$ are
+
+$$
+\begin{array}{rcl}
+l_{ij,\texttt{H}} =& \textrm{log}\left(\frac{Pr(\texttt{H}_{ij})}{Pr(\texttt{O}_{ij})}\right)&= \beta^{(0)}_\texttt{H}+u_{j, \texttt{H}}+e_{ij, \texttt{H}}\\
+l_{ij,\texttt{P}} =& \textrm{log}\left(\frac{Pr(\texttt{P}_{ij})}{Pr(\texttt{O}_{ij})}\right)&= \beta^{(0)}_\texttt{P}+u_{j, \texttt{P}}+e_{ij, \texttt{P}}\\
+l_{ij,\texttt{C}} =& \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij}}\right)&= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
+l_{ij,\texttt{S}} =& \textrm{log}\left(\frac{Pr(\texttt{S}_{ij})}{Pr(\texttt{O}_{ij}}\right)&= \beta^{(0)}_\texttt{S}+u_{j, \texttt{S}}+e_{ij, \texttt{S}}\\
+\end{array}
+$$
+
+where the $\beta^{(0)}$ are trait-specific intercepts, the $u$ are trait-specific year effects and and the $e$ are trait-observation specific $\texttt{unit}$ effects that capture overdispersion.  
+
+The difficulty, I think, is that the effects are comparisons with the base-line category, yet it is easy to forget this. For example, let's imagine that Pollock and Herring appear in the diet completely independently of each other and so knowing there are many Pollock in a particular year is not informative about the abundance of Herring. It might then be tempting to assume that two sets of year effects, $u_{\texttt{P}}$ and $u_{\texttt{H}}$ are uncorrelated. However, they may be correlated through their shared dependence on 'Other' prey items: 
+
+$$
+\begin{array}{rl}
+Cov(l_{\texttt{H}}, l_{\texttt{P}}) =& Cov(\textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{P}))-\textrm{log}(Pr(\texttt{O})))\\
+=& Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{P})))-Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{O})))\\
+ &-Cov(\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{P})))+Var(\textrm{log}(Pr(\texttt{O})))\\
+\end{array}
+$$
+
+Even if the (log) probabilities are uncorrelated between all pairs of prey items, the log-contrasts between pairs (the latent variables) are expected to be correlated. For example, if the probabilities of Pollock, Herring and Other are all uncorrelated the above equation simplifies to  
+
+$$
+Cov(l_{\texttt{H}}, l_{\texttt{P}}) =Var(\textrm{log}(Pr(\texttt{O})))\\
+$$
+
+and a non-zero covariance exists whenever there is variation in the probability of success in the base-line category. Similarly, if we look at the variability in a particular latent variable we have:
+
+$$
+\begin{array}{rl}
+Var(l_{\texttt{H}})=&Var(\textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O}))\\
+=&Var(\textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))-2Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{O}))) \\
+\end{array}
+$$
+
+which simplifies to
+
+$$
+Var(l_{\texttt{H}})=Var(\textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))
+$$
+
+when the probabilities of Herring and Other are uncorrelated. When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log probabilities have the same yearly variation for all categories, and categories are independent then our null for the covariance matrix of year effects would have $2\sigma^2_{u}$ along the diagonal and $\sigma^2_{u}$ on the off-diagonals. We can represent this as ${\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})$ where ${\bf I}$ and ${\bf J}$ are $4\times 4$ identity and unit matrices, respectively[^unit]. If we believe that the amount of yearly variation differs across categories, yet the categories remain independent then our null would be  ${\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}$ where ${\bf D}$ is a diagonal matrix with four variances to be estimated in addition to $\sigma^2_{\texttt{O}}$. 
+
+[^unit]: An identity matrix has ones along the diagonal and zero's on the off-diagonals. A unit matrix is a matrix of all ones.
+
+
+
+```{r m-tuftedb}
+m.tuftedb<-MCMCglmm(cbind(Herring, Pollock, Capelin, SandLance, Other)~trait-1, data=tufted_mm, random=~idv(1+trait):year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
 ```
 
-which strongly suggests the three morphs differ in frequency. We could then ask whether the frequencies differ by sex:
 
-```{r echo=TRUE}
-chisq.test(Ctable)
+```{r m-tuftedc}
+m.tuftedc<-MCMCglmm(cbind(Herring, Pollock, Capelin, SandLance, Other)~trait-1, data=tufted_mm, random=~idh(trait):year+year, rcov=~us(trait):units, family="multinomial", longer=20, prior=prior.tufted, pr=TRUE)
 ```
 
-which again they do, which is not that surprising since the trait is partly sex limited, with males not expressing the polled phenotype.
 
-If there were only two horn types, polled and normal for example, then we could have considered transforming the data into the binary variable *polled or not?* and analysing using a glm with sex as a predictor. In doing this we have reduced the dimension of the data from $J=2$ categories to a single ($J-1=1$) contrast. The motivation for the dimension reduction is obvious; if being a male increased the probability of expressing normal horns by 10%, it must by necessity reduce the probability of expressing polled horn type by 10%, because an individual cannot express both horn types simultaneously. The dimension reduction essentially constrains the probability of expressing either horn type to unity:
-
-$$Pr(\texttt{horn[i]}=\textrm{normal})+Pr(\texttt{horn[i]}=\textrm{polled}) = 1$$
-
-These concepts can be directly translated into situations with more than two categories where the unit sum constraint has the general form:
-
-$$\sum_{k=1}^{J}Pr(y_{i}=k)=1$$
-
-For binary data we designated one category to be the success (polled) and one category to be the failure (normal) which we will call the baseline category. The latent variable in this case was the log-odds ratio of succeeding versus failing:
-
-$$l_{i} = \textrm{log}\left(\frac{Pr(\texttt{horn[i]}=\textrm{polled})}{Pr(\texttt{horn[i]}=\textrm{normal})}\right) = \textrm{logit}\left(Pr(\texttt{horn[i]}=\textrm{polled})\right)$$
-
-With more than two categories we need to have $J-1$ latent variables, which in the original horn type example are:
-
-$$l_{i,\textrm{polled}} = \textrm{log}\left(\frac{Pr(\texttt{horn[i]}=\textrm{polled})}{Pr(\texttt{horn[i]}=\textrm{normal})}\right)$$
-
-and
-
-$$l_{i,\textrm{scurred}} = \textrm{log}\left(\frac{Pr(\texttt{horn[i]}=\textrm{scurred})}{Pr(\texttt{horn[i]}=\textrm{normal})}\right)$$
 
 The two latent variables are indexed as `trait`, and the unit of observation ($i$) as `units`, as in multi-response models. As with binary models the residual variance is not identified, and can be set to any arbitrary value. For reasons that will become clearer later I like to work with the residual covariance matrix $\frac{1}{J}({\bf I}+{\bf J})$ where ${\bf I}$ and ${\bf J}$ are $J-1$ dimensional identity and unit matrices, respectively.
 
 To start we will try a simple model with an intercept:
 
-```{r echo=TRUE, eval=TRUE, cache=TRUE}
+```{r }
+data(SShorns)
+Ctable<-table(SShorns$horn, SShorns$sex)
+```
+
+```{r }
 IJ<-(1/3)*(diag(2)+matrix(1,2,2))
 prior=list(R=list(V=IJ, fix=1))
 m5c.1<-MCMCglmm(horn~trait-1, rcov=~us(trait):units, prior=prior, data=SShorns, family="categorical")
