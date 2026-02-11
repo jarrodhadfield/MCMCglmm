@@ -94,6 +94,9 @@ fig:pbc1-reg2
 fig:terachoric
 fig:covu-r
 fig:mu-vs-sing
+fig:tufted-num
+fig:tufted-prop
+fig:tufted-sim
 fig:MN1
 fig:MN2
 fig:ZIP
