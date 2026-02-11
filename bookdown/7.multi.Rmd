@@ -608,15 +608,16 @@ head(tufted_puffin)
 Each row corresponds to one of `r nrow(tufted_puffin)` samples with their collection year and month recorded.  The following four columns are the number of Capelin ($\texttt{Capelin}$), Pacific herring ($\texttt{Herring}$), Walleye pollock ($\texttt{Pollock}$) and Pacific sand lance ($\texttt{SandLance}$) in each sample. An additional 40 prey taxa were also recorded and their combined counts per sample are in the final column ($\texttt{Other}$). Figure \@ref(fig:tufted-num) plots the number of prey items for 150 random samples.
 
 
-```{r tufted-num, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year."}
-
-mean_prop<-colMeans(prop_counts)
+```{r tufted-num, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance."}
 
 tot_counts<-rowSums(tufted_puffin[,-c(1:2)])
 prop_counts<-tufted_puffin[,-c(1:2)]/tot_counts
+mean_prop<-colMeans(prop_counts)
+
+nsamples<-150
 
 ranking<-rank(tufted_puffin$year*1.1+prop_counts[,"SandLance"], ties.method="random")
-sample_save<-sample(1:nrow(tufted_puffin), 150)
+sample_save<-sample(1:nrow(tufted_puffin), nsamples)
 sample_save<-sample_save[order(ranking[sample_save])]
 
 tot_counts<-tot_counts[sample_save]
@@ -626,7 +627,7 @@ xmid <-barplot(t(tufted_puffin[sample_save,-c(1:2)]),
         beside      = FALSE,        
         col         = rainbow(5),
         ylab        = "Counts",
-        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,45))
+        xlab        = "Sample", names.arg=rep("", nsamples), ylim=c(0,45))
 
 years           <- tufted_puffin$year[sample_save] 
 year_centres    <- tapply(xmid, years, mean)            
@@ -654,13 +655,13 @@ colMeans(tufted_puffin[,-c(1:2)])
 However, there is tremendous variation in the total number of prey items per sample and it looks as if those samples with many prey items are dominated by Capelin. The multinomial ignores (conditions on) the total number of prey items and essentially works with the proportions of each prey item, as shown in Figure \@ref(fig:tufted-prop). 
 
 
-```{r tufted-prop, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year."}
+```{r tufted-prop, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance."}
 
 xmid<-barplot(t(prop_counts),    
         beside      = FALSE,       
         col         = rainbow(5),
         ylab        = "Counts",
-        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+        xlab        = "Sample", names.arg=rep("", nsamples), ylim=c(0,1.1))
 
 legend("top",                     
        legend = colnames(tufted_puffin)[-c(1:2)],
@@ -692,12 +693,20 @@ It is also apparent from Figure \@ref(fig:tufted-prop) (and Figure \@ref(fig:tuf
 ```{r tufted-sim, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year."}
 
 sim_counts<-t(sapply(tot_counts, FUN=function(x){rmultinom(1, prob=mean_prop, size=x)}))
+sim_prop<-sim_counts/tot_counts
 
-xmid<-barplot(t(sim_counts/tot_counts),    
+colnames(sim_prop)<-colnames(prop_counts)
+
+ranking.sim<-rank(tufted_puffin$year[sample_save]*1.1+sim_prop[,"SandLance"], ties.method="random")
+sample_save.sim<-order(ranking.sim)
+
+sim_prop<-sim_prop[sample_save.sim,]
+
+xmid<-barplot(t(sim_prop),    
         beside      = FALSE,       
         col         = rainbow(5),
         ylab        = "Counts",
-        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+        xlab        = "Sample", names.arg=rep("", nsamples), ylim=c(0,1.1))
 
 legend("top",                     
        legend = colnames(tufted_puffin)[-c(1:2)],
@@ -760,65 +769,66 @@ There seems to be substantial variation, both between years and between samples 
 
 
 
-```{r tufted-sim2, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="A posterior predictive simulation using model $\\texttt{m.tufted}$ for the proportion of prey items that are of each type in 150 randomly selected samples. The tick-marks on the x-axis delimit samples taken in the same year and samples within years have been sorted in increasing proportion of Pacific sand lance."}
+```{r tufted-sim2, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=7, fig.cap="A posterior predictive simulation (top) using model $\\texttt{m.tufted}$ for the proportion of prey items that are of each type in 150 randomly selected samples. On the bottom are the observed proportion of prey items. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance. Note that $\\texttt{unit}$ effects are marginalised in the posterior predictive simulation and so we do not expect an exact correspondence between samples: only the *distributions* within and across years should match."}
 
 sim_counts<-matrix(simulate(m.tufted, marginal=NULL), nrow(tufted_puffin), 4)[sample_save,]
 sim_counts<-cbind(sim_counts, tot_counts-rowSums(sim_counts))
+sim_prop<-sim_counts/tot_counts
 
-xmid<-barplot(t(sim_counts/tot_counts),    
-        beside      = FALSE,       
-        col         = rainbow(5),
-        ylab        = "Counts",
-        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+colnames(sim_prop)<-colnames(prop_counts)
 
-legend("top",                     
-       legend = colnames(tufted_puffin)[-c(1:2)],
-       fill   = rainbow(5),
-       ncol   = 5) 
+ranking.sim<-rank(tufted_puffin$year[sample_save]*1.1+sim_prop[,"SandLance"], ties.method="random")
+sample_save.sim<-order(ranking.sim)
 
-years           <- tufted_puffin$year[sample_save] 
-year_centres    <- tapply(xmid, years, mean)            
-year_separators <- tapply(xmid, years, max) + 0.5     
-
-axis(1, at = year_centres , labels = unique(years), tick = FALSE, line = 0.5)
-
-axis(1,                                         
-     at   = year_separators[-length(year_separators)],    
-     labels = FALSE,
-     tcl  = -0.6)                             
+sim_prop<-sim_prop[sample_save.sim,]
 
 
-xmid<-barplot(t(prop_counts),    
-        beside      = FALSE,       
-        col         = rainbow(5),
-        ylab        = "Counts",
-        xlab        = "Sample", names.arg=rep("", 150), ylim=c(0,1.1))
+cols<-rainbow(5)
 
-legend("top",                     
-       legend = colnames(tufted_puffin)[-c(1:2)],
-       fill   = rainbow(5),
-       ncol   = 5) 
+layout(matrix(1:3, ncol = 1), heights = c(1, 0.25, 1))  
+par(oma = c(1, 0, 0, 0))                               
 
-years           <- tufted_puffin$year[sample_save] 
-year_centres    <- tapply(xmid, years, mean)            
-year_separators <- tapply(xmid, years, max) + 0.5     
-
-axis(1, at = year_centres , labels = unique(years), tick = FALSE, line = 0.5)
-
-axis(1,                                         
-     at   = year_separators[-length(year_separators)],    
-     labels = FALSE,
-     tcl  = -0.6)                             
+par(mar = c(0, 4, 4, 2))                 
+xmid <- barplot(t(sim_prop),
+                space   = 0,
+                col     = cols,
+                ylim    = c(0, 1.1),
+                axisnames = FALSE,
+                ylab    = "Counts")
+legend("top", legend = colnames(prop_counts), fill = cols,
+       ncol = 5,  cex=1.4, bg="white")
 
 
+par(mar = c(0, 4, 0, 2))               
+plot.new()
+plot.window(xlim = range(xmid) + c(-0.5, 0.5), ylim = c(0, 1))
 
+year_centres    <- tapply(xmid, years, mean)
+year_separators <- tapply(xmid, years, max) + 0.5
+
+
+axis(1, at = year_centres, labels = unique(years),
+     tick = FALSE, line = -3)
+
+axis(1, at = c(1, year_separators),
+     labels = FALSE, tcl = -0.6, line = -3)
+axis(1, at = c(1, year_separators),
+     labels = FALSE, tcl = 0.6, line = -3)
+
+par(mar = c(4, 4, 0, 2))               
+barplot(-t(prop_counts[ , ncol(prop_counts):1 ]),
+        space     = 0,
+        col       = cols[ ncol(prop_counts):1 ],
+        ylim      = c(-1.1, 0),
+        axisnames = FALSE,
+        ylab      = "Counts")
 ```
 
 Multinomial models are difficult - both to fit and interpret. With $K=5$ categories we have $K-1=4$ latent variables (traits) that are the log-odds ratio of observing a particular prey item versus the base-line prey item, in this case $\texttt{Other}$. Abbreviating the prey types by their initial the latent variables for sample $i$ in year $j$ are
 
 $$
 \begin{array}{rcl}
-l_{ij,\texttt{C}} =& \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij}}\right)&= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
+l_{ij,\texttt{C}} =& \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij})}\right)&= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
 l_{ij,\texttt{H}} =& \textrm{log}\left(\frac{Pr(\texttt{H}_{ij})}{Pr(\texttt{O}_{ij})}\right)&= \beta^{(0)}_\texttt{H}+u_{j, \texttt{H}}+e_{ij, \texttt{H}}\\
 l_{ij,\texttt{P}} =& \textrm{log}\left(\frac{Pr(\texttt{P}_{ij})}{Pr(\texttt{O}_{ij})}\right)&= \beta^{(0)}_\texttt{P}+u_{j, \texttt{P}}+e_{ij, \texttt{P}}\\
 l_{ij,\texttt{S}} =& \textrm{log}\left(\frac{Pr(\texttt{S}_{ij})}{Pr(\texttt{O}_{ij}}\right)&= \beta^{(0)}_\texttt{S}+u_{j, \texttt{S}}+e_{ij, \texttt{S}}\\
