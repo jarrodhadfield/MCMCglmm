@@ -59,60 +59,40 @@ and phylogenies (Hadfield 2010). Please read the course notes: <code><a href="..
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <p></p>
 <dl><dt id="arg-fixed">fixed<a class="anchor" aria-label="anchor" href="#arg-fixed"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></code> for the fixed effects, multiple responses
-are passed as a matrix using cbind</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></code> for the fixed effects, multiple responses are passed as a matrix using cbind</p></dd>
 
   <dt id="arg-random">random<a class="anchor" aria-label="anchor" href="#arg-random"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></code> for the random effects. Multiple random terms can be passed using the <code>+</code> operator, and in the most general case each random term has the form <code>variance.function(formula):linking.function(random.terms)</code>. Currently, the only <code>variance.functions</code> available are <code>idv</code>, <code>idh</code>, <code>us</code>, <code>cor[]</code> and <code>ante[]</code>. <code>idv</code> fits a constant variance across all components in <code>formula</code>. Both <code>idh</code> and <code>us</code> fit different variances across each component in <code>formula</code>, but <code>us</code> will also fit the covariances. <code>corg</code> fixes the variances along the diagonal to one and <code>corgh</code> fixes the variances along the diagonal to those specified in the prior.  <code>cors</code> allows correlation submatrices.
-<code>ante[]</code> fits ante-dependence structures of different order (e.g ante1, ante2), and the number can be prefixed by a <code>c</code> to hold all regression coefficients of the same order equal. The number can also be suffixed by a <code>v</code> to hold all innovation variances equal (e.g <code>antec2v</code> has 3 parameters).  The <code>formula</code> can contain both factors and numeric terms (i.e. random regression) although it should be noted that the intercept term is suppressed.  The (co)variances are the (co)variances of the <code>random.terms</code> effects.  Currently, the only <code>linking.functions</code> available are <code>mm</code> and <code>str</code>. <code>mm</code> fits a multimembership model where multiple random terms are separated by the <code>+</code> operator. <code>str</code> allows covariances to exist between multiple random terms that are also separated by the <code>+</code> operator. In both cases the levels of all multiple random terms have to be the same.  For simpler models the <code>variance.function(formula)</code> and <code>linking.function(random.terms)</code> can be omitted and the model syntax has the simpler form <code>~random1+random2+...</code>.  There are two reserved variables: <code>units</code> which index rows of the response variable and <code>trait</code> which index columns of the response variable</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></code> for the random effects. Multiple random terms can be passed using the <code>+</code> operator, and in the most general case each random term has the form <code>variance.function(formula):linking.function(random.terms)</code>. Currently, the only <code>variance.functions</code> available are <code>idv</code>, <code>idh</code>, <code>us</code>, <code>cor[]</code> and <code>ante[]</code>. <code>idv</code> fits a constant variance across all components in <code>formula</code>. Both <code>idh</code> and <code>us</code> fit different variances across each component in <code>formula</code>, but <code>us</code> will also fit the covariances. <code>corg</code> fixes the variances along the diagonal to one and <code>corgh</code> fixes the variances along the diagonal to those specified in the prior.  <code>cors</code> allows correlation submatrices. <code>ante[]</code> fits ante-dependence structures of different order (e.g ante1, ante2), and the number can be prefixed by a <code>c</code> to hold all regression coefficients of the same order equal. The number can also be suffixed by a <code>v</code> to hold all innovation variances equal (e.g <code>antec2v</code> has 3 parameters).  The <code>formula</code> can contain both factors and numeric terms (i.e. random regression) although it should be noted that the intercept term is suppressed.  The (co)variances are the (co)variances of the <code>random.terms</code> effects.  Currently, the only <code>linking.functions</code> available are <code>mm</code> and <code>str</code>. <code>mm</code> fits a multimembership model where multiple random terms are separated by the <code>+</code> operator. <code>str</code> allows covariances to exist between multiple random terms that are also separated by the <code>+</code> operator. In both cases the levels of all multiple random terms have to be the same.  For simpler models the <code>variance.function(formula)</code> and <code>linking.function(random.terms)</code> can be omitted and the model syntax has the simpler form <code>~random1+random2+...</code>.  There are two reserved variables: <code>units</code> which index rows of the response variable and <code>trait</code> which index columns of the response variable</p></dd>
 
   <dt id="arg-rcov">rcov<a class="anchor" aria-label="anchor" href="#arg-rcov"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/stats/formula.html" class="external-link">formula</a></code> for residual covariance structure. This has to be set up so that each data point is associated with a unique residual. For example a multi-response model might have the R-structure defined by <code>~us(trait):units</code></p></dd>
 
   <dt id="arg-family">family<a class="anchor" aria-label="anchor" href="#arg-family"></a></dt>
-<dd><p>optional character vector of trait distributions. Currently,
-<code>"gaussian"</code>, <code>"poisson"</code>,  <code>"categorical"</code>,
-<code>"multinomial"</code>,  <code>"ordinal"</code>, <code>"threshold"</code>, <code>"exponential"</code>, <code>"geometric"</code>, <code>"cengaussian"</code>,
-<code>"cenpoisson"</code>,  <code>"cenexponential"</code>,  <code>"zipoisson"</code>, <code>"zapoisson"</code>, <code>"ztpoisson"</code>, <code>"hupoisson"</code>, <code>"zibinomial"</code>, <code>"threshold"</code>, <code>"nzbinom"</code> , <code>"ncst"</code>, <code>"msst"</code> , <code>"hubinomial"</code>, <code>"ztmb"</code> and <code>"ztmultinomial"</code> are supported, where the prefix <code>"cen"</code> means censored, the prefix <code>"zi"</code> means zero inflated, the prefix <code>"za"</code> means zero altered, the prefix <code>"zt"</code> means zero truncated and the prefix <code>"hu"</code> means hurdle. If <code>NULL</code>, <code>data</code> needs to contain a
-<code>family</code> column.</p></dd>
+<dd><p>optional character vector of trait distributions. Currently, <code>"gaussian"</code>, <code>"poisson"</code>,  <code>"categorical"</code>, <code>"multinomial"</code>,  <code>"ordinal"</code>, <code>"threshold"</code>, <code>"exponential"</code>, <code>"geometric"</code>, <code>"cengaussian"</code>, <code>"cenpoisson"</code>,  <code>"cenexponential"</code>,  <code>"zipoisson"</code>, <code>"zapoisson"</code>, <code>"ztpoisson"</code>, <code>"hupoisson"</code>, <code>"zibinomial"</code>, <code>"threshold"</code>, <code>"nzbinom"</code> , <code>"ncst"</code>, <code>"msst"</code> , <code>"hubinomial"</code>, <code>"ztmb"</code> and <code>"ztmultinomial"</code> are supported, where the prefix <code>"cen"</code> means censored, the prefix <code>"zi"</code> means zero inflated, the prefix <code>"za"</code> means zero altered, the prefix <code>"zt"</code> means zero truncated and the prefix <code>"hu"</code> means hurdle. If <code>NULL</code>, <code>data</code> needs to contain a <code>family</code> column.</p></dd>
 
   <dt id="arg-mev">mev<a class="anchor" aria-label="anchor" href="#arg-mev"></a></dt>
-<dd><p>optional vector of measurement error variances for each data point
-for random effect meta-analysis.</p></dd>
+<dd><p>optional vector of measurement error variances for each data point for random effect meta-analysis.</p></dd>
 
   <dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
 <dd><p><code>data.frame</code></p></dd>
 
   <dt id="arg-start">start<a class="anchor" aria-label="anchor" href="#arg-start"></a></dt>
-<dd><p>optional list having 5 possible elements:
-<code>R</code> (R-structure) <code>G</code> (G-structure) and <code>Liab</code> (latent variables or liabilities) should contain the starting values where <code>G</code> itself is also a list with as many elements as random effect components. The element <code>QUASI</code> should be logical: if <code>TRUE</code> starting latent variables are obtained heuristically, if <code>FALSE</code> then they are sampled from a Z-distribution. The element <code>r</code> should be be between -1 and 1 and determines the correlation between the starting latent variables and the ordered latent variables (ordered by the response variable): the default is 0.8.</p></dd>
+<dd><p>optional list having 5 possible elements: <code>R</code> (R-structure) <code>G</code> (G-structure) and <code>Liab</code> (latent variables or liabilities) should contain the starting values where <code>G</code> itself is also a list with as many elements as random effect components. The element <code>QUASI</code> should be logical: if <code>TRUE</code> starting latent variables are obtained heuristically, if <code>FALSE</code> then they are sampled from a Z-distribution. The element <code>r</code> should be be between -1 and 1 and determines the correlation between the starting latent variables and the ordered latent variables (ordered by the response variable): the default is 0.8.</p></dd>
 
   <dt id="arg-prior">prior<a class="anchor" aria-label="anchor" href="#arg-prior"></a></dt>
-<dd><p>optional list of prior specifications having 4 possible elements:
-<code>R</code> (R-structure) <code>G</code> (G-structure), <code>B</code> (fixed effects) and <code>S</code> (theta_scale parameter). <code>B</code> and <code>S</code> are lists containing the expected value (<code>mu</code>) and a
-(co)variance matrix (<code>V</code>) representing the strength of belief: the defaults are <code>B$mu</code>=<code>S$mu</code>=0 and <code>B$V</code>=<code>S$V</code>=I*1e+10, where where I is an identity matrix of appropriate dimension.  The priors for the variance structures (<code>R</code> and <code>G</code>) are lists with the expected (co)variances (<code>V</code>) and degree of belief parameter (<code>nu</code>) for the inverse-Wishart (note this parameterisation is non-standard - see <a href="rIW.html">rIW</a>), and also the mean vector (<code>alpha.mu</code>) and covariance matrix (<code>alpha.V</code>) for the redundant working parameters. The defaults are <code>nu</code>=0, <code>V</code>=1, <code>alpha.mu</code>=0, and <code>alpha.V</code>=0. When <code>alpha.V</code> is non-zero, parameter expanded algorithms are used.</p></dd>
+<dd><p>optional list of prior specifications having 4 possible elements: <code>R</code> (R-structure) <code>G</code> (G-structure), <code>B</code> (fixed effects) and <code>S</code> (theta_scale parameter). <code>B</code> and <code>S</code> are lists containing the expected value (<code>mu</code>) and a (co)variance matrix (<code>V</code>) representing the strength of belief: the defaults are <code>B$mu</code>=<code>S$mu</code>=0 and <code>B$V</code>=<code>S$V</code>=I*1e+10, where where I is an identity matrix of appropriate dimension.  The priors for the variance structures (<code>R</code> and <code>G</code>) are lists with the expected (co)variances (<code>V</code>) and degree of belief parameter (<code>nu</code>) for the inverse-Wishart (note this parameterisation is non-standard - see <a href="rIW.html">rIW</a>), and also the mean vector (<code>alpha.mu</code>) and covariance matrix (<code>alpha.V</code>) for the redundant working parameters. The defaults are <code>nu</code>=0, <code>V</code>=1, <code>alpha.mu</code>=0, and <code>alpha.V</code>=0. When <code>alpha.V</code> is non-zero, parameter expanded algorithms are used.</p></dd>
 
   <dt id="arg-tune">tune<a class="anchor" aria-label="anchor" href="#arg-tune"></a></dt>
 <dd><p>optional list with elements <code>mh_V</code> and/or <code>mh_weights</code> <code>mh_V</code> should be a list with as many elements as there are R-structure terms with each element being the (co)variance matrix defining the proposal distribution for the associated latent variables. If NULL an adaptive algorithm is used which ceases to adapt once the burn-in phase has finished. <code>mh_weights</code> should be equal to the number of latent variables and acts as a scaling factor for the proposal standard deviations.</p></dd>
 
   <dt id="arg-pedigree">pedigree<a class="anchor" aria-label="anchor" href="#arg-pedigree"></a></dt>
-<dd><p>ordered pedigree with 3 columns id, dam and sire or a
-<code>phylo</code> object. This argument is retained for back compatibility - see ginverse argument for a more general formulation.</p></dd>
+<dd><p>ordered pedigree with 3 columns id, dam and sire or a <code>phylo</code> object. This argument is retained for back compatibility - see ginverse argument for a more general formulation.</p></dd>
 
   <dt id="arg-nodes">nodes<a class="anchor" aria-label="anchor" href="#arg-nodes"></a></dt>
-<dd><p>pedigree/phylogeny nodes to be estimated. The default,
-<code>"ALL"</code> estimates effects for all individuals in a pedigree or nodes in a
-phylogeny (including ancestral nodes). For phylogenies <code>"TIPS"</code> estimates
-effects for the tips only, and for pedigrees a vector of ids can be passed to
-<code>nodes</code> specifying the subset of individuals for which animal effects are
-estimated.  Note that all analyses are equivalent if omitted nodes have missing
-data but by absorbing these nodes the chain max mix better. However, the
-algorithm may be less numerically stable and may iterate slower, especially for
-large phylogenies.</p></dd>
+<dd><p>pedigree/phylogeny nodes to be estimated. The default, <code>"ALL"</code> estimates effects for all individuals in a pedigree or nodes in a phylogeny (including ancestral nodes). For phylogenies <code>"TIPS"</code> estimates effects for the tips only, and for pedigrees a vector of ids can be passed to <code>nodes</code> specifying the subset of individuals for which animal effects are estimated.  Note that all analyses are equivalent if omitted nodes have missing data but by absorbing these nodes the chain max mix better. However, the algorithm may be less numerically stable and may iterate slower, especially for large phylogenies.</p></dd>
 
   <dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
-<dd><p>logical: should the phylogeny (needs to be ultrametric) be scaled
-to unit length (distance from root to tip)?</p></dd>
+<dd><p>logical: should the phylogeny (needs to be ultrametric) be scaled to unit length (distance from root to tip)?</p></dd>
 
   <dt id="arg-nitt">nitt<a class="anchor" aria-label="anchor" href="#arg-nitt"></a></dt>
 <dd><p>number of MCMC iterations</p></dd>
@@ -124,12 +104,10 @@ to unit length (distance from root to tip)?</p></dd>
 <dd><p>burnin</p></dd>
 
   <dt id="arg-pr">pr<a class="anchor" aria-label="anchor" href="#arg-pr"></a></dt>
-<dd><p>logical: should the posterior distribution of random effects be
-saved?</p></dd>
+<dd><p>logical: should the posterior distribution of random effects be saved?</p></dd>
 
   <dt id="arg-pl">pl<a class="anchor" aria-label="anchor" href="#arg-pl"></a></dt>
-<dd><p>logical: should the posterior distribution of latent variables be
-saved?</p></dd>
+<dd><p>logical: should the posterior distribution of latent variables be saved?</p></dd>
 
   <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
 <dd><p>logical: if <code>TRUE</code> MH diagnostics are printed to screen</p></dd>
@@ -165,7 +143,7 @@ saved?</p></dd>
 <dd><p>logical: save design matrix for scaled effects.</p></dd>
 
   <dt id="arg-aggregate">aggregate<a class="anchor" aria-label="anchor" href="#arg-aggregate"></a></dt>
-<dd><p>character: names of long-format variables to be formed from wide-format variables in multi-trait models. Wide-format variables should have the long-format variable name followed by an underscore and then the trait name. For example, a wide-format data frame might have variable names <code>y1</code>, <code>y2</code>, <code>x_y1</code>, <code>x_y2</code>. If a multi-trait model is fitted for <code>y1</code> and <code>y2</code> then <code>aggregate="x"</code> generates the new variable <code>x=c(x_y1, x_y2)</code>).</p></dd>
+<dd><p>character: names of long-format variables to be formed from wide-format variables in multi-trait models. Wide-format variables should have the long-format variable name followed by an underscore and then the trait name. For example, a wide-format data frame might have variable names <code>y1</code>, <code>y2</code>, <code>x_y1</code>, <code>x_y2</code>. If a multi-trait model is fitted for <code>y1</code> and <code>y2</code> then <code>aggregate="x"</code> generates the new variable <code>x=c(x_y1, x_y2)</code>.</p></dd>
 
   <dt id="arg-longer-positive-integer-that-multiples-nitt-thin-and-burnin">longer: positive integer that multiples <code>nitt</code>, <code>thin</code> and <code>burnin</code><a class="anchor" aria-label="anchor" href="#arg-longer-positive-integer-that-multiples-nitt-thin-and-burnin"></a></dt>
 <dd><p></p></dd>

@@ -240,7 +240,7 @@ MCMCglmm(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL,
   and then the trait name. For example, a wide-format data frame might
   have variable names `y1`, `y2`, `x_y1`, `x_y2`. If a multi-trait model
   is fitted for `y1` and `y2` then `aggregate="x"` generates the new
-  variable `x=c(x_y1, x_y2)`).
+  variable `x=c(x_y1, x_y2)`.
 
 - longer: positive integer that multiples `nitt`, `thin` and `burnin`:
 

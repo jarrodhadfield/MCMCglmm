@@ -183,3 +183,6 @@
 
 - [`summary(`*`<MCMCglmm>`*`)`](https://jarrodhadfield.github.io/MCMCglmm/reference/summary.MCMCglmm.md)
   : Summarising GLMM Fits from MCMCglmm
+
+- [`tufted_puffin`](https://jarrodhadfield.github.io/MCMCglmm/reference/tufted_puffin.md)
+  : Diet composition of Tufted Puffin

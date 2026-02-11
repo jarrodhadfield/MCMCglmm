@@ -857,88 +857,258 @@ Figure 7.10: Posterior distributions for the probit regression of <span class="m
 <h2><span class="header-section-number">7.6</span> Multinomial Models<a href="multi.html#multinomial-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The previous sections of this chapter have covered multi-response models where each response comes from a single parameter distribution. <span class="math inline">\(\texttt{MCMCglmm}\)</span> also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with <span class="math inline">\(\texttt{trait}\)</span> indexing the different parameters of the distribution and <span class="math inline">\(\texttt{units}\)</span> indexing the observation.</p>
 <p>We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section <a href="glm.html#binom-sec">3.6</a>. In binomial models we condition on the total number of counts (the size) and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and model the probabilities of belonging to each category. However, as with the binomial, if we have <span class="math inline">\(K\)</span> categories we only need to model <span class="math inline">\(K-1\)</span> parameters: if we know <span class="math inline">\(K-1\)</span> probabilities the final probability is known since the sum of all probabilities must equal one. Consequently, we chose a base-line category to which the other categories are compared to. As with binomial models the number in each category can be passed as columns using cbind or, if the total number of counts is one, the response can be passed as a single vector of categories for each observation. In both cases a logit-link is used and the base-line category is either the category associated with the final column or the first factor level if a single column is passed as the response.</p>
-<p>To explore multinomial models we will analyse data collected by the Alaska Science Center on the prey items of seabirds breeding on Middleton Island in the Gulf of Alaska (soon to be renamed the Gulf of Canada) - <a href="https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82">see here</a>. We will restrict ourselves to data obtained on the chicks of the wonderful Tufted Puffin. 44 different prey items were recorded but we will lump all but the top four prey items (Walleye pollock, Pacific herring, Pacific sand lance and Capelin) into a single category, <span class="math inline">\(\texttt{other}\)</span>. After a little formatting we have the data-frame <span class="math inline">\(\texttt{tufted_mm}\)</span>:</p>
-<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="multi.html#cb270-1" tabindex="-1"></a><span class="fu">head</span>(tufted_mm)</span></code></pre></div>
-<pre><code>##   Capelin Other Herring SandLance Pollock year month
-## 1       0     0       0         1       0 1978   Jul
-## 2       0     0       0         1       0 1978   Aug
-## 3       0     0       0         6       0 1978   Aug
-## 4       0     0       0         1       0 1978   Aug
-## 5       0     0       0         1       0 1978   Aug
-## 6       0     0       0         1       0 1978   Aug</code></pre>
-<p>Each row corresponds to one of 565 samples and the first 5 columns are the counts of each prey item in the sample. The final two columns are the collection year (of which there are 0) and collection month (July or August). Figure <a href="multi.html#fig:tufted-num">7.11</a> plots the number of prey items for 150 random samples.</p>
+<p>To explore multinomial models we will analyse data collected by the Alaska Science Center on the prey items of seabirds breeding on Middleton Island in the Gulf of Alaska - <a href="https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82">see here</a>. We will restrict ourselves to data obtained on the chicks of the wonderful Tufted Puffin:</p>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="multi.html#cb270-1" tabindex="-1"></a><span class="fu">data</span>(tufted_puffin)</span>
+<span id="cb270-2"><a href="multi.html#cb270-2" tabindex="-1"></a><span class="fu">head</span>(tufted_puffin)</span></code></pre></div>
+<pre><code>##   year month Capelin Herring Pollock SandLance Other
+## 1 1978   Jul       0       0       0         1     0
+## 2 1978   Aug       0       0       0         1     0
+## 3 1978   Aug       0       0       0         6     0
+## 4 1978   Aug       0       0       0         1     0
+## 5 1978   Aug       0       0       0         1     0
+## 6 1978   Aug       0       0       0         1     0</code></pre>
+<p>Each row corresponds to one of 565 samples with their collection year and month recorded. The following four columns are the number of Capelin (<span class="math inline">\(\texttt{Capelin}\)</span>), Pacific herring (<span class="math inline">\(\texttt{Herring}\)</span>), Walleye pollock (<span class="math inline">\(\texttt{Pollock}\)</span>) and Pacific sand lance (<span class="math inline">\(\texttt{SandLance}\)</span>) in each sample. An additional 40 prey taxa were also recorded and their combined counts per sample are in the final column (<span class="math inline">\(\texttt{Other}\)</span>). Figure <a href="multi.html#fig:tufted-num">7.11</a> plots the number of prey items for 150 random samples.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-num"></span>
-<img src="_bookdown_files/fig/tufted-num-1.png" alt="Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year." width="864" />
+<img src="_bookdown_files/fig/tufted-num-1.png" alt="Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance." width="864" />
 <p class="caption">
-Figure 7.11: Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year.
+Figure 7.11: Number of prey items of different types in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance.
 </p>
 </div>
 <p>In terms of numbers, Capelin and the Pacific sand lance are the most common prey items, with ‘Other’ being the rarest</p>
-<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="multi.html#cb272-1" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_mm[, <span class="fu">c</span>(<span class="st">&quot;Other&quot;</span>, <span class="st">&quot;Herring&quot;</span>, <span class="st">&quot;Pollock&quot;</span>, <span class="st">&quot;SandLance&quot;</span>, <span class="st">&quot;Capelin&quot;</span>)])</span></code></pre></div>
-<pre><code>##     Other   Herring   Pollock SandLance   Capelin 
-## 0.5150442 1.1522124 0.6141593 1.6300885 1.7238938</code></pre>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="multi.html#cb272-1" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span></code></pre></div>
+<pre><code>##   Capelin   Herring   Pollock SandLance     Other 
+## 1.7238938 1.1522124 0.6141593 1.6300885 0.5150442</code></pre>
 <p>However, there is tremendous variation in the total number of prey items per sample and it looks as if those samples with many prey items are dominated by Capelin. The multinomial ignores (conditions on) the total number of prey items and essentially works with the proportions of each prey item, as shown in Figure <a href="multi.html#fig:tufted-prop">7.12</a>.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-prop"></span>
-<img src="_bookdown_files/fig/tufted-prop-1.png" alt="Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year." width="864" />
+<img src="_bookdown_files/fig/tufted-prop-1.png" alt="Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance." width="864" />
 <p class="caption">
-Figure 7.12: Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year.
+Figure 7.12: Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance.
 </p>
 </div>
 <p>Once we control for the total number of prey items we see that Capelin actually makes up the lowest proportion of the diet and Pacific sand lance dominates:</p>
-<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="multi.html#cb274-1" tabindex="-1"></a>tot_counts <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(tufted_mm[, <span class="fu">c</span>(<span class="st">&quot;Other&quot;</span>, <span class="st">&quot;Herring&quot;</span>, <span class="st">&quot;Pollock&quot;</span>, <span class="st">&quot;SandLance&quot;</span>, <span class="st">&quot;Capelin&quot;</span>)])</span>
-<span id="cb274-2"><a href="multi.html#cb274-2" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_mm[, <span class="fu">c</span>(<span class="st">&quot;Other&quot;</span>, <span class="st">&quot;Herring&quot;</span>, <span class="st">&quot;Pollock&quot;</span>, <span class="st">&quot;SandLance&quot;</span>, <span class="st">&quot;Capelin&quot;</span>)]<span class="sc">/</span>tot_counts)</span></code></pre></div>
-<pre><code>##     Other   Herring   Pollock SandLance   Capelin 
-## 0.1971235 0.1316400 0.1449124 0.4062647 0.1200594</code></pre>
-<p>It is also apparent from Figure <a href="multi.html#fig:tufted-prop">7.12</a> (and Figure <a href="multi.html#fig:tufted-num">7.11</a>) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure <a href="multi.html#fig:tufted-sim">7.13</a> I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples. It is clear that the simulated data are much less structured than the real data.</p>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="multi.html#cb274-1" tabindex="-1"></a>total_counts <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span>
+<span id="cb274-2"><a href="multi.html#cb274-2" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]<span class="sc">/</span>total_counts)</span></code></pre></div>
+<pre><code>##   Capelin   Herring   Pollock SandLance     Other 
+## 0.1200594 0.1316400 0.1449124 0.4062647 0.1971235</code></pre>
+<p>It is also apparent from Figure <a href="multi.html#fig:tufted-prop">7.12</a> (and Figure <a href="multi.html#fig:tufted-num">7.11</a>) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years, samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure <a href="multi.html#fig:tufted-sim">7.13</a> I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples. It is clear that the simulated data are much less structured than the real data.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-sim"></span>
 <img src="_bookdown_files/fig/tufted-sim-1.png" alt="Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year." width="864" />
 <p class="caption">
 Figure 7.13: Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year.
 </p>
 </div>
+<p>Let’s fit a multinomial model to these data, using <span class="math inline">\(\texttt{Other}\)</span> as the base-line category. We will also fit fully unstructured, <span class="math inline">\(4\times 4\)</span>, covariance matrices at the level of year and sample (<span class="math inline">\(\texttt{unit}\)</span>):</p>
 <div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="multi.html#cb276-1" tabindex="-1"></a>prior.tufted <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">IW</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">2</span>, <span class="dv">1000</span>))</span>
-<span id="cb276-2"><a href="multi.html#cb276-2" tabindex="-1"></a>m.tufted <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Herring, Pollock, Capelin, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb276-3"><a href="multi.html#cb276-3" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_mm, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>,</span>
+<span id="cb276-2"><a href="multi.html#cb276-2" tabindex="-1"></a>m.tufted <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
+<span id="cb276-3"><a href="multi.html#cb276-3" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>,</span>
 <span id="cb276-4"><a href="multi.html#cb276-4" tabindex="-1"></a>    <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>With two <span class="math inline">\(4\times 4\)</span> covariance matrices, the model summary is pretty overwhelming. To get a feel for the broad patterns, in Table <a href="multi.html#tab:puffin">7.1</a> I have summarised the two matrices in terms of correlations (off-diagonals) and variances (diagonals). The posterior means together with the 95% credible interval (in square brackets) are reported.</p>
+<table class="table" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:puffin">Table 7.1: </span>Posterior mean and 95% credible intervals for the variances (diagonal) and correlations (off-diagonal) in year effects (top) and sample effects (bottom) from model <span class="math inline">\(\texttt{m.tufted}\)</span>
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+Capelin
+</th>
+<th style="text-align:left;">
+Herring
+</th>
+<th style="text-align:left;">
+Pollock
+</th>
+<th style="text-align:left;">
+SandLance
+</th>
+</tr>
+</thead>
+<tbody>
+<tr grouplength="4">
+<td colspan="5" style="border-bottom: 1px solid;">
+<strong><span class="math inline">\({\bf V}_\texttt{year}\)</span></strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+Capelin
+</td>
+<td style="text-align:left;">
+63.63 [13.58-141.35]
+</td>
+<td style="text-align:left;">
+0.09 [-0.40-0.55]
+</td>
+<td style="text-align:left;">
+0.21 [-0.29-0.64]
+</td>
+<td style="text-align:left;">
+-0.13 [-0.54-0.32]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+Herring
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+38.06 [10.77-79.25]
+</td>
+<td style="text-align:left;">
+-0.16 [-0.57-0.29]
+</td>
+<td style="text-align:left;">
+0.37 [-0.02-0.73]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+Pollock
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+12.79 [3.18-26.06]
+</td>
+<td style="text-align:left;">
+-0.23 [-0.61-0.18]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+SandLance
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+17.54 [6.09-32.76]
+</td>
+</tr>
+<tr grouplength="4">
+<td colspan="5" style="border-bottom: 1px solid;">
+<strong><span class="math inline">\({\bf V}_\texttt{units}\)</span></strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+Capelin
+</td>
+<td style="text-align:left;">
+60.09 [22.95-99.82]
+</td>
+<td style="text-align:left;">
+-0.15 [-0.60-0.24]
+</td>
+<td style="text-align:left;">
+-0.09 [-0.60-0.42]
+</td>
+<td style="text-align:left;">
+-0.02 [-0.46-0.36]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+Herring
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+17.13 [9.46-26.71]
+</td>
+<td style="text-align:left;">
+-0.01 [-0.45-0.44]
+</td>
+<td style="text-align:left;">
+0.68 [0.48-0.84]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+Pollock
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+4.41 [1.72-7.23]
+</td>
+<td style="text-align:left;">
+0.02 [-0.51-0.50]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;padding-left: 2em;font-weight: bold;" indentlevel="1">
+SandLance
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+</td>
+<td style="text-align:left;">
+15.85 [9.02-23.29]
+</td>
+</tr>
+</tbody>
+</table>
+<p><br></p>
+<p>There seems to be substantial variation, both between years and between samples for the linear predictors for each prey item. Although credible intervals are wide, it seems generally that between year variation exceeds the between sample variation. Correlations between the linear predictors for different prey items have wide credible intervals, but in generally are fairly modest. The exception to this is between the <span class="math inline">\(\texttt{Herring}\)</span> and <span class="math inline">\(\texttt{SandLance}\)</span> predictors where the correlation is moderately positive particular at the level of samples (<span class="math inline">\(\texttt{units}\)</span>).</p>
+<div class="figure"><span style="display:block;" id="fig:tufted-sim2"></span>
+<img src="_bookdown_files/fig/tufted-sim2-1.png" alt="A posterior predictive simulation (top) using model $\texttt{m.tufted}$ for the proportion of prey items that are of each type in 150 randomly selected samples. On the bottom are the observed proportion of prey items. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance. Note that $\texttt{unit}$ effects are marginalised in the posterior predictive simulation and so we do not expect an exact correspondence between samples: only the *distributions* within and across years should match." width="864" />
+<p class="caption">
+Figure 7.14: A posterior predictive simulation (top) using model <span class="math inline">\(\texttt{m.tufted}\)</span> for the proportion of prey items that are of each type in 150 randomly selected samples. On the bottom are the observed proportion of prey items. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance. Note that <span class="math inline">\(\texttt{unit}\)</span> effects are marginalised in the posterior predictive simulation and so we do not expect an exact correspondence between samples: only the <em>distributions</em> within and across years should match.
+</p>
+</div>
 <p>Multinomial models are difficult - both to fit and interpret. With <span class="math inline">\(K=5\)</span> categories we have <span class="math inline">\(K-1=4\)</span> latent variables (traits) that are the log-odds ratio of observing a particular prey item versus the base-line prey item, in this case <span class="math inline">\(\texttt{Other}\)</span>. Abbreviating the prey types by their initial the latent variables for sample <span class="math inline">\(i\)</span> in year <span class="math inline">\(j\)</span> are</p>
 <p><span class="math display">\[
 \begin{array}{rcl}
+l_{ij,\texttt{C}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
 l_{ij,\texttt{H}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{H}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(0)}_\texttt{H}+u_{j, \texttt{H}}+e_{ij, \texttt{H}}\\
 l_{ij,\texttt{P}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{P}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(0)}_\texttt{P}+u_{j, \texttt{P}}+e_{ij, \texttt{P}}\\
-l_{ij,\texttt{C}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij}}\right)&amp;= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
 l_{ij,\texttt{S}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{S}_{ij})}{Pr(\texttt{O}_{ij}}\right)&amp;= \beta^{(0)}_\texttt{S}+u_{j, \texttt{S}}+e_{ij, \texttt{S}}\\
 \end{array}
 \]</span></p>
 <p>where the <span class="math inline">\(\beta^{(0)}\)</span> are trait-specific intercepts, the <span class="math inline">\(u\)</span> are trait-specific year effects and and the <span class="math inline">\(e\)</span> are trait-observation specific <span class="math inline">\(\texttt{unit}\)</span> effects that capture overdispersion.</p>
-<p>The difficulty, I think, is that the effects are comparisons with the base-line category, yet it is easy to forget this. For example, let’s imagine that Pollock and Herring appear in the diet completely independently of each other and so knowing there are many Pollock in a particular year is not informative about the abundance of Herring. It might then be tempting to assume that two sets of year effects, <span class="math inline">\(u_{\texttt{P}}\)</span> and <span class="math inline">\(u_{\texttt{H}}\)</span> are uncorrelated. However, they may be correlated through their shared dependence on ‘Other’ prey items:</p>
+<p>The difficulty, I think, is that the effects are comparisons with the base-line category, yet it is easy to forget this. For example, let’s imagine that Capelin and Herring appear in the diet completely independently of each other and so knowing there are many Capelin in a particular year is not informative about the abundance of Herring. It might then be tempting to assume that two sets of year effects, <span class="math inline">\(u_{\texttt{C}}\)</span> and <span class="math inline">\(u_{\texttt{H}}\)</span> are uncorrelated. However, they may be correlated through their shared dependence on ‘Other’ prey items:</p>
 <p><span class="math display">\[
 \begin{array}{rl}
-Cov(l_{\texttt{H}}, l_{\texttt{P}}) =&amp; Cov(\textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{P}))-\textrm{log}(Pr(\texttt{O})))\\
-=&amp; Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{P})))-Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{O})))\\
-&amp;-Cov(\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{P})))+Var(\textrm{log}(Pr(\texttt{O})))\\
+Cov(l_{\texttt{C}}, l_{\texttt{H}}) =&amp; Cov(\textrm{log}(Pr(\texttt{C}))-\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O})))\\
+=&amp; Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{H})))-Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{O})))\\
+&amp;-Cov(\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))\\
 \end{array}
 \]</span></p>
-<p>Even if the (log) probabilities are uncorrelated between all pairs of prey items, the log-contrasts between pairs (the latent variables) are expected to be correlated. For example, if the probabilities of Pollock, Herring and Other are all uncorrelated the above equation simplifies to</p>
+<p>Even if the (log) probabilities are uncorrelated between all pairs of prey items, the log-contrasts between pairs (the latent variables) are expected to be correlated. For example, if the probabilities of Capelin, Herring and Other are all uncorrelated the above equation simplifies to</p>
 <p><span class="math display">\[
-Cov(l_{\texttt{H}}, l_{\texttt{P}}) =Var(\textrm{log}(Pr(\texttt{O})))\\
+Cov(l_{\texttt{C}}, l_{\texttt{H}}) =Var(\textrm{log}(Pr(\texttt{O})))\\
 \]</span></p>
 <p>and a non-zero covariance exists whenever there is variation in the probability of success in the base-line category. Similarly, if we look at the variability in a particular latent variable we have:</p>
 <p><span class="math display">\[
 \begin{array}{rl}
-Var(l_{\texttt{H}})=&amp;Var(\textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O}))\\
-=&amp;Var(\textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))-2Cov(\textrm{log}(Pr(\texttt{H})), \textrm{log}(Pr(\texttt{O}))) \\
+Var(l_{\texttt{C}})=&amp;Var(\textrm{log}(Pr(\texttt{C}))-\textrm{log}(Pr(\texttt{O}))\\
+=&amp;Var(\textrm{log}(Pr(\texttt{C})))+Var(\textrm{log}(Pr(\texttt{O})))-2Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{O}))) \\
 \end{array}
 \]</span></p>
 <p>which simplifies to</p>
 <p><span class="math display">\[
-Var(l_{\texttt{H}})=Var(\textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))
+Var(l_{\texttt{C}})=Var(\textrm{log}(Pr(\texttt{C})))+Var(\textrm{log}(Pr(\texttt{O})))
 \]</span></p>
-<p>when the probabilities of Herring and Other are uncorrelated. When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log probabilities have the same yearly variation for all categories, and categories are independent then our null for the covariance matrix of year effects would have <span class="math inline">\(2\sigma^2_{u}\)</span> along the diagonal and <span class="math inline">\(\sigma^2_{u}\)</span> on the off-diagonals. We can represent this as <span class="math inline">\({\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(4\times 4\)</span> identity and unit matrices, respectively<a href="#fn38" class="footnote-ref" id="fnref38"><sup>38</sup></a>. If we believe that the amount of yearly variation differs across categories, yet the categories remain independent then our null would be <span class="math inline">\({\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}\)</span> where <span class="math inline">\({\bf D}\)</span> is a diagonal matrix with four variances to be estimated in addition to <span class="math inline">\(\sigma^2_{\texttt{O}}\)</span>.</p>
-<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="multi.html#cb277-1" tabindex="-1"></a>m.tuftedb <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Herring, Pollock, Capelin, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb277-2"><a href="multi.html#cb277-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_mm, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(<span class="dv">1</span> <span class="sc">+</span> trait)<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
+<p>when the probabilities of Capelin and Other are uncorrelated. When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log probabilities have the same yearly variation for all categories, and categories are independent then our null for the covariance matrix of year effects would have <span class="math inline">\(2\sigma^2_{u}\)</span> along the diagonal and <span class="math inline">\(\sigma^2_{u}\)</span> on the off-diagonals. We can represent this as <span class="math inline">\({\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(4\times 4\)</span> identity and unit matrices, respectively<a href="#fn38" class="footnote-ref" id="fnref38"><sup>38</sup></a>. If we believe that the amount of yearly variation differs across categories, yet the categories remain independent then our null would be <span class="math inline">\({\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}\)</span> where <span class="math inline">\({\bf D}\)</span> is a diagonal matrix with four variances to be estimated in addition to <span class="math inline">\(\sigma^2_{\texttt{O}}\)</span>.</p>
+<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="multi.html#cb277-1" tabindex="-1"></a>m.tuftedb <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
+<span id="cb277-2"><a href="multi.html#cb277-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(<span class="dv">1</span> <span class="sc">+</span> trait)<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
 <span id="cb277-3"><a href="multi.html#cb277-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="multi.html#cb278-1" tabindex="-1"></a>m.tuftedc <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Herring, Pollock, Capelin, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb278-2"><a href="multi.html#cb278-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_mm, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year <span class="sc">+</span> year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="multi.html#cb278-1" tabindex="-1"></a>m.tuftedc <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
+<span id="cb278-2"><a href="multi.html#cb278-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year <span class="sc">+</span> year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
 <span id="cb278-3"><a href="multi.html#cb278-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>The two latent variables are indexed as <code>trait</code>, and the unit of observation (<span class="math inline">\(i\)</span>) as <code>units</code>, as in multi-response models. As with binary models the residual variance is not identified, and can be set to any arbitrary value. For reasons that will become clearer later I like to work with the residual covariance matrix <span class="math inline">\(\frac{1}{J}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(J-1\)</span> dimensional identity and unit matrices, respectively.</p>
 <p>To start we will try a simple model with an intercept:</p>
@@ -948,12 +1118,12 @@ Var(l_{\texttt{H}})=Var(\textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\textt
 <span id="cb280-2"><a href="multi.html#cb280-2" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> IJ, <span class="at">fix =</span> <span class="dv">1</span>))</span>
 <span id="cb280-3"><a href="multi.html#cb280-3" tabindex="-1"></a>m5c<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">prior =</span> prior, <span class="at">data =</span> SShorns,</span>
 <span id="cb280-4"><a href="multi.html#cb280-4" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>)</span></code></pre></div>
-<p>The posterior distribution for the intercepts is shown in Figure <a href="multi.html#fig:MN1">7.14</a>, and the model
-clearly needs to be run for longer (Figure <a href="multi.html#fig:MN1">7.14</a>. However…</p>
+<p>The posterior distribution for the intercepts is shown in Figure <a href="multi.html#fig:MN1">7.15</a>, and the model
+clearly needs to be run for longer (Figure <a href="multi.html#fig:MN1">7.15</a>. However…</p>
 <div class="figure"><span style="display:block;" id="fig:MN1"></span>
 <img src="_bookdown_files/fig/MN1-1.png" alt="Posterior distribution of fixed effects from model `m5c.1`: a simple multinomial logit model with intercepts only}" width="672" />
 <p class="caption">
-Figure 7.14: Posterior distribution of fixed effects from model <code>m5c.1</code>: a simple multinomial logit model with intercepts only}
+Figure 7.15: Posterior distribution of fixed effects from model <code>m5c.1</code>: a simple multinomial logit model with intercepts only}
 </p>
 </div>
 <p>The problem can also be represented using the contrast matrix <span class="math inline">\({\bf \Delta}\)</span> <span class="citation">(<a href="#ref-Bunch.1991">Bunch 1991</a>)</span>:</p>
@@ -987,16 +1157,16 @@ probability for each horn type:</p>
 ##    plus standard error of the mean:
 ## 
 ##        Mean      SD  Naive SE Time-series SE
-## [1,] 0.6481 0.01841 0.0005822       0.001720
-## [2,] 0.1029 0.01084 0.0003427       0.001352
-## [3,] 0.2489 0.01635 0.0005171       0.001667
+## [1,] 0.6539 0.01806 0.0005710       0.001718
+## [2,] 0.1007 0.01128 0.0003566       0.001727
+## [3,] 0.2454 0.01725 0.0005454       0.001725
 ## 
 ## 2. Quantiles for each variable:
 ## 
-##        2.5%     25%    50%    75%  97.5%
-## var1 0.6116 0.63533 0.6485 0.6612 0.6825
-## var2 0.0829 0.09554 0.1024 0.1099 0.1246
-## var3 0.2169 0.23722 0.2488 0.2608 0.2800</code></pre>
+##         2.5%     25%    50%    75%  97.5%
+## var1 0.61836 0.64193 0.6543 0.6659 0.6902
+## var2 0.07891 0.09339 0.1011 0.1077 0.1234
+## var3 0.21255 0.23386 0.2452 0.2567 0.2812</code></pre>
 <p>which agrees well with those observed:</p>
 <div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="multi.html#cb283-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">rowSums</span>(Ctable))</span></code></pre></div>
 <pre><code>##    normal    polled   scurred 
@@ -1004,11 +1174,11 @@ probability for each horn type:</p>
 <p>To test for the effects of sex specific expression we can also fit a model with a sex effect:</p>
 <div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="multi.html#cb285-1" tabindex="-1"></a>m5c<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">+</span> sex <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> SShorns,</span>
 <span id="cb285-2"><a href="multi.html#cb285-2" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior)</span></code></pre></div>
-<p>In this case we have not interacted sex with trait, and so we are estimating the difference between the sexes in their expression of normal and polled+scurred jointly. The posterior distribution is plotted in Figure <a href="multi.html#fig:MN2">7.15</a> and clearly shows that males are more likely to express the normal horn phenotype than females.</p>
+<p>In this case we have not interacted sex with trait, and so we are estimating the difference between the sexes in their expression of normal and polled+scurred jointly. The posterior distribution is plotted in Figure <a href="multi.html#fig:MN2">7.16</a> and clearly shows that males are more likely to express the normal horn phenotype than females.</p>
 <div class="figure"><span style="display:block;" id="fig:MN2"></span>
 <img src="_bookdown_files/fig/MN2-1.png" alt="Posterior distribution of fixed effects from model `m5c.2` in which a main effect of sex was included" width="672" />
 <p class="caption">
-Figure 7.15: Posterior distribution of fixed effects from model <code>m5c.2</code> in which a main effect of sex was included
+Figure 7.16: Posterior distribution of fixed effects from model <code>m5c.2</code> in which a main effect of sex was included
 </p>
 </div>
 <p>A more general model would be to estimate separate probabilities for each cell, but the contingency table indicates that one cell (polled males) has zero counts which will cause extreme separation problems. We could choose to have a better prior for the fixed effects, that is close to being flat for the two-way (i.e. polled vs scurred, normal vs.scurred &amp; polled vs. normal) marginal probabilities within each sex:</p>
@@ -1103,11 +1273,11 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 <span id="cb301-2"><a href="multi.html#cb301-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
 <span id="cb301-3"><a href="multi.html#cb301-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
 <span id="cb301-4"><a href="multi.html#cb301-4" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>)</span></code></pre></div>
-<p>As is often the case the parameters of the zero-inflation model mixes poorly (See Figure <a href="multi.html#fig:ZIP">7.16</a> especially when compared to equivalent hurdle models (See Section <a href="multi.html#Hurdle">7.8</a>). Poor mixing is often associated with distributions that may <em>not</em> be zero-inflated but instead overdispersed.</p>
+<p>As is often the case the parameters of the zero-inflation model mixes poorly (See Figure <a href="multi.html#fig:ZIP">7.17</a> especially when compared to equivalent hurdle models (See Section <a href="multi.html#Hurdle">7.8</a>). Poor mixing is often associated with distributions that may <em>not</em> be zero-inflated but instead overdispersed.</p>
 <div class="figure"><span style="display:block;" id="fig:ZIP"></span>
 <img src="_bookdown_files/fig/ZIP-1.png" alt="Posterior distribution of fixed effects from model `m5d.1` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the zero-inflation." width="672" />
 <p class="caption">
-Figure 7.16: Posterior distribution of fixed effects from model <code>m5d.1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
+Figure 7.17: Posterior distribution of fixed effects from model <code>m5d.1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
 </p>
 </div>
 <p>The model would have to be run for (much) longer to say something concrete about the level of zero-inflation but my guess would be it’s not a big issue, given the probability is probably quite small:</p>
@@ -1128,11 +1298,11 @@ Figure 7.16: Posterior distribution of fixed effects from model <code>m5d.1</cod
 <span id="cb304-9"><a href="multi.html#cb304-9" tabindex="-1"></a>    pred.l <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">915</span>, (m5d<span class="fl">.2</span><span class="sc">$</span>X <span class="sc">%*%</span> m5d<span class="fl">.2</span><span class="sc">$</span>Sol[i, ])<span class="sc">@</span>x, <span class="fu">sqrt</span>(m5d<span class="fl">.2</span><span class="sc">$</span>VCV[i]))</span>
 <span id="cb304-10"><a href="multi.html#cb304-10" tabindex="-1"></a>    nz[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rpois</span>(<span class="dv">915</span>, <span class="fu">exp</span>(pred.l)) <span class="sc">==</span> <span class="dv">0</span>)</span>
 <span id="cb304-11"><a href="multi.html#cb304-11" tabindex="-1"></a>}</span></code></pre></div>
-<p>Figure <a href="multi.html#fig:PPZIP">7.17</a> shows a histogram of the posterior predictive distribution of zero’s (<code>nz</code>) from the model compared to the observed number of zeros (<code>oz</code>). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.</p>
+<p>Figure <a href="multi.html#fig:PPZIP">7.18</a> shows a histogram of the posterior predictive distribution of zero’s (<code>nz</code>) from the model compared to the observed number of zeros (<code>oz</code>). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.</p>
 <div class="figure"><span style="display:block;" id="fig:PPZIP"></span>
 <img src="_bookdown_files/fig/PPZIP-1.png" alt="Posterior predictive distribution of zeros from model `m5d.2` with the observed number in red." width="672" />
 <p class="caption">
-Figure 7.17: Posterior predictive distribution of zeros from model <code>m5d.2</code> with the observed number in red.
+Figure 7.18: Posterior predictive distribution of zeros from model <code>m5d.2</code> with the observed number in red.
 </p>
 </div>
 </div>
@@ -1149,11 +1319,11 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 <div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="multi.html#cb305-1" tabindex="-1"></a>m5d<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
 <span id="cb305-2"><a href="multi.html#cb305-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
 <span id="cb305-3"><a href="multi.html#cb305-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
-<p>Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure <a href="multi.html#fig:ZIP">7.16</a> with Figure <a href="multi.html#fig:HU">7.18</a>).</p>
+<p>Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure <a href="multi.html#fig:ZIP">7.17</a> with Figure <a href="multi.html#fig:HU">7.19</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:HU"></span>
 <img src="_bookdown_files/fig/HU-1.png" alt="Posterior distribution of fixed effects from model `m5d.3` in which trait 1 ($\texttt{art}$) is the zero-truncated Poisson process and trait 2 ($\texttt{hu.art}$) is the binary trait zero or non-zero." width="672" />
 <p class="caption">
-Figure 7.18: Posterior distribution of fixed effects from model <code>m5d.3</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the zero-truncated Poisson process and trait 2 (<span class="math inline">\(\texttt{hu.art}\)</span>) is the binary trait zero or non-zero.
+Figure 7.19: Posterior distribution of fixed effects from model <code>m5d.3</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the zero-truncated Poisson process and trait 2 (<span class="math inline">\(\texttt{hu.art}\)</span>) is the binary trait zero or non-zero.
 </p>
 </div>
 <p>The interpretation of the model is slightly different. Fitting just an intercept in the hurdle model implies that the proportion of zeros observed across different combinations of those fixed effects fitted for the Poisson process is constant. Our 95% credible intervals for this proportion is (See section <a href="#pred-sec"><strong>??</strong></a>):</p>

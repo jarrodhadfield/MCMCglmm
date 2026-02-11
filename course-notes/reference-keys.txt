@@ -97,6 +97,8 @@ fig:mu-vs-sing
 fig:tufted-num
 fig:tufted-prop
 fig:tufted-sim
+tab:puffin
+fig:tufted-sim2
 fig:MN1
 fig:MN2
 fig:ZIP
