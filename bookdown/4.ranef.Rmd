@@ -367,8 +367,10 @@ At the start of this Chapter I highlighted the central decision that needs to be
 
 In my own field, year is often a good example. A field project has ran for less than five years but each year a lot data is collected. Should the year effects be treated as fixed or random? Well there are few levels, suggesting fixed, but the effect of year 2014 (for example) isn't particularly interesting, suggesting random. People sometimes claim fixed because years haven't been sampled at random, but this argument shows a deep misunderstanding of what a random effect is. 'random' isn't referring to *years* being *sampled at random*, but referring to the fact that we would like to treat year *effects* as *random variables* coming from a distribution. If I had observations from many years I would certainly fit year effects as random. However, with few years and a lot of data per year I would treat them as fixed. Let's consider a data-set I collected and that I use for teaching:
 
+
 ```{r }
-load(url("https://github.com/jarrodhadfield/sda/raw/master/data/BTtarsus.rda"))
+load("~/Work/MScStats/sda/data/BTtarsus.rda")
+#load(url("https://github.com/jarrodhadfield/sda/raw/master/data/BTtarsus.rda"))
 head(BTtarsus)
 ```
 
