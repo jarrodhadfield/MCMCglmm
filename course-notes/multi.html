@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-02-11" />
+<meta name="date" content="2026-02-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -855,8 +855,8 @@ Figure 7.10: Posterior distributions for the probit regression of <span class="m
 </div>
 <div id="multinomial-models" class="section level2 hasAnchor" number="7.6">
 <h2><span class="header-section-number">7.6</span> Multinomial Models<a href="multi.html#multinomial-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The previous sections of this chapter have covered multi-response models where each response comes from a single parameter distribution. <span class="math inline">\(\texttt{MCMCglmm}\)</span> also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with <span class="math inline">\(\texttt{trait}\)</span> indexing the different parameters of the distribution and <span class="math inline">\(\texttt{units}\)</span> indexing the observation.</p>
-<p>We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section <a href="glm.html#binom-sec">3.6</a>. In binomial models we condition on the total number of counts (the size) and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and model the probabilities of belonging to each category. However, as with the binomial, if we have <span class="math inline">\(K\)</span> categories we only need to model <span class="math inline">\(K-1\)</span> parameters: if we know <span class="math inline">\(K-1\)</span> probabilities the final probability is known since the sum of all probabilities must equal one. Consequently, we chose a base-line category to which the other categories are compared to. As with binomial models the number in each category can be passed as columns using cbind or, if the total number of counts is one, the response can be passed as a single vector of categories for each observation. In both cases a logit-link is used and the base-line category is either the category associated with the final column or the first factor level if a single column is passed as the response.</p>
+<p>In the previous sections of this chapter we covered multi-response models where each response comes from a single parameter distribution. <span class="math inline">\(\texttt{MCMCglmm}\)</span> also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with <span class="math inline">\(\texttt{trait}\)</span> indexing the different parameters of the distribution and <span class="math inline">\(\texttt{units}\)</span> indexing the observation.</p>
+<p>We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section <a href="glm.html#binom-sec">3.6</a>. In binomial models we condition on the total number of counts and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and model the probability of belonging to each category compared to a base-line category. In both cases, it makes sense that the model is parameterised in terms of <span class="math inline">\(K-1\)</span> comparisons since if we know <span class="math inline">\(K-1\)</span> probabilities the final probability is known since the sum of all probabilities must equal one. As with binomial models, the number in each category can be passed as columns using cbind and then the base-line category is that associated with the final column. Alternatively, if the total number of counts is one, the response can be passed as a single vector of categories for each observation and then the base-line category is the first factor level of the response. In both cases, a logit-link is used.</p>
 <p>To explore multinomial models we will analyse data collected by the Alaska Science Center on the prey items of seabirds breeding on Middleton Island in the Gulf of Alaska - <a href="https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82">see here</a>. We will restrict ourselves to data obtained on the chicks of the wonderful Tufted Puffin:</p>
 <div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="multi.html#cb270-1" tabindex="-1"></a><span class="fu">data</span>(tufted_puffin)</span>
 <span id="cb270-2"><a href="multi.html#cb270-2" tabindex="-1"></a><span class="fu">head</span>(tufted_puffin)</span></code></pre></div>
@@ -878,7 +878,7 @@ Figure 7.11: Number of prey items of different types in 150 randomly selected sa
 <div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="multi.html#cb272-1" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span></code></pre></div>
 <pre><code>##   Capelin   Herring   Pollock SandLance     Other 
 ## 1.7238938 1.1522124 0.6141593 1.6300885 0.5150442</code></pre>
-<p>However, there is tremendous variation in the total number of prey items per sample and it looks as if those samples with many prey items are dominated by Capelin. The multinomial ignores (conditions on) the total number of prey items and essentially works with the proportions of each prey item, as shown in Figure <a href="multi.html#fig:tufted-prop">7.12</a>.</p>
+<p>However, there is tremendous variation in the total number of prey items per sample and it looks as if those samples with many prey items are dominated by Capelin. The multinomial ignores (conditions on) the total number of prey items and essentially works with the proportions of each prey item, as shown in Figure <a href="multi.html#fig:tufted-prop">7.12</a> for the 150 random samples.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-prop"></span>
 <img src="_bookdown_files/fig/tufted-prop-1.png" alt="Proportion of prey items that are of each type in 150 randomly selected samples from Tufted Puffin chicks. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance." width="864" />
 <p class="caption">
@@ -890,11 +890,11 @@ Figure 7.12: Proportion of prey items that are of each type in 150 randomly sele
 <span id="cb274-2"><a href="multi.html#cb274-2" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]<span class="sc">/</span>total_counts)</span></code></pre></div>
 <pre><code>##   Capelin   Herring   Pollock SandLance     Other 
 ## 0.1200594 0.1316400 0.1449124 0.4062647 0.1971235</code></pre>
-<p>It is also apparent from Figure <a href="multi.html#fig:tufted-prop">7.12</a> (and Figure <a href="multi.html#fig:tufted-num">7.11</a>) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years, samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure <a href="multi.html#fig:tufted-sim">7.13</a> I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples. It is clear that the simulated data are much less structured than the real data.</p>
+<p>It is also apparent from Figure <a href="multi.html#fig:tufted-prop">7.12</a> (and Figure <a href="multi.html#fig:tufted-num">7.11</a>) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years, samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure <a href="multi.html#fig:tufted-sim">7.13</a> I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples plotted. It is clear that the simulated data are much less structured than the real data shown in Figure <a href="multi.html#fig:tufted-prop">7.12</a>.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-sim"></span>
-<img src="_bookdown_files/fig/tufted-sim-1.png" alt="Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year." width="864" />
+<img src="_bookdown_files/fig/tufted-sim-1.png" alt="Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance." width="864" />
 <p class="caption">
-Figure 7.13: Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year.
+Figure 7.13: Simulated proportion of prey items that are of each type assuming that the probability of a prey item is constant over the samples. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance.
 </p>
 </div>
 <p>Let’s fit a multinomial model to these data, using <span class="math inline">\(\texttt{Other}\)</span> as the base-line category. We will also fit fully unstructured, <span class="math inline">\(4\times 4\)</span>, covariance matrices at the level of year and sample (<span class="math inline">\(\texttt{unit}\)</span>):</p>
@@ -902,10 +902,10 @@ Figure 7.13: Simulated proportion of prey items that are of each type assuming t
 <span id="cb276-2"><a href="multi.html#cb276-2" tabindex="-1"></a>m.tufted <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
 <span id="cb276-3"><a href="multi.html#cb276-3" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>,</span>
 <span id="cb276-4"><a href="multi.html#cb276-4" tabindex="-1"></a>    <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>With two <span class="math inline">\(4\times 4\)</span> covariance matrices, the model summary is pretty overwhelming. To get a feel for the broad patterns, in Table <a href="multi.html#tab:puffin">7.1</a> I have summarised the two matrices in terms of correlations (off-diagonals) and variances (diagonals). The posterior means together with the 95% credible interval (in square brackets) are reported.</p>
+<p>With two <span class="math inline">\(4\times 4\)</span> covariance matrices, the model summary is pretty overwhelming. To get a feel for the broad patterns, I have summarised the two matrices in terms of correlations (upper-triangle), variances (diagonals) and covariances (lower-triangle) in Table <a href="multi.html#tab:puffin">7.1</a>. The posterior means together with the 95% credible intervals (in square brackets) are reported.</p>
 <table class="table" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
-<span id="tab:puffin">Table 7.1: </span>Posterior mean and 95% credible intervals for the variances (diagonal) and correlations (off-diagonal) in year effects (top) and sample effects (bottom) from model <span class="math inline">\(\texttt{m.tufted}\)</span>
+<span id="tab:puffin">Table 7.1: </span>Posterior mean and 95% credible intervals for the variances (diagonal), covariances (lower-triangle) and correlations (upper-triangle) in year effects (top) and sample effects (bottom) from model <span class="math inline">\(\texttt{m.tufted}\)</span>
 </caption>
 <thead>
 <tr>
@@ -953,6 +953,7 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
+3.95 [-21.33-31.63]
 </td>
 <td style="text-align:left;">
 38.06 [10.77-79.25]
@@ -969,8 +970,10 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
+5.90 [-12.16-20.04]
 </td>
 <td style="text-align:left;">
+-3.53 [-14.44-7.44]
 </td>
 <td style="text-align:left;">
 12.79 [3.18-26.06]
@@ -984,10 +987,13 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
+-4.21 [-21.24-10.62]
 </td>
 <td style="text-align:left;">
+9.66 [-2.66-25.76]
 </td>
 <td style="text-align:left;">
+-3.39 [-10.99-3.62]
 </td>
 <td style="text-align:left;">
 17.54 [6.09-32.76]
@@ -1020,6 +1026,7 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
+-4.53 [-18.84-8.02]
 </td>
 <td style="text-align:left;">
 17.13 [9.46-26.71]
@@ -1036,8 +1043,10 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
+-1.27 [-9.11-7.63]
 </td>
 <td style="text-align:left;">
+0.08 [-3.67-4.12]
 </td>
 <td style="text-align:left;">
 4.41 [1.72-7.23]
@@ -1051,10 +1060,13 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
+-0.38 [-12.84-13.70]
 </td>
 <td style="text-align:left;">
+11.30 [5.72-18.83]
 </td>
 <td style="text-align:left;">
+0.30 [-4.12-4.43]
 </td>
 <td style="text-align:left;">
 15.85 [9.02-23.29]
@@ -1063,186 +1075,266 @@ SandLance
 </tbody>
 </table>
 <p><br></p>
-<p>There seems to be substantial variation, both between years and between samples for the linear predictors for each prey item. Although credible intervals are wide, it seems generally that between year variation exceeds the between sample variation. Correlations between the linear predictors for different prey items have wide credible intervals, but in generally are fairly modest. The exception to this is between the <span class="math inline">\(\texttt{Herring}\)</span> and <span class="math inline">\(\texttt{SandLance}\)</span> predictors where the correlation is moderately positive particular at the level of samples (<span class="math inline">\(\texttt{units}\)</span>).</p>
+<p>There seems to be substantial variation, both between years and between samples, in the linear predictors for each prey item. Although credible intervals are wide, the generally pattern seems to be that the between year variation exceeds the between sample variation. Correlations between the linear predictors for different prey items also have wide credible intervals, but in general they seem fairly small. The exception to this is between the <span class="math inline">\(\texttt{Herring}\)</span> and <span class="math inline">\(\texttt{SandLance}\)</span> predictors, where the correlation is moderately positive, particularly at the level of samples (<span class="math inline">\(\texttt{units}\)</span>).</p>
+<p>Does the model fit the data? We can generate a draw from the posterior predictive distribution for the specific years sampled using the predict function and specifying <span class="math inline">\(\texttt{marginal=NULL}\)</span>:</p>
+<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="multi.html#cb277-1" tabindex="-1"></a>sim_tufted <span class="ot">&lt;-</span> <span class="fu">simulate</span>(m.tufted, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p>This is a vector of counts of length <span class="math inline">\(n(K-1)\)</span> where the first <span class="math inline">\(n\)</span> values are the counts (in this example) for Capelin and the second set of <span class="math inline">\(n\)</span> values are for Herring and so on. The counts for <span class="math inline">\(\texttt{Other}\)</span> are not returned but can be obtained by taking the difference between the total number of counts for each observation and the sum of the counts across the other <span class="math inline">\(K-1\)</span> categories. If we plot the quantiles of the observed number of counts against the quantiles of the posterior prediction for the number of counts we see a very strong 1:1 relationship (Figure <a href="multi.html#fig:qq-counts">7.14</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:qq-counts"></span>
+<img src="_bookdown_files/fig/qq-counts-1.png" alt="qq-plot of prey item counts from a posterior predictive simulation of model $\texttt{m.tufted}$ (x-axis) versus the empirical quantiles (y-axis)." width="864" />
+<p class="caption">
+Figure 7.14: qq-plot of prey item counts from a posterior predictive simulation of model <span class="math inline">\(\texttt{m.tufted}\)</span> (x-axis) versus the empirical quantiles (y-axis).
+</p>
+</div>
+<p>However, this is rather misleading. The strong relationship may simply be driven by variation in the total number of counts per sample - something that is not modelled, but conditioned on. For this reason, I usually focus on the proportions when assessing the adequacy of the model. The qq-plot of the proportions shows a slightly noisier relationship, but still, it looks like the the marginal distribution of the data is captured well by the model (Figure <a href="multi.html#fig:qq-props">7.15</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:qq-props"></span>
+<img src="_bookdown_files/fig/qq-props-1.png" alt="qq-plot of prey item proportions from a posterior predictive simulation of model $\texttt{m.tufted}$ (x-axis) versus the empirical quantiles (y-axis)." width="864" />
+<p class="caption">
+Figure 7.15: qq-plot of prey item proportions from a posterior predictive simulation of model <span class="math inline">\(\texttt{m.tufted}\)</span> (x-axis) versus the empirical quantiles (y-axis).
+</p>
+</div>
+<p>While these qq-plots are good for assessing whether the model captures broad aspects of the data distribution, they don’t really provide insight as to whether the finer patterns have been captured well - for example, if changes in the composition of the samples over time has been adequately modelled. In Figure <a href="multi.html#fig:tufted-sim2">7.16</a> I have plotted the proportion of each prey item for 150 random chicks as obtained from the posterior simulation (top) and compared it to the actual diet compositions (bottom). We can see, at least qualitatively, that the model seems to be picking up the structuring due to year rather well. Within years, we do not expect the posterior simulation to match the observation perfectly, since we are drawing a sample for a new chick within that year (the predict function always marginalises residual <span class="math inline">\(\texttt{unit}\)</span> effects). However, if the model is doing a good job the distribution of compositions within years should look reasonable. Although hard to judge, there appears to be no major discrepancies - the model does predict that samples tend to be dominated by a single prey item even if the dominating prey item varies to some degree across samples within a year.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-sim2"></span>
 <img src="_bookdown_files/fig/tufted-sim2-1.png" alt="A posterior predictive simulation (top) using model $\texttt{m.tufted}$ for the proportion of prey items that are of each type in 150 randomly selected samples. On the bottom are the observed proportion of prey items. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance. Note that $\texttt{unit}$ effects are marginalised in the posterior predictive simulation and so we do not expect an exact correspondence between samples: only the *distributions* within and across years should match." width="864" />
 <p class="caption">
-Figure 7.14: A posterior predictive simulation (top) using model <span class="math inline">\(\texttt{m.tufted}\)</span> for the proportion of prey items that are of each type in 150 randomly selected samples. On the bottom are the observed proportion of prey items. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance. Note that <span class="math inline">\(\texttt{unit}\)</span> effects are marginalised in the posterior predictive simulation and so we do not expect an exact correspondence between samples: only the <em>distributions</em> within and across years should match.
+Figure 7.16: A posterior predictive simulation (top) using model <span class="math inline">\(\texttt{m.tufted}\)</span> for the proportion of prey items that are of each type in 150 randomly selected samples. On the bottom are the observed proportion of prey items. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance. Note that <span class="math inline">\(\texttt{unit}\)</span> effects are marginalised in the posterior predictive simulation and so we do not expect an exact correspondence between samples: only the <em>distributions</em> within and across years should match.
 </p>
 </div>
-<p>Multinomial models are difficult - both to fit and interpret. With <span class="math inline">\(K=5\)</span> categories we have <span class="math inline">\(K-1=4\)</span> latent variables (traits) that are the log-odds ratio of observing a particular prey item versus the base-line prey item, in this case <span class="math inline">\(\texttt{Other}\)</span>. Abbreviating the prey types by their initial the latent variables for sample <span class="math inline">\(i\)</span> in year <span class="math inline">\(j\)</span> are</p>
+<p>While the pictures are pretty, we need to go beyond them to get a full understanding of what the model is telling us. With <span class="math inline">\(K=5\)</span> categories we have <span class="math inline">\(K-1=4\)</span> latent variables (traits) that are the log-odds ratio of observing a particular prey item versus the base-line prey item, in this case <span class="math inline">\(\texttt{Other}\)</span>. Abbreviating the prey types by their initial, the latent variables for sample <span class="math inline">\(i\)</span> in year <span class="math inline">\(j\)</span> are</p>
 <p><span class="math display">\[
 \begin{array}{rcl}
-l_{ij,\texttt{C}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(0)}_\texttt{C}+u_{j, \texttt{C}}+e_{ij, \texttt{C}}\\
-l_{ij,\texttt{H}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{H}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(0)}_\texttt{H}+u_{j, \texttt{H}}+e_{ij, \texttt{H}}\\
-l_{ij,\texttt{P}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{P}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(0)}_\texttt{P}+u_{j, \texttt{P}}+e_{ij, \texttt{P}}\\
-l_{ij,\texttt{S}} =&amp; \textrm{log}\left(\frac{Pr(\texttt{S}_{ij})}{Pr(\texttt{O}_{ij}}\right)&amp;= \beta^{(0)}_\texttt{S}+u_{j, \texttt{S}}+e_{ij, \texttt{S}}\\
+l^{(\texttt{C-O})}_{ij} =&amp; \textrm{log}\left(\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(\texttt{C-O})}_0+u^{(\texttt{C-O})}_{j}+e^{(\texttt{C-O})}_{ij}\\
+l^{(\texttt{H-O})}_{ij} =&amp; \textrm{log}\left(\frac{Pr(\texttt{H-O}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(\texttt{H-O})}_0+u^{(\texttt{H-O})}_{j}+e^{(\texttt{H-O})}_{ij}\\
+l^{(\texttt{P-O})}_{ij} =&amp; \textrm{log}\left(\frac{Pr(\texttt{P}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(\texttt{P-O})}_0+u^{(\texttt{P-O})}_{j}+e^{(\texttt{P-O})}_{ij}\\
+l^{(\texttt{S-O})}_{ij} =&amp; \textrm{log}\left(\frac{Pr(\texttt{S}_{ij})}{Pr(\texttt{O}_{ij})}\right)&amp;= \beta^{(\texttt{S-O})}_0+u^{(\texttt{S-O})}_{j}+e^{(\texttt{S-O})}_{ij}\\
 \end{array}
 \]</span></p>
-<p>where the <span class="math inline">\(\beta^{(0)}\)</span> are trait-specific intercepts, the <span class="math inline">\(u\)</span> are trait-specific year effects and and the <span class="math inline">\(e\)</span> are trait-observation specific <span class="math inline">\(\texttt{unit}\)</span> effects that capture overdispersion.</p>
-<p>The difficulty, I think, is that the effects are comparisons with the base-line category, yet it is easy to forget this. For example, let’s imagine that Capelin and Herring appear in the diet completely independently of each other and so knowing there are many Capelin in a particular year is not informative about the abundance of Herring. It might then be tempting to assume that two sets of year effects, <span class="math inline">\(u_{\texttt{C}}\)</span> and <span class="math inline">\(u_{\texttt{H}}\)</span> are uncorrelated. However, they may be correlated through their shared dependence on ‘Other’ prey items:</p>
+<p>where the <span class="math inline">\(\beta_0\)</span> are trait-specific intercepts, the <span class="math inline">\(u\)</span> are trait-specific year effects and and the <span class="math inline">\(e\)</span> are trait-specific sample (<span class="math inline">\(\texttt{unit}\)</span>) effects that capture overdispersion. The effects for each trait are really comparisons against the base-line category, <span class="math inline">\(\texttt{Other}\)</span>, and I have used a notation that makes this explicit, since it is easy to forget. Nevertheless, it needs to be kept in mind. For example, let’s imagine that Capelin and Herring appear in the diet completely independently of each other and so knowing there are many Capelin in a particular year is not informative about the abundance of Herring. It might then be tempting to assume that two sets of year effects, <span class="math inline">\(u^{(\texttt{C-O})}\)</span> and <span class="math inline">\(u^{(\texttt{H-O})}\)</span> are uncorrelated. However, they may be correlated through their shared dependence on <span class="math inline">\(\texttt{Other}\)</span> prey items. To understand this, I often find it easier to think about the multinomial as a multivariate Poisson which is then followed by normalisation. The ratio of the probabilities, for example of Capelin versus <span class="math inline">\(\texttt{Other}\)</span>, is also equal to the ratio of expected counts:</p>
+<p><span class="math display">\[\frac{Pr(\texttt{C}_{ij})}{Pr(\texttt{O}_{ij})} = \frac{n_{ij}Pr(\texttt{C}_{ij})}{n_{ij}Pr(\texttt{O}_{ij})}=\frac{E[n^{(\texttt{C})}_{ij}]}{E[n^{(\texttt{0})}_{ij}]}\]</span></p>
+<p>where <span class="math inline">\(n_{ij}\)</span> is the total number of counts across all categories: <span class="math inline">\(n_{ij}=n^{(\texttt{C})}_{ij}+n^{(\texttt{H})}_{ij}+n^{(\texttt{P})}_{ij}+n^{(\texttt{S})}_{ij}+n^{(\texttt{O})}_{ij}\)</span>. Sine a Poisson GLM with log-link involves linear models of the log expectation, we can interpret each parameter in the multinomial model as the difference in parameters from a bivariate Poisson model. For example, if we have log-linear models for the Capelin and <span class="math inline">\(\texttt{Other}\)</span> counts:</p>
+<p><span class="math display">\[
+\textrm{log}\left(E[n^{(\texttt{C})}_{ij}]\right) = \beta^{(\texttt{C})}_0+u^{(\texttt{C})}_{j}+e^{(\texttt{C})}_{ij}\\
+\]</span></p>
+<p><span class="math display">\[
+\textrm{log}\left(E[n^{(\texttt{O})}_{ij}]\right) = \beta^{(\texttt{O})}_0+u^{(\texttt{O})}_{j}+e^{(\texttt{O})}_{ij}\\
+\]</span></p>
+<p>then the parameters of the multinomial model are <span class="math inline">\(\beta^{(\texttt{C-O})}_0 = \beta^{(\texttt{C})}_0-\beta^{(\texttt{O})}_0\)</span>, <span class="math inline">\(u^{(\texttt{C-O})}_{j}=u^{(\texttt{C})}_{j}-u^{(\texttt{O})}_{j}\)</span> and <span class="math inline">\(e^{(\texttt{C-O})}_{ij}=e^{(\texttt{C})}_{ij}-e^{(\texttt{O})}_{ij}\)</span>.</p>
+<p>The assumption that the abundance of Capelin in a particular year is independent of the abundance of Herring implies that <span class="math inline">\(COV(u^{(\texttt{C})}, u^{(\texttt{H})})=0\)</span>. However, the covariance of the year effects in the multinomial is (for Capelin and Herring):</p>
 <p><span class="math display">\[
 \begin{array}{rl}
-Cov(l_{\texttt{C}}, l_{\texttt{H}}) =&amp; Cov(\textrm{log}(Pr(\texttt{C}))-\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{H}))-\textrm{log}(Pr(\texttt{O})))\\
-=&amp; Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{H})))-Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{O})))\\
-&amp;-Cov(\textrm{log}(Pr(\texttt{O})), \textrm{log}(Pr(\texttt{H})))+Var(\textrm{log}(Pr(\texttt{O})))\\
+COV(u^{(\texttt{C-O})}, u^{(\texttt{H-O})})=&amp;COV(u^{(\texttt{C})}-u^{(\texttt{O})}, u^{(\texttt{H})}-u^{(\texttt{O})})&amp; \\
+=&amp;COV(u^{(\texttt{C})}, u^{(\texttt{H})})-COV(u^{(\texttt{C})}, u^{(\texttt{O})})-COV(u^{(\texttt{H})}, u^{(\texttt{O})}) +VAR(u^{(\texttt{O})})&amp; \\
 \end{array}
 \]</span></p>
-<p>Even if the (log) probabilities are uncorrelated between all pairs of prey items, the log-contrasts between pairs (the latent variables) are expected to be correlated. For example, if the probabilities of Capelin, Herring and Other are all uncorrelated the above equation simplifies to</p>
-<p><span class="math display">\[
-Cov(l_{\texttt{C}}, l_{\texttt{H}}) =Var(\textrm{log}(Pr(\texttt{O})))\\
-\]</span></p>
-<p>and a non-zero covariance exists whenever there is variation in the probability of success in the base-line category. Similarly, if we look at the variability in a particular latent variable we have:</p>
+<p>and would remain non-zero even if <span class="math inline">\(COV(u^{(\texttt{C})}, u^{(\texttt{H})})=0\)</span>. If the abundances of Capelin, Herring and <span class="math inline">\(\texttt{Other}\)</span> are <em>all</em> independent, the covariance simplifies to <span class="math inline">\(VAR(u^{(\texttt{O})})\)</span> reflecting the shared dependence of the two log-odds on the base-line category, <span class="math inline">\(\texttt{Other}\)</span>. Similarly, the variance of year effects in the multinomial is (for Capelin):</p>
 <p><span class="math display">\[
 \begin{array}{rl}
-Var(l_{\texttt{C}})=&amp;Var(\textrm{log}(Pr(\texttt{C}))-\textrm{log}(Pr(\texttt{O}))\\
-=&amp;Var(\textrm{log}(Pr(\texttt{C})))+Var(\textrm{log}(Pr(\texttt{O})))-2Cov(\textrm{log}(Pr(\texttt{C})), \textrm{log}(Pr(\texttt{O}))) \\
+VAR(u^{(\texttt{C-O})})=&amp;VAR(u^{(\texttt{C})})+VAR(u^{(\texttt{O})})-2COV(u^{(\texttt{C})}, u^{(\texttt{O})})\\
 \end{array}
 \]</span></p>
-<p>which simplifies to</p>
-<p><span class="math display">\[
-Var(l_{\texttt{C}})=Var(\textrm{log}(Pr(\texttt{C})))+Var(\textrm{log}(Pr(\texttt{O})))
-\]</span></p>
-<p>when the probabilities of Capelin and Other are uncorrelated. When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log probabilities have the same yearly variation for all categories, and categories are independent then our null for the covariance matrix of year effects would have <span class="math inline">\(2\sigma^2_{u}\)</span> along the diagonal and <span class="math inline">\(\sigma^2_{u}\)</span> on the off-diagonals. We can represent this as <span class="math inline">\({\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(4\times 4\)</span> identity and unit matrices, respectively<a href="#fn38" class="footnote-ref" id="fnref38"><sup>38</sup></a>. If we believe that the amount of yearly variation differs across categories, yet the categories remain independent then our null would be <span class="math inline">\({\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}\)</span> where <span class="math inline">\({\bf D}\)</span> is a diagonal matrix with four variances to be estimated in addition to <span class="math inline">\(\sigma^2_{\texttt{O}}\)</span>.</p>
-<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="multi.html#cb277-1" tabindex="-1"></a>m.tuftedb <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb277-2"><a href="multi.html#cb277-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(<span class="dv">1</span> <span class="sc">+</span> trait)<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb277-3"><a href="multi.html#cb277-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="multi.html#cb278-1" tabindex="-1"></a>m.tuftedc <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb278-2"><a href="multi.html#cb278-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year <span class="sc">+</span> year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
+<p>Even if the abundance of Capelin and <span class="math inline">\(\texttt{Other}\)</span> are independent across years, the variance in the log-odds depends on the year variance of both categories: <span class="math inline">\(VAR(u^{(\texttt{C})})+VAR(u^{(\texttt{O})})\)</span>.</p>
+<p>When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log abundances of different prey items are independent across years but have the same yearly variation, then our null for the covariance matrix of multinomial year effects would have <span class="math inline">\(2\sigma^2_{u}\)</span> along the diagonal and <span class="math inline">\(\sigma^2_{u}\)</span> on the off-diagonals. Looking at the estimates when we fitted a fully unstructured covariance matrix for the year effects (Table <a href="multi.html#tab:puffin">7.1</a>) suggest this model may not perform that well. While the between-year variances have large credible intervals, and so a common variance of around 20 may not be too bad, a common covariance of 10 (correlation of 0.5) looks too large. Nevertheless, we can fit this model and assess the fit. We can represent the covariance structure of the year effects in this model as <span class="math inline">\({\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(4\times 4\)</span> identity and unit matrices, respectively<a href="#fn38" class="footnote-ref" id="fnref38"><sup>38</sup></a>. To fit a year covariance matrix of this form we can use an <span class="math inline">\(\texttt{idv}\)</span> variance structure with model formula <code>trait+at.set(trait, 1:(K-1))</code><a href="#fn39" class="footnote-ref" id="fnref39"><sup>39</sup></a>:</p>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="multi.html#cb278-1" tabindex="-1"></a>m.tuftedb <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
+<span id="cb278-2"><a href="multi.html#cb278-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(<span class="sc">~</span>trait <span class="sc">+</span> <span class="fu">at.set</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>))<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
 <span id="cb278-3"><a href="multi.html#cb278-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>The two latent variables are indexed as <code>trait</code>, and the unit of observation (<span class="math inline">\(i\)</span>) as <code>units</code>, as in multi-response models. As with binary models the residual variance is not identified, and can be set to any arbitrary value. For reasons that will become clearer later I like to work with the residual covariance matrix <span class="math inline">\(\frac{1}{J}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(J-1\)</span> dimensional identity and unit matrices, respectively.</p>
-<p>To start we will try a simple model with an intercept:</p>
-<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="multi.html#cb279-1" tabindex="-1"></a><span class="fu">data</span>(SShorns)</span>
-<span id="cb279-2"><a href="multi.html#cb279-2" tabindex="-1"></a>Ctable <span class="ot">&lt;-</span> <span class="fu">table</span>(SShorns<span class="sc">$</span>horn, SShorns<span class="sc">$</span>sex)</span></code></pre></div>
-<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="multi.html#cb280-1" tabindex="-1"></a>IJ <span class="ot">&lt;-</span> (<span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>) <span class="sc">*</span> (<span class="fu">diag</span>(<span class="dv">2</span>) <span class="sc">+</span> <span class="fu">matrix</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>))</span>
-<span id="cb280-2"><a href="multi.html#cb280-2" tabindex="-1"></a>prior <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> IJ, <span class="at">fix =</span> <span class="dv">1</span>))</span>
-<span id="cb280-3"><a href="multi.html#cb280-3" tabindex="-1"></a>m5c<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">prior =</span> prior, <span class="at">data =</span> SShorns,</span>
-<span id="cb280-4"><a href="multi.html#cb280-4" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>)</span></code></pre></div>
-<p>The posterior distribution for the intercepts is shown in Figure <a href="multi.html#fig:MN1">7.15</a>, and the model
-clearly needs to be run for longer (Figure <a href="multi.html#fig:MN1">7.15</a>. However…</p>
-<div class="figure"><span style="display:block;" id="fig:MN1"></span>
-<img src="_bookdown_files/fig/MN1-1.png" alt="Posterior distribution of fixed effects from model `m5c.1`: a simple multinomial logit model with intercepts only}" width="672" />
+<p>The posterior mean and 95% credible interval of <span class="math inline">\(\sigma^2_u\)</span> is 12.94 [7.40-19.62]. In the fully unstructured model (<span class="math inline">\(\texttt{m.tufted}\)</span>) the average of the four between-year variances halved was 16.5 and the average of the six between-year covariances was 2.4 (see Table <a href="multi.html#tab:puffin">7.1</a>). The estimate of <span class="math inline">\(\sigma^2_u\)</span> can be seen as a compromise estimate of these ten parameters. To assess whether this simpler model does a good job at capturing the differences between years we can decide on a suitable metric and compare the metric calculated on the observed data with that calculated on posterior predictive simulations. One possible metric would be to calculate the mean proportions of Capelin, Herring, Pollock and Sand lance across samples for each year and then take the variance in these year means for each prey item or the correlation between year means for pairs of prey items. Relating this metric to the parameters of the model is not straight forward since the sample means for each year will, in part, reflect between sample variability, particularly in years where replication is low. In addition, the model works with log-probabilities, yet the described metric works with raw proportions since these are often zero and logging isn’t an option. Despite the metric’s limitations, I would still expect it to reveal major problems with the specified year effects.</p>
+<div class="figure"><span style="display:block;" id="fig:tufted-sim3"></span>
+<img src="_bookdown_files/fig/tufted-sim3-1.png" alt="The mean proportion of each prey item across samples in a given year were calculated for one thousand posterior predictive simulations from model $\texttt{m.tuftedb}$. This histograms represent the posterior predictive distributions for the variances of the yearly means (diagonal) or the correlations in yearly means between prey items. The red lines are the values calculated from the data." width="864" />
 <p class="caption">
-Figure 7.15: Posterior distribution of fixed effects from model <code>m5c.1</code>: a simple multinomial logit model with intercepts only}
+Figure 7.17: The mean proportion of each prey item across samples in a given year were calculated for one thousand posterior predictive simulations from model <span class="math inline">\(\texttt{m.tuftedb}\)</span>. This histograms represent the posterior predictive distributions for the variances of the yearly means (diagonal) or the correlations in yearly means between prey items. The red lines are the values calculated from the data.
 </p>
 </div>
-<p>The problem can also be represented using the contrast matrix <span class="math inline">\({\bf \Delta}\)</span> <span class="citation">(<a href="#ref-Bunch.1991">Bunch 1991</a>)</span>:</p>
-<p><span class="math display">\[{\boldsymbol{\mathbf{\Delta}}}=
-\left[
-\begin{array}{c c}
--1&amp;-1\\
-1&amp;0\\
-0&amp;1\\
-\end{array}
-\right]\]</span></p>
-<p>where the rows correspond to the factor levels (<code>normal</code>, <code>polled</code> and <code>scurred</code>) and the columns to the two latent variables. For example column one corresponds to <span class="math inline">\(l_{i,\textrm{polled}}\)</span> which on the log scale is
-<span class="math inline">\(Pr(\texttt{horn[i]}=\textrm{polled}) - Pr(\texttt{horn[i]}=\textrm{normal})\)</span>.</p>
-<p><span class="math display">\[\textrm{exp}\left(({\boldsymbol{\mathbf{\Delta}}}{\boldsymbol{\mathbf{\Delta}}}^{&#39;})^{-1}{\boldsymbol{\mathbf{\Delta}}}{\bf l}_{i}\right) \propto E\left[\begin{array}{c} Pr(\texttt{horn[i]}=\textrm{normal})\\ Pr(\texttt{horn[i]}=\textrm{polled})\\ Pr(\texttt{horn[i]}=\textrm{scurred}) \end{array} \right]\]</span></p>
-<p>The residual and any random effect covariance matrices are for identifiability purposes estimated on the <span class="math inline">\(J-1\)</span> space with <span class="math inline">\({\boldsymbol{\mathbf{V}}}={\boldsymbol{\mathbf{\Delta}}}^{&#39;}\tilde{\bf V}{\boldsymbol{\mathbf{\Delta}}}\)</span> where <span class="math inline">\(\tilde{\bf V}\)</span> is the covariance matrix estimated on the <span class="math inline">\(J-1\)</span> space. To illustrate, we will rescale the intercepts as if the residual covariance matrix was zero (see Sections <a href="#pred-sec"><strong>??</strong></a> and <a href="cat-int.html#cat-int">5</a>) and predict the expected
-probability for each horn type:</p>
-<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="multi.html#cb281-1" tabindex="-1"></a>Delta <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>), <span class="fu">c</span>(<span class="sc">-</span><span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb281-2"><a href="multi.html#cb281-2" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb281-3"><a href="multi.html#cb281-3" tabindex="-1"></a>D <span class="ot">&lt;-</span> <span class="fu">ginv</span>(Delta <span class="sc">%*%</span> <span class="fu">t</span>(Delta)) <span class="sc">%*%</span> Delta</span>
-<span id="cb281-4"><a href="multi.html#cb281-4" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(m5c<span class="fl">.1</span><span class="sc">$</span>Sol, <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb281-5"><a href="multi.html#cb281-5" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
-<span id="cb281-6"><a href="multi.html#cb281-6" tabindex="-1"></a>}))</span>
-<span id="cb281-7"><a href="multi.html#cb281-7" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
-<pre><code>## 
-## Iterations = 1:1000
-## Thinning interval = 1 
-## Number of chains = 1 
-## Sample size per chain = 1000 
-## 
-## 1. Empirical mean and standard deviation for each variable,
-##    plus standard error of the mean:
-## 
-##        Mean      SD  Naive SE Time-series SE
-## [1,] 0.6539 0.01806 0.0005710       0.001718
-## [2,] 0.1007 0.01128 0.0003566       0.001727
-## [3,] 0.2454 0.01725 0.0005454       0.001725
-## 
-## 2. Quantiles for each variable:
-## 
-##         2.5%     25%    50%    75%  97.5%
-## var1 0.61836 0.64193 0.6543 0.6659 0.6902
-## var2 0.07891 0.09339 0.1011 0.1077 0.1234
-## var3 0.21255 0.23386 0.2452 0.2567 0.2812</code></pre>
-<p>which agrees well with those observed:</p>
-<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="multi.html#cb283-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">rowSums</span>(Ctable))</span></code></pre></div>
-<pre><code>##    normal    polled   scurred 
-## 0.6531532 0.0975976 0.2492492</code></pre>
-<p>To test for the effects of sex specific expression we can also fit a model with a sex effect:</p>
-<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="multi.html#cb285-1" tabindex="-1"></a>m5c<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> trait <span class="sc">+</span> sex <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> SShorns,</span>
-<span id="cb285-2"><a href="multi.html#cb285-2" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior)</span></code></pre></div>
-<p>In this case we have not interacted sex with trait, and so we are estimating the difference between the sexes in their expression of normal and polled+scurred jointly. The posterior distribution is plotted in Figure <a href="multi.html#fig:MN2">7.16</a> and clearly shows that males are more likely to express the normal horn phenotype than females.</p>
-<div class="figure"><span style="display:block;" id="fig:MN2"></span>
-<img src="_bookdown_files/fig/MN2-1.png" alt="Posterior distribution of fixed effects from model `m5c.2` in which a main effect of sex was included" width="672" />
+<p>The posterior predictive simulations suggest that the model is not too disastrous. The posterior distributions for the covariances are centred a little above the observed values, and the posterior distributions for the variances are concentrated a little below the observed values. Nevertheless, the discrepancies are not extreme, and even for Capelin, the posterior predictive distribution includes higher variances than that observed.</p>
+<p>We can also fit a model which retains the assumption of independence but allows the amount of yearly variation in abundance to differ across categories. The (co)variance in multinomial year effects would then be <span class="math inline">\({\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}\)</span> where <span class="math inline">\({\bf D}\)</span> is a diagonal matrix with four variances to be estimated in addition to <span class="math inline">\(\sigma^2_{\texttt{O}}\)</span>. This can be achieved using the model structure <code>idh(trait):year+year</code>. The first term fits independent effects for each of the four traits but allows them to have different variances which can interpreted as <span class="math inline">\(VAR(u^{(\texttt{C})})\)</span>, <span class="math inline">\(VAR(u^{(\texttt{H})})\)</span>, <span class="math inline">\(VAR(u^{(\texttt{P})})\)</span> and <span class="math inline">\(VAR(u^{(\texttt{S})})\)</span> from the Poisson model. The second term fits a year effect common to all traits, which can interpreted as <span class="math inline">\(VAR(u^{(\texttt{O})})\)</span> from the Poisson model.</p>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="multi.html#cb279-1" tabindex="-1"></a>m.tuftedc <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
+<span id="cb279-2"><a href="multi.html#cb279-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year <span class="sc">+</span> year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb279-3"><a href="multi.html#cb279-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>The posterior means and 95% credible intervals for the year variances are displayed in table <a href="multi.html#tab:puffinc">7.2</a>. Again, the credible intervals are wide and a common variance of around 20 may not be too bad for all categories except <span class="math inline">\(\texttt{Other}\)</span>. The yearly variance for <span class="math inline">\(\texttt{Other}\)</span> is considerably smaller, which is to be expected since this represents the covariance between year effects in the fully unstructured model which were consistently less than half the variances. A reduced between-year variance for the <span class="math inline">\(\texttt{Other}\)</span> category seems biologically reasonable: since this category lumps 40 prey items which are likely to show some degree of independence in their abundances across years.</p>
+<table class="table" style="font-size: 14px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:puffinc">Table 7.2: </span>Posterior mean and 95% credible intervals for the variances from model <span class="math inline">\(\texttt{m.tuftedc}\)</span>. Note that the variance labelled <span class="math inline">\(\texttt{Other}\)</span> is the variance of the main year effects fitted as <code>~year</code>.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+Posterior Mean
+</th>
+<th style="text-align:right;">
+l-95% CI
+</th>
+<th style="text-align:right;">
+u-95% CI
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Capelin
+</td>
+<td style="text-align:right;">
+57.43
+</td>
+<td style="text-align:right;">
+12.65
+</td>
+<td style="text-align:right;">
+123.53
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Herring
+</td>
+<td style="text-align:right;">
+29.45
+</td>
+<td style="text-align:right;">
+5.10
+</td>
+<td style="text-align:right;">
+62.91
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pollock
+</td>
+<td style="text-align:right;">
+11.06
+</td>
+<td style="text-align:right;">
+2.72
+</td>
+<td style="text-align:right;">
+23.11
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SandLance
+</td>
+<td style="text-align:right;">
+14.02
+</td>
+<td style="text-align:right;">
+5.12
+</td>
+<td style="text-align:right;">
+27.91
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other
+</td>
+<td style="text-align:right;">
+1.55
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+5.32
+</td>
+</tr>
+</tbody>
+</table>
+<p>If we perform the same posterior predictive check that we did for the previous model we can see it does a good job (Figure <a href="multi.html#fig:tufted-sim4">7.18</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:tufted-sim4"></span>
+<img src="_bookdown_files/fig/tufted-sim4-1.png" alt="The mean proportion of each prey item across samples in a given year were calculated for one thousand posterior predictive simulations from model $\texttt{m.tuftedc}$. This histograms represent the posterior predictive distributions for the variances of the yearly means (diagonal) or the correlations in yearly means between prey items. The red lines are the values calculated from the data." width="864" />
 <p class="caption">
-Figure 7.16: Posterior distribution of fixed effects from model <code>m5c.2</code> in which a main effect of sex was included
+Figure 7.18: The mean proportion of each prey item across samples in a given year were calculated for one thousand posterior predictive simulations from model <span class="math inline">\(\texttt{m.tuftedc}\)</span>. This histograms represent the posterior predictive distributions for the variances of the yearly means (diagonal) or the correlations in yearly means between prey items. The red lines are the values calculated from the data.
 </p>
 </div>
-<p>A more general model would be to estimate separate probabilities for each cell, but the contingency table indicates that one cell (polled males) has zero counts which will cause extreme separation problems. We could choose to have a better prior for the fixed effects, that is close to being flat for the two-way (i.e. polled vs scurred, normal vs.scurred &amp; polled vs. normal) marginal probabilities within each sex:</p>
-<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="multi.html#cb286-1" tabindex="-1"></a>prior<span class="sc">$</span>B <span class="ot">=</span> <span class="fu">list</span>(<span class="at">mu =</span> <span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">4</span>), <span class="at">V =</span> <span class="fu">kronecker</span>(IJ, <span class="fu">diag</span>(<span class="dv">2</span>)) <span class="sc">*</span> (<span class="fl">1.7</span> <span class="sc">+</span> pi<span class="sc">^</span><span class="dv">2</span><span class="sc">/</span><span class="dv">3</span>))</span>
-<span id="cb286-2"><a href="multi.html#cb286-2" tabindex="-1"></a>m5c<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(horn <span class="sc">~</span> <span class="fu">at.level</span>(sex, <span class="dv">1</span>)<span class="sc">:</span>trait <span class="sc">+</span> <span class="fu">at.level</span>(sex, <span class="dv">2</span>)<span class="sc">:</span>trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb286-3"><a href="multi.html#cb286-3" tabindex="-1"></a>    <span class="at">data =</span> SShorns, <span class="at">family =</span> <span class="st">&quot;categorical&quot;</span>, <span class="at">prior =</span> prior)</span></code></pre></div>
-<p>The female specific probabilities appear reasonable:</p>
-<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="multi.html#cb287-1" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(m5c<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb287-2"><a href="multi.html#cb287-2" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
-<span id="cb287-3"><a href="multi.html#cb287-3" tabindex="-1"></a>}))</span>
-<span id="cb287-4"><a href="multi.html#cb287-4" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
-<pre><code>## 
-## Iterations = 1:1000
-## Thinning interval = 1 
-## Number of chains = 1 
-## Sample size per chain = 1000 
-## 
-## 1. Empirical mean and standard deviation for each variable,
-##    plus standard error of the mean:
-## 
-##        Mean      SD  Naive SE Time-series SE
-## [1,] 0.3451 0.02906 0.0009189       0.002056
-## [2,] 0.2609 0.02726 0.0008620       0.002391
-## [3,] 0.3941 0.03158 0.0009985       0.003846
-## 
-## 2. Quantiles for each variable:
-## 
-##        2.5%    25%    50%    75%  97.5%
-## var1 0.2901 0.3258 0.3441 0.3640 0.4010
-## var2 0.2109 0.2421 0.2594 0.2775 0.3185
-## var3 0.3354 0.3723 0.3924 0.4157 0.4587</code></pre>
-<p>compared to the observed frequencies:</p>
-<div class="sourceCode" id="cb289"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb289-1"><a href="multi.html#cb289-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">1</span>])</span></code></pre></div>
-<pre><code>##    normal    polled   scurred 
-## 0.3401639 0.2663934 0.3934426</code></pre>
-<p>as do the male probabilities:</p>
-<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="multi.html#cb291-1" tabindex="-1"></a>Int <span class="ot">&lt;-</span> <span class="fu">t</span>(<span class="fu">apply</span>(<span class="fu">cbind</span>(m5c<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span><span class="sc">:</span><span class="dv">4</span>]), <span class="dv">1</span>, <span class="cf">function</span>(x) {</span>
-<span id="cb291-2"><a href="multi.html#cb291-2" tabindex="-1"></a>    D <span class="sc">%*%</span> (x<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2 <span class="sc">*</span> <span class="fu">diag</span>(IJ)))</span>
-<span id="cb291-3"><a href="multi.html#cb291-3" tabindex="-1"></a>}))</span>
-<span id="cb291-4"><a href="multi.html#cb291-4" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">mcmc</span>(<span class="fu">exp</span>(Int)<span class="sc">/</span><span class="fu">rowSums</span>(<span class="fu">exp</span>(Int))))</span></code></pre></div>
-<pre><code>## 
-## Iterations = 1:1000
-## Thinning interval = 1 
-## Number of chains = 1 
-## Sample size per chain = 1000 
-## 
-## 1. Empirical mean and standard deviation for each variable,
-##    plus standard error of the mean:
-## 
-##         Mean       SD  Naive SE Time-series SE
-## [1,] 0.83255 0.016714 0.0005285      0.0019138
-## [2,] 0.00856 0.003264 0.0001032      0.0009153
-## [3,] 0.15889 0.016290 0.0005151      0.0019286
-## 
-## 2. Quantiles for each variable:
-## 
-##          2.5%      25%      50%     75%   97.5%
-## var1 0.797973 0.820923 0.833381 0.84392 0.86485
-## var2 0.004052 0.006222 0.007649 0.01026 0.01652
-## var3 0.127873 0.147763 0.158103 0.17068 0.19161</code></pre>
-<p>compared to the observed frequencies:</p>
-<div class="sourceCode" id="cb293"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb293-1"><a href="multi.html#cb293-1" tabindex="-1"></a><span class="fu">prop.table</span>(Ctable[, <span class="dv">2</span>])</span></code></pre></div>
-<pre><code>##    normal    polled   scurred 
-## 0.8341232 0.0000000 0.1658768</code></pre>
+<p>We could also consider a similar model for the sample <span class="math inline">\(\texttt{unit}\)</span> effects:</p>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="multi.html#cb280-1" tabindex="-1"></a>m.tuftedd <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
+<span id="cb280-2"><a href="multi.html#cb280-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year <span class="sc">+</span> year <span class="sc">+</span> units, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb280-3"><a href="multi.html#cb280-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<p>The magnitude of the units variances show similar patterns to the year variances, with <span class="math inline">\(\texttt{Other}\)</span> being small and Capelin being large (Table <a href="multi.html#tab:puffind">7.3</a>).</p>
+<table class="table" style="font-size: 14px; margin-left: auto; margin-right: auto;">
+<caption style="font-size: initial !important;">
+<span id="tab:puffind">Table 7.3: </span>Posterior mean and 95% credible intervals for the variances from model <span class="math inline">\(\texttt{m.tuftedd}\)</span>. Note that the variance labelled <span class="math inline">\(\texttt{Other}\)</span> is the variance of the main year and unit effects fitted as <code>~year</code> and <code>~units</code> respectively.
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+year
+</th>
+<th style="text-align:left;">
+units
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Capelin
+</td>
+<td style="text-align:left;">
+75.95 [15.70-162.35]
+</td>
+<td style="text-align:left;">
+82.48 [34.52-137.49]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Herring
+</td>
+<td style="text-align:left;">
+33.22 [7.32-73.18]
+</td>
+<td style="text-align:left;">
+11.29 [5.42-17.93]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Pollock
+</td>
+<td style="text-align:left;">
+12.45 [3.17-25.32]
+</td>
+<td style="text-align:left;">
+4.28 [0.62-8.42]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SandLance
+</td>
+<td style="text-align:left;">
+12.95 [3.90-25.01]
+</td>
+<td style="text-align:left;">
+9.78 [5.41-15.48]
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Other
+</td>
+<td style="text-align:left;">
+1.69 [0.00-5.75]
+</td>
+<td style="text-align:left;">
+3.07 [0.00-6.06]
+</td>
+</tr>
+</tbody>
+</table>
+<p>Since model <span class="math inline">\(\texttt{m.tuftedd}\)</span> simplifies the covariance structure of the unit effects compared to previous models, it makes sense to assess the fit of the model by looking at unit-level patterns. To do this, we can simply calculate the proportion of each prey item in a sample and then calculate the variance in these proportions , or the correlation in proportions for pairs of prey items. Figure <a href="multi.html#fig:tufted-sim5">7.19</a> plots the posterior predictive distributions of these quantities and compares them to their observed values.</p>
+<div class="figure"><span style="display:block;" id="fig:tufted-sim5"></span>
+<img src="_bookdown_files/fig/tufted-sim5-1.png" alt="The histograms represent the posterior predictive distributions for the variances of the proportion of each prey item in a sample (diagonal) or the correlations in the proportion of prey items in a sample. The red lines are the values calculated from the data." width="864" />
+<p class="caption">
+Figure 7.19: The histograms represent the posterior predictive distributions for the variances of the proportion of each prey item in a sample (diagonal) or the correlations in the proportion of prey items in a sample. The red lines are the values calculated from the data.
+</p>
+</div>
+<p>Generally, the model seems to predict these quantities well, although the correlation between Herring and Sand lance is at the extreme end of that seen in the posterior predictive simulations. This is evidenced in the fully unstructured model where the correlation is estimated to be more positive than all other correlations (Table <a href="multi.html#tab:puffin">7.1</a>).</p>
 </div>
 <div id="zero-inflated-models" class="section level2 hasAnchor" number="7.7">
 <h2><span class="header-section-number">7.7</span> Zero-inflated Models<a href="multi.html#zero-inflated-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -1252,8 +1344,8 @@ Pr(y=0) =&amp; \texttt{plogis}(l_{2})+\texttt{plogis}(-l_{2})\ast \texttt{dpois}
 Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}(l_{1}))\\
 \end{array}\]</span></p>
 <p><span class="math inline">\(\texttt{pscl}\)</span> fits zero-inflated models very well through the <code>zeroinfl</code> function, and I strongly recommend using it if you do not want to fit random effects. To illustrate the syntax for fitting ZIP models in MCMCglmm I will take one of their examples:</p>
-<div class="sourceCode" id="cb295"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb295-1"><a href="multi.html#cb295-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bioChemists&quot;</span>, <span class="at">package =</span> <span class="st">&quot;pscl&quot;</span>)</span>
-<span id="cb295-2"><a href="multi.html#cb295-2" tabindex="-1"></a><span class="fu">head</span>(bioChemists)</span></code></pre></div>
+<div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="multi.html#cb281-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bioChemists&quot;</span>, <span class="at">package =</span> <span class="st">&quot;pscl&quot;</span>)</span>
+<span id="cb281-2"><a href="multi.html#cb281-2" tabindex="-1"></a><span class="fu">head</span>(bioChemists)</span></code></pre></div>
 <pre><code>##   art   fem     mar kid5  phd ment
 ## 1   0   Men Married    0 2.52    7
 ## 2   0 Women  Single    0 2.05    6
@@ -1262,47 +1354,47 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 ## 5   0 Women  Single    0 3.75   26
 ## 6   0 Women Married    2 3.59    2</code></pre>
 <p><code>art</code> is the response variable - the number of papers published by a Ph.D student - and the remaining variables are to be fitted as fixed effects. Naively, we may expect zero-inflation to be a problem given 30% of the data are zeros, and based on the global mean we only expect around 18%.</p>
-<div class="sourceCode" id="cb297"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb297-1"><a href="multi.html#cb297-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="multi.html#cb283-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span></code></pre></div>
 <pre><code>## 
 ## FALSE  TRUE 
 ##   640   275</code></pre>
-<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="multi.html#cb299-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="multi.html#cb285-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
 <pre><code>## [1] 0.1839859</code></pre>
 <p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures overdispersion:</p>
-<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="multi.html#cb301-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
-<span id="cb301-2"><a href="multi.html#cb301-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb301-3"><a href="multi.html#cb301-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb301-4"><a href="multi.html#cb301-4" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>)</span></code></pre></div>
-<p>As is often the case the parameters of the zero-inflation model mixes poorly (See Figure <a href="multi.html#fig:ZIP">7.17</a> especially when compared to equivalent hurdle models (See Section <a href="multi.html#Hurdle">7.8</a>). Poor mixing is often associated with distributions that may <em>not</em> be zero-inflated but instead overdispersed.</p>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="multi.html#cb287-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
+<span id="cb287-2"><a href="multi.html#cb287-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
+<span id="cb287-3"><a href="multi.html#cb287-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb287-4"><a href="multi.html#cb287-4" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>)</span></code></pre></div>
+<p>As is often the case the parameters of the zero-inflation model mixes poorly (See Figure <a href="multi.html#fig:ZIP">7.20</a> especially when compared to equivalent hurdle models (See Section <a href="multi.html#Hurdle">7.8</a>). Poor mixing is often associated with distributions that may <em>not</em> be zero-inflated but instead overdispersed.</p>
 <div class="figure"><span style="display:block;" id="fig:ZIP"></span>
 <img src="_bookdown_files/fig/ZIP-1.png" alt="Posterior distribution of fixed effects from model `m5d.1` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the zero-inflation." width="672" />
 <p class="caption">
-Figure 7.17: Posterior distribution of fixed effects from model <code>m5d.1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
+Figure 7.20: Posterior distribution of fixed effects from model <code>m5d.1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
 </p>
 </div>
 <p>The model would have to be run for (much) longer to say something concrete about the level of zero-inflation but my guess would be it’s not a big issue, given the probability is probably quite small:</p>
-<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="multi.html#cb302-1" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">plogis</span>(m5d<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="multi.html#cb288-1" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">plogis</span>(m5d<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##          0%         25%         50%         75%        100% 
-## 0.002411913 0.006275172 0.008380651 0.012331379 0.068352559</code></pre>
+## 0.004678307 0.009205072 0.010996518 0.014144546 0.058293082</code></pre>
 <div id="posterior-predictive-checks" class="section level3 hasAnchor" number="7.7.1">
 <h3><span class="header-section-number">7.7.1</span> Posterior predictive checks<a href="multi.html#posterior-predictive-checks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Another useful check is to fit the standard Poisson model and use posterior predictive checks to see how many zero’s you would expect under the simple model:</p>
-<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="multi.html#cb304-1" tabindex="-1"></a>prior.m5d<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
-<span id="cb304-2"><a href="multi.html#cb304-2" tabindex="-1"></a>m5d<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.2</span>,</span>
-<span id="cb304-3"><a href="multi.html#cb304-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">saveX =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb304-4"><a href="multi.html#cb304-4" tabindex="-1"></a></span>
-<span id="cb304-5"><a href="multi.html#cb304-5" tabindex="-1"></a>nz <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span></span>
-<span id="cb304-6"><a href="multi.html#cb304-6" tabindex="-1"></a>oz <span class="ot">&lt;-</span> <span class="fu">sum</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb304-7"><a href="multi.html#cb304-7" tabindex="-1"></a></span>
-<span id="cb304-8"><a href="multi.html#cb304-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>) {</span>
-<span id="cb304-9"><a href="multi.html#cb304-9" tabindex="-1"></a>    pred.l <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">915</span>, (m5d<span class="fl">.2</span><span class="sc">$</span>X <span class="sc">%*%</span> m5d<span class="fl">.2</span><span class="sc">$</span>Sol[i, ])<span class="sc">@</span>x, <span class="fu">sqrt</span>(m5d<span class="fl">.2</span><span class="sc">$</span>VCV[i]))</span>
-<span id="cb304-10"><a href="multi.html#cb304-10" tabindex="-1"></a>    nz[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rpois</span>(<span class="dv">915</span>, <span class="fu">exp</span>(pred.l)) <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb304-11"><a href="multi.html#cb304-11" tabindex="-1"></a>}</span></code></pre></div>
-<p>Figure <a href="multi.html#fig:PPZIP">7.18</a> shows a histogram of the posterior predictive distribution of zero’s (<code>nz</code>) from the model compared to the observed number of zeros (<code>oz</code>). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.</p>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="multi.html#cb290-1" tabindex="-1"></a>prior.m5d<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
+<span id="cb290-2"><a href="multi.html#cb290-2" tabindex="-1"></a>m5d<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.2</span>,</span>
+<span id="cb290-3"><a href="multi.html#cb290-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">saveX =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb290-4"><a href="multi.html#cb290-4" tabindex="-1"></a></span>
+<span id="cb290-5"><a href="multi.html#cb290-5" tabindex="-1"></a>nz <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span></span>
+<span id="cb290-6"><a href="multi.html#cb290-6" tabindex="-1"></a>oz <span class="ot">&lt;-</span> <span class="fu">sum</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb290-7"><a href="multi.html#cb290-7" tabindex="-1"></a></span>
+<span id="cb290-8"><a href="multi.html#cb290-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>) {</span>
+<span id="cb290-9"><a href="multi.html#cb290-9" tabindex="-1"></a>    pred.l <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">915</span>, (m5d<span class="fl">.2</span><span class="sc">$</span>X <span class="sc">%*%</span> m5d<span class="fl">.2</span><span class="sc">$</span>Sol[i, ])<span class="sc">@</span>x, <span class="fu">sqrt</span>(m5d<span class="fl">.2</span><span class="sc">$</span>VCV[i]))</span>
+<span id="cb290-10"><a href="multi.html#cb290-10" tabindex="-1"></a>    nz[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rpois</span>(<span class="dv">915</span>, <span class="fu">exp</span>(pred.l)) <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb290-11"><a href="multi.html#cb290-11" tabindex="-1"></a>}</span></code></pre></div>
+<p>Figure <a href="multi.html#fig:PPZIP">7.21</a> shows a histogram of the posterior predictive distribution of zero’s (<code>nz</code>) from the model compared to the observed number of zeros (<code>oz</code>). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.</p>
 <div class="figure"><span style="display:block;" id="fig:PPZIP"></span>
 <img src="_bookdown_files/fig/PPZIP-1.png" alt="Posterior predictive distribution of zeros from model `m5d.2` with the observed number in red." width="672" />
 <p class="caption">
-Figure 7.18: Posterior predictive distribution of zeros from model <code>m5d.2</code> with the observed number in red.
+Figure 7.21: Posterior predictive distribution of zeros from model <code>m5d.2</code> with the observed number in red.
 </p>
 </div>
 </div>
@@ -1316,47 +1408,47 @@ Pr(y=0) =&amp; \texttt{plogis}(l_{2})\\
 Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}(l_{1}))/(1-\texttt{ppois}(0, \texttt{exp}(l_{1})))\\
 \end{array}\]</span></p>
 <p>To illustrate, we will refit the ZIP model (<code>m5d.1</code>) as a hurdle-Poisson model.</p>
-<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="multi.html#cb305-1" tabindex="-1"></a>m5d<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb305-2"><a href="multi.html#cb305-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb305-3"><a href="multi.html#cb305-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
-<p>Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure <a href="multi.html#fig:ZIP">7.17</a> with Figure <a href="multi.html#fig:HU">7.19</a>).</p>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="multi.html#cb291-1" tabindex="-1"></a>m5d<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
+<span id="cb291-2"><a href="multi.html#cb291-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb291-3"><a href="multi.html#cb291-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
+<p>Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure <a href="multi.html#fig:ZIP">7.20</a> with Figure <a href="multi.html#fig:HU">7.22</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:HU"></span>
 <img src="_bookdown_files/fig/HU-1.png" alt="Posterior distribution of fixed effects from model `m5d.3` in which trait 1 ($\texttt{art}$) is the zero-truncated Poisson process and trait 2 ($\texttt{hu.art}$) is the binary trait zero or non-zero." width="672" />
 <p class="caption">
-Figure 7.19: Posterior distribution of fixed effects from model <code>m5d.3</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the zero-truncated Poisson process and trait 2 (<span class="math inline">\(\texttt{hu.art}\)</span>) is the binary trait zero or non-zero.
+Figure 7.22: Posterior distribution of fixed effects from model <code>m5d.3</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the zero-truncated Poisson process and trait 2 (<span class="math inline">\(\texttt{hu.art}\)</span>) is the binary trait zero or non-zero.
 </p>
 </div>
 <p>The interpretation of the model is slightly different. Fitting just an intercept in the hurdle model implies that the proportion of zeros observed across different combinations of those fixed effects fitted for the Poisson process is constant. Our 95% credible intervals for this proportion is (See section <a href="#pred-sec"><strong>??</strong></a>):</p>
-<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="multi.html#cb306-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb306-2"><a href="multi.html#cb306-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="multi.html#cb292-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb292-2"><a href="multi.html#cb292-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##          lower     upper
 ## var1 0.2669255 0.3255151
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>and we can compare this to the predicted number of zero’s from the Poisson process if it had not been zero-truncated:</p>
-<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="multi.html#cb308-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="multi.html#cb294-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##          lower     upper
 ## var1 0.1359227 0.3528413
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>The credible intervals largely overlap, strongly suggesting a standard Poisson model would be adequate. However, our prediction for the number of zero’s that would arise form a non-truncated Poisson process only involved the intercept term. This prediction therefore pertains to the number of articles published by single women with no young children who obtained their Ph.D’s from departments scoring zero for prestige (<code>phd</code>) and whose mentors had published nothing in the previous 3 years. Our equivalent prediction for men is a little lower</p>
-<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="multi.html#cb310-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="multi.html#cb296-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##           lower     upper
 ## var1 0.09385229 0.2910297
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>suggesting that perhaps the number of zero’s is greater than we expected for this group. However, this may just be a consequence of us fixing the proportion of zero’s to be constant across these groups. We can relax this assumption by fitting a separate term for the proportion of zeros for men:</p>
-<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="multi.html#cb312-1" tabindex="-1"></a>m5d<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb312-2"><a href="multi.html#cb312-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb312-3"><a href="multi.html#cb312-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="multi.html#cb298-1" tabindex="-1"></a>m5d<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
+<span id="cb298-2"><a href="multi.html#cb298-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb298-3"><a href="multi.html#cb298-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
 <p>which reveals that although this proportion is expected to be (slightly) smaller:</p>
-<div class="sourceCode" id="cb313"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb313-1"><a href="multi.html#cb313-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>((m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">2</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">4</span>])<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="multi.html#cb299-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>((m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">2</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">4</span>])<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
 <pre><code>##          lower     upper
 ## var1 0.2312673 0.3072587
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>the proportion of zeros expected for men is probably still less than what we expect from a non-truncated Poisson process for which the estimates have changed very little:</p>
-<div class="sourceCode" id="cb315"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb315-1"><a href="multi.html#cb315-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
+<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="multi.html#cb301-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
 <pre><code>##           lower    upper
 ## var1 0.07276588 0.248731
 ## attr(,&quot;Probability&quot;)
@@ -1380,9 +1472,9 @@ Pr(y | y&gt;0) =&amp; \texttt{dpois}(y, \texttt{exp}(l))\\
 \end{array}\]</span></p>
 <p>which is equivalent to a standard Poisson model.</p>
 <p>We can then test for zero-flation by constraining the overdispersion to be the same for both process using a <code>trait</code> by <code>units</code> interaction in the R-structure, and by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-flation, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:</p>
-<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="multi.html#cb317-1" tabindex="-1"></a>m5d<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
-<span id="cb317-2"><a href="multi.html#cb317-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>)</span>
-<span id="cb317-3"><a href="multi.html#cb317-3" tabindex="-1"></a><span class="fu">summary</span>(m5d<span class="fl">.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="multi.html#cb303-1" tabindex="-1"></a>m5d<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
+<span id="cb303-2"><a href="multi.html#cb303-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>)</span>
+<span id="cb303-3"><a href="multi.html#cb303-3" tabindex="-1"></a><span class="fu">summary</span>(m5d<span class="fl">.5</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10
@@ -1416,19 +1508,13 @@ Pr(y | y&gt;0) =&amp; \texttt{dpois}(y, \texttt{exp}(l))\\
 
 </div>
 </div>
-<h3> References<a href="references.html#references" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-Bunch.1991" class="csl-entry">
-Bunch, D. S. 1991. <span>“Estimability in the Multinomial Probit Model.”</span> <em>Transportation Research Part B-Methodological</em> 25 (1): 1–12.
-</div>
-</div>
 <div class="footnotes">
 <hr />
 <ol start="29">
 <li id="fn29"><p>If the model has &gt;2 responses and you want to regress response <span class="math inline">\(\texttt{i}\)</span> effects on the remainder (i.e. a multiple regression), the coefficients can be obtained as <code>solve(V[-i,-i], V[i,-i])</code> where <span class="math inline">\(\texttt{V}\)</span> is the (co)variance matrix of effects.<a href="multi.html#fnref29" class="footnote-back">↩︎</a></p></li>
 <li id="fn30"><p>We could also have parameterised the model directly as a regression using <span class="math inline">\(\texttt{ante1(trait):id}\)</span> <span class="math inline">\(\texttt{ante1(trait):units}\)</span> - see Section <a href="cont-int.html#ante-sec">6.5</a>.<a href="multi.html#fnref30" class="footnote-back">↩︎</a></p></li>
 <li id="fn31"><p>If we had an additional covariate, let’s say <span class="math inline">\(\texttt{rain}\)</span>, we can also obtain the <span class="math inline">\(\texttt{units}\)</span> variance had we fitted both <span class="math inline">\(\texttt{rain}\)</span> and <span class="math inline">\(\texttt{ice}\)</span>. Define <span class="math inline">\({\bf c}\)</span> as the <span class="math inline">\(2\times 1\)</span> vector of residual covariances between road accidents and the weather variables and <span class="math inline">\({\bf V}\)</span> as the <span class="math inline">\(2\times 2\)</span> residual covariance matrix for the weather variables. Then <span class="math inline">\(\sigma^2_\texttt{traity|weather.unit} = \sigma^2_\texttt{traity.unit}-{\bf c}^{\top}{\bf V}^{-1}{\bf c}\)</span>.<a href="multi.html#fnref31" class="footnote-back">↩︎</a></p></li>
-<li id="fn32"><p>For a <span class="math inline">\(2\times 2\)</span> covariance matrix, positive-definitness requires both variances to be positive and the correlation to lie between -1 and 1. For covariance matrices of larger dimension, the conditions for positive-definitness are more complicated. Perhaps the simplest definition is that all eigenvalues are positive. The function <span class="math inline">\(\textttt{posterior.evals}\)</span> returns the posterior distribution of the <span class="math inline">\(k\)</span> eigenvalues given the posterior samples of a <span class="math inline">\(k\)</span> dimensional covariance matrix (obtained for the appropriate <span class="math inline">\(k^2\)</span> columns of the <span class="math inline">\(\texttt{VCV}\)</span> element of the <span class="math inline">\(\texttt{MCMCglmm}\)</span> model object.)<a href="multi.html#fnref32" class="footnote-back">↩︎</a></p></li>
+<li id="fn32"><p>For a <span class="math inline">\(2\times 2\)</span> covariance matrix, positive-definitness requires both variances to be positive and the correlation to lie between -1 and 1. For covariance matrices of larger dimension, the conditions for positive-definitness are more complicated. Perhaps the simplest definition is that all eigenvalues are positive. The function <span class="math inline">\(\texttt{posterior.evals}\)</span> returns the posterior distribution of the <span class="math inline">\(k\)</span> eigenvalues given the posterior samples of a <span class="math inline">\(k\)</span> dimensional covariance matrix (obtained for the appropriate <span class="math inline">\(k^2\)</span> columns of the <span class="math inline">\(\texttt{VCV}\)</span> element of the <span class="math inline">\(\texttt{MCMCglmm}\)</span> model object.)<a href="multi.html#fnref32" class="footnote-back">↩︎</a></p></li>
 <li id="fn33"><p><span class="math inline">\(\texttt{at.level}\)</span> takes the name of categorical variable together with a vector of specified levels. It creates an <span class="math inline">\(n\times k\)</span> incidence matrix where <span class="math inline">\(n\)</span> is the length of the categorical variable and <span class="math inline">\(k\)</span> the number of specified levels. The matrix element <span class="math inline">\(ij\)</span> has a one if the categorical variable for observation <span class="math inline">\(i\)</span>is of level <span class="math inline">\(j\)</span>, and zero otherwise. When <span class="math inline">\(\texttt{at.level}\)</span> is used in a model formula, and interacted with other terms, it restricts those terms to only having effects when the observations are associated with the <span class="math inline">\(k\)</span> specified levels. For example, imagine a categorical variable <span class="math inline">\(\texttt{fac}\)</span> with three levels <span class="math inline">\(\texttt{a}\)</span>, <span class="math inline">\(\texttt{b}\)</span>, and <span class="math inline">\(\texttt{c}\)</span> and a continuous variable <span class="math inline">\(\texttt{x}\)</span>. <span class="math inline">\(\texttt{at.level(fac, c(&quot;a&quot;, &quot;c&quot;)):x}\)</span> would fit two effects - an effect of <span class="math inline">\(x\)</span> when <span class="math inline">\(\texttt{fac}=\texttt{a}\)</span> and an effect of <span class="math inline">\(x\)</span> when <span class="math inline">\(\texttt{fac}=\texttt{c}\)</span>. <span class="math inline">\(\texttt{at.set}\)</span> is similar although it creates an <span class="math inline">\(n\times 1\)</span> incidence matrix where element <span class="math inline">\(i\)</span> is one if the categorical variable for observation <span class="math inline">\(i\)</span> is <em>any</em> of the specified levels. The term <span class="math inline">\(\texttt{at.set(fac, c(&quot;a&quot;, &quot;c&quot;)):x}\)</span> would then fit <em>one</em> effect - the effect of <span class="math inline">\(x\)</span> when <span class="math inline">\(\texttt{fac}\)</span> is equal to <span class="math inline">\(\texttt{a}\)</span> <em>or</em> <span class="math inline">\(\texttt{c}\)</span>.<a href="multi.html#fnref33" class="footnote-back">↩︎</a></p></li>
 <li id="fn34"><p>For more complicated models a (co)variance matrix may be estimated for a particular random component rather than just a single variance as here. In such cases, <code>V</code> is a matrix. The value at which (part of) the (co)variance matrix is fixed at is determined by <code>V</code>. Any elements of the covariance matrix in rows and/or columns equal to or greater than <code>fix</code> are fixed. In the case of a single variance <code>fix=1</code> simply fixes the variance (element 1,1 of the (co)variance matrix) at whatever is specified in <code>V</code> (one in this example).<a href="multi.html#fnref34" class="footnote-back">↩︎</a></p></li>
 <li id="fn35"><p>Obtaining this expression is involved. We can express the expected value of <span class="math inline">\(y\)</span> given <span class="math inline">\(l\)</span> is less than, or greater than, some value <span class="math inline">\(c\)</span> using the law of total expectation</p>
@@ -1483,6 +1569,15 @@ here
 <li id="fn36"><p>I should really have an na.option in the call to <span class="math inline">\(\texttt{MCMCglmm}\)</span> that simply ignores missing values in the wide-format.<a href="multi.html#fnref36" class="footnote-back">↩︎</a></p></li>
 <li id="fn37"><p>Obtaining comparable regression coefficients between the single and multi-response models is fairly involved. The reason for this is that the standard single-response probit model assumes a <span class="math inline">\(\texttt{units}\)</span> variance of one after conditioning on the predictors, yet the multiple-response model assumes a <span class="math inline">\(\texttt{units}\)</span> variance of one before conditioning on the predictors. Nevertheless, we can easily move between the two parameterisations. As detailed at the start of this Chapter and in the footnote[^schur], the $ variance for death after conditioning on the <span class="math inline">\(\texttt{id}\)</span> effects for <span class="math inline">\(log(\texttt{bili})\)</span> is <span class="math inline">\(V_{2|1}=V_{2,2}-V_{1,2}^2/V_{1,1}\)</span> where <span class="math inline">\({\bf V}\)</span> is the covariance matrix. As covered in Section <a href="glm.html#bernoulli-sec">3.6.3</a> and in footnote[^3.5] we can then rescale the regression coefficient from the multi-response model by <span class="math inline">\(\sqrt{2/(1+V_{2|1})}\)</span> to obtain the value we get if we could have set <span class="math inline">\(V_{2|1}=1\)</span> as in the single-response model.<a href="multi.html#fnref37" class="footnote-back">↩︎</a></p></li>
 <li id="fn38"><p>An identity matrix has ones along the diagonal and zero’s on the off-diagonals. A unit matrix is a matrix of all ones.<a href="multi.html#fnref38" class="footnote-back">↩︎</a></p></li>
+<li id="fn39"><p>It is not immediately obvious what this is doing. The model formula specifies five parameters across the four traits. The term <span class="math inline">\(\texttt{trait}\)</span> defines four effects, one effect for each trait since the intercept is suppressed for formula inside variance functions. The term <code>at.set(trait, 1:4</code> sets up a single binary indicator variable with a one when the trait level is 1, 2, 3, or 4. Since this is all the four traits, this is just setting up a column of ones. The associated parameter is common to all traits and this will be our <span class="math inline">\(\texttt{Other}\)</span> effect. If we interact the variance structure with year we end up with a set of five year effects for year <span class="math inline">\(j\)</span> with design matrix:</p>
+<p><span class="math display">\[{\bf Z}_j=\left[\begin{array}{ccccc}
+1&amp;0&amp;0&amp;0&amp;1\\
+0&amp;1&amp;0&amp;0&amp;1\\
+0&amp;0&amp;1&amp;0&amp;1\\
+0&amp;0&amp;0&amp;1&amp;1\\
+\end{array}\right]
+\]</span></p>
+<p>The <span class="math inline">\(\texttt{idv}\)</span> variance structure assumes the five effects are uncorrelated with a common variance, such that <span class="math inline">\(\sigma^2_u{\bf Z}_j{\bf Z}^{\top}_j = \sigma^2_u({\bf I}+{\bf J})\)</span>: the specification is equivalent to just fitting four year effects with the desired covariance structure.<a href="multi.html#fnref39" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

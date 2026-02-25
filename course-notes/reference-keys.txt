@@ -98,9 +98,14 @@ fig:tufted-num
 fig:tufted-prop
 fig:tufted-sim
 tab:puffin
+fig:qq-counts
+fig:qq-props
 fig:tufted-sim2
-fig:MN1
-fig:MN2
+fig:tufted-sim3
+tab:puffinc
+fig:tufted-sim4
+tab:puffind
+fig:tufted-sim5
 fig:ZIP
 fig:PPZIP
 fig:HU
