@@ -369,8 +369,7 @@ In my own field, year is often a good example. A field project has ran for less 
 
 
 ```{r }
-load("~/Work/MScStats/sda/data/BTtarsus.rda")
-#load(url("https://github.com/jarrodhadfield/sda/raw/master/data/BTtarsus.rda"))
+load(url("https://github.com/jarrodhadfield/sda/raw/master/data/BTtarsus.rda"))
 head(BTtarsus)
 ```
 

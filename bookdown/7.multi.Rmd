@@ -179,7 +179,7 @@ In Section \@ref(od-sec) we saw that overdispersion arises if there are unmeasur
 
 [^schur]: If we had an additional covariate, let's say $\texttt{rain}$, we can also obtain the $\texttt{units}$ variance had we fitted both  $\texttt{rain}$ and $\texttt{ice}$. Define ${\bf c}$ as the $2\times 1$ vector of residual covariances between road accidents and the weather variables and ${\bf V}$ as the  $2\times 2$ residual covariance matrix for the weather variables. Then $\sigma^2_\texttt{traity|weather.unit} = \sigma^2_\texttt{traity.unit}-{\bf c}^{\top}{\bf V}^{-1}{\bf c}$. 
 
-[^pd]: For a $2\times 2$ covariance matrix, positive-definitness requires both variances to be positive and the correlation to lie between -1 and 1. For covariance matrices of larger dimension, the conditions for positive-definitness are more complicated. Perhaps the simplest definition is that all eigenvalues are positive. The function $\textttt{posterior.evals}$ returns the posterior distribution of the $k$ eigenvalues given the posterior samples of a $k$ dimensional covariance matrix (obtained for the appropriate $k^2$ columns of the $\texttt{VCV}$ element of the $\texttt{MCMCglmm}$ model object.) 
+[^pd]: For a $2\times 2$ covariance matrix, positive-definitness requires both variances to be positive and the correlation to lie between -1 and 1. For covariance matrices of larger dimension, the conditions for positive-definitness are more complicated. Perhaps the simplest definition is that all eigenvalues are positive. The function $\texttt{posterior.evals}$ returns the posterior distribution of the $k$ eigenvalues given the posterior samples of a $k$ dimensional covariance matrix (obtained for the appropriate $k^2$ columns of the $\texttt{VCV}$ element of the $\texttt{MCMCglmm}$ model object.) 
 
 ## Multi-response Bernoulli Models
 
@@ -773,20 +773,23 @@ Does the model fit the data? We can generate a draw from the posterior predictiv
 sim_tufted<-simulate(m.tufted, marginal=NULL)
 ```
 
-This is a vector of counts of length $n(K-1)$ where the first $n$ values are the counts (in this example) for Capelin and the second set of $n$ values are for Herring and so on. The counts for $\texttt{Other}$ are not returned but can be obtained by taking the difference between the total number of counts for each observation and the sum of the counts across the other $K-1$ categories.  If we plot the quantiles of the observed number of counts against the quantiles of the posterior prediction for the number of counts we see a very strong 1:1 relationship:
+This is a vector of counts of length $n(K-1)$ where the first $n$ values are the counts (in this example) for Capelin and the second set of $n$ values are for Herring and so on. The counts for $\texttt{Other}$ are not returned but can be obtained by taking the difference between the total number of counts for each observation and the sum of the counts across the other $K-1$ categories.  If we plot the quantiles of the observed number of counts against the quantiles of the posterior prediction for the number of counts we see a very strong 1:1 relationship (Figure \@ref(fig:qq-counts)). 
 
-```{r }
+```{r qq-counts, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="qq-plot of prey item counts from a posterior predictive simulation of model $\\texttt{m.tufted}$ (x-axis) versus the empirical quantiles (y-axis)."}
+
+qqplot(unlist(tufted_puffin[,c("Capelin", "Herring", "Pollock", "SandLance")]), sim_tufted, xlab="Posterior Predictive Quantiles", ylab="Observed Quantiles")
+abline(0,1)
 ```
 
-However, this is rather misleading. We have conditioned on the total number of counts and... 
+However, this is rather misleading. The strong relationship may simply be driven by variation in the total number of counts per sample - something that is not modelled, but conditioned on. For this reason, I usually focus on the proportions when assessing the adequacy of the model. The qq-plot of the proportions shows a slightly noisier relationship, but still, it looks like the the marginal distribution of the data is captured well by the model (Figure \@ref(fig:qq-props)).  
 
+```{r qq-props, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=5, fig.cap="qq-plot of prey item proportions from a posterior predictive simulation of model $\\texttt{m.tufted}$ (x-axis) versus the empirical quantiles (y-axis)."}
 
+qqplot(unlist(tufted_puffin[,c("Capelin", "Herring", "Pollock", "SandLance")])/rowSums(tufted_puffin[,c("Capelin", "Herring", "Pollock", "SandLance", "Other")]), sim_tufted/rowSums(tufted_puffin[,c("Capelin", "Herring", "Pollock", "SandLance", "Other")]), xlab="Posterior Predictive Quantiles", ylab="Observed Quantiles")
+abline(0,1)
+```
 
-
-
-
-
-In Figure \@ref(fig:tufted-sim2) I have plotted the proportion of each prey item for 150 random chicks as obtained from the posterior simulation (top) and compared it to the actual diet compositions (bottom).  We can see, at least qualitatively, that the model seems to be picking up the structuring due to year rather well. Within years, we do not expect the posterior simulation to match the observation perfectly, since we are drawing a sample for a new chick within that year (the predict function always marginalises residual $\texttt{unit}$ effects). However, if the model is doing a good job the distribution of compositions within years should look reasonable. Although hard to judge, there appears to be no major discrepancies - the model does predict that samples tend to be dominated by a single prey item even if the dominating prey item varies to some degree across samples within a year.      
+While these qq-plots are good for assessing whether the model captures broad aspects of the data distribution, they don't really provide insight as to whether the finer patterns have been captured well - for example, if changes in the composition of the samples over time has been adequately modelled.  In Figure \@ref(fig:tufted-sim2) I have plotted the proportion of each prey item for 150 random chicks as obtained from the posterior simulation (top) and compared it to the actual diet compositions (bottom).  We can see, at least qualitatively, that the model seems to be picking up the structuring due to year rather well. Within years, we do not expect the posterior simulation to match the observation perfectly, since we are drawing a sample for a new chick within that year (the predict function always marginalises residual $\texttt{unit}$ effects). However, if the model is doing a good job the distribution of compositions within years should look reasonable. Although hard to judge, there appears to be no major discrepancies - the model does predict that samples tend to be dominated by a single prey item even if the dominating prey item varies to some degree across samples within a year.      
 
 
 ```{r tufted-sim2, echo=FALSE, include=TRUE, fig.cap="", fig.width=9, fig.height=7, fig.cap="A posterior predictive simulation (top) using model $\\texttt{m.tufted}$ for the proportion of prey items that are of each type in 150 randomly selected samples. On the bottom are the observed proportion of prey items. The tick-marks on the x-axis delimit samples taken in the same year, and within years, samples are ordered by the proportion of prey items that are Pacific sand lance. Note that $\\texttt{unit}$ effects are marginalised in the posterior predictive simulation and so we do not expect an exact correspondence between samples: only the *distributions* within and across years should match."}
@@ -1086,7 +1089,7 @@ for(j in 1:4){
 }
 ```
 
-Generally, the model seems to predict these quantities well, although the correlation between Herring and Sand lance is at the extreme end of that seen in the posterior predictive simulations. This is evidenced in the fully unstructured model where the correlation is estimated to be more positive than all other correlations (Table \@ref(tab:tufted)).
+Generally, the model seems to predict these quantities well, although the correlation between Herring and Sand lance is at the extreme end of that seen in the posterior predictive simulations. This is evidenced in the fully unstructured model where the correlation is estimated to be more positive than all other correlations (Table \@ref(tab:puffin)).
 
 
 
