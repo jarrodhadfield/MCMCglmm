@@ -633,7 +633,7 @@ polygon(x = c(1:11, 11:1), y = c(pnzbinom[,"lwr"],rev(pnzbinom[,"upr"])), col = 
 
 If the data set was larger and/or variation in the pool size was greater, there may be sufficient information to justify trying to estimate the residual variance, rather than fixing it to one.  To see where the information comes from first imagine that you have information on samples all with a pool-size of 1. You could jut average you the resulting zeros and ones to get an estimate of $P_1$ where the subscript designates the size of the pool for which the probability of at least one infection is calculated. Even if the probability of infection varied over individuals, the average probability $E[p]$ is equal to $P_1$, as we saw when we determined why variation in the probability cannot be estimated with standard Bernoulli data. Let's then imagine we move to pool sizes of 2. $P_2$ (the probability of at least one success in a pool of 2) is then $E[1-(1-p)^2]$. If there is no variation in $p$ then $P_2=1-(1-P_1)^2$ since $p$ is a constant and equal to $P_1$. However, when there is variation in $p$ the non-linearity in the function (i.e. $(1-p)^2$) means that $E[1-(1-p)^2]$ will deviate from $1-(1-E[p])^2=1-(1-P_1)^2$: we expect the the number of successful pools of size 2 to be less than that predicted from estimating $p$ from pools of size 1[^3.6]. Consequently, the rate at which $P$ asymptotes with increasing pool-size (as seen in Figure \@ref(fig:nzbinom)) provides information about how much variation in $p$ exists.
 
-## Complete Separation
+## Complete Separation {#sec-complete-separation}
 
 One potential issue that can occur in GLM is something known as complete separation or the extreme category problem. While it can occur for any distribution which is discrete, it is most commonly seen when the response is Bernoulli. It occurs when the predictors perfectly predict the outcome. For example, in Section \@ref(bernoulli-sec) we generated Bernoulli data for each photo by assessing whether the mean score was greater than or less than five. Photo $\texttt{type}$ is a very good predictor of the outcome, but not perfect:
 
@@ -651,7 +651,7 @@ mcs<-glm(mean5~type, family=binomial(link=probit), data=data.cs)
 summary(mcs)
 ```
 
-The coefficient for $\texttt{typehappy}$ now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. If we assess significance using Fisher's exact test we get:
+The coefficient for $\texttt{typehappy}$ now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. This is known as the @Hauck.1977 effect. If we assess significance using Fisher's exact test we get:
 
 ```{r }
 fisher.test(table(data.cs$mean5, data.cs$type))

@@ -592,7 +592,7 @@ In the previous sections of this Chapter we've often thought about multi-respons
 
 ## Multinomial Models
 
-In the previous sections of this chapter we covered multi-response models where each response comes from a single parameter distribution.  $\texttt{MCMCglmm}$ also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with $\texttt{trait}$ indexing the different parameters of the distribution and $\texttt{units}$ indexing the observation.
+In the previous sections of this chapter we covered multi-response models where each response comes from a single parameter distribution.  $\texttt{MCMCglmm}$ also allows some distributions that are multi-parameter such as the multinomial and a range of zero-modified distributions. The syntax for fitting these models is similar to that for multi-response models with $\texttt{trait}$ indexing the different parameters of the distribution and $\texttt{units}$ indexing the observation.
 
 We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section \@ref(binom-sec). In binomial models we condition on the total number of counts and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and model the probability of belonging to each category compared to a base-line category. In both cases, it makes sense that the model is parameterised in terms of $K-1$ comparisons since if we know $K-1$ probabilities the final probability is known since the sum of all probabilities must equal one. As with binomial models, the number in each category can be passed as columns using cbind and then the base-line category is that associated with the final column. Alternatively, if the total number of counts is one, the response can be passed as a single vector of categories for each observation and then the base-line category is the first factor level of the response.  In both cases, a logit-link is used. 
 
@@ -1093,73 +1093,157 @@ Generally, the model seems to predict these quantities well, although the correl
 
 
 
-## Zero-inflated Models
+## Zero-modified Poisson Models
 
-Each datum in a zero-inflated model is associated with two latent variables. The first latent variable is associated with the named distribution and the second latent variable is associated with zero inflation. I'll work through a zero-inflated Poisson (ZIP) model to make things clearer. As the name suggests, a ZIP distribution is a Poisson distribution with extra zero's. The observed zeros are modelled as a mixture distribution of zero's originating form the Poisson process and zero's arising through zero-inflation. It is the probability (on the logit scale) that a zero is from the zero-inflation process that we aim to model with the second latent variable. The likelihood has the form:
+A range of distributions are available for dealing with data where the non-zero counts conform to a Poisson distribution but the frequency of zeros is either too high or too low. The zero-truncated Poisson (`ztpoisson`) is the most extreme and is for situations where zeros are entirely missing. Three other distributions provide greater flexibility with the zero-inflated Poisson (`zipoisson`) allowing an excess of zeros and the hurdle Poisson (`hupoisson`) and the zero-altered Poisson (`zapoisson`) allowing both excesses and deficits. For these three distributions each data point is associated with two latent variables. The first latent variable is associated with a Poisson distribution and the second latent variable is associated with a Bernoulli distribution. For zero-inflated Poisson models the first latent variable specifies a standard Poisson, and the second latent variable models the probability that a zero belongs to this Poisson (failure) or is from some other process (success). The probability is modelled with logit link. For the hurdle and zero-altered Poissons, the first latent variable specifies a zero-truncated Poisson, and the second latent variable models the probability that an observation is a zero (success) or not (failure). For the hurdle Poisson the probability is modelled with logit link whereas with for the zero-altered Poisson a complementary log-log link is used. Figure \@ref(fig:zm-poisson) provides a graphical representation of these distributions.
 
-$$\begin{array}{rl}
-Pr(y=0) =& \texttt{plogis}(l_{2})+\texttt{plogis}(-l_{2})\ast \texttt{dpois}(0, \texttt{exp}(l_{1}))\\
-Pr(y | y>0) =& \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}(l_{1}))\\
-\end{array}$$
 
-$\texttt{pscl}$ fits zero-inflated models very well through the `zeroinfl` function, and I strongly recommend using it if you do not want to fit random effects. To illustrate the syntax for fitting ZIP models in MCMCglmm I will take one of their examples:
+```{r zm-poisson, echo=FALSE, include=TRUE, fig.cap="", fig.width=7, fig.height=5, fig.cap="Probability mass function for a zero-modified Poisson. The blue and yellow bars combined represent a Poisson distribution with a mean of three. The red bar represents the excess zeros compared to what is expected under the Poisson (in yellow). The blue bars alone represent a zero-truncated distribution. In zero-inflated models, the first latent variable is the mean of the Poisson (blue and yellow bars combined) and the second latent variable models the probability of a zero being in the red category versus the yellow. In hurdle and zero-altered  models, the first latent variable is the mean of a zero-truncated Poisson (blue bars) and the second latent variable models the probability of a zero (red and yellow bars combined) versus non-zero (blue bars)."}
+
+lambda<-3        
+pi<-0.40 
+
+x<-0:qpois(0.999, lambda)
+
+p_pois <- dpois(x, lambda)
+
+prob_mat <- rbind(c((1-pi)*p_pois[1], rep(0, max(x))), c(pi, rep(0, max(x))),c(0,(1-pi)*p_pois[-1]))
+
+barplot(prob_mat,     
+        col      = c("gold","firebrick", "steelblue"),
+        names.arg = x,
+        xlab     = "y",
+        ylab     = "Probability",
+)
+```
+
+To illustrate these models I'll use the data `bioChemists` available in the package $\texttt{pscl}$. The data were collected on 915 biochemistry graduates, and the response variable `art` is the number of papers published during their PhD.   
+
 
 ```{r echo=TRUE}
 data("bioChemists", package = "pscl")
 head(bioChemists)
 ```
 
-`art` is the response variable - the number of papers published by a Ph.D student - and the remaining variables are to be fitted as fixed effects. Naively, we may expect zero-inflation to be a problem given 30% of the data are zeros, and based on the global mean we only expect around 18%.
+Approximately, 30% of students do not publish a paper
 
 ```{r echo=TRUE}
-table(bioChemists$art==0)
+table(bioChemists$art==0)/915
+```
+
+which is considerably more than expected from a Poisson distribution with a mean equal to the mean number of papers published (`r round(mean(bioChemists$art), 2)`).
+
+```{r }
 ppois(0,mean(bioChemists$art))
 ```
 
-As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I've fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting `V=diag(2)` and `nu=0.002` we have the inverse-gamma prior with `shape=scale=0.001` for the residual component of the Poisson process which captures overdispersion:
+If we compare the observed frequencies of the number of papers published with a standard Poisson, we can see than not only is there an excess of zero's but also an excess of students publishing four or more papers (Figure \@ref(fig:art)).
 
-```{r echo=TRUE, cache=TRUE}
-prior.m5d.1=list(R=list(V=diag(2), nu=0.002, fix=2))
-m5d.1<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="zipoisson")
-```
 
-As is often the case the parameters of the zero-inflation model mixes poorly (See Figure \@ref(fig:ZIP) especially when compared to equivalent hurdle models (See Section \@ref(Hurdle)). Poor mixing is often associated with distributions that may *not* be zero-inflated but instead overdispersed.
+```{r art, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap=paste("Number of papers published by biochemistry graduate students during their PhD. The red dots are the probabilities calculated from a Poisson with a mean of", round(mean(bioChemists$art), 2), ".")}
 
-```{r label=ZIP, echo=FALSE, include=TRUE, fig.cap="Posterior distribution of fixed effects from model `m5d.1` in which trait 1 ($\\texttt{art}$) is the Poisson process and trait 2 ($\\texttt{zi.art}$) is the zero-inflation.", fig.width=7, fig.height=8}
-plot(m5d.1$Sol[,1:4])
-```
+lambda<-mean(bioChemists$art)        
 
-The model would have to be run for (much) longer to say something concrete about the level of zero-inflation but my guess would be it's not a big issue, given the probability is probably quite small:
+x<-0:max(bioChemists$art)
 
-```{r echo=TRUE}
-quantile(plogis(m5d.1$Sol[,2]/sqrt(1+c2)))
-```
+p_pois <- dpois(x, lambda)
 
-### Posterior predictive checks
+mids<-barplot(table(factor(bioChemists$art, levels=x))/915, ylim=c(-0.01, max(p_pois)*1.1), xlab="Frequency", ylab="Papers published")
 
-Another useful check is to fit the standard Poisson model and use posterior predictive checks to see how many zero's you would expect under the simple model:
+points(p_pois~mids[,1], pch=16, col="red")
 
-```{r echo=TRUE, cache=TRUE}
-prior.m5d.2=list(R=list(V=diag(1), nu=0.002))
-m5d.2<-MCMCglmm(art~fem + mar + kid5 + phd + ment, data=bioChemists, prior=prior.m5d.2, family="poisson", saveX=TRUE)
 
-nz<-1:1000
-oz<-sum(bioChemists$art==0)
-
-for(i in 1:1000){
-pred.l<-rnorm(915, (m5d.2$X%*%m5d.2$Sol[i,])@x, sqrt(m5d.2$VCV[i]))
-nz[i]<-sum(rpois(915, exp(pred.l))==0)
+dztpois<-function(x, lambda, log=FALSE){
+	dpois(x, lambda, log=log)/(1-dpois(0, lambda))
 }
+
+ztloglik<-function(x, lambda){
+-sum(dztpois(x, lambda, log=TRUE))
+}
+
+ztmean<-optim(1, x=bioChemists$art[which(bioChemists$art!=0)], ztloglik)$par
+
+#points(I(dztpois(x[-1], ztmean)*(sum(bioChemists$art!=0)/915))~mids[-1,1], pch=16, col="blue")
+
 ```
 
-Figure \@ref(fig:PPZIP) shows a histogram of the posterior predictive distribution of zero's (`nz`) from the model compared to the observed number of zeros (`oz`). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.
+While the excess of zero's may suggest that the distribution is zero-inflated, general overdispersion will also create an excess of zeros compared to the standard Poisson. If we focus only on the non-zero counts and compare their distribution to what we would expect under a standard zero-truncated Poisson, an excess of small values and very large values is evident - the non-zero data are overdispersed with respect to the zero-truncated Poisson (Figure \@ref(fig:art2)). As is often the case, it's unclear whether the large number of zero's in the data are due to zero-inflation or overdispersion more generally.
 
-```{r label=PPZIP, echo=FALSE, include=TRUE, fig.cap="Posterior predictive distribution of zeros from model `m5d.2` with the observed number in red.", fig.width=7, fig.height=5}
-hist(nz, breaks=30)
-abline(v=oz, col="red", lwd=2)
+```{r art2, echo=FALSE, include=TRUE, fig.width=7, fig.height=5, fig.cap=paste("Number of papers published by biochemistry graduate students during their PhD, excluding those students that published no papers. The blue dots are the probabilities calculated from a zero-truncated Poisson with a mean of", round(ztmean, 2), ".")}
+
+
+x<-1:max(bioChemists$art)
+zttab<-prop.table(table(factor(bioChemists$art[which(bioChemists$art!=0)], levels=x)))
+
+
+mids<-barplot(zttab, xlab="Frequency", ylab="Papers published")
+
+
+points(dztpois(x, ztmean)~mids[,1], pch=16, col="blue")
+
 ```
 
-## Hurdle Models {#Hurdle}
+As with standard Poisson models, MCMCglmm fits an overdispersed (zero-truncated) Poisson when fitting zero-modified Poisson distributions by allowing observation-level ($\texttt{unit}$) effects (Section \@ref(addod-sec)). Consequently, any zero-modification is with respect to the overdispersed distribution. As in Bernoulli models, $\texttt{unit}$ effects are fitted in the zero-modification model, but their variance is not identifiable and so should usually be fixed in the prior (Section \@ref(bernoulli-sec)). Similarly, any covariation between the Poisson model and the zero-modification model at the level of an observation is not identifiable, since non-zero Poisson counts are absent for all observations that have zero counts, obviously. Consequently, the residual covariance matrix for the pair of latent variables is usually constrained to have the form:
+
+
+$$
+V_{\texttt{units}} =\left[
+\begin{array}{cc}
+\sigma^2_{y}&0\\
+0&1\\
+\end{array}
+ \right] 
+$$
+
+where $\sigma^2_{y}$ is the units variance for the Poisson, or zero-truncated Poisson for the hurdle Poisson. This can be achieved by using an $\texttt{idh}$ structure and fixing the second variance to one by specifying $\texttt{fix}$ in the prior.
+
+### Zero-inflated Poisson
+
+We can fit a zero-inflated model to the biochemsirty student data where there is a constant odds of a zero belonging to the inflation process rather than the Poisson process, but the mean of the Poisson may depend on a suite of predictors such as the categorical predictors sex ($\texttt{fem}$) and marital status ($\texttt{Married}$) and continuous predictors such as the number of children aged 5 or younger ($\texttt{kid5}$) prestige of the department ($\texttt{phd}$) and how many papers the student's mentor published over the same period ($\texttt{ment}$).
+
+```{r zip}
+prior.zip=list(R=list(V=diag(2), nu=0.002, fix=2))
+m.zip<-MCMCglmm(art~trait-1+at.level(trait,1):(fem + mar + kid5 + phd +ment), rcov=~idh(trait):units, data=bioChemists, prior=prior.zip, family="zipoisson", longer=10)
+```
+
+The first 'trait' has the same name as the response ($\texttt{art}$ in this example) and is the latent variable for the Poisson process. The second 'trait' is the latent variable for the zero-inflation and has the same name as the response prefixed by $\texttt{zi_}$ ($\texttt{zi)art}$). Let's look at the model summary:
+
+```{r }
+summary(m.zip)
+```
+
+We can see that there is good evidence for overdispersion: the $\texttt{units}$ variance for the Poisson process ($\texttt{traitart.units}$) is far from zero and several of the covariates seem to impact the Poisson mean. However, note that the log odds of a zero belonging to the zero-inflation process is extremely small (`r round(mean(m.zip$Sol[,"traitzi_art"]), 2)`) - essentially a probability of zero - and the mixing is very poor for this parameter with a very low effective sample size. We can see this visually by looking at the MCMC traces from the model (Figure \@ref(fig:mcmc-zip)). 
+
+```{r label=mcmc-zip, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the first four fixed effects from model `m.zip` in which trait 1 ($\\texttt{art}$) is the Poisson process and trait 2 ($\\texttt{zi.art}$) is the zero-inflation.", fig.width=7, fig.height=8}
+plot(m.zip$Sol[,1:4], density=FALSE)
+```
+
+The reason that the model mixes so poorly for the zero-inflation parameter is that there is essentially no zero-inflation.  We have complete separation where the likelihood is favouring estimates of the probability that are close to zero and therefore minus infinity on the logit scale (Section \@ref(sec-complete-separation)). Before worrying about zero-inflation I usually fit a standard (over-dispersed) Poisson: 
+
+
+```{r }
+prior.odp=list(R=list(V=diag(1), nu=0.002))
+m.odp<-MCMCglmm(art~fem + mar + kid5 + phd + ment, data=bioChemists, prior=prior.odp, family="poisson")
+```
+
+and then use posterior predictive checks to see how many zero's you would expect under this simpler model:
+
+```{r fig.width=7, fig.height=5, fig.cap="Posterior predictive distribution from an (overdispersed) Poisson model fitted to the number of biochemistry students (out of 915) that publish no papers during their PhD. The red line is the observed number."}
+ysim<-simulate(m.odp, nsim=1000)
+# simulate from model
+
+nzsim<-colSums(ysim==0)
+# count the number of zeros for each simulated data set
+
+hist(nzsim, main="", xlab="Number of zeros")
+abline(v=sum(bioChemists$art==0), col="red", lwd=2)
+# plot posterior predictive distribution with observed value
+
+```
+
+The simpler model seems to be entirely consistent with the number of zeros suggesting that a zero-inflated model may not be required.
+
+### Hurdle and zero-altered models {#Hurdle}
 
 Hurdle models are very similar to zero-inflated models but they can be used to model zero-deflation as well as zero-inflation and seem to have much better mixing properties in $\texttt{MCMCglmm}$. As in ZIP models each datum
 in the hurdle model is associated with two latent variables. However, whereas in a ZIP model the first latent variable is the mean parameter of a Poisson distribution the equivalent latent variable in the hurdle model is the mean parameter of a zero-truncated Possion distribution (i.e. a Poisson distribution without the zeros observed). In addition the second latent variable in a ZIP model is the probability that an observed zero is due to zero-inflation rather than the Poisson process. In hurdle models the second latent variable is simply the probability (on the logit scale) that the response variable is zero or not. The likelihood is:
@@ -1172,32 +1256,32 @@ Pr(y | y>0) =& \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}(l_{1})
 To illustrate, we will refit the ZIP model (`m5d.1`) as a hurdle-Poisson model.
 
 ```{r echo=TRUE, cache=TRUE}
-m5d.3<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.m5d.1, family="hupoisson")
+m.hup<-MCMCglmm(art~trait-1+at.level(trait,1):fem + at.level(trait,1):mar + at.level(trait,1):kid5 + at.level(trait,1):phd + at.level(trait,1):ment, rcov=~idh(trait):units, data=bioChemists, prior=prior.zip, family="hupoisson")
 ```
 
 Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure \@ref(fig:ZIP) with Figure \@ref(fig:HU)).
 
 ```{r label=HU, echo=FALSE, include=TRUE, fig.cap="Posterior distribution of fixed effects from model `m5d.3` in which trait 1 ($\\texttt{art}$) is the zero-truncated Poisson process and trait 2 ($\\texttt{hu.art}$) is the binary trait zero or non-zero.", fig.width=7, fig.height=8}
-plot(m5d.3$Sol[,1:4])
+plot(m.hup$Sol[,1:4])
 ```
 
 The interpretation of the model is slightly different. Fitting just an intercept in the hurdle model implies that the proportion of zeros observed across different combinations of those fixed effects fitted for the Poisson process is constant. Our 95% credible intervals for this proportion is (See section \@ref(pred-sec)):
 
 ```{r echo=TRUE}
 c2<-(16*sqrt(3)/(15*pi))^2
-HPDinterval(plogis(m5d.3$Sol[,2]/sqrt(1+c2))) 
+HPDinterval(plogis(m.hup$Sol[,2]/sqrt(1+c2))) 
 ```
 
 and we can compare this to the predicted number of zero's from the Poisson process if it had not been zero-truncated:
 
 ```{r echo=TRUE}
-HPDinterval(ppois(0, exp(m5d.3$Sol[,1]+0.5*m5d.3$VCV[,1])))  
+HPDinterval(ppois(0, exp(m.hup$Sol[,1]+0.5*m.hup$VCV[,1])))  
 ```
 
 The credible intervals largely overlap, strongly suggesting a standard Poisson model would be adequate. However, our prediction for the number of zero's that would arise form a non-truncated Poisson process only involved the intercept term. This prediction therefore pertains to the number of articles published by single women with no young children who obtained their Ph.D's from departments scoring zero for prestige (`phd`) and whose mentors had published nothing in the previous 3 years. Our equivalent prediction for men is a little lower
 
 ```{r echo=TRUE}
-HPDinterval(ppois(0, exp(m5d.3$Sol[,1]+m5d.3$Sol[,3]+0.5*m5d.3$VCV[,1])))  
+HPDinterval(ppois(0, exp(m.hup$Sol[,1]+m.hup$Sol[,3]+0.5*m.hup$VCV[,1])))  
 ```
 
 suggesting that perhaps the number of zero's is greater than we expected for this group. However, this may just be a consequence of us fixing the proportion of zero's to be constant across these groups. We can relax this assumption by fitting a separate term for the proportion of zeros for men:
