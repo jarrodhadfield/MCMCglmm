@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-02-25" />
+<meta name="date" content="2026-03-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -224,7 +224,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#ordinal-sec"><i class="fa fa-check"></i><b>3.7</b> Ordinal Data</a></li>
 <li class="chapter" data-level="3.8" data-path="glm.html"><a href="glm.html#non-zero-binomial-data"><i class="fa fa-check"></i><b>3.8</b> Non-zero Binomial Data</a></li>
-<li class="chapter" data-level="3.9" data-path="glm.html"><a href="glm.html#complete-separation"><i class="fa fa-check"></i><b>3.9</b> Complete Separation</a>
+<li class="chapter" data-level="3.9" data-path="glm.html"><a href="glm.html#sec-complete-separation"><i class="fa fa-check"></i><b>3.9</b> Complete Separation</a>
 <ul>
 <li class="chapter" data-level="3.9.1" data-path="glm.html"><a href="glm.html#gelman-prior-sec"><i class="fa fa-check"></i><b>3.9.1</b> The <span class="citation">Gelman, Jakulin, et al. (2008)</span> prior</a></li>
 </ul></li>
@@ -296,12 +296,12 @@ div.csl-indent {
 <li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#covu-sec"><i class="fa fa-check"></i><b>7.4</b> Covariances between random and residual terms (<span class="math inline">\(\texttt{covu}\)</span>)</a></li>
 <li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#scaled-linear-predictors-texttttheta_scale"><i class="fa fa-check"></i><b>7.5</b> Scaled linear predictors: <span class="math inline">\(\texttt{theta_scale}\)</span></a></li>
 <li class="chapter" data-level="7.6" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.6</b> Multinomial Models</a></li>
-<li class="chapter" data-level="7.7" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>7.7</b> Zero-inflated Models</a>
+<li class="chapter" data-level="7.7" data-path="multi.html"><a href="multi.html#zero-modified-poisson-models"><i class="fa fa-check"></i><b>7.7</b> Zero-modified Poisson Models</a>
 <ul>
-<li class="chapter" data-level="7.7.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>7.7.1</b> Posterior predictive checks</a></li>
+<li class="chapter" data-level="7.7.1" data-path="multi.html"><a href="multi.html#zero-inflated-poisson"><i class="fa fa-check"></i><b>7.7.1</b> Zero-inflated Poisson</a></li>
+<li class="chapter" data-level="7.7.2" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.7.2</b> Hurdle and zero-altered models</a></li>
 </ul></li>
-<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.8</b> Hurdle Models</a></li>
-<li class="chapter" data-level="7.9" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.9</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.8</b> Zero-altered Models</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
 <ul>
@@ -855,7 +855,7 @@ Figure 7.10: Posterior distributions for the probit regression of <span class="m
 </div>
 <div id="multinomial-models" class="section level2 hasAnchor" number="7.6">
 <h2><span class="header-section-number">7.6</span> Multinomial Models<a href="multi.html#multinomial-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In the previous sections of this chapter we covered multi-response models where each response comes from a single parameter distribution. <span class="math inline">\(\texttt{MCMCglmm}\)</span> also allows some distributions that are multi-parameter such as the multinomial and a range of zero-flated distributions. The syntax for fitting these models is similar to that for multi-response models with <span class="math inline">\(\texttt{trait}\)</span> indexing the different parameters of the distribution and <span class="math inline">\(\texttt{units}\)</span> indexing the observation.</p>
+<p>In the previous sections of this chapter we covered multi-response models where each response comes from a single parameter distribution. <span class="math inline">\(\texttt{MCMCglmm}\)</span> also allows some distributions that are multi-parameter such as the multinomial and a range of zero-modified distributions. The syntax for fitting these models is similar to that for multi-response models with <span class="math inline">\(\texttt{trait}\)</span> indexing the different parameters of the distribution and <span class="math inline">\(\texttt{units}\)</span> indexing the observation.</p>
 <p>We will start with multinomial models where the response is the number of counts in two or more nominal categories. When the number of categories is two we have the binomial which was covered in Section <a href="glm.html#binom-sec">3.6</a>. In binomial models we condition on the total number of counts and the model is parameterised in terms of the probability of success, with failure being the base-line category. In multinomial models we also condition on the total number of counts and model the probability of belonging to each category compared to a base-line category. In both cases, it makes sense that the model is parameterised in terms of <span class="math inline">\(K-1\)</span> comparisons since if we know <span class="math inline">\(K-1\)</span> probabilities the final probability is known since the sum of all probabilities must equal one. As with binomial models, the number in each category can be passed as columns using cbind and then the base-line category is that associated with the final column. Alternatively, if the total number of counts is one, the response can be passed as a single vector of categories for each observation and then the base-line category is the first factor level of the response. In both cases, a logit-link is used.</p>
 <p>To explore multinomial models we will analyse data collected by the Alaska Science Center on the prey items of seabirds breeding on Middleton Island in the Gulf of Alaska - <a href="https://www.sciencebase.gov/catalog/item/64134381d34eb496d1ce3c82">see here</a>. We will restrict ourselves to data obtained on the chicks of the wonderful Tufted Puffin:</p>
 <div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="multi.html#cb270-1" tabindex="-1"></a><span class="fu">data</span>(tufted_puffin)</span>
@@ -1336,14 +1336,16 @@ Figure 7.19: The histograms represent the posterior predictive distributions for
 </div>
 <p>Generally, the model seems to predict these quantities well, although the correlation between Herring and Sand lance is at the extreme end of that seen in the posterior predictive simulations. This is evidenced in the fully unstructured model where the correlation is estimated to be more positive than all other correlations (Table <a href="multi.html#tab:puffin">7.1</a>).</p>
 </div>
-<div id="zero-inflated-models" class="section level2 hasAnchor" number="7.7">
-<h2><span class="header-section-number">7.7</span> Zero-inflated Models<a href="multi.html#zero-inflated-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Each datum in a zero-inflated model is associated with two latent variables. The first latent variable is associated with the named distribution and the second latent variable is associated with zero inflation. I’ll work through a zero-inflated Poisson (ZIP) model to make things clearer. As the name suggests, a ZIP distribution is a Poisson distribution with extra zero’s. The observed zeros are modelled as a mixture distribution of zero’s originating form the Poisson process and zero’s arising through zero-inflation. It is the probability (on the logit scale) that a zero is from the zero-inflation process that we aim to model with the second latent variable. The likelihood has the form:</p>
-<p><span class="math display">\[\begin{array}{rl}
-Pr(y=0) =&amp; \texttt{plogis}(l_{2})+\texttt{plogis}(-l_{2})\ast \texttt{dpois}(0, \texttt{exp}(l_{1}))\\
-Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}(l_{1}))\\
-\end{array}\]</span></p>
-<p><span class="math inline">\(\texttt{pscl}\)</span> fits zero-inflated models very well through the <code>zeroinfl</code> function, and I strongly recommend using it if you do not want to fit random effects. To illustrate the syntax for fitting ZIP models in MCMCglmm I will take one of their examples:</p>
+<div id="zero-modified-poisson-models" class="section level2 hasAnchor" number="7.7">
+<h2><span class="header-section-number">7.7</span> Zero-modified Poisson Models<a href="multi.html#zero-modified-poisson-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A range of distributions are available for dealing with data where the non-zero counts conform to a Poisson distribution but the frequency of zeros is either too high or too low. The zero-truncated Poisson (<code>ztpoisson</code>) is the most extreme and is for situations where zeros are entirely missing. Three other distributions provide greater flexibility with the zero-inflated Poisson (<code>zipoisson</code>) allowing an excess of zeros and the hurdle Poisson (<code>hupoisson</code>) and the zero-altered Poisson (<code>zapoisson</code>) allowing both excesses and deficits. For these three distributions each data point is associated with two latent variables. The first latent variable is associated with a Poisson distribution and the second latent variable is associated with a Bernoulli distribution. For zero-inflated Poisson models the first latent variable specifies a standard Poisson, and the second latent variable models the probability that a zero belongs to this Poisson (failure) or is from some other process (success). The probability is modelled with logit link. For the hurdle and zero-altered Poissons, the first latent variable specifies a zero-truncated Poisson, and the second latent variable models the probability that an observation is a zero (success) or not (failure). For the hurdle Poisson the probability is modelled with logit link whereas with for the zero-altered Poisson a complementary log-log link is used. Figure <a href="multi.html#fig:zm-poisson">7.20</a> provides a graphical representation of these distributions.</p>
+<div class="figure"><span style="display:block;" id="fig:zm-poisson"></span>
+<img src="_bookdown_files/fig/zm-poisson-1.png" alt="Probability mass function for a zero-modified Poisson. The blue and yellow bars combined represent a Poisson distribution with a mean of three. The red bar represents the excess zeros compared to what is expected under the Poisson (in yellow). The blue bars alone represent a zero-truncated distribution. In zero-inflated models, the first latent variable is the mean of the Poisson (blue and yellow bars combined) and the second latent variable models the probability of a zero being in the red category versus the yellow. In hurdle and zero-altered  models, the first latent variable is the mean of a zero-truncated Poisson (blue bars) and the second latent variable models the probability of a zero (red and yellow bars combined) versus non-zero (blue bars)." width="672" />
+<p class="caption">
+Figure 7.20: Probability mass function for a zero-modified Poisson. The blue and yellow bars combined represent a Poisson distribution with a mean of three. The red bar represents the excess zeros compared to what is expected under the Poisson (in yellow). The blue bars alone represent a zero-truncated distribution. In zero-inflated models, the first latent variable is the mean of the Poisson (blue and yellow bars combined) and the second latent variable models the probability of a zero being in the red category versus the yellow. In hurdle and zero-altered models, the first latent variable is the mean of a zero-truncated Poisson (blue bars) and the second latent variable models the probability of a zero (red and yellow bars combined) versus non-zero (blue bars).
+</p>
+</div>
+<p>To illustrate these models I’ll use the data <code>bioChemists</code> available in the package <span class="math inline">\(\texttt{pscl}\)</span>. The data were collected on 915 biochemistry graduates and the response variable <code>art</code> is the number of papers published during their PhD.</p>
 <div class="sourceCode" id="cb281"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb281-1"><a href="multi.html#cb281-1" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;bioChemists&quot;</span>, <span class="at">package =</span> <span class="st">&quot;pscl&quot;</span>)</span>
 <span id="cb281-2"><a href="multi.html#cb281-2" tabindex="-1"></a><span class="fu">head</span>(bioChemists)</span></code></pre></div>
 <pre><code>##   art   fem     mar kid5  phd ment
@@ -1353,110 +1355,200 @@ Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}
 ## 4   0   Men Married    1 1.18    3
 ## 5   0 Women  Single    0 3.75   26
 ## 6   0 Women Married    2 3.59    2</code></pre>
-<p><code>art</code> is the response variable - the number of papers published by a Ph.D student - and the remaining variables are to be fitted as fixed effects. Naively, we may expect zero-inflation to be a problem given 30% of the data are zeros, and based on the global mean we only expect around 18%.</p>
-<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="multi.html#cb283-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span></code></pre></div>
+<p>Approximately, 30% of students do not publish a paper</p>
+<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="multi.html#cb283-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)<span class="sc">/</span><span class="dv">915</span></span></code></pre></div>
 <pre><code>## 
-## FALSE  TRUE 
-##   640   275</code></pre>
+##     FALSE      TRUE 
+## 0.6994536 0.3005464</code></pre>
+<p>which is considerably more than expected from a Poisson distribution with a mean equal to the mean number of papers published (1.69).</p>
 <div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="multi.html#cb285-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
 <pre><code>## [1] 0.1839859</code></pre>
-<p>As with binary models we do not observe any residual variance for the zero-inflated process, and in addition the residual covariance between the zero-inflation and the Poisson process cannot be estimated because both processes cannot be observed in a single data point. To deal with this I’ve fixed the residual variance for the zero-inflation at 1, and the covariance is set to zero using the idh structure. Setting <code>V=diag(2)</code> and <code>nu=0.002</code> we have the inverse-gamma prior with <code>shape=scale=0.001</code> for the residual component of the Poisson process which captures overdispersion:</p>
-<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="multi.html#cb287-1" tabindex="-1"></a>prior.m5d<span class="fl">.1</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
-<span id="cb287-2"><a href="multi.html#cb287-2" tabindex="-1"></a>m5d<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb287-3"><a href="multi.html#cb287-3" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb287-4"><a href="multi.html#cb287-4" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>)</span></code></pre></div>
-<p>As is often the case the parameters of the zero-inflation model mixes poorly (See Figure <a href="multi.html#fig:ZIP">7.20</a> especially when compared to equivalent hurdle models (See Section <a href="multi.html#Hurdle">7.8</a>). Poor mixing is often associated with distributions that may <em>not</em> be zero-inflated but instead overdispersed.</p>
-<div class="figure"><span style="display:block;" id="fig:ZIP"></span>
-<img src="_bookdown_files/fig/ZIP-1.png" alt="Posterior distribution of fixed effects from model `m5d.1` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the zero-inflation." width="672" />
+<p>If we compare the observed frequencies of the number of papers published with a standard Poisson, we can see than not only is there an excess of zero’s but also an excess of students publishing four or more papers (Figure <a href="multi.html#fig:art">7.21</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:art"></span>
+<img src="_bookdown_files/fig/art-1.png" alt="Number of papers published by biochemistry graduate students during their PhD. The red dots are the probabilities calculated from a Poisson with a mean of 1.69." width="672" />
 <p class="caption">
-Figure 7.20: Posterior distribution of fixed effects from model <code>m5d.1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
+Figure 7.21: Number of papers published by biochemistry graduate students during their PhD. The red dots are the probabilities calculated from a Poisson with a mean of 1.69.
 </p>
 </div>
-<p>The model would have to be run for (much) longer to say something concrete about the level of zero-inflation but my guess would be it’s not a big issue, given the probability is probably quite small:</p>
-<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="multi.html#cb288-1" tabindex="-1"></a><span class="fu">quantile</span>(<span class="fu">plogis</span>(m5d<span class="fl">.1</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
-<pre><code>##          0%         25%         50%         75%        100% 
-## 0.004678307 0.009205072 0.010996518 0.014144546 0.058293082</code></pre>
-<div id="posterior-predictive-checks" class="section level3 hasAnchor" number="7.7.1">
-<h3><span class="header-section-number">7.7.1</span> Posterior predictive checks<a href="multi.html#posterior-predictive-checks" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Another useful check is to fit the standard Poisson model and use posterior predictive checks to see how many zero’s you would expect under the simple model:</p>
-<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="multi.html#cb290-1" tabindex="-1"></a>prior.m5d<span class="fl">.2</span> <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
-<span id="cb290-2"><a href="multi.html#cb290-2" tabindex="-1"></a>m5d<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.2</span>,</span>
-<span id="cb290-3"><a href="multi.html#cb290-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>, <span class="at">saveX =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb290-4"><a href="multi.html#cb290-4" tabindex="-1"></a></span>
-<span id="cb290-5"><a href="multi.html#cb290-5" tabindex="-1"></a>nz <span class="ot">&lt;-</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span></span>
-<span id="cb290-6"><a href="multi.html#cb290-6" tabindex="-1"></a>oz <span class="ot">&lt;-</span> <span class="fu">sum</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb290-7"><a href="multi.html#cb290-7" tabindex="-1"></a></span>
-<span id="cb290-8"><a href="multi.html#cb290-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">1000</span>) {</span>
-<span id="cb290-9"><a href="multi.html#cb290-9" tabindex="-1"></a>    pred.l <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="dv">915</span>, (m5d<span class="fl">.2</span><span class="sc">$</span>X <span class="sc">%*%</span> m5d<span class="fl">.2</span><span class="sc">$</span>Sol[i, ])<span class="sc">@</span>x, <span class="fu">sqrt</span>(m5d<span class="fl">.2</span><span class="sc">$</span>VCV[i]))</span>
-<span id="cb290-10"><a href="multi.html#cb290-10" tabindex="-1"></a>    nz[i] <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">rpois</span>(<span class="dv">915</span>, <span class="fu">exp</span>(pred.l)) <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb290-11"><a href="multi.html#cb290-11" tabindex="-1"></a>}</span></code></pre></div>
-<p>Figure <a href="multi.html#fig:PPZIP">7.21</a> shows a histogram of the posterior predictive distribution of zero’s (<code>nz</code>) from the model compared to the observed number of zeros (<code>oz</code>). The simpler model seems to be consistent with the data, suggesting that a ZIP model may not be required.</p>
-<div class="figure"><span style="display:block;" id="fig:PPZIP"></span>
-<img src="_bookdown_files/fig/PPZIP-1.png" alt="Posterior predictive distribution of zeros from model `m5d.2` with the observed number in red." width="672" />
+<p>While the excess of zeros may suggest that the distribution is zero-inflated, general overdispersion will also create an excess of zeros. If we focus only on the non-zero counts and compare their distribution to what we would expect under a zero-truncated Poisson, an excess of small values and very large values is evident - the non-zero data are overdispersed with respect to the zero-truncated Poisson (Figure <a href="multi.html#fig:art2">7.22</a>). As is often the case, it’s unclear whether the large number of zero’s in the data are due to zero-inflation or overdispersion more generally.</p>
+<div class="figure"><span style="display:block;" id="fig:art2"></span>
+<img src="_bookdown_files/fig/art2-1.png" alt="Number of papers published by biochemistry graduate students during their PhD, excluding those students that published no papers. The blue dots are the probabilities calculated from a zero-truncated Poisson with a mean of 2.42." width="672" />
 <p class="caption">
-Figure 7.21: Posterior predictive distribution of zeros from model <code>m5d.2</code> with the observed number in red.
+Figure 7.22: Number of papers published by biochemistry graduate students during their PhD, excluding those students that published no papers. The blue dots are the probabilities calculated from a zero-truncated Poisson with a mean of 2.42.
 </p>
 </div>
-</div>
-</div>
-<div id="Hurdle" class="section level2 hasAnchor" number="7.8">
-<h2><span class="header-section-number">7.8</span> Hurdle Models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Hurdle models are very similar to zero-inflated models but they can be used to model zero-deflation as well as zero-inflation and seem to have much better mixing properties in <span class="math inline">\(\texttt{MCMCglmm}\)</span>. As in ZIP models each datum
-in the hurdle model is associated with two latent variables. However, whereas in a ZIP model the first latent variable is the mean parameter of a Poisson distribution the equivalent latent variable in the hurdle model is the mean parameter of a zero-truncated Possion distribution (i.e. a Poisson distribution without the zeros observed). In addition the second latent variable in a ZIP model is the probability that an observed zero is due to zero-inflation rather than the Poisson process. In hurdle models the second latent variable is simply the probability (on the logit scale) that the response variable is zero or not. The likelihood is:</p>
-<p><span class="math display">\[\begin{array}{rl}
-Pr(y=0) =&amp; \texttt{plogis}(l_{2})\\
-Pr(y | y&gt;0) =&amp; \texttt{plogis}(-l_{2})\ast \texttt{dpois}(y, \texttt{exp}(l_{1}))/(1-\texttt{ppois}(0, \texttt{exp}(l_{1})))\\
-\end{array}\]</span></p>
-<p>To illustrate, we will refit the ZIP model (<code>m5d.1</code>) as a hurdle-Poisson model.</p>
-<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="multi.html#cb291-1" tabindex="-1"></a>m5d<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb291-2"><a href="multi.html#cb291-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb291-3"><a href="multi.html#cb291-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
-<p>Plotting the Markov chain for the equivalent parameters that were plotted for the ZIP model shows that the mixing properties are much better (compare Figure <a href="multi.html#fig:ZIP">7.20</a> with Figure <a href="multi.html#fig:HU">7.22</a>).</p>
-<div class="figure"><span style="display:block;" id="fig:HU"></span>
-<img src="_bookdown_files/fig/HU-1.png" alt="Posterior distribution of fixed effects from model `m5d.3` in which trait 1 ($\texttt{art}$) is the zero-truncated Poisson process and trait 2 ($\texttt{hu.art}$) is the binary trait zero or non-zero." width="672" />
+<p>As with standard Poisson models, by allowing observation-level (<span class="math inline">\(\texttt{unit}\)</span>) effects, MCMCglmm fits an overdispersed (zero-truncated) Poisson when fitting zero-modified Poisson distributions (Section <a href="glm.html#addod-sec">3.4.2</a>). Consequently, any zero-modification is with respect to the overdispersed distribution. As in Bernoulli models, <span class="math inline">\(\texttt{unit}\)</span> effects are fitted in the zero-modification model, but their variance is not identifiable and so should usually be fixed in the prior (Section <a href="glm.html#bernoulli-sec">3.6.3</a>). Similarly, any covariation between the Poisson model and the zero-modification model at the level of an observation is not identifiable, since non-zero Poisson counts are absent for all observations that have zero counts, obviously. Consequently, the residual covariance matrix for the pair of latent variables is usually constrained to have the form:</p>
+<p><span class="math display">\[
+V_{\texttt{units}} =\left[
+\begin{array}{cc}
+\sigma^2_{y}&amp;0\\
+0&amp;1\\
+\end{array}
+\right]
+\]</span></p>
+<p>where <span class="math inline">\(\sigma^2_{y}\)</span> is the units variance for the (zero-truncated) Poisson. This can be achieved by using an <span class="math inline">\(\texttt{idh}\)</span> structure and fixing the second variance to one by specifying <span class="math inline">\(\texttt{fix}\)</span> in the prior.</p>
+<div id="zero-inflated-poisson" class="section level3 hasAnchor" number="7.7.1">
+<h3><span class="header-section-number">7.7.1</span> Zero-inflated Poisson<a href="multi.html#zero-inflated-poisson" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>To the biochemsirty student data, we can fit a zero-inflated model where we specify constant odds for a zero belonging to the inflation process rather than the Poisson process, but the mean of the Poisson may depend on a suite of predictors such as the categorical predictors sex (<span class="math inline">\(\texttt{fem}\)</span>) and marital status (<span class="math inline">\(\texttt{Married}\)</span>) and continuous predictors such as the number of children aged 5 or younger (<span class="math inline">\(\texttt{kid5}\)</span>) prestige of the department (<span class="math inline">\(\texttt{phd}\)</span>) and how many papers the student’s mentor published over the same period (<span class="math inline">\(\texttt{ment}\)</span>).</p>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="multi.html#cb287-1" tabindex="-1"></a>prior.zip <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
+<span id="cb287-2"><a href="multi.html#cb287-2" tabindex="-1"></a>m.zip <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span></span>
+<span id="cb287-3"><a href="multi.html#cb287-3" tabindex="-1"></a>    ment), <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.zip, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>,</span>
+<span id="cb287-4"><a href="multi.html#cb287-4" tabindex="-1"></a>    <span class="at">longer =</span> <span class="dv">10</span>)</span></code></pre></div>
+<p>Let’s look at the model summary:</p>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="multi.html#cb288-1" tabindex="-1"></a><span class="fu">summary</span>(m.zip)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 30001:129901
+##  Thinning interval  = 100
+##  Sample size  = 1000 
+## 
+##  DIC: 3015.031 
+## 
+##  R-structure:  ~idh(trait):units
+## 
+##                   post.mean l-95% CI u-95% CI eff.samp
+## traitart.units        0.406   0.3106   0.5121    532.8
+## traitzi_art.units     1.000   1.0000   1.0000      0.0
+## 
+##  Location effects: art ~ trait - 1 + at.level(trait, 1):(fem + mar + kid5 + phd + ment) 
+## 
+##                               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## traitart                       -0.18899 -0.48020  0.07266  908.993  0.188    
+## traitzi_art                    -7.14062 -9.78402 -3.91286    5.976 &lt;0.001 ***
+## at.level(trait, 1):femMen       0.20713  0.08430  0.37723 1000.000  0.004 ** 
+## at.level(trait, 1):marMarried   0.15426 -0.02155  0.31146 1000.000  0.092 .  
+## at.level(trait, 1):kid5        -0.17719 -0.27411 -0.08102 1000.000 &lt;0.001 ***
+## at.level(trait, 1):phd          0.02866 -0.04564  0.09548 1215.734  0.462    
+## at.level(trait, 1):ment         0.02820  0.02156  0.03488 1000.000 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The first ‘trait’ has the same name as the response (<span class="math inline">\(\texttt{art}\)</span> in this example) and is the latent variable for the Poisson process. The second ‘trait’ is the latent variable for the zero-inflation and has the same name as the response prefixed by <span class="math inline">\(\texttt{zi_}\)</span> (<span class="math inline">\(\texttt{zi_art}\)</span>). We can see that there is good evidence for overdispersion: the <span class="math inline">\(\texttt{units}\)</span> variance for the Poisson process (<span class="math inline">\(\texttt{traitart.units}\)</span>) is far from zero and several of the covariates seem to impact the Poisson mean. However, note that the log odds of a zero belonging to the zero-inflation process is extremely small (-7.14) - essentially a probability of zero - and the mixing is very poor for this parameter which has a very low effective sample size. We can see this visually by looking at the MCMC traces from the model (Figure <a href="multi.html#fig:mcmc-zip">7.23</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:mcmc-zip"></span>
+<img src="_bookdown_files/fig/mcmc-zip-1.png" alt="MCMC traces for the first four fixed effects from the zero-inflated Poisson model `m.zip` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the zero-inflation." width="672" />
 <p class="caption">
-Figure 7.22: Posterior distribution of fixed effects from model <code>m5d.3</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the zero-truncated Poisson process and trait 2 (<span class="math inline">\(\texttt{hu.art}\)</span>) is the binary trait zero or non-zero.
+Figure 7.23: MCMC traces for the first four fixed effects from the zero-inflated Poisson model <code>m.zip</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the zero-inflation.
 </p>
 </div>
-<p>The interpretation of the model is slightly different. Fitting just an intercept in the hurdle model implies that the proportion of zeros observed across different combinations of those fixed effects fitted for the Poisson process is constant. Our 95% credible intervals for this proportion is (See section <a href="#pred-sec"><strong>??</strong></a>):</p>
-<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="multi.html#cb292-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb292-2"><a href="multi.html#cb292-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">2</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
-<pre><code>##          lower     upper
-## var1 0.2669255 0.3255151
-## attr(,&quot;Probability&quot;)
-## [1] 0.95</code></pre>
-<p>and we can compare this to the predicted number of zero’s from the Poisson process if it had not been zero-truncated:</p>
-<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="multi.html#cb294-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
-<pre><code>##          lower     upper
-## var1 0.1359227 0.3528413
-## attr(,&quot;Probability&quot;)
-## [1] 0.95</code></pre>
-<p>The credible intervals largely overlap, strongly suggesting a standard Poisson model would be adequate. However, our prediction for the number of zero’s that would arise form a non-truncated Poisson process only involved the intercept term. This prediction therefore pertains to the number of articles published by single women with no young children who obtained their Ph.D’s from departments scoring zero for prestige (<code>phd</code>) and whose mentors had published nothing in the previous 3 years. Our equivalent prediction for men is a little lower</p>
-<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="multi.html#cb296-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.3</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
-<pre><code>##           lower     upper
-## var1 0.09385229 0.2910297
-## attr(,&quot;Probability&quot;)
-## [1] 0.95</code></pre>
-<p>suggesting that perhaps the number of zero’s is greater than we expected for this group. However, this may just be a consequence of us fixing the proportion of zero’s to be constant across these groups. We can relax this assumption by fitting a separate term for the proportion of zeros for men:</p>
-<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="multi.html#cb298-1" tabindex="-1"></a>m5d<span class="fl">.4</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)<span class="sc">:</span>fem <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>mar <span class="sc">+</span></span>
-<span id="cb298-2"><a href="multi.html#cb298-2" tabindex="-1"></a>    <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>kid5 <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>phd <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>ment, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb298-3"><a href="multi.html#cb298-3" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.m5d<span class="fl">.1</span>, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>)</span></code></pre></div>
-<p>which reveals that although this proportion is expected to be (slightly) smaller:</p>
-<div class="sourceCode" id="cb299"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb299-1"><a href="multi.html#cb299-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>((m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">2</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">4</span>])<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
-<pre><code>##          lower     upper
-## var1 0.2312673 0.3072587
-## attr(,&quot;Probability&quot;)
-## [1] 0.95</code></pre>
-<p>the proportion of zeros expected for men is probably still less than what we expect from a non-truncated Poisson process for which the estimates have changed very little:</p>
-<div class="sourceCode" id="cb301"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb301-1"><a href="multi.html#cb301-1" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">exp</span>(m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">1</span>] <span class="sc">+</span> m5d<span class="fl">.4</span><span class="sc">$</span>Sol[, <span class="dv">3</span>] <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> m5d<span class="fl">.4</span><span class="sc">$</span>VCV[, <span class="dv">1</span>])))</span></code></pre></div>
-<pre><code>##           lower    upper
-## var1 0.07276588 0.248731
-## attr(,&quot;Probability&quot;)
-## [1] 0.95</code></pre>
-<p>This highlights one of the disadvantages of hurdle models. If explanatory variables have been fitted that affect the expectation of the Poisson process then this implies that the proportion of zero’s observed will also vary across these same explanatory variables, even in the absence of zero-inflation. It may then be necessary to fit an equally complicated model for both processes even though a single parameter would suffice in a ZIP model. However, in the absence of zero-inflation the intercept of the zero-inflation process in a ZIP model is <span class="math inline">\(-\infty\)</span> on the logit scale causing numerical and inferential problems. An alternative type of model are zero-altered models.</p>
+<p>The reason that the model mixes so poorly for the zero-inflation parameter is that there is essentially no zero-inflation. We have complete separation where the likelihood is favouring estimates of the probability that are close to zero and therefore minus infinity on the logit scale (Section <a href="glm.html#sec-complete-separation">3.9</a>). Before worrying about zero-inflation I usually fit a standard (over-dispersed) Poisson:</p>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="multi.html#cb290-1" tabindex="-1"></a>prior.odp <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
+<span id="cb290-2"><a href="multi.html#cb290-2" tabindex="-1"></a>m.odp <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.odp,</span>
+<span id="cb290-3"><a href="multi.html#cb290-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>)</span></code></pre></div>
+<p>and then use posterior predictive checks to see how many zero’s you would expect under this simpler model:</p>
+<div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="multi.html#cb291-1" tabindex="-1"></a><span class="co"># simulate from model</span></span>
+<span id="cb291-2"><a href="multi.html#cb291-2" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="fu">simulate</span>(m.odp, <span class="at">nsim =</span> <span class="dv">1000</span>)</span>
+<span id="cb291-3"><a href="multi.html#cb291-3" tabindex="-1"></a></span>
+<span id="cb291-4"><a href="multi.html#cb291-4" tabindex="-1"></a><span class="co"># count the number of zeros for each simulated data set</span></span>
+<span id="cb291-5"><a href="multi.html#cb291-5" tabindex="-1"></a>nzsim <span class="ot">&lt;-</span> <span class="fu">colSums</span>(ysim <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb291-6"><a href="multi.html#cb291-6" tabindex="-1"></a></span>
+<span id="cb291-7"><a href="multi.html#cb291-7" tabindex="-1"></a><span class="co"># plot posterior predictive distribution with observed value</span></span>
+<span id="cb291-8"><a href="multi.html#cb291-8" tabindex="-1"></a><span class="fu">hist</span>(nzsim, <span class="at">main =</span> <span class="st">&quot;&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Number of zeros&quot;</span>)</span>
+<span id="cb291-9"><a href="multi.html#cb291-9" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fu">sum</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>), <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:ppzi"></span>
+<img src="_bookdown_files/fig/ppzi-1.png" alt="Posterior predictive distribution from an (overdispersed) Poisson model fitted to the number of biochemistry students (out of 915) that publish no papers during their PhD. The red line is the observed number." width="672" />
+<p class="caption">
+Figure 7.24: Posterior predictive distribution from an (overdispersed) Poisson model fitted to the number of biochemistry students (out of 915) that publish no papers during their PhD. The red line is the observed number.
+</p>
 </div>
-<div id="ZAP" class="section level2 hasAnchor" number="7.9">
-<h2><span class="header-section-number">7.9</span> Zero-altered Models<a href="multi.html#ZAP" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The simpler model seems to be entirely consistent with the number of zeros (Figure <a href="multi.html#fig:ppzi">7.24</a>) suggesting that a zero-inflated model may not be required.</p>
+</div>
+<div id="Hurdle" class="section level3 hasAnchor" number="7.7.2">
+<h3><span class="header-section-number">7.7.2</span> Hurdle and zero-altered models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In hurdle and zero-altered models, it is the probability of a zero versus non-zero that is modelled, rather than the probability a zero belongs to the zero-inflation process (Figure <a href="multi.html#fig:zm-poisson">7.20</a>). Consequently, complete separation only occurs when no zeros are observed and the probability tends to zero. The equivalent model to <span class="math inline">\(\texttt{m.zip}\)</span> but using a hurdle distribution therefore behaves better</p>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="multi.html#cb292-1" tabindex="-1"></a>m.hup <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span></span>
+<span id="cb292-2"><a href="multi.html#cb292-2" tabindex="-1"></a>    ment), <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.zip, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>,</span>
+<span id="cb292-3"><a href="multi.html#cb292-3" tabindex="-1"></a>    <span class="at">longer =</span> <span class="dv">10</span>)</span>
+<span id="cb292-4"><a href="multi.html#cb292-4" tabindex="-1"></a><span class="fu">summary</span>(m.hup)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 30001:129901
+##  Thinning interval  = 100
+##  Sample size  = 1000 
+## 
+##  DIC: 3105.693 
+## 
+##  R-structure:  ~idh(trait):units
+## 
+##                   post.mean l-95% CI u-95% CI eff.samp
+## traitart.units       0.3529   0.2503   0.4621    753.2
+## traithu_art.units    1.0000   1.0000   1.0000      0.0
+## 
+##  Location effects: art ~ trait - 1 + at.level(trait, 1):(fem + mar + kid5 + phd + ment) 
+## 
+##                               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## traitart                       0.144434 -0.163386  0.462698   1000.0  0.362    
+## traithu_art                   -1.017939 -1.175358 -0.845119   1000.0 &lt;0.001 ***
+## at.level(trait, 1):femMen      0.202624  0.031164  0.374296    804.3  0.014 *  
+## at.level(trait, 1):marMarried  0.086344 -0.110559  0.273742   1187.1  0.358    
+## at.level(trait, 1):kid5       -0.132514 -0.252916 -0.003691   1000.0  0.034 *  
+## at.level(trait, 1):phd         0.013413 -0.070314  0.095427   1000.0  0.736    
+## at.level(trait, 1):ment        0.019536  0.013008  0.026733   1000.0 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Compared to the zero-inflated traces plotted in Figure <a href="multi.html#fig:mcmc-zip">7.23</a> the equivalent parameters in the hurdle model show better mixing (Figure <a href="multi.html#fig:mcmc-hup">7.25</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:mcmc-hup"></span>
+<img src="_bookdown_files/fig/mcmc-hup-1.png" alt="MCMC traces for the first four fixed effects from the hurdle Poisson model `m.hup` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the probability of being zero." width="672" />
+<p class="caption">
+Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisson model <code>m.hup</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the probability of being zero.
+</p>
+</div>
+<p>However, the interpretation of the hurdle model is slightly different than the zero-inflated model. In the hurdle model, fitting just an intercept for the zero-modification process implies that the proportion of zeros observed across different combinations of fixed effects is constant. Our 95% credible intervals for this proportion is (See section <a href="glm.html#binom-pred-sec">3.6.2</a>):</p>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="multi.html#cb294-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb294-2"><a href="multi.html#cb294-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m.hup<span class="sc">$</span>Sol[, <span class="st">&quot;traithu_art&quot;</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<pre><code>##          lower     upper
+## var1 0.2642268 0.3233664
+## attr(,&quot;Probability&quot;)
+## [1] 0.95</code></pre>
+<p>While this is consistent with the overall frequency of zeros in the data set it is unclear whether it is consistent with the observed frequency of zeros across different groups of students. For example, the frequency of zero’s is perhaps lower in men than women and increases with the number of children under 5 (there is only one observation for a women with 3 children under 5).</p>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="multi.html#cb296-1" tabindex="-1"></a><span class="fu">tapply</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>, <span class="fu">list</span>(bioChemists<span class="sc">$</span>fem, bioChemists<span class="sc">$</span>kid5), mean)</span></code></pre></div>
+<pre><code>##               0         1         2         3
+## Men   0.2441860 0.2877698 0.3170732 0.4666667
+## Women 0.3255132 0.3214286 0.4347826 0.0000000</code></pre>
+<p>In standard and zero-inflated Poisson models, these frequencies would be expected to change depending on how the predictors affect the mean number of papers (including zeros). For example, when we fitted the standard Poisson model to these data the predicted frequency of zeros is:</p>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="multi.html#cb298-1" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="fu">simulate</span>(m.odp, <span class="at">nsim =</span> <span class="dv">1000</span>) <span class="sc">==</span> <span class="dv">0</span></span>
+<span id="cb298-2"><a href="multi.html#cb298-2" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="fu">apply</span>(ysim, <span class="dv">1</span>, sum)<span class="sc">/</span><span class="dv">1000</span></span>
+<span id="cb298-3"><a href="multi.html#cb298-3" tabindex="-1"></a></span>
+<span id="cb298-4"><a href="multi.html#cb298-4" tabindex="-1"></a><span class="fu">tapply</span>(ysim, <span class="fu">list</span>(bioChemists<span class="sc">$</span>fem, bioChemists<span class="sc">$</span>kid5), mean)</span></code></pre></div>
+<pre><code>##               0         1         2         3
+## Men   0.2477946 0.2725324 0.3202317 0.4167333
+## Women 0.3216804 0.3499107 0.3873043 0.4310000</code></pre>
+<p>which largely recapitulates what is seen in the data. We can relax the assumption of a fixed proportion of zeros by fitting the same predictors for the zero-modified process</p>
+<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="multi.html#cb300-1" tabindex="-1"></a>m.hup2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> trait<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
+<span id="cb300-2"><a href="multi.html#cb300-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.zip, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>, <span class="at">longer =</span> <span class="dv">10</span>)</span>
+<span id="cb300-3"><a href="multi.html#cb300-3" tabindex="-1"></a><span class="fu">summary</span>(m.hup2)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 30001:129901
+##  Thinning interval  = 100
+##  Sample size  = 1000 
+## 
+##  DIC: 3047.146 
+## 
+##  R-structure:  ~idh(trait):units
+## 
+##                   post.mean l-95% CI u-95% CI eff.samp
+## traitart.units       0.3574   0.2556   0.4811    708.9
+## traithu_art.units    1.0000   1.0000   1.0000      0.0
+## 
+##  Location effects: art ~ trait - 1 + trait:(fem + mar + kid5 + phd + ment) 
+## 
+##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## traitart                0.342904  0.020018  0.656384    744.2  0.034 *  
+## traithu_art            -0.283081 -0.978961  0.449033   1000.0  0.452    
+## traitart:femWomen      -0.200897 -0.370564 -0.025107   1000.0  0.016 *  
+## traithu_art:femWomen    0.295391 -0.076915  0.660072   1000.0  0.118    
+## traitart:marMarried     0.084553 -0.098330  0.284480    891.4  0.390    
+## traithu_art:marMarried -0.399522 -0.775345  0.042801   1000.0  0.060 .  
+## traitart:kid5          -0.128080 -0.253677 -0.006791   1000.0  0.032 *  
+## traithu_art:kid5        0.348513  0.084561  0.583487   1000.0  0.004 ** 
+## traitart:phd            0.014379 -0.062054  0.102265    744.7  0.746    
+## traithu_art:phd        -0.031943 -0.226316  0.135083    889.3  0.736    
+## traitart:ment           0.019563  0.013140  0.027176   1000.0 &lt;0.001 ***
+## traithu_art:ment       -0.093599 -0.123049 -0.065413    552.1 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>However, the fully parameterised model involves almost doubling the number of location parameters. This highlights one of the disadvantages of hurdle models. If explanatory variables have been fitted that affect the expectation of the Poisson process then this implies that the proportion of zero’s observed will also vary across these same explanatory variables, even in the absence of zero-inflation. It may then be necessary to fit an equally complicated model for both processes even though no additional parameter would be required if the model was fitted as a standard Poisson. Even if there was an excess of zero’s, a single intercept parameter may suffice in a zero-inflated model as this would simply …</p>
+<p>However, in the absence of zero-inflation the intercept of the zero-inflation process in a ZIP model is <span class="math inline">\(-\infty\)</span> on the logit scale causing numerical and inferential problems. An alternative type of model are zero-altered models.</p>
+</div>
+</div>
+<div id="ZAP" class="section level2 hasAnchor" number="7.8">
+<h2><span class="header-section-number">7.8</span> Zero-altered Models<a href="multi.html#ZAP" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Zero-altered Poisson (ZAP) models are identical to Poisson-hurdle models except a complementary log-log link is used instead of the logit link when modelling the proportion of zeros. However for reasons that will become clearer below, the zero-altered process (<code>za</code>) is predicting non-zeros as opposed to the ZIP and hurdle-Poisson models where it is
 the number of zeros. The likelihood is:</p>
 <p><span class="math display">\[\begin{array}{rl}
@@ -1472,36 +1564,36 @@ Pr(y | y&gt;0) =&amp; \texttt{dpois}(y, \texttt{exp}(l))\\
 \end{array}\]</span></p>
 <p>which is equivalent to a standard Poisson model.</p>
 <p>We can then test for zero-flation by constraining the overdispersion to be the same for both process using a <code>trait</code> by <code>units</code> interaction in the R-structure, and by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-flation, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:</p>
-<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="multi.html#cb303-1" tabindex="-1"></a>m5d<span class="fl">.5</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
-<span id="cb303-2"><a href="multi.html#cb303-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>)</span>
-<span id="cb303-3"><a href="multi.html#cb303-3" tabindex="-1"></a><span class="fu">summary</span>(m5d<span class="fl">.5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="multi.html#cb302-1" tabindex="-1"></a>m.zap <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
+<span id="cb302-2"><a href="multi.html#cb302-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>)</span>
+<span id="cb302-3"><a href="multi.html#cb302-3" tabindex="-1"></a><span class="fu">summary</span>(m.zap)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3038.879 
+##  DIC: 3042.107 
 ## 
 ##  R-structure:  ~trait:units
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp
-## trait:units    0.3644   0.2541   0.4827    50.15
+## trait:units    0.3664   0.2481   0.4771    35.05
 ## 
 ##  Location effects: art ~ trait * (fem + mar + kid5 + phd + ment) 
 ## 
 ##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## (Intercept)             0.336746 -0.002718  0.644566    272.8  0.044 *  
-## traitza_art            -0.527132 -1.109418  0.010963    189.4  0.058 .  
-## femWomen               -0.201442 -0.367876 -0.044271    350.2  0.006 ** 
-## marMarried              0.078166 -0.118030  0.262194    262.6  0.402    
-## kid5                   -0.125775 -0.264035 -0.005271    199.9  0.066 .  
-## phd                     0.017631 -0.068209  0.096252    307.5  0.692    
-## ment                    0.019415  0.012902  0.027132    500.3 &lt;0.001 ***
-## traitza_art:femWomen    0.048930 -0.220809  0.288344    216.1  0.720    
-## traitza_art:marMarried  0.141315 -0.171269  0.475263    201.6  0.376    
-## traitza_art:kid5       -0.080008 -0.266962  0.128955    181.7  0.424    
-## traitza_art:phd         0.007655 -0.137684  0.129547    227.9  0.928    
-## traitza_art:ment        0.028197  0.013272  0.044048    140.1 &lt;0.001 ***
+## (Intercept)             0.341020 -0.045073  0.664034   262.50  0.074 .  
+## traitza_art            -0.527418 -1.047721  0.029294   169.59  0.062 .  
+## femWomen               -0.191959 -0.364142 -0.020190   172.32  0.028 *  
+## marMarried              0.091965 -0.111934  0.281095   265.12  0.358    
+## kid5                   -0.130474 -0.264961 -0.004639   237.95  0.052 .  
+## phd                     0.012338 -0.073279  0.098821   297.55  0.774    
+## ment                    0.019447  0.012135  0.026002   478.43 &lt;0.001 ***
+## traitza_art:femWomen    0.030178 -0.264980  0.314898   157.03  0.828    
+## traitza_art:marMarried  0.129060 -0.174090  0.446947   206.08  0.426    
+## traitza_art:kid5       -0.066351 -0.270879  0.140204   156.28  0.576    
+## traitza_art:phd         0.010181 -0.121807  0.151097   198.36  0.910    
+## traitza_art:ment        0.028194  0.011455  0.046355    97.07 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>we can see from this that the more papers a mentor produces, the more zero-deflation (or conversely the less papers a mentor produces, the more zero-inflation).</p>

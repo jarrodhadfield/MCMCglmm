@@ -106,9 +106,12 @@ tab:puffinc
 fig:tufted-sim4
 tab:puffind
 fig:tufted-sim5
-fig:ZIP
-fig:PPZIP
-fig:HU
+fig:zm-poisson
+fig:art
+fig:art2
+fig:mcmc-zip
+fig:ppzi
+fig:mcmc-hup
 eq:rs-Eq
 eq:pyl-Eq
 eq:pyl2-Eq
@@ -163,7 +166,7 @@ bernoulli-sec
 probit-link
 ordinal-sec
 non-zero-binomial-data
-complete-separation
+sec-complete-separation
 gelman-prior-sec
 ranef
 GLMM
@@ -211,8 +214,8 @@ wide-versus-long-format
 covu-sec
 scaled-linear-predictors-texttttheta_scale
 multinomial-models
-zero-inflated-models
-posterior-predictive-checks
+zero-modified-poisson-models
+zero-inflated-poisson
 Hurdle
 ZAP
 pedigree

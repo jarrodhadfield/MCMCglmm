@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-02-25" />
+<meta name="date" content="2026-03-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -224,7 +224,7 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="3.7" data-path="glm.html"><a href="glm.html#ordinal-sec"><i class="fa fa-check"></i><b>3.7</b> Ordinal Data</a></li>
 <li class="chapter" data-level="3.8" data-path="glm.html"><a href="glm.html#non-zero-binomial-data"><i class="fa fa-check"></i><b>3.8</b> Non-zero Binomial Data</a></li>
-<li class="chapter" data-level="3.9" data-path="glm.html"><a href="glm.html#complete-separation"><i class="fa fa-check"></i><b>3.9</b> Complete Separation</a>
+<li class="chapter" data-level="3.9" data-path="glm.html"><a href="glm.html#sec-complete-separation"><i class="fa fa-check"></i><b>3.9</b> Complete Separation</a>
 <ul>
 <li class="chapter" data-level="3.9.1" data-path="glm.html"><a href="glm.html#gelman-prior-sec"><i class="fa fa-check"></i><b>3.9.1</b> The <span class="citation">Gelman, Jakulin, et al. (2008)</span> prior</a></li>
 </ul></li>
@@ -296,12 +296,12 @@ div.csl-indent {
 <li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#covu-sec"><i class="fa fa-check"></i><b>7.4</b> Covariances between random and residual terms (<span class="math inline">\(\texttt{covu}\)</span>)</a></li>
 <li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#scaled-linear-predictors-texttttheta_scale"><i class="fa fa-check"></i><b>7.5</b> Scaled linear predictors: <span class="math inline">\(\texttt{theta_scale}\)</span></a></li>
 <li class="chapter" data-level="7.6" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.6</b> Multinomial Models</a></li>
-<li class="chapter" data-level="7.7" data-path="multi.html"><a href="multi.html#zero-inflated-models"><i class="fa fa-check"></i><b>7.7</b> Zero-inflated Models</a>
+<li class="chapter" data-level="7.7" data-path="multi.html"><a href="multi.html#zero-modified-poisson-models"><i class="fa fa-check"></i><b>7.7</b> Zero-modified Poisson Models</a>
 <ul>
-<li class="chapter" data-level="7.7.1" data-path="multi.html"><a href="multi.html#posterior-predictive-checks"><i class="fa fa-check"></i><b>7.7.1</b> Posterior predictive checks</a></li>
+<li class="chapter" data-level="7.7.1" data-path="multi.html"><a href="multi.html#zero-inflated-poisson"><i class="fa fa-check"></i><b>7.7.1</b> Zero-inflated Poisson</a></li>
+<li class="chapter" data-level="7.7.2" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.7.2</b> Hurdle and zero-altered models</a></li>
 </ul></li>
-<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.8</b> Hurdle Models</a></li>
-<li class="chapter" data-level="7.9" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.9</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.8</b> Zero-altered Models</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
 <ul>
@@ -910,8 +910,8 @@ Figure 3.16: Probability of seeing at least one infection (<span class="math inl
 </div>
 <p>If the data set was larger and/or variation in the pool size was greater, there may be sufficient information to justify trying to estimate the residual variance, rather than fixing it to one. To see where the information comes from first imagine that you have information on samples all with a pool-size of 1. You could jut average you the resulting zeros and ones to get an estimate of <span class="math inline">\(P_1\)</span> where the subscript designates the size of the pool for which the probability of at least one infection is calculated. Even if the probability of infection varied over individuals, the average probability <span class="math inline">\(E[p]\)</span> is equal to <span class="math inline">\(P_1\)</span>, as we saw when we determined why variation in the probability cannot be estimated with standard Bernoulli data. Let’s then imagine we move to pool sizes of 2. <span class="math inline">\(P_2\)</span> (the probability of at least one success in a pool of 2) is then <span class="math inline">\(E[1-(1-p)^2]\)</span>. If there is no variation in <span class="math inline">\(p\)</span> then <span class="math inline">\(P_2=1-(1-P_1)^2\)</span> since <span class="math inline">\(p\)</span> is a constant and equal to <span class="math inline">\(P_1\)</span>. However, when there is variation in <span class="math inline">\(p\)</span> the non-linearity in the function (i.e. <span class="math inline">\((1-p)^2\)</span>) means that <span class="math inline">\(E[1-(1-p)^2]\)</span> will deviate from <span class="math inline">\(1-(1-E[p])^2=1-(1-P_1)^2\)</span>: we expect the the number of successful pools of size 2 to be less than that predicted from estimating <span class="math inline">\(p\)</span> from pools of size 1<a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a>. Consequently, the rate at which <span class="math inline">\(P\)</span> asymptotes with increasing pool-size (as seen in Figure <a href="glm.html#fig:nzbinom">3.16</a>) provides information about how much variation in <span class="math inline">\(p\)</span> exists.</p>
 </div>
-<div id="complete-separation" class="section level2 hasAnchor" number="3.9">
-<h2><span class="header-section-number">3.9</span> Complete Separation<a href="glm.html#complete-separation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="sec-complete-separation" class="section level2 hasAnchor" number="3.9">
+<h2><span class="header-section-number">3.9</span> Complete Separation<a href="glm.html#sec-complete-separation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>One potential issue that can occur in GLM is something known as complete separation or the extreme category problem. While it can occur for any distribution which is discrete, it is most commonly seen when the response is Bernoulli. It occurs when the predictors perfectly predict the outcome. For example, in Section <a href="glm.html#bernoulli-sec">3.6.3</a> we generated Bernoulli data for each photo by assessing whether the mean score was greater than or less than five. Photo <span class="math inline">\(\texttt{type}\)</span> is a very good predictor of the outcome, but not perfect:</p>
 <div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="glm.html#cb118-1" tabindex="-1"></a><span class="fu">table</span>(<span class="at">mean5 =</span> Grumpy<span class="sc">$</span>mean5, <span class="at">type =</span> Grumpy<span class="sc">$</span>type)</span></code></pre></div>
 <pre><code>##        type
@@ -940,7 +940,7 @@ Figure 3.16: Probability of seeing at least one infection (<span class="math inl
 ## AIC: 33.767
 ## 
 ## Number of Fisher Scoring iterations: 17</code></pre>
-<p>The coefficient for <span class="math inline">\(\texttt{typehappy}\)</span> now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. If we assess significance using Fisher’s exact test we get:</p>
+<p>The coefficient for <span class="math inline">\(\texttt{typehappy}\)</span> now has a huge standard error and the p-value is close to one, despite being a very good predictor of the outcome. This is known as the <span class="citation">Hauck Jr and Donner (<a href="#ref-Hauck.1977">1977</a>)</span> effect. If we assess significance using Fisher’s exact test we get:</p>
 <div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="glm.html#cb122-1" tabindex="-1"></a><span class="fu">fisher.test</span>(<span class="fu">table</span>(data.cs<span class="sc">$</span>mean5, data.cs<span class="sc">$</span>type))</span></code></pre></div>
 <pre><code>## 
 ##  Fisher&#39;s Exact Test for Count Data
@@ -1022,6 +1022,9 @@ Diggle, P., P. Heagerty, K. Liang, and S. Zeger. 2004. <em>Analysis of Longitudi
 </div>
 <div id="ref-Gelman.2008a" class="csl-entry">
 Gelman, A., A. Jakulin, M. G. Pittau, and Y. Su. 2008. <span>“A Weakly Informative Default Prior Distribution for Logistic and Other Regression Models.”</span>
+</div>
+<div id="ref-Hauck.1977" class="csl-entry">
+Hauck Jr, Walter W, and Allan Donner. 1977. <span>“Wald’s Test as Applied to Hypotheses in Logit Analysis.”</span> <em>Journal of the American Statistical Association</em> 72 (360a): 851–53.
 </div>
 <div id="ref-Hinde.1982" class="csl-entry">
 Hinde, John. 1982. <span>“Compound <span>Poisson</span> Regression Models.”</span> In <em>Glim 82: Proceedings of the International Conference on Generalised Linear Models</em>, 109–21. Springer.
