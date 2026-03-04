@@ -1095,7 +1095,7 @@ Generally, the model seems to predict these quantities well, although the correl
 
 ## Zero-modified Poisson Models
 
-A range of distributions are available for dealing with data where the non-zero counts conform to a Poisson distribution but the frequency of zeros is either too high or too low. The zero-truncated Poisson (`ztpoisson`) is the most extreme and is for situations where zeros are entirely missing. Three other distributions provide greater flexibility with the zero-inflated Poisson (`zipoisson`) allowing an excess of zeros and the hurdle Poisson (`hupoisson`) and the zero-altered Poisson (`zapoisson`) allowing both excesses and deficits. For these three distributions each data point is associated with two latent variables. The first latent variable is associated with a Poisson distribution and the second latent variable is associated with a Bernoulli distribution. For zero-inflated Poisson models the first latent variable specifies a standard Poisson, and the second latent variable models the probability that a zero belongs to this Poisson (failure) or is from some other process (success). The probability is modelled with logit link. For the hurdle and zero-altered Poissons, the first latent variable specifies a zero-truncated Poisson, and the second latent variable models the probability that an observation is a zero (success) or not (failure). For the hurdle Poisson the probability is modelled with logit link whereas with for the zero-altered Poisson a complementary log-log link is used. Figure \@ref(fig:zm-poisson) provides a graphical representation of these distributions.
+A range of distributions are available for dealing with data where the non-zero counts conform to a Poisson distribution but the frequency of zeros is either too high or too low. The zero-truncated Poisson (`ztpoisson`) is the most extreme and is for situations where zeros are entirely missing. Three other distributions provide greater flexibility with the zero-inflated Poisson (`zipoisson`) allowing an excess of zeros and the hurdle Poisson (`hupoisson`) and the zero-altered Poisson (`zapoisson`) allowing both excesses and deficits. For these three distributions each data point is associated with two latent variables. The first latent variable is associated with a Poisson distribution and the second latent variable is associated with a Bernoulli distribution. For zero-inflated Poisson models the first latent variable specifies a standard Poisson, and the second latent variable models the probability that a zero belongs to this Poisson (failure) or is from some other process (success). The probability is modelled with logit link. For the hurdle and zero-altered Poissons, the first latent variable specifies a zero-truncated Poisson, and the second latent variable models the probability that an observation is a zero or not. For the hurdle Poisson a zero is a success and the probability is modelled with logit link. For the zero-altered Poisson a non-zero is a success and the complementary log-log link is used. Figure \@ref(fig:zm-poisson) provides a graphical representation of these distributions.
 
 
 ```{r zm-poisson, echo=FALSE, include=TRUE, fig.cap="", fig.width=7, fig.height=5, fig.cap="Probability mass function for a zero-modified Poisson. The blue and yellow bars combined represent a Poisson distribution with a mean of three. The red bar represents the excess zeros compared to what is expected under the Poisson (in yellow). The blue bars alone represent a zero-truncated distribution. In zero-inflated models, the first latent variable is the mean of the Poisson (blue and yellow bars combined) and the second latent variable models the probability of a zero being in the red category versus the yellow. In hurdle and zero-altered  models, the first latent variable is the mean of a zero-truncated Poisson (blue bars) and the second latent variable models the probability of a zero (red and yellow bars combined) versus non-zero (blue bars)."}
@@ -1243,7 +1243,7 @@ abline(v=sum(bioChemists$art==0), col="red", lwd=2)
 
 The simpler model seems to be entirely consistent with the number of zeros (Figure \@ref(fig:ppzi)) suggesting that a zero-inflated model may not be required.
 
-### Hurdle and zero-altered models {#Hurdle}
+### Hurdle Poisson models {#Hurdle}
 
 In hurdle and zero-altered models, it is the probability of a zero versus non-zero that is modelled, rather than the probability a zero belongs to the zero-inflation process (Figure \@ref(fig:zm-poisson)). Consequently, complete separation only occurs when no zeros are observed and the probability tends to zero. The equivalent model to $\texttt{m.zip}$ but using a hurdle distribution therefore behaves better
 
@@ -1289,40 +1289,35 @@ m.hup2<-MCMCglmm(art~trait-1+trait:(fem+mar+kid5+phd+ment), rcov=~idh(trait):uni
 summary(m.hup2)
 ```
 
-However, the fully parameterised model involves almost doubling the number of location parameters. This highlights one of the disadvantages of hurdle models. If explanatory variables have been fitted that affect the expectation of the Poisson process then this implies that the proportion of zero's observed will also vary across these same explanatory variables, even in the absence of zero-inflation. It may then be necessary to fit an equally complicated model for both processes even though no additional parameter would be required if the model was fitted as a standard Poisson. Even if there was an excess of zero's, a single intercept parameter may suffice in a zero-inflated model as this would simply ...
+However, the fully parameterised model involves almost doubling the number of location parameters. This highlights one of the disadvantages of hurdle models. If zeros do arise through the same process that generate the non-zero counts (either with zero-inflation or not) then the proportion of zero's observed across a set of explanatory variables will vary if those predictors affect the expectation of the Poisson. It may then be necessary to fit an equally complicated model for both processes even though no additional parameter would be required if the model was fitted as a standard Poisson and a single intercept parameter may suffice in a zero-inflated model if there were excess zeros. 
 
 
+## Zero-altered Poisson Models {#ZAP}
 
- However, in the absence of zero-inflation the intercept of the zero-inflation process in a ZIP model is $-\infty$ on the logit scale causing numerical and inferential problems. An alternative type of model are zero-altered models.
+Zero-altered Poisson (ZAP) models are identical to Poisson-hurdle models except the second latent variable models the probability of a non-zero (rather than a zero) and the complementary log-log link is used. The motivation behind this is that the standard Poisson can the become a special case of the zero-altered Poisson. With complementary log-log link, the probability of a zero is equal to $exp(-exp(l_2))$ where $l_2$ is the second latent variable. The probability of obtaining a zero from a Poisson distribution with mean $\lambda$ is $exp(-\lambda)$. Consequently, in a Poisson GLM with log-link the probability of a zero is $exp(-exp(l_1))$, where $l_1$ is the first latent variable. Applying the constraint that $l_1=l_2$ across all observations the zero-altered Poisson model is equivalent to the standard Poisson. In MCMCglmm, $l_1$ and $l_2$ cannot be constrained to be equal, because they must at least differ in their residual since each 'trait' must have a unique residual. Nevertheless, the residuals can be forced to have the same residual ($\texttt{unit}$) variance, although all of the information comes from the Poisson part.
 
 
-## Zero-altered Models {#ZAP}
-
-Zero-altered Poisson (ZAP) models are identical to Poisson-hurdle models except a complementary log-log link is used instead of the logit link when modelling the proportion of zeros. However for reasons that will become clearer below, the zero-altered process (`za`) is predicting non-zeros as opposed to the ZIP and hurdle-Poisson models where it is
-the number of zeros. The likelihood is:
-
-$$\begin{array}{rl}
-Pr(y=0) =& 1-\texttt{pexp}(\texttt{exp}(l_{2}))\\
-Pr(y | y>0) =& \texttt{pexp}(\texttt{exp}(l_{2}))\ast \texttt{dpois}(y, \texttt{exp}(l_{1}))/(1-\texttt{ppois}(0, \texttt{exp}(l_{1})))\\
-\end{array}$$
-
-since the inverse of the complementary log-log transformation is the distribution function of the extreme value (log-exponential) distribution.
-
-It happens that $\texttt{ppois}(0,\texttt{exp}(l)) = \texttt{dpois}(0,\texttt{exp}(l)) = 1-\texttt{pexp}(\texttt{exp}(l))$
-so that if $l = l_{1} = l_{2}$ then the likelihood reduces to:
-
-$$\begin{array}{rl}
-Pr(y=0) =& \texttt{dpois}(0,\texttt{exp}(l))\\
-Pr(y | y>0) =& \texttt{dpois}(y, \texttt{exp}(l))\\
-\end{array}$$
-
-which is equivalent to a standard Poisson model.
-
-We can then test for zero-flation by constraining the overdispersion to be the same for both process using a `trait` by `units` interaction in the R-structure, and by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-flation, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:
 
 ```{r echo=TRUE, cache=TRUE}
-m.zap<-MCMCglmm(art~trait*(fem +mar + kid5 + phd + ment), rcov=~trait:units, data=bioChemists, family="zapoisson")
-summary(m.zap)
+m.zap1<-MCMCglmm(art~fem+mar+kid5+phd+ment, rcov=~trait:units, data=bioChemists, family="zapoisson", prior=prior.odp, longer=10)
+summary(m.zap1)
+```
+
+
+
+
+```{r label=mzap1, echo=FALSE, include=TRUE, fig.cap="MCMC traces for the first four fixed effects from the hurdle Poisson model `m.hup` in which trait 1 ($\\texttt{art}$) is the Poisson process and trait 2 ($\\texttt{zi.art}$) is the probability of being zero.", fig.width=7, fig.height=8}
+
+mcmc.1<-as.mcmc(cbind(m.odp$Sol[,1:6], m.odp$VCV[,1]))
+mcmc.2<-as.mcmc(cbind(m.zap1$Sol[,1:6], m.zap1$VCV[,1]))
+plot(mcmc.list(mcmc.1, mcmc.2), density=FALSE)
+```
+
+We can then test for zero-modification by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-modification, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:
+
+```{r echo=TRUE, cache=TRUE}
+m.zap2<-MCMCglmm(art~trait*(fem +mar + kid5 + phd + ment), rcov=~trait:units, data=bioChemists, family="zapoisson")
+summary(m.zap2)
 ```
 
 we can see from this that the more papers a mentor produces, the more zero-deflation (or conversely the less papers a mentor produces, the more zero-inflation).
