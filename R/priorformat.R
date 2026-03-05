@@ -61,7 +61,11 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
        }
        if(!prior$covu){   
          if(any(dim(prior$V)!=sum(nfl))){ # check not performed for covu - checked outside of priorformat
-           stop("V is the wrong dimension for some prior$G/prior$R elements")
+           if(vtype=="idvm" & nrow(prior$V)==1 & ncol(prior$V)==1){
+              prior$V<-diag(prior$V[1,1], sum(nfl))
+           }else{ 
+              stop("V is the wrong dimension for some prior$G/prior$R elements")
+           }
          }
        }
        if(is.positive.definite(prior$V)==FALSE){
