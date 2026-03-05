@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-03-02" />
+<meta name="date" content="2026-03-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -299,18 +299,17 @@ div.csl-indent {
 <li class="chapter" data-level="7.7" data-path="multi.html"><a href="multi.html#zero-modified-poisson-models"><i class="fa fa-check"></i><b>7.7</b> Zero-modified Poisson Models</a>
 <ul>
 <li class="chapter" data-level="7.7.1" data-path="multi.html"><a href="multi.html#zero-inflated-poisson"><i class="fa fa-check"></i><b>7.7.1</b> Zero-inflated Poisson</a></li>
-<li class="chapter" data-level="7.7.2" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.7.2</b> Hurdle and zero-altered models</a></li>
+<li class="chapter" data-level="7.7.2" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.7.2</b> Hurdle Poisson models</a></li>
+<li class="chapter" data-level="7.7.3" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.7.3</b> Zero-altered Poisson Models</a></li>
 </ul></li>
-<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.8</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#zero-modified-binomial-models"><i class="fa fa-check"></i><b>7.8</b> Zero-modified Binomial Models</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
+<li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Structured Random Effects</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>8.1</b> Pedigree and phylogeny formats</a>
-<ul>
-<li class="chapter" data-level="8.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1.1</b> Pedigrees</a></li>
-<li class="chapter" data-level="8.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.1.2</b> Phylogenies</a></li>
-</ul></li>
-<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.2</b> The animal model and the phylogenetic mixed model</a></li>
+<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.2</b> Phylogenies</a></li>
+<li class="chapter" data-level="8.3" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.3</b> The animal model and the phylogenetic mixed model</a></li>
+<li class="chapter" data-level="8.4" data-path="pedigree.html"><a href="pedigree.html#general-correlation-matrices"><i class="fa fa-check"></i><b>8.4</b> General correlation matrices</a></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="measurement.html"><a href="measurement.html"><i class="fa fa-check"></i><b>9</b> Measurement Error, Meta-analysis an Missing Values</a>
 <ul>
@@ -973,7 +972,7 @@ Function
 </div>
 <div id="priors-for-corg-and-corgh-structures" class="section level2 hasAnchor" number="11.4">
 <h2><span class="header-section-number">11.4</span> Priors for <code>corg</code> and <code>corgh</code> structures<a href="technical-details.html#priors-for-corg-and-corgh-structures" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn40" class="footnote-ref" id="fnref40"><sup>40</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
+<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn41" class="footnote-ref" id="fnref41"><sup>41</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
 <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>; and <a href="#ref-Box.1973">Box and Tiao 1973</a>)</span>:</p>
 <p><span class="math display">\[\begin{array}{lr}
 Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, &amp; |r|&lt;1\\
@@ -1051,8 +1050,8 @@ Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <spa
 </div>
 <div class="footnotes">
 <hr />
-<ol start="40">
-<li id="fn40"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref40" class="footnote-back">↩︎</a></p></li>
+<ol start="41">
+<li id="fn41"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref41" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

@@ -112,6 +112,7 @@ fig:art2
 fig:mcmc-zip
 fig:ppzi
 fig:mcmc-hup
+fig:mzap1
 eq:rs-Eq
 eq:pyl-Eq
 eq:pyl2-Eq
@@ -218,11 +219,12 @@ zero-modified-poisson-models
 zero-inflated-poisson
 Hurdle
 ZAP
+zero-modified-binomial-models
 pedigree
-pedigree-and-phylogeny-formats
 pedigrees
 phylogenies
 the-animal-model-and-the-phylogenetic-mixed-model
+general-correlation-matrices
 measurement
 error-in-the-response
 meta-sec

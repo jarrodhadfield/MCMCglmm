@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-03-02" />
+<meta name="date" content="2026-03-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -299,18 +299,17 @@ div.csl-indent {
 <li class="chapter" data-level="7.7" data-path="multi.html"><a href="multi.html#zero-modified-poisson-models"><i class="fa fa-check"></i><b>7.7</b> Zero-modified Poisson Models</a>
 <ul>
 <li class="chapter" data-level="7.7.1" data-path="multi.html"><a href="multi.html#zero-inflated-poisson"><i class="fa fa-check"></i><b>7.7.1</b> Zero-inflated Poisson</a></li>
-<li class="chapter" data-level="7.7.2" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.7.2</b> Hurdle and zero-altered models</a></li>
+<li class="chapter" data-level="7.7.2" data-path="multi.html"><a href="multi.html#Hurdle"><i class="fa fa-check"></i><b>7.7.2</b> Hurdle Poisson models</a></li>
+<li class="chapter" data-level="7.7.3" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.7.3</b> Zero-altered Poisson Models</a></li>
 </ul></li>
-<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#ZAP"><i class="fa fa-check"></i><b>7.8</b> Zero-altered Models</a></li>
+<li class="chapter" data-level="7.8" data-path="multi.html"><a href="multi.html#zero-modified-binomial-models"><i class="fa fa-check"></i><b>7.8</b> Zero-modified Binomial Models</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Pedigrees and Phylogenies</a>
+<li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Structured Random Effects</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-and-phylogeny-formats"><i class="fa fa-check"></i><b>8.1</b> Pedigree and phylogeny formats</a>
-<ul>
-<li class="chapter" data-level="8.1.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1.1</b> Pedigrees</a></li>
-<li class="chapter" data-level="8.1.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.1.2</b> Phylogenies</a></li>
-</ul></li>
-<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.2</b> The animal model and the phylogenetic mixed model</a></li>
+<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.2</b> Phylogenies</a></li>
+<li class="chapter" data-level="8.3" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.3</b> The animal model and the phylogenetic mixed model</a></li>
+<li class="chapter" data-level="8.4" data-path="pedigree.html"><a href="pedigree.html#general-correlation-matrices"><i class="fa fa-check"></i><b>8.4</b> General correlation matrices</a></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="measurement.html"><a href="measurement.html"><i class="fa fa-check"></i><b>9</b> Measurement Error, Meta-analysis an Missing Values</a>
 <ul>
@@ -1338,7 +1337,7 @@ Figure 7.19: The histograms represent the posterior predictive distributions for
 </div>
 <div id="zero-modified-poisson-models" class="section level2 hasAnchor" number="7.7">
 <h2><span class="header-section-number">7.7</span> Zero-modified Poisson Models<a href="multi.html#zero-modified-poisson-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>A range of distributions are available for dealing with data where the non-zero counts conform to a Poisson distribution but the frequency of zeros is either too high or too low. The zero-truncated Poisson (<code>ztpoisson</code>) is the most extreme and is for situations where zeros are entirely missing. Three other distributions provide greater flexibility with the zero-inflated Poisson (<code>zipoisson</code>) allowing an excess of zeros and the hurdle Poisson (<code>hupoisson</code>) and the zero-altered Poisson (<code>zapoisson</code>) allowing both excesses and deficits. For these three distributions each data point is associated with two latent variables. The first latent variable is associated with a Poisson distribution and the second latent variable is associated with a Bernoulli distribution. For zero-inflated Poisson models the first latent variable specifies a standard Poisson, and the second latent variable models the probability that a zero belongs to this Poisson (failure) or is from some other process (success). The probability is modelled with logit link. For the hurdle and zero-altered Poissons, the first latent variable specifies a zero-truncated Poisson, and the second latent variable models the probability that an observation is a zero (success) or not (failure). For the hurdle Poisson the probability is modelled with logit link whereas with for the zero-altered Poisson a complementary log-log link is used. Figure <a href="multi.html#fig:zm-poisson">7.20</a> provides a graphical representation of these distributions.</p>
+<p>A range of distributions are available for dealing with data where the non-zero counts conform to a Poisson distribution but the frequency of zeros is either too high or too low. The zero-truncated Poisson (<code>ztpoisson</code>) is the most extreme and is for situations where zeros are entirely missing. Three other distributions provide greater flexibility with the zero-inflated Poisson (<code>zipoisson</code>) allowing an excess of zeros and the hurdle Poisson (<code>hupoisson</code>) and the zero-altered Poisson (<code>zapoisson</code>) allowing both excesses and deficits. For these three distributions each data point is associated with two latent variables. The first latent variable is associated with a Poisson distribution and the second latent variable is associated with a Bernoulli distribution. For zero-inflated Poisson models the first latent variable specifies a standard Poisson, and the second latent variable models the probability that a zero belongs to this Poisson (failure) or is from some other process (success). The probability is modelled with logit link. For the hurdle and zero-altered Poissons, the first latent variable specifies a zero-truncated Poisson, and the second latent variable models the probability that an observation is a zero or not. For the hurdle Poisson a zero is a success and the probability is modelled with logit link. For the zero-altered Poisson a non-zero is a success and the complementary log-log link is used. Figure <a href="multi.html#fig:zm-poisson">7.20</a> provides a graphical representation of these distributions.</p>
 <div class="figure"><span style="display:block;" id="fig:zm-poisson"></span>
 <img src="_bookdown_files/fig/zm-poisson-1.png" alt="Probability mass function for a zero-modified Poisson. The blue and yellow bars combined represent a Poisson distribution with a mean of three. The red bar represents the excess zeros compared to what is expected under the Poisson (in yellow). The blue bars alone represent a zero-truncated distribution. In zero-inflated models, the first latent variable is the mean of the Poisson (blue and yellow bars combined) and the second latent variable models the probability of a zero being in the red category versus the yellow. In hurdle and zero-altered  models, the first latent variable is the mean of a zero-truncated Poisson (blue bars) and the second latent variable models the probability of a zero (red and yellow bars combined) versus non-zero (blue bars)." width="672" />
 <p class="caption">
@@ -1451,7 +1450,7 @@ Figure 7.24: Posterior predictive distribution from an (overdispersed) Poisson m
 <p>The simpler model seems to be entirely consistent with the number of zeros (Figure <a href="multi.html#fig:ppzi">7.24</a>) suggesting that a zero-inflated model may not be required.</p>
 </div>
 <div id="Hurdle" class="section level3 hasAnchor" number="7.7.2">
-<h3><span class="header-section-number">7.7.2</span> Hurdle and zero-altered models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<h3><span class="header-section-number">7.7.2</span> Hurdle Poisson models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>In hurdle and zero-altered models, it is the probability of a zero versus non-zero that is modelled, rather than the probability a zero belongs to the zero-inflation process (Figure <a href="multi.html#fig:zm-poisson">7.20</a>). Consequently, complete separation only occurs when no zeros are observed and the probability tends to zero. The equivalent model to <span class="math inline">\(\texttt{m.zip}\)</span> but using a hurdle distribution therefore behaves better</p>
 <div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="multi.html#cb292-1" tabindex="-1"></a>m.hup <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span></span>
 <span id="cb292-2"><a href="multi.html#cb292-2" tabindex="-1"></a>    ment), <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.zip, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>,</span>
@@ -1543,60 +1542,82 @@ Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisso
 ## traithu_art:ment       -0.093599 -0.123049 -0.065413    552.1 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>However, the fully parameterised model involves almost doubling the number of location parameters. This highlights one of the disadvantages of hurdle models. If explanatory variables have been fitted that affect the expectation of the Poisson process then this implies that the proportion of zero’s observed will also vary across these same explanatory variables, even in the absence of zero-inflation. It may then be necessary to fit an equally complicated model for both processes even though no additional parameter would be required if the model was fitted as a standard Poisson. Even if there was an excess of zero’s, a single intercept parameter may suffice in a zero-inflated model as this would simply …</p>
-<p>However, in the absence of zero-inflation the intercept of the zero-inflation process in a ZIP model is <span class="math inline">\(-\infty\)</span> on the logit scale causing numerical and inferential problems. An alternative type of model are zero-altered models.</p>
+<p>However, the fully parameterised model involves almost doubling the number of location parameters. This highlights one of the disadvantages of hurdle models. If zeros do arise through the same process that generate the non-zero counts (either with zero-inflation or not) then the proportion of zero’s observed across a set of explanatory variables will vary if those predictors affect the expectation of the Poisson. It may then be necessary to fit an equally complicated model for both processes even though no additional parameter would be required if the model was fitted as a standard Poisson and a single intercept parameter may suffice in a zero-inflated model if there were excess zeros.</p>
 </div>
-</div>
-<div id="ZAP" class="section level2 hasAnchor" number="7.8">
-<h2><span class="header-section-number">7.8</span> Zero-altered Models<a href="multi.html#ZAP" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Zero-altered Poisson (ZAP) models are identical to Poisson-hurdle models except a complementary log-log link is used instead of the logit link when modelling the proportion of zeros. However for reasons that will become clearer below, the zero-altered process (<code>za</code>) is predicting non-zeros as opposed to the ZIP and hurdle-Poisson models where it is
-the number of zeros. The likelihood is:</p>
-<p><span class="math display">\[\begin{array}{rl}
-Pr(y=0) =&amp; 1-\texttt{pexp}(\texttt{exp}(l_{2}))\\
-Pr(y | y&gt;0) =&amp; \texttt{pexp}(\texttt{exp}(l_{2}))\ast \texttt{dpois}(y, \texttt{exp}(l_{1}))/(1-\texttt{ppois}(0, \texttt{exp}(l_{1})))\\
-\end{array}\]</span></p>
-<p>since the inverse of the complementary log-log transformation is the distribution function of the extreme value (log-exponential) distribution.</p>
-<p>It happens that <span class="math inline">\(\texttt{ppois}(0,\texttt{exp}(l)) = \texttt{dpois}(0,\texttt{exp}(l)) = 1-\texttt{pexp}(\texttt{exp}(l))\)</span>
-so that if <span class="math inline">\(l = l_{1} = l_{2}\)</span> then the likelihood reduces to:</p>
-<p><span class="math display">\[\begin{array}{rl}
-Pr(y=0) =&amp; \texttt{dpois}(0,\texttt{exp}(l))\\
-Pr(y | y&gt;0) =&amp; \texttt{dpois}(y, \texttt{exp}(l))\\
-\end{array}\]</span></p>
-<p>which is equivalent to a standard Poisson model.</p>
-<p>We can then test for zero-flation by constraining the overdispersion to be the same for both process using a <code>trait</code> by <code>units</code> interaction in the R-structure, and by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-flation, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:</p>
-<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="multi.html#cb302-1" tabindex="-1"></a>m.zap <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
-<span id="cb302-2"><a href="multi.html#cb302-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>)</span>
-<span id="cb302-3"><a href="multi.html#cb302-3" tabindex="-1"></a><span class="fu">summary</span>(m.zap)</span></code></pre></div>
+<div id="ZAP" class="section level3 hasAnchor" number="7.7.3">
+<h3><span class="header-section-number">7.7.3</span> Zero-altered Poisson Models<a href="multi.html#ZAP" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Zero-altered Poisson (ZAP) models are identical to Poisson hurdle models except the second latent variable models the probability of a non-zero (rather than a zero) and the complementary log-log link is used<a href="#fn40" class="footnote-ref" id="fnref40"><sup>40</sup></a>. The motivation behind this is that the standard Poisson can then become a special case of the zero-altered Poisson. With complementary log-log link, the probability of a zero is equal to <span class="math inline">\(exp(-exp(l_2))\)</span>, where <span class="math inline">\(l_2\)</span> is the second latent variable. The probability of obtaining a zero from a Poisson distribution with mean <span class="math inline">\(\lambda\)</span> is <span class="math inline">\(exp(-\lambda)\)</span>. Consequently, in a Poisson GLM with log-link, the probability of a zero is <span class="math inline">\(exp(-exp(l_1))\)</span>, where <span class="math inline">\(l_1\)</span> is the first latent variable. Applying the constraint that <span class="math inline">\(l_1=l_2\)</span> across all observations, the zero-altered Poisson model is equivalent to the standard Poisson. In MCMCglmm, <span class="math inline">\(l_1\)</span> and <span class="math inline">\(l_2\)</span> cannot be constrained to be equal because they must at least differ in their residual, since each ‘trait’ must have a unique residual. Nevertheless, the residuals can be forced to have the same residual (<span class="math inline">\(\texttt{unit}\)</span>) variance, although all of the information comes from the Poisson part.</p>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="multi.html#cb302-1" tabindex="-1"></a>m.zap1 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units, <span class="at">data =</span> bioChemists,</span>
+<span id="cb302-2"><a href="multi.html#cb302-2" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>, <span class="at">prior =</span> prior.odp, <span class="at">longer =</span> <span class="dv">10</span>)</span>
+<span id="cb302-3"><a href="multi.html#cb302-3" tabindex="-1"></a><span class="fu">summary</span>(m.zap1)</span></code></pre></div>
 <pre><code>## 
-##  Iterations = 3001:12991
-##  Thinning interval  = 10
+##  Iterations = 30001:129901
+##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3042.107 
+##  DIC: 3033.376 
 ## 
 ##  R-structure:  ~trait:units
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp
-## trait:units    0.3664   0.2481   0.4771    35.05
+## trait:units    0.4221   0.3235   0.5397    551.9
+## 
+##  Location effects: art ~ fem + mar + kid5 + phd + ment 
+## 
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)   0.09498 -0.15444  0.36050   1000.0  0.478    
+## femWomen     -0.19168 -0.34735 -0.06270   1000.0  0.004 ** 
+## marMarried    0.15026 -0.01676  0.30970   1000.0  0.066 .  
+## kid5         -0.17207 -0.27737 -0.07455    851.9 &lt;0.001 ***
+## phd           0.02810 -0.03254  0.09571   1000.0  0.396    
+## ment          0.02733  0.02081  0.03329   1000.0 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>If we plot the coefficients and <span class="math inline">\(\texttt{units}\)</span> variance for this model and compare it to the standard (overdispersed) Poisson we see that the posteriors are in close agreement, for all but the intercept (Figure <a href="multi.html#fig:mzap1">7.26</a>). The difference in intercept presumably arises because of the separate <span class="math inline">\(\txttt{unit}\)</span> effect for the two processes.</p>
+<div class="figure"><span style="display:block;" id="fig:mzap1"></span>
+<img src="_bookdown_files/fig/mzap1-1.png" alt="In red is are the MCMC traces for the fixed effects and $   exttt{units}$ variance from the zero-inflated Poisson model `m.zap1` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the probability of being zero. The MCMC traces in black are from the equivalent overdispersed Poisson model, `m.odp`." width="672" />
+<p class="caption">
+Figure 7.26: In red is are the MCMC traces for the fixed effects and $ exttt{units}$ variance from the zero-inflated Poisson model <code>m.zap1</code> in which trait 1 (<span class="math inline">\(\texttt{art}\)</span>) is the Poisson process and trait 2 (<span class="math inline">\(\texttt{zi.art}\)</span>) is the probability of being zero. The MCMC traces in black are from the equivalent overdispersed Poisson model, <code>m.odp</code>.
+</p>
+</div>
+<p>Consequently, we can test for zero-modification by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-modification, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:</p>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="multi.html#cb304-1" tabindex="-1"></a>m.zap2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
+<span id="cb304-2"><a href="multi.html#cb304-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.odp, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>, <span class="at">longer =</span> <span class="dv">10</span>)</span>
+<span id="cb304-3"><a href="multi.html#cb304-3" tabindex="-1"></a><span class="fu">summary</span>(m.zap2)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 30001:129901
+##  Thinning interval  = 100
+##  Sample size  = 1000 
+## 
+##  DIC: 3039.251 
+## 
+##  R-structure:  ~trait:units
+## 
+##             post.mean l-95% CI u-95% CI eff.samp
+## trait:units     0.367   0.2611   0.4843    405.3
 ## 
 ##  Location effects: art ~ trait * (fem + mar + kid5 + phd + ment) 
 ## 
 ##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## (Intercept)             0.341020 -0.045073  0.664034   262.50  0.074 .  
-## traitza_art            -0.527418 -1.047721  0.029294   169.59  0.062 .  
-## femWomen               -0.191959 -0.364142 -0.020190   172.32  0.028 *  
-## marMarried              0.091965 -0.111934  0.281095   265.12  0.358    
-## kid5                   -0.130474 -0.264961 -0.004639   237.95  0.052 .  
-## phd                     0.012338 -0.073279  0.098821   297.55  0.774    
-## ment                    0.019447  0.012135  0.026002   478.43 &lt;0.001 ***
-## traitza_art:femWomen    0.030178 -0.264980  0.314898   157.03  0.828    
-## traitza_art:marMarried  0.129060 -0.174090  0.446947   206.08  0.426    
-## traitza_art:kid5       -0.066351 -0.270879  0.140204   156.28  0.576    
-## traitza_art:phd         0.010181 -0.121807  0.151097   198.36  0.910    
-## traitza_art:ment        0.028194  0.011455  0.046355    97.07 &lt;0.001 ***
+## (Intercept)             0.342282  0.010942  0.652098    817.7  0.030 *  
+## traitza_art            -0.560568 -1.050868 -0.039140    849.4  0.036 *  
+## femWomen               -0.204883 -0.379548 -0.043264   1000.0  0.020 *  
+## marMarried              0.089303 -0.099765  0.300598   1425.1  0.374    
+## kid5                   -0.132702 -0.251958  0.003326   1000.0  0.040 *  
+## phd                     0.014271 -0.065669  0.102145   1000.0  0.752    
+## ment                    0.019411  0.012568  0.026734    898.2 &lt;0.001 ***
+## traitza_art:femWomen    0.041297 -0.223434  0.321874   1000.0  0.802    
+## traitza_art:marMarried  0.145704 -0.162047  0.453230   1000.0  0.364    
+## traitza_art:kid5       -0.075348 -0.260525  0.150291   1211.0  0.436    
+## traitza_art:phd         0.017169 -0.124562  0.138759    904.6  0.802    
+## traitza_art:ment        0.028949  0.013823  0.046897    821.7  0.002 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>we can see from this that the more papers a mentor produces, the more zero-deflation (or conversely the less papers a mentor produces, the more zero-inflation).</p>
+<p>The credible intervals on the interaction coefficients (including <code>traitza_art</code>) are large and so drawing firm conclusions is hard, although there does seem that the more papers a mentor produces, the more zero-deflation (or conversely the less papers a mentor produces, the more zero-inflation).</p>
+</div>
+</div>
+<div id="zero-modified-binomial-models" class="section level2 hasAnchor" number="7.8">
+<h2><span class="header-section-number">7.8</span> Zero-modified Binomial Models<a href="multi.html#zero-modified-binomial-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 
 </div>
 </div>
@@ -1670,6 +1691,7 @@ here
 \end{array}\right]
 \]</span></p>
 <p>The <span class="math inline">\(\texttt{idv}\)</span> variance structure assumes the five effects are uncorrelated with a common variance, such that <span class="math inline">\(\sigma^2_u{\bf Z}_j{\bf Z}^{\top}_j = \sigma^2_u({\bf I}+{\bf J})\)</span>: the specification is equivalent to just fitting four year effects with the desired covariance structure.<a href="multi.html#fnref39" class="footnote-back">↩︎</a></p></li>
+<li id="fn40"><p>I can now find no reference of this model being referred to as a zero-altered model, but for back compatibility it will have to remain as <code>zapoisson</code>.<a href="multi.html#fnref40" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>
