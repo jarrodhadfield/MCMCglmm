@@ -7,7 +7,7 @@ for printing with the `print.summary.MCMCglmm` method.
 
 ``` r
 # S3 method for class 'MCMCglmm'
-summary(object, random=FALSE, ...)
+summary(object, random=FALSE, antev = FALSE, ...)
 ```
 
 ## Arguments
@@ -19,6 +19,11 @@ summary(object, random=FALSE, ...)
 - random:
 
   logical: should the random effects be summarised
+
+- antev:
+
+  logical: if `TRUE` parameters of any antedepence structures are
+  reoprted rather than the covariance matrix
 
 - ...:
 

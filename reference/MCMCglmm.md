@@ -242,7 +242,9 @@ MCMCglmm(fixed, random=NULL, rcov=~units, family="gaussian", mev=NULL,
   is fitted for `y1` and `y2` then `aggregate="x"` generates the new
   variable `x=c(x_y1, x_y2)`.
 
-- longer: positive integer that multiples `nitt`, `thin` and `burnin`:
+- longer:
+
+  positive integer that multiples `nitt`, `thin` and `burnin`
 
 ## Value
 

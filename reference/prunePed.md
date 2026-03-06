@@ -6,7 +6,7 @@ subset of individuals
 ## Usage
 
 ``` r
-prunePed(pedigree, keep, make.base=FALSE)
+prunePed(pedigree, keep, make.base=TRUE)
 ```
 
 ## Arguments
@@ -41,7 +41,8 @@ resulting in some individuals becoming part of the base population. In
 terms of variance component and fixed effect estimation pruning the
 pedigree should have no impact on the target posterior distribution,
 although convergence and mixing may be better because there is less
-missing data.
+missing data. In versions of MCMCglmm \<3.0 the default argument to
+`make.base` was `FALSE`.
 
 ## Author
 

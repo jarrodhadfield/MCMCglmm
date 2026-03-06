@@ -46,5 +46,5 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 CA<-rIW(diag(2),10, n=1)
 CB<-rIW(diag(2),10, n=1)
 Ddivergence(CA, CB)
-#> [1] 0.2971437
+#> [1] 0.548045
 ```

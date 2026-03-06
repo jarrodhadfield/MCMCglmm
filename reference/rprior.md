@@ -6,7 +6,7 @@ prior
 ## Usage
 
 ``` r
-rprior(n, prior, vtype="us")
+rprior(n, prior, k = NULL, vtype="us")
 ```
 
 ## Arguments
@@ -19,6 +19,10 @@ rprior(n, prior, vtype="us")
 
   list: with elements `V`, `nu` and (optionally) `alpha.mu` and
   `alpha.V`
+
+- k:
+
+  dimension of the (co)variance matrix
 
 - vtype:
 
@@ -48,7 +52,7 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 
 ``` r
 prior<-resolve_prior(F(10, 20), k=3, vtype="us")
-# parameter expanded prior for 3x3 covariance matrix with scaled (20) central F_{1,10} marginal variances
+# 3x3 covariance matrix with scaled (20) central F_{1,10} marginal variances
 
 V<-rprior(2000, prior)
 

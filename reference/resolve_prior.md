@@ -6,7 +6,7 @@ prior specification that might utilise a `prior_generator`.
 ## Usage
 
 ``` r
-resolve_prior(prior_element, k=NULL)
+resolve_prior(prior_element, k=NULL, vtype=NULL)
 ```
 
 ## Arguments
@@ -42,7 +42,7 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 
 ## See also
 
-`prior_generator`,[`IW`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md),
+[`prior_generators`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md),[`IW`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md),
 [`IG`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md),
 [`F`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md),
 [`tSD`](https://jarrodhadfield.github.io/MCMCglmm/reference/prior_generators.md)
@@ -50,9 +50,9 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 ## Examples
 
 ``` r
-prior_element1<-list(V=diag(2)/2, nu=2, alpha.mu=c(0,0), alpha.V=diag(2)*1000)
+prior_element<-F(df2=1, scale=1000)
 
-resolve_prior(prior_element1)
+resolve_prior(prior_element, k=2, vtype="us")
 #> $V
 #>      [,1] [,2]
 #> [1,]  0.5  0.0
@@ -70,27 +70,7 @@ resolve_prior(prior_element1)
 #> [2,]    0 1000
 #> 
 
-prior_element2<-F(df2=1, scale=1000)
-
-resolve_prior(prior_element2, k=2, vtype="us")
-#> $V
-#>      [,1] [,2]
-#> [1,]  0.5  0.0
-#> [2,]  0.0  0.5
-#> 
-#> $nu
-#> [1] 2
-#> 
-#> $alpha.mu
-#> [1] 0 0
-#> 
-#> $alpha.V
-#>      [,1] [,2]
-#> [1,] 1000    0
-#> [2,]    0 1000
-#> 
-
-resolve_prior(prior_element2, k=2, vtype="idh")
+resolve_prior(prior_element, k=2, vtype="idh")
 #> $V
 #>      [,1] [,2]
 #> [1,]    1    0

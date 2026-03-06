@@ -64,11 +64,26 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 
 ## See also
 
-`prior_generator`
+[`resolve_prior`](https://jarrodhadfield.github.io/MCMCglmm/reference/resolve_prior.md)
 
 ## Examples
 
 ``` r
-resolve_prior(F(df2=1, scale=1000), k=2)
-#> Error in resolve_prior(F(df2 = 1, scale = 1000), k = 2): vtype must be specified
+resolve_prior(F(df2=1, scale=1000), k=2, vtype="us")
+#> $V
+#>      [,1] [,2]
+#> [1,]  0.5  0.0
+#> [2,]  0.0  0.5
+#> 
+#> $nu
+#> [1] 2
+#> 
+#> $alpha.mu
+#> [1] 0 0
+#> 
+#> $alpha.V
+#>      [,1] [,2]
+#> [1,] 1000    0
+#> [2,]    0 1000
+#> 
 ```

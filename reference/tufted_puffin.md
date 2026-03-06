@@ -24,4 +24,4 @@ recorded and their combined counts per sample are in the final column
 Hatch, S., Arimitsu, M., Piatt, J., Whelan, S., and Marsteller, C.E.,
 2023, Seabird Diet Data Collected on Middleton Island, Gulf of Alaska
 (ver 3.0, February 2025): U.S. Geological Survey data release,
-<https://doi.org/10.5066/P93I0P67>.
+[doi:10.5066/P93I0P67](https://doi.org/10.5066/P93I0P67) .

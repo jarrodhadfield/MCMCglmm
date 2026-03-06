@@ -38,7 +38,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">resolve_prior</span><span class="op">(</span><span class="va">prior_element</span>, k<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">resolve_prior</span><span class="op">(</span><span class="va">prior_element</span>, k<span class="op">=</span><span class="cn">NULL</span>, vtype<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -68,14 +68,14 @@
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code>prior_generator</code>,<code><a href="prior_generators.html">IW</a></code>, <code><a href="prior_generators.html">IG</a></code>, <code><a href="prior_generators.html">F</a></code>, <code><a href="prior_generators.html">tSD</a></code></p></div>
+    <div class="dont-index"><p><code><a href="prior_generators.html">prior_generators</a></code>,<code><a href="prior_generators.html">IW</a></code>, <code><a href="prior_generators.html">IG</a></code>, <code><a href="prior_generators.html">F</a></code>, <code><a href="prior_generators.html">tSD</a></code></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">prior_element1</span><span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>V<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span>, nu<span class="op">=</span><span class="fl">2</span>, alpha.mu<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span>, alpha.V<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">*</span><span class="fl">1000</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">prior_element</span><span class="op">&lt;-</span><span class="fu"><a href="prior_generators.html">F</a></span><span class="op">(</span>df2<span class="op">=</span><span class="fl">1</span>, scale<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">resolve_prior</span><span class="op">(</span><span class="va">prior_element1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">resolve_prior</span><span class="op">(</span><span class="va">prior_element</span>, k<span class="op">=</span><span class="fl">2</span>, vtype<span class="op">=</span><span class="st">"us"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $V</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  0.5  0.0</span>
@@ -93,27 +93,7 @@
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    0 1000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">prior_element2</span><span class="op">&lt;-</span><span class="fu"><a href="prior_generators.html">F</a></span><span class="op">(</span>df2<span class="op">=</span><span class="fl">1</span>, scale<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">resolve_prior</span><span class="op">(</span><span class="va">prior_element2</span>, k<span class="op">=</span><span class="fl">2</span>, vtype<span class="op">=</span><span class="st">"us"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $V</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]  0.5  0.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  0.0  0.5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $nu</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $alpha.mu</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $alpha.V</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2]</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1,] 1000    0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    0 1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">resolve_prior</span><span class="op">(</span><span class="va">prior_element2</span>, k<span class="op">=</span><span class="fl">2</span>, vtype<span class="op">=</span><span class="st">"idh"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">resolve_prior</span><span class="op">(</span><span class="va">prior_element</span>, k<span class="op">=</span><span class="fl">2</span>, vtype<span class="op">=</span><span class="st">"idh"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $V</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1    0</span>

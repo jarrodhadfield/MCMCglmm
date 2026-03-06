@@ -38,7 +38,7 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">posterior.ante</span><span class="op">(</span><span class="va">x</span>,k<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">posterior.ante</span><span class="op">(</span><span class="va">x</span>, vtype<span class="op">=</span><span class="st">"ante1"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -47,8 +47,8 @@
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
 <dd><p>mcmc object of (co)variances stacked column-wise</p></dd>
 
- <dt id="arg-k">k<a class="anchor" aria-label="anchor" href="#arg-k"></a></dt>
-<dd><p>order of the ante-dependence structure</p></dd>
+ <dt id="arg-vtype">vtype<a class="anchor" aria-label="anchor" href="#arg-vtype"></a></dt>
+<dd><p>type of ante variance function used</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -67,8 +67,8 @@
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">v</span><span class="op">&lt;-</span><span class="fu"><a href="rIW.html">rIW</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diag.html" class="external-link">diag</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>,<span class="fl">10</span>, n<span class="op">=</span><span class="fl">1000</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">posterior.ante</span><span class="op">(</span><span class="fu">mcmc</span><span class="op">(</span><span class="va">v</span><span class="op">)</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in colnames(ante)[1:k] &lt;- colnames(x)[seq(1, k^2, k + 1)]:</span> replacement has length zero</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu">posterior.ante</span><span class="op">(</span><span class="fu">mcmc</span><span class="op">(</span><span class="va">v</span><span class="op">)</span>,vtype<span class="op">=</span><span class="st">"ante1"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="posterior.ante-1.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

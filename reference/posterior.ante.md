@@ -5,7 +5,7 @@ Posterior distribution of ante-dependence parameters
 ## Usage
 
 ``` r
-posterior.ante(x,k=1)
+posterior.ante(x, vtype="ante1")
 ```
 
 ## Arguments
@@ -14,9 +14,9 @@ posterior.ante(x,k=1)
 
   mcmc object of (co)variances stacked column-wise
 
-- k:
+- vtype:
 
-  order of the ante-dependence structure
+  type of ante variance function used
 
 ## Value
 
@@ -37,6 +37,5 @@ Jarrod Hadfield <j.hadfield@ed.ac.uk>
 
 ``` r
 v<-rIW(diag(2),10, n=1000)
-plot(posterior.ante(mcmc(v),1))
-#> Error in colnames(ante)[1:k] <- colnames(x)[seq(1, k^2, k + 1)]: replacement has length zero
+plot(posterior.ante(mcmc(v),vtype="ante1"))
 ```
