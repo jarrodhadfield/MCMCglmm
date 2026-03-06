@@ -1,14 +1,17 @@
 "posterior.ante"<-function(x, vtype="ante1"){
 
-    if (is.null(dim(x))[1]) {
+    if(is.null(dim(x))[1]){
         x <- as.matrix(x)
     }
-
     k<-sqrt(ncol(x))
 
     if (k%%1 != 0) {
         stop("cannot coerce rows of x into a matrix - the number of columns should be a triangular number")
     }
+
+    if(is.null(colnames(x))){
+      colnames(x)<-c(outer(1:k, 1:k, paste, sep="."))
+    }  
 
     
     lag<-as.numeric(gsub("[a-z]", "", vtype))
@@ -33,7 +36,6 @@
     }else{
         save_pos<-1:k
         colnames(ante)[1:k]<-colnames(x)[seq(1, k^2, k+1)]
-
     }   
     if(grepl("c", vtype)){
         save_pos<-c(save_pos, k+1:lag)

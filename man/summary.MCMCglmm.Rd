@@ -6,11 +6,12 @@
 \description{\code{summary} method for class \code{"MCMCglmm"}. The returned object is suitable for printing with the \code{print.summary.MCMCglmm} method.
 }
 \usage{
-\method{summary}{MCMCglmm}(object, random=FALSE, \dots)
+\method{summary}{MCMCglmm}(object, random=FALSE, antev = FALSE, \dots)
 }
 \arguments{
  \item{object}{an object of class \code{"MCMCglmm"}}
  \item{random}{logical: should the random effects be summarised}
+ \item{antev}{logical: if \code{TRUE} parameters of any antedepence structures are reoprted rather than the covariance matrix}
  \item{\dots}{Further arguments to be passed}
 }
 \value{

@@ -30,12 +30,12 @@
     }
   }
 
-  rcomponents<-split.direct.sum(as.character(object$Random$formula)[2])
+  rcomponents<-split_direct_sum(as.character(object$Random$formula)[2])
 
   if(length(rcomponents)!=length(object$Random$nrt)){stop("sorry - not implented for covu models")}
   if(!is.null(object$ThetaS)){stop("sorry - not implemented for theta_scale models")}
 
-  mcomponents<-split.direct.sum(as.character(marginal)[2])
+  mcomponents<-split_direct_sum(as.character(marginal)[2])
 
   if(any(mcomponents%in%rcomponents==FALSE)){stop("marginal formula does not correspond to model formula")}
 

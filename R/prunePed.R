@@ -1,4 +1,4 @@
-"prunePed"<-function(pedigree, keep, make.base=FALSE){
+"prunePed"<-function(pedigree, keep, make.base=TRUE){
 
    pedigree2<-pedigree
    pedigree2[,1]<-as.character(pedigree[,1])

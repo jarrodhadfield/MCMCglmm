@@ -25,8 +25,8 @@
       if(it>nrow(object$Sol) | it<1){stop("it should be less than or equal to the number of iterations")}
     }
 
-    rcomponents<-split.direct.sum(as.character(object$Random$formula)[2])
-    mcomponents<-split.direct.sum(as.character(marginal)[2])
+    rcomponents<-split_direct_sum(as.character(object$Random$formula)[2])
+    mcomponents<-split_direct_sum(as.character(marginal)[2])
     
     if(is.null(object$meta)){object$meta<-FALSE}
       

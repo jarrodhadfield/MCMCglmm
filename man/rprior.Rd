@@ -3,11 +3,12 @@
 \title{Simulate Covariance Matrices from Prior}
 \description{Simulates covariance matrices from prior as specified in a MCMCglmm prior}
 \usage{
-rprior(n, prior, vtype="us")
+rprior(n, prior, k = NULL, vtype="us")
 }
 \arguments{
  \item{n}{number of observations}
  \item{prior}{list: with elements \code{V}, \code{nu} and (optionally) \code{alpha.mu} and \code{alpha.V}}
+ \item{k}{dimension of the (co)variance matrix}
  \item{vtype}{character: variance structure type with default \code{us}}
 }
 \value{
@@ -23,7 +24,7 @@ If \code{alpha.V} is \code{NULL} the distribution is an inverse-Wishart distribu
 \examples{
 
 prior<-resolve_prior(F(10, 20), k=3, vtype="us")
-# parameter expanded prior for 3x3 covariance matrix with scaled (20) central F_{1,10} marginal variances
+# 3x3 covariance matrix with scaled (20) central F_{1,10} marginal variances
 
 V<-rprior(2000, prior)
 

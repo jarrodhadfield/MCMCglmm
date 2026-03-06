@@ -1,4 +1,4 @@
-split.direct.sum<-function(x){  
+split_direct_sum<-function(x){  
   
   if(is.na(x)){
    return(NULL)

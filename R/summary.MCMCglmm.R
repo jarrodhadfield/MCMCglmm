@@ -20,8 +20,8 @@
   random.formula=object$Random$formula
   residual.formula=object$Residual$formula
 
-  gcomponents<-split.direct.sum(as.character(object$Random$formula)[2])
-  rcomponents<-split.direct.sum(as.character(object$Residual$formula)[2])
+  gcomponents<-split_direct_sum(as.character(object$Random$formula)[2])
+  rcomponents<-split_direct_sum(as.character(object$Residual$formula)[2])
 
   if(!antev){
 
@@ -136,7 +136,7 @@
 
  cat("\n DIC:", x$DIC, "\n")
  if(is.null(x$random.formula)==FALSE){
-   rcomponents<-split.direct.sum(as.character(x$random.formula)[2])
+   rcomponents<-split_direct_sum(as.character(x$random.formula)[2])
    for(i in 1:length(rcomponents)){
      if(i==1){
      cat(paste("\n G-structure:  ~", rcomponents[i], "\n\n", sep=""))
@@ -150,7 +150,7 @@
      }
    }
  }
- rcomponents<-split.direct.sum(as.character(x$residual.formula)[2])
+ rcomponents<-split_direct_sum(as.character(x$residual.formula)[2])
  for(i in 1:length(rcomponents)){
    if(i==1){
      cat(paste("\n R-structure:  ~", rcomponents[i], "\n\n", sep=""))

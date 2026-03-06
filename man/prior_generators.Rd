@@ -30,9 +30,9 @@
   function of class \code{prior_generator}
 }
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
-\seealso{\code{\link{prior_generator}}}
+\seealso{\code{\link{resolve_prior}}}
 \examples{
-resolve_prior(F(df2=1, scale=1000), k=2)
+resolve_prior(F(df2=1, scale=1000), k=2, vtype="us")
 }
 \keyword{distribution}
 

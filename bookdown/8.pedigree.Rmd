@@ -14,34 +14,40 @@ $$\begin{array}{c|rrrrrc}
 
 The $\texttt{us}$ structure allows the line effects for each virus to have different variances, but it also allows the effects for the same line to be correlated across viruses: the effects ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}$ and ${\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}$ are allowed to be correlated. However, effects from different lines are assumed to be independent, both within and between virsus: the effects ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}$ and ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{142A}}}$ are assumed independent with zero correlation because they are associated with different lines.
 
-In some cases we would like to allow correlations between the effects associated with different lines. For example, lines 129A and 142A may be genetically very similar and so we may expect them to respond to viruses in a similar way. 
-
-
-
-
-
-
-Pedigrees and phylogenies are similar things: they are both ways of representing shared ancestry. Under a quantitative genetic model of inheritance, or a Brownian motion model of evolution, GLMM's can be readily extended to model the similarities that exist between the phenotypes of related individuals or taxa. In the context of quantitative genetics these models are known as 'animal' models , and in the context of the comparative method these models are known as phylogenetic mixed models. The two models are almost identical, and are relatively minor modifications to the basic mixed model.
+In some cases we would like to allow correlations between the effects associated with different lines. For example, lines 129A and 142A may be genetically very similar and so we may expect them to respond to viruses in a similar way. If the covariance structure of a set of random effects is known up to proportionality, $\texttt{MCMCglmm}$ allows this to be specified and the constant or low-dimensional matrix of constants is estimated. We will start with the covariance structures that arise because individuals or species have shared ancestry.  In the context of individuals, these models are known as 'animal' models and shared ancestry is represented by a pedigree. In the context of species, these models are known as phylogenetic mixed models and shared ancestry is represented by a phylogeny. The two models are almost identical, and are relatively minor modifications to the basic mixed model. 
 
 
 ## Pedigrees
 
-$\texttt{MCMCglmm}$ handles pedigrees stored in 3-column tabular form, with each row representing a single individual. The first column should contain the unique identifier of the individual, and columns 2 and 3 should be the unique identifiers of the individual's parents. Parents must appear before their offspring in the table. I usually have the dam (mother) in
-the first column and the sire (father) in the third. I prefer the words dam and sire because if I subscript things with $m$ and $f$ I can never remember whether I mean male and female, or mother and father. In hermaphrodite systems the same individual may appear in both columns, even within the same row if an individual was produced through selfing. This is not a problem, but $\texttt{MCMCglmm}$ will issue a warning in case hermaphrodites are not present and a data entry mistake has been made. Impossible pedigrees (for example individual's that give birth to their own mother) are a problem and $\texttt{MCMCglmm}$ will issue an error, hopefully with an appropriate message, when impossibilities are detected.
+$\texttt{MCMCglmm}$ handles pedigrees stored in 3-column tabular form, with each row representing a single individual. The first column should contain the unique identifier of the individual, and columns 2 and 3 should be the unique identifiers of the individual's parents. Parents must appear before their offspring in the table - the function $\texttt{orderPed}$ from the library $\texttt{MasterBayes}$ will reorder the pedigree of required. I usually have the dam (mother) in the first column and the sire (father) in the third. I prefer the words dam and sire because if I subscript things with $m$ and $f$ I can never remember whether I mean male and female, or mother and father. In hermaphrodite systems the same individual may appear in both columns, even within the same row if an individual was produced through selfing. This is not a problem, but $\texttt{MCMCglmm}$ will issue a warning in case hermaphrodites are not present and a data entry mistake has been made. Impossible pedigrees (for example individual's that give birth to their own mother) are a problem and $\texttt{MCMCglmm}$ will issue an error, hopefully with an appropriate message, when impossibilities are detected.
 
-If the parent(s) of an individual are unknown then a missing value (`NA`) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. $\texttt{MCMCglmm}$ can handle this, as long as all the individuals appearing in the data frame passed to `data` also appear in the pedigree.
+If the parent(s) of an individual are unknown then a missing value (`NA`) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. The function $\texttt{insertPed}$ will return a pedigree table with these individuals inserted if they are missing. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. $\texttt{MCMCglmm}$ can handle this, as long as all the individuals appearing in the data frame passed to `data` also appear in the pedigree. However, it will be more efficient to prune out individuals from the pedigree that lack phenotypic data and which are not required in order to determine the relatedness of two or more phenotyped individuals (e.g. the unphenotyped parents of two siblings) - the function $\texttt{prunePed}$ will do this [^prune].
+
+  [^prune]: If you pass a pedigree to $\texttt{prunePed}$ with the id's of phenotyped individuals specified in the argument $\texttt{keep}$ a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed.  In earlier versions of MCMCglmm (<3.0) the default argument to $\texttt{prunePed}$ was $\texttt{make.base=FALSE}$ but this did not result in the optimal amount of mixing and was only retained for back compatibility.  
 
 To illustrate, we can load a pedigree for a population of blue tits and display the pedigree for the nuclear family that has individuals $\texttt{R187920}$ and $\texttt{R187921}$ as parents:
 
-``` {r echo=TRUE}
+``` {r }
 data(BTped)
 Nped <- BTped[which(apply(BTped, 1, function(x) {any(x == "R187920" | x == "R187921")})), ]
 Nped
 ```
 
-Both parents form part of what is known as the base population - they are outbred and unrelated to anybody else in the pedigree.
+Both parents form part of what is known as the base population - they are assumed to be outbred and unrelated to anybody else in the pedigree.  A pedigree can also be expressed in terms of a relatedness matrix ${\bf A}$. This matrix is symmetric, square, and has dimensions equal to the number of individuals in the pedigree. Simple, but perhaps slow, recursive methods exist for calculating ${\bf A}$:
 
-$\texttt{MCMCglmm}$ and `MasterBayes` have several pedigree manipulation functions. (`MasterBayes::orderPed`) orders a pedigree so parents appear before their offspring, (`MasterBayes::insertPed`) inserts records for individuals that only appear as parents (or a vector of specified individuals). When the number of individuals with phenotypic data is less than the number of individuals in the pedigree it is sometimes possible to remove uninformative individuals from the pedigree and thus reduce the computation time. This is known as pruning the pedigree and is implemented in the $\texttt{MCMCglmm}$ function `prunePed`. A vector of measured individuals is specified in the argument `keep` and specifying `make.base=TRUE` implements the most complete pruning. Note, `make.base=FALSE` is the default argument so you'll need to explicitly specify `TRUE` in the call to `prunePed`. Michael Morrissey's `pedantics` package, and the `kinship2` package also have many other useful pedigree orientated functions. In fact, the `orderPed` function in `MasterBayes` is built around functions provided by `kinship2`.\
+``` {r }
+Aped <- 2 * kinship2::kinship(Nped[, 1], Nped[, 2], Nped[, 3])
+Aped
+```
+
+In 'animal' models, each individual is associated with a unique random effect (often called a 'breeding value') and their covariance structure is assumed to proportional to ${\bf A}$ rather than an identity matrix. This non-identity covariance structure allows the associated variance to be estimated even when there is only one observation per individual.  Although ${\bf A}$ has quite a straightforward interpretation, $\texttt{MCMCglmm}$ actually requires the inverse of ${\bf A}$ which can be obtained using the function $\texttt{inverseA}$:
+
+
+``` {r }
+inverseA(Nped)$Ainv
+```
+
+While the numerical values are harder to interpret the patterns of zeros (represented as dots) and non-zeros in inverse covariance matrices are revealing: a zero indicates that two variables are *conditionally* independent. With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's breeding value, siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being related. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and a $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygote.    
 
 ## Phylogenies
 

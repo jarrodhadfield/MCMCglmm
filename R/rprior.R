@@ -1,4 +1,4 @@
-rprior<-function(n, prior, vtype="us", k=NULL){
+rprior<-function(n, prior, k=NULL, vtype="us"){
 
     if(!is.list(prior)){
     	stop("prior should be a list with elements V, nu and (optionally) alpha.mu and alpha.V")

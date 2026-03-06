@@ -35,8 +35,8 @@
 
   if(type%in%c("response", "terms")==FALSE){stop("type must be response or terms")}
 
-  rcomponents<-split.direct.sum(as.character(object$Random$formula)[2])
-  mcomponents<-split.direct.sum(as.character(marginal)[2])
+  rcomponents<-split_direct_sum(as.character(object$Random$formula)[2])
+  mcomponents<-split_direct_sum(as.character(marginal)[2])
   
   if(is.null(object$meta)){object$meta<-FALSE}
   

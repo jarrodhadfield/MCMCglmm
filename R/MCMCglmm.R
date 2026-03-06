@@ -52,19 +52,19 @@
 
   if(!is.null(prior$R)){ 
     if(inherits(prior$R, "prior_generator")){
-       if(length(split.direct.sum(as.character(rcov)[2]))==1){
+       if(length(split_direct_sum(as.character(rcov)[2]))==1){
          prior$R<-list(R1=prior$R)
        }else{  
-         prior$R<-replicate(length(split.direct.sum(as.character(rcov)[2])), prior$R)
+         prior$R<-replicate(length(split_direct_sum(as.character(rcov)[2])), prior$R)
        } 
     }
   }
   if(!is.null(prior$G)){ 
     if(inherits(prior$G, "prior_generator")){
-       if(length(split.direct.sum(as.character(random)[2]))==1){
+       if(length(split_direct_sum(as.character(random)[2]))==1){
          prior$G<-list(G1=prior$G)
        }else{  
-         prior$G<-replicate(length(split.direct.sum(as.character(random)[2])), prior$G)
+         prior$G<-replicate(length(split_direct_sum(as.character(random)[2])), prior$G)
        } 
     }
   }
@@ -528,7 +528,7 @@ nt<-nt-1
 
 if(any(!family.names%in%family.types)){stop(paste(unique(family.names[which((family.names%in%family.types)==FALSE)]), "not a supported distribution"))}
 
-rcov_terms<-split.direct.sum(as.character(rcov)[2])
+rcov_terms<-split_direct_sum(as.character(rcov)[2])
 convert_rcov<-rep(0, length(rcov_terms))
 
 id2M<-FALSE
@@ -620,10 +620,10 @@ if(is.null(mev)==FALSE){
   } 
 }
 
-rmodel.terms<-split.direct.sum(as.character(random)[2])
+rmodel.terms<-split_direct_sum(as.character(random)[2])
 
 ngstructures<-length(rmodel.terms)
-rmodel.terms<-c(rmodel.terms, split.direct.sum(as.character(rcov)[2])) 
+rmodel.terms<-c(rmodel.terms, split_direct_sum(as.character(rcov)[2])) 
 
 nfl<-c()                                                       # number of fixed levels the random term is structured by
 nrl<-c()                                                       # number of random levels

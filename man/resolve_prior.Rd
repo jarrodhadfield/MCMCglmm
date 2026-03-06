@@ -3,7 +3,7 @@
 \title{Resolves a Prior Specification in MCMCglmm}
 \description{Generates the (co)variance matrix prior parameters in MCMCglmm given a prior specification that might utilise a \code{prior_generator}.}
 \usage{
-  resolve_prior(prior_element, k=NULL)
+  resolve_prior(prior_element, k=NULL, vtype=NULL)
 }
 \arguments{
  \item{prior_element}{prior spefictaion for a (co)variance matrix}
@@ -17,18 +17,14 @@
   list of prior parameters for MCMCglmm
 }
 \author{Jarrod Hadfield \email{j.hadfield@ed.ac.uk}}
-\seealso{\code{\link{prior_generator}},\code{\link{IW}}, \code{\link{IG}}, \code{\link{F}}, \code{\link{tSD}}}
+\seealso{\code{\link{prior_generators}},\code{\link{IW}}, \code{\link{IG}}, \code{\link{F}}, \code{\link{tSD}}}
 
 \examples{
-prior_element1<-list(V=diag(2)/2, nu=2, alpha.mu=c(0,0), alpha.V=diag(2)*1000)
+prior_element<-F(df2=1, scale=1000)
 
-resolve_prior(prior_element1)
+resolve_prior(prior_element, k=2, vtype="us")
 
-prior_element2<-F(df2=1, scale=1000)
-
-resolve_prior(prior_element2, k=2, vtype="us")
-
-resolve_prior(prior_element2, k=2, vtype="idh")
+resolve_prior(prior_element, k=2, vtype="idh")
 
 }
 \keyword{distribution}
