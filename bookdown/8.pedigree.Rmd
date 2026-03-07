@@ -71,7 +71,7 @@ plot(m.animal$VCV/rowSums(m.animal$VCV))
 and can see that the while the nest a chick is raised in ($\texttt{fosternest}$) explains relatively little variation, the genetic variance (the variance in $\texttt{animal}$ effects) explains around half the total. It is also apparent from the MCMC traces that despite the chain being run for 10 times longer than the default ($\texttt{longer=10}$) there is still a bit of autocorrelation. In general, animal models mix less well than most models, in part because of strong posterior correlations between the genetic and residual variance:
 
 ```{r }
-plot(c(m.animal$VCV[,"animal"]), c(m.animal$VCV[,"units"]))
+plot(c(m.animal$VCV[,"animal"])~c(m.animal$VCV[,"units"]), ylab=expression(sigma[animal]^2), xlab=expression(sigma[units]^2))
 ```
 
 This correlation exists because each offspring receives a unique jumble of it's parents genome, the effect of which (the Mendelian sampling deviation) is confounded with the effect of the unique environmental factors the offspring experiences (the residual). This can be observed in the relatedness matrix $\texttt{Aped}$ where the diagonal elements are one yet the off-diagonal elements are at best a half.  In this particular example, the relatedness structure of phenotyped individuals is very simple: either individuals share a mother (or father) and are related by a half since they are full-siblings or they are completely unrelated. Consequently, an equivalent model is to fit nuclear family as an effect (by fitting mother ($\texttt{dam}$) effects) rather than pedigree ($\texttt{animal}$) effects:
@@ -92,28 +92,36 @@ attr(sibV, "mcpar")<-attr(m.animal$VCV, "mcpar")
 plot(mcmc.list(sibV, m.animal$VCV), density=FALSE)
 ```
 
-Slight discrepancies may exist because the prior specifications are not equivalent.  
-
-While the numerical values are harder to interpret the patterns of zeros (represented as dots) and non-zeros in inverse covariance matrices are revealing: a zero indicates that two variables are *conditionally* independent. With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's breeding value, siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being related. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and a $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygote.    
+Slight discrepancies exist because the prior specifications are not equivalent.  
 
 ## Phylogenies
 
-Phylogenies can be expressed in tabular form, although only two columns are required because each species only has a single parent. In general however, phylogenies are not expressed in this form presumably because it is hard to traverse phylogenies (and pedigrees) backwards in time when they are stored this way. For phylogenetic mixed models we generally only need to traverse phylogenies forward in time (if at all) but I have stuck with convention and used the `phylo` class from the `ape` package to store phylogenies. As with pedigrees, all species appearing in the data frame passed to `data` need to appear in the phylogeny. Typically, this will only include species at the tips of the phylogeny and so the measured species should appear in the `tip.label` element of the phylo object. An error message will be issued if this is not the case. Data may also exist for ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data as long as the phylogeny has labelled internal nodes. If nodes are unlabelled then $\texttt{MCMCglmm}$ names them internally using the default arguments of `makeNodeLabel` from `ape`.
+Phylogenies can also be expressed in tabular form, although only two columns are required because each species only has a single parent. However, whereas in pedigrees a single generation elapses between a parent and an offspring, a variable number of generations or a variable amount of time may elapse between parents and their daughter species. 
 
-To illustrate, lets take the phylogeny of bird families included in the `ape` package, and extract the phylogeny in tabular form for the Paridae (Tits), Certhiidae (Treecreepers), Gruidae (Cranes) and the Struthionidae (Ostriches):
+
+In general however, phylogenies are not expressed in this form presumably because it is hard to traverse phylogenies (and pedigrees) backwards in time when they are stored this way. For phylogenetic mixed models we generally only need to traverse phylogenies forward in time (if at all) but I have stuck with convention and used the `phylo` class from the `ape` package to store phylogenies. As with pedigrees, all species appearing in the data frame passed to `data` need to appear in the phylogeny. Typically, this will only include species at the tips of the phylogeny and so the measured species should appear in the `tip.label` element of the phylo object. An error message will be issued if this is not the case. Data may also exist for ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data as long as the phylogeny has labelled internal nodes. If nodes are unlabelled then $\texttt{MCMCglmm}$ names them internally using the default arguments of `makeNodeLabel` from `ape`.
+
+To illustrate, lets take the phylogeny of bird families included in the `ape` package, and plotted in Figure \@ref(fig:bird.families). 
+
+
+``` {r label=bird.families, echo=FALSE, include=TRUE, fig.cap="A phylogeny of bird families from \\citet{Sibley.1990} The families in red are the Tits (Paridae), Treecreepers (Certhiidae),  Cranes (Gruidae)  and the Ostriches (Struthionidae) from top to bottom. Blue tits are in the Paridae, and the word pedigree comes from the french for crane's foot.", fig.width=7, fig.height=7}
+bird.families <- makeNodeLabel(bird.families)
+some.families <- c("Certhiidae", "Paridae", "Gruidae", "Struthionidae")
+plot(bird.families, cex=0.5, tip.col=c("black","red")[bird.families$tip.label%in%some.families+1])
+```
+
+
+We can, if we wish, extract the phylogeny in tabular form. For the Paridae (Tits), Certhiidae (Treecreepers), Gruidae (Cranes) and the Struthionidae (Ostriches) this looks like:
+
 
 ``` {r echo=TRUE}
 data("bird.families")
-bird.families <- makeNodeLabel(bird.families)
-some.families <- c("Certhiidae", "Paridae", "Gruidae", "Struthionidae")
 Nphylo <- drop.tip(bird.families, setdiff(bird.families$tip.label, some.families))
 INphylo <- inverseA(Nphylo)
 INphylo$pedigree
 ```
 
-``` {r label=bird.families, echo=FALSE, include=TRUE, fig.cap="A phylogeny of bird families from \\citet{Sibley.1990} The families in red are the Tits (Paridae), Treecreepers (Certhiidae),  Cranes (Gruidae)  and the Ostriches (Struthionidae) from top to bottom. Blue tits are in the Paridae, and the word pedigree comes from the french for crane's foot.", fig.width=7, fig.height=7}
-plot(bird.families, cex=0.5, tip.col=c("black","red")[bird.families$tip.label%in%some.families+1])
-```
+
 
 The full phylogeny, with these families and their connecting notes displayed, is shown in Figure \@ref(fig:bird.families). You will notice that $\texttt{Node1}$ - the root - does not appear in the phylogeny in tabular form. This is because the root is equivalent to the base population in a pedigree analysis, an issue which we will come back to later. Another piece of information that seems to be lacking in the tabular form is the branch length information. Branch lengths are equivalent to inbreeding coefficients in a pedigree. As with pedigrees the inbreeding coefficients are calculated by `inverseA`:
 
@@ -172,6 +180,9 @@ where $\sim$ stands for 'is distributed as' and $N$ a (multivariate) normal dist
 effects is ${\bf I}\sigma^{2}_{1}$ where $\sigma^{2}_{1}$ is the variance component to be estimated. The use of the identity matrix makes two things explicit. First, because all off-diagonal elements of an identity matrix are zero we are assuming that all `dam` effects are independent (no covariance exists between any two `dam` effects). Second, all diagonal elements of an identity matrix are 1 implying that the range of possible values the dam effect *could* take is equivalent for every `dam`, this range being governed by the magnitude of the variance component.
 
 Since `dam`'s have very little interaction with the subset of offspring that were moved to a `fosternest`, we may be willing to assume that any similarity that exists between the tarsus lengths of this susbset and the subset that remained at home must be due to genetic effects. Although not strictly true we can assume that individuals that shared the same dam also shared the same sire, and so share around 50% of their genes.
+
+While the numerical values are harder to interpret the patterns of zeros (represented as dots) and non-zeros in inverse covariance matrices are revealing: a zero indicates that two variables are *conditionally* independent. With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's breeding value, siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being related. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and a $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygote.    
+
 
 ## General correlation matrices
 
