@@ -23,11 +23,11 @@ $\texttt{MCMCglmm}$ handles pedigrees stored in 3-column tabular form, with each
 
 If the parent(s) of an individual are unknown then a missing value (`NA`) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. The function $\texttt{insertPed}$ will return a pedigree table with these individuals inserted if they are missing. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. $\texttt{MCMCglmm}$ can handle this, as long as all the individuals appearing in the data frame passed to `data` also appear in the pedigree. However, it will be more efficient to prune out individuals from the pedigree that lack phenotypic data and which are not required in order to determine the relatedness of two or more phenotyped individuals (e.g. the unphenotyped parents of two siblings) - the function $\texttt{prunePed}$ will do this [^prune].
 
-  [^prune]: If you pass a pedigree to $\texttt{prunePed}$ with the id's of phenotyped individuals specified in the argument $\texttt{keep}$ a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed.  In earlier versions of MCMCglmm (<3.0) the default argument to $\texttt{prunePed}$ was $\texttt{make.base=FALSE}$ but this did not result in the optimal amount of mixing and was only retained for back compatibility.  
+[^prune]: If you pass a pedigree to $\texttt{prunePed}$ with the id's of phenotyped individuals specified in the argument $\texttt{keep}$ a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed.  In earlier versions of MCMCglmm (<3.0) the default argument to $\texttt{prunePed}$ was $\texttt{make.base=FALSE}$ but this did not result in the optimal amount of mixing and was only retained for back compatibility.  
 
 To illustrate, we can load a pedigree for a population of blue tits and display the pedigree for the nuclear family that has individuals $\texttt{R187920}$ and $\texttt{R187921}$ as parents:
 
-``` {r }
+```{r }
 data(BTped)
 Nped <- BTped[which(apply(BTped, 1, function(x) {any(x == "R187920" | x == "R187921")})), ]
 Nped
@@ -35,17 +35,64 @@ Nped
 
 Both parents form part of what is known as the base population - they are assumed to be outbred and unrelated to anybody else in the pedigree.  A pedigree can also be expressed in terms of a relatedness matrix ${\bf A}$. This matrix is symmetric, square, and has dimensions equal to the number of individuals in the pedigree. Simple, but perhaps slow, recursive methods exist for calculating ${\bf A}$:
 
-``` {r }
+```{r }
 Aped <- 2 * kinship2::kinship(Nped[, 1], Nped[, 2], Nped[, 3])
 Aped
 ```
 
-In 'animal' models, each individual is associated with a unique random effect (often called a 'breeding value') and their covariance structure is assumed to proportional to ${\bf A}$ rather than an identity matrix. This non-identity covariance structure allows the associated variance to be estimated even when there is only one observation per individual.  Although ${\bf A}$ has quite a straightforward interpretation, $\texttt{MCMCglmm}$ actually requires the inverse of ${\bf A}$ which can be obtained using the function $\texttt{inverseA}$:
+In 'animal' models, each individual is associated with a unique random effect (often called a 'breeding value') and their covariance structure is assumed to proportional to ${\bf A}$ rather than an identity matrix. This non-identity covariance structure allows the associated variance to be estimated even when there is only one observation per individual.  Although ${\bf A}$ has quite a straightforward interpretation, $\texttt{MCMCglmm}$ actually requires the inverse of ${\bf A}$ which can be obtained using the function $\texttt{inverseA}$. We can create this for the full pedigree which consists of `r nlevels(BTped$dam)` nuclear families with two parents and between `r min(table(BTped$sire))` and `r max(table(BTped$sire))` of their offspring offspring. 
 
 
-``` {r }
-inverseA(Nped)$Ainv
+```{r }
+Ainv<-inverseA(BTped)$Ainv
 ```
+
+The data set $\texttt{BTdata}$ contains information collected on their offspring: the length of one of their leg bones ($\texttt{tarsus}$) together with their identifier ($\texttt{animal}$) their sex ($\texttt{sex}$) and the nest they were raised in ($\texttt{fosternest}$). Note that roughly half the chicks in each nest were switched into another nest soon after hatching and so the identity of the nuclear family and $\texttt{fosternest}$ are not completely confounded. We can fit a model which includes both $\texttt{fosternest}$ nest effects and also $\texttt{animal}$ effects that are correlated through a pedigree:
+
+```{r animal}
+data(BTdata)
+prior.animal<-list(R=IW(1, 0.002), G=F(1, 1000))
+m.animal <- MCMCglmm(tarsus ~ sex, random = ~fosternest+animal, data = BTdata, ginv=list(animal=Ainv), prior=prior.animal, longer=10)
+```
+
+The $\texttt{ginv}$ argument takes a list of inverse covariance structures (just $\texttt{Ainv}$ in this example) where the names of the list elements state the name of the effects the covariance structure is associated with (just $\texttt{animal}$ in this example). 
+
+
+```{r }
+summary(m.animal)
+```
+
+Often, the variances of the random effects are expressed as proportions of the total variance:
+
+```{r }
+plot(m.animal$VCV/rowSums(m.animal$VCV))
+```
+
+and can see that the while the nest a chick is raised in ($\texttt{fosternest}$) explains relatively little variation, the genetic variance (the variance in $\texttt{animal}$ effects) explains around half the total. It is also apparent from the MCMC traces that despite the chain being run for 10 times longer than the default ($\texttt{longer=10}$) there is still a bit of autocorrelation. In general, animal models mix less well than most models, in part because of strong posterior correlations between the genetic and residual variance:
+
+```{r }
+plot(c(m.animal$VCV[,"animal"]), c(m.animal$VCV[,"units"]))
+```
+
+This correlation exists because each offspring receives a unique jumble of it's parents genome, the effect of which (the Mendelian sampling deviation) is confounded with the effect of the unique environmental factors the offspring experiences (the residual). This can be observed in the relatedness matrix $\texttt{Aped}$ where the diagonal elements are one yet the off-diagonal elements are at best a half.  In this particular example, the relatedness structure of phenotyped individuals is very simple: either individuals share a mother (or father) and are related by a half since they are full-siblings or they are completely unrelated. Consequently, an equivalent model is to fit nuclear family as an effect (by fitting mother ($\texttt{dam}$) effects) rather than pedigree ($\texttt{animal}$) effects:
+
+
+```{r sib}
+prior.sib<-list(R=IW(1, 0.002), G=F(1, 1000))
+m.sib <- MCMCglmm(tarsus ~ sex, random = ~fosternest+dam, data = BTdata, prior=prior.sib)
+```
+In this model, the $\texttt{units}$ variance is the variance due to environmental effects and the genetic effects unique to an individual. Under the assumptions of the animal model, the variance of the unique genetic effects is assumed to be half the genetic variance. Under the assumptions of the animal model, the $\texttt{dam}$ variance should be half the genetic variance since it is the variance due to the 50% of the genome full siblings share. Consequently, $2\sigma^2_{dam}$ from `m.sib` should be equivalent to the $\texttt{animal}$ variance from `m.animal`, and  $\sigma^2_{units}-\sigma^2_{dam}$ from `m.sib` should be equivalent to the $\texttt{units}$ variance from `m.animal`: 
+
+```{r echo=FALSE}
+sibV<-m.sib$VCV
+sibV[,"units"]<-sibV[,"units"]-sibV[,"dam"]
+sibV[,"dam"]<-sibV[,"dam"]*2
+colnames(sibV)<-colnames(m.animal$VCV)
+attr(sibV, "mcpar")<-attr(m.animal$VCV, "mcpar")
+plot(mcmc.list(sibV, m.animal$VCV), density=FALSE)
+```
+
+Slight discrepancies may exist because the prior specifications are not equivalent.  
 
 While the numerical values are harder to interpret the patterns of zeros (represented as dots) and non-zeros in inverse covariance matrices are revealing: a zero indicates that two variables are *conditionally* independent. With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's breeding value, siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being related. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and a $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygote.    
 
