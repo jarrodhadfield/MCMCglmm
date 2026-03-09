@@ -113,6 +113,8 @@ fig:mcmc-zip
 fig:ppzi
 fig:mcmc-hup
 fig:mzap1
+fig:bird-families
+fig:bird-families2
 eq:rs-Eq
 eq:pyl-Eq
 eq:pyl2-Eq
