@@ -96,35 +96,48 @@ Slight discrepancies exist because the prior specifications are not equivalent.
 
 ## Phylogenies
 
-Phylogenies can also be expressed in tabular form, although only two columns are required because for species we only need to record a single 'parent' - an immediate ancestor of that species. In general however, phylogenies are not expressed in this form presumably because it is hard to traverse phylogenies (and pedigrees) backwards in time when they are stored this way. For phylogenetic mixed models we generally only need to traverse phylogenies forward in time (if at all) but I have stuck with convention and used the `phylo` class from the `ape` package to store phylogenies. To illustrate, we can use the phylogeny of bird families included in the `ape` package.
+Phylogenies can also be expressed in tabular form, although only two columns are required because for species we only need to record a single 'parent' - an immediate ancestor of that species. In general however, phylogenies are not expressed in this form presumably because it is hard to traverse phylogenies (and pedigrees) backwards in time when they are stored this way. For phylogenetic mixed models we generally only need to traverse phylogenies forward in time (if at all) but I have stuck with convention and used the `phylo` class from the `ape` package to store phylogenies. To illustrate, we can use the phylogeny of the world's birds families available through the package $\texttt{clootl}$
+
+```{r }
+bird.tree<-clootl::extractTree()
+```
+
+With more than 10,000 species the complete tree is hard to visualise, but in Figure \@ref(fig:phylo) I have plotted the tree 
+for 30 species.
+
+``` {r phylo, echo=FALSE, include=TRUE, fig.cap="The phylogeny for 30 bird species with the Blue tit (*Cyanistes caeruleus*), Tufted Puffin (*Fratercula cirrhata*), Common Crane (*Grus grus*) and Tundra Bean Goose (*Anser serrirostris*) in red. Data from Blue Tits and Tufted Puffins appear in Chapters \\@ref() and  \\@ref() respectively. The word pedigree comes from the French for Crane's foot. I found a Tundra Bean Goose this week.", fig.width=7, fig.height=7}
+
+bird.tree$node.label<-NULL
+bird.tree <- makeNodeLabel(bird.tree)
+some.species <- c(sample(tree$tip.label, 26), "Grus_grus", "Cyanistes_caeruleus", "Fratercula_cirrhata", "Anser_serrirostris")
+plot.tree<-drop.tip(bird.tree, setdiff(tree$tip.label, some.species))
+
+plot(plot.tree, cex=1, tip.col=c("black","red")[plot.tree$tip.label%in%c("Grus_grus", "Cyanistes_caeruleus", "Fratercula_cirrhata", "Anser_serrirostris")+1])
+```
+
+We can also use the AVONET data-base, available through the package $\texttt{PNC}$, which contains information about the world's birds including their tarsus lengths:
+
+```{r }
+bird.data<-PNC::AVONET
+```
+
+As with pedigrees, all species appearing in the data frame passed to `data` need to appear in the phylogeny. Typically, this will be the (extant) species at the tips of the phylogeny and so those species appearing in the data frame should appear in the `tip.label` element of the phylo object. The internal nodes in the phylogeny are the parents, and in general, phylogenies are already pruned: all non-measured ancestors have been stripped out except those that allow us to determine the relatedness between measured species. This can be seen in Figure \@ref(fig:phylo)
+
+
+Data may also exist for ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data as long as the phylogeny has labelled internal nodes. If nodes are unlabelled then $\texttt{MCMCglmm}$ names them internally using the default arguments of `makeNodeLabel` from `ape`. In pedigrees a single generation elapses between a parent and an offspring. However, in phylogenies a variable number of generations (or amount of time) may elapse between parents and their daughter species and this is represented by the length of the branch that connects to nodes. 
+
+
+We can, if we wish, extract the phylogeny in tabular form. Let's do this for a subset of the taxa: the Blue tit (*Cyanistes caeruleus*), Tufted Puffin (*Fratercula cirrhata*), Common Crane (*Grus grus*) and Tundra Bean Goose (*Anser serrirostris*):
+
 
 ``` {r }
-data(bird.families)
-```
-
-This is plotted in Figure \@ref(fig:bird-families). 
-
-
-``` {r bird-families, echo=FALSE, include=TRUE, fig.cap="A phylogeny of bird families from \\citet{Sibley.1990} The families in red are the Tits (Paridae), Treecreepers (Certhiidae),  Cranes (Gruidae)  and the Ostriches (Struthionidae) from top to bottom. Blue tits are in the Paridae, and the word pedigree comes from the french for crane's foot.", fig.width=7, fig.height=7}
-bird.families <- makeNodeLabel(bird.families)
-some.families <- c("Certhiidae", "Paridae", "Gruidae", "Struthionidae")
-plot(bird.families, cex=0.5, tip.col=c("black","red")[bird.families$tip.label%in%some.families+1])
-```
-
-As with pedigrees, all species appearing in the data frame passed to `data` need to appear in the phylogeny. Typically, this will be the (extant) species at the tips of the phylogeny and so those species appearing in the data frame should appear in the `tip.label` element of the phylo object. The internal nodes in the phylogeny are the parents, and in general, phylogenies are already pruned: all non-measured ancestors have been stripped out except those that allow us to determine the relatedness between measured species. Data may also exist for ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data as long as the phylogeny has labelled internal nodes. If nodes are unlabelled then $\texttt{MCMCglmm}$ names them internally using the default arguments of `makeNodeLabel` from `ape`. In pedigrees a single generation elapses between a parent and an offspring. However, in phylogenies a variable number of generations (or amount of time) may elapse between parents and their daughter species and this is represented by the length of the branch that connects to nodes. 
-
-
-We can, if we wish, extract the phylogeny in tabular form. Let's do this for a subset of the taxa: the Paridae (Tits), Certhiidae (Treecreepers), Gruidae (Cranes) and the Struthionidae (Ostriches):
-
-
-``` {r }
-Nphylo <- drop.tip(bird.families, setdiff(bird.families$tip.label, some.families))
+Nphylo <- drop.tip(bird.tree, setdiff(bird.families$tip.tree, some.species))
 ```
 
 
-Note that when we do this, pruning is automatically done. The phylogeny is shown in Figure \@ref(fig:bird-families2) and we can see that all internal nodes have been stripped out except those that connect our four families.
+Note that when we do this, pruning is automatically done. The phylogeny is shown in Figure \@ref(fig:phylo2) and we can see that all internal nodes have been stripped out except those that connect our four families.
 
-``` {r bird-families2, echo=FALSE, include=TRUE, fig.cap="A subset of the phylogeny of bird families from \\citet{Sibley.1990} for Tits (Paridae), Treecreepers (Certhiidae),  Cranes (Gruidae) and the Ostriches (Struthionidae)", fig.width=7, fig.height=7}
+``` {r phylo2, echo=FALSE, include=TRUE, fig.cap=""The phylogeny for four bird species: Blue tit (*Cyanistes caeruleus*), Tufted Puffin (*Fratercula cirrhata*), Common Crane (*Grus grus*) and Tundra Bean Goose (*Anser serrirostris*) in red.", fig.width=7, fig.height=7}
 Nphylo <- makeNodeLabel(Nphylo)
 plot(Nphylo, cex=1, tip.col="red", show.node.label=TRUE)
 ```
@@ -144,6 +157,17 @@ INphylo$inbreeding
 
 You will notice that the Struthionidae have a branch length of one. This is because there are no internal nodes between the root and the Struthionidae, and we used the default `scale=TRUE` in the call to $\texttt{inverseA}$. `scale=TRUE` rescales the branch lengths by a constant so that the total branch length from the root to each tip is one. This is only possible if the tree is ultrametric  - the total branch length from the root to each tip is constant before rescaling. 
 
+```{r }
+bird.data$species<-gsub(" ", "_", bird.data$species)
+bird.data<-bird.data %>% select(-"family")
+
+bird.tree <- drop.tip(bird.tree , setdiff(bird.tree $tip.label, bird.data$species))
+
+Ainv<-inverseA(bird.tree, scale=FALSE)$Ainv
+m.phylo<-MCMCglmm(log(Tarsus.Length)~1, random=~species, data=subset(AVONET, species%in%rownames(Ainv)), ginv=list(species=Ainv))
+```
+
+
 
 
 ## The animal model and the phylogenetic mixed model
@@ -160,6 +184,13 @@ Aphylo <- vcv.phylo(Nphylo, cor = T)
 Aphylo
 ```
 
+```{r }
+dat<-read.csv(url("https://figshare.com/ndownloader/files/34480865?private_link=b990722d72a26b5bfead"))
+
+
+%20%7C%20https://figshare.com/ndownloader/files/5631084
+
+```
 Note that specifying `cor=T` is equivalent to scaling the tree as we did in the argument to `inverseA`.
 
 In fact, all of the mixed models we fitted in earlier sections also used an ${\bf A}$ matrix, but in those cases the matrix was an identity matrix (i.e. ${\bf A}={\bf I}$) and we didn't have to worry about it. Let's reconsider the Blue tit model `m3a.1` from Section \@ref(cat-int) where we were interested in estimating `sex` effects for `tarsus` length together with the amount of variance explained by genetic mother (`dam`) and foster mother (`fosternest`):
