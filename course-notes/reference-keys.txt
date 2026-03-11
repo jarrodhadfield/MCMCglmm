@@ -227,7 +227,7 @@ pedigree
 pedigree-sec
 phylogenies
 nodestips
-general-correlation-matrices
+user-defined-covariance-structures
 measurement
 error-in-the-response
 meta-sec

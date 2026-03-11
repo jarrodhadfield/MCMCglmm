@@ -311,7 +311,7 @@ div.csl-indent {
 <ul>
 <li class="chapter" data-level="8.2.1" data-path="pedigree.html"><a href="pedigree.html#nodestips"><i class="fa fa-check"></i><b>8.2.1</b> <code>nodes="TIPS"</code></a></li>
 </ul></li>
-<li class="chapter" data-level="8.3" data-path="pedigree.html"><a href="pedigree.html#general-correlation-matrices"><i class="fa fa-check"></i><b>8.3</b> General correlation matrices</a></li>
+<li class="chapter" data-level="8.3" data-path="pedigree.html"><a href="pedigree.html#user-defined-covariance-structures"><i class="fa fa-check"></i><b>8.3</b> User-defined covariance structures</a></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="measurement.html"><a href="measurement.html"><i class="fa fa-check"></i><b>9</b> Measurement Error, Meta-analysis an Missing Values</a>
 <ul>
@@ -974,7 +974,7 @@ Function
 </div>
 <div id="priors-for-corg-and-corgh-structures" class="section level2 hasAnchor" number="11.4">
 <h2><span class="header-section-number">11.4</span> Priors for <code>corg</code> and <code>corgh</code> structures<a href="technical-details.html#priors-for-corg-and-corgh-structures" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn43" class="footnote-ref" id="fnref43"><sup>43</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
+<p>For <code>corg</code> and <code>corgh</code> structures<a href="#fn44" class="footnote-ref" id="fnref44"><sup>44</sup></a> the diagonals of <code>V</code> define the fixed variances (<code>corgh</code>) or are ignored and the variances set to one (<code>corg</code>). I use the prior specification in <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>)</span> where <code>nu</code> controls how much the correlation matrix approaches an identity matrix. The marginal distribution of individual correlations (<span class="math inline">\(r\)</span>) is given by
 <span class="citation">Barnard, McCulloch, and Meng (<a href="#ref-Barnard.2000">2000</a>; and <a href="#ref-Box.1973">Box and Tiao 1973</a>)</span>:</p>
 <p><span class="math display">\[\begin{array}{lr}
 Pr(r) \propto (1-r^{2})^\frac{\texttt{nu-dim(V)-1}}{\texttt{2}}, &amp; |r|&lt;1\\
@@ -1052,8 +1052,8 @@ Spiegelhalter, D. J., N. G. Best, B. R. Carlin, and A. van der Linde. 2002. <spa
 </div>
 <div class="footnotes">
 <hr />
-<ol start="43">
-<li id="fn43"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref43" class="footnote-back">↩︎</a></p></li>
+<ol start="44">
+<li id="fn44"><p>In versions <span class="math inline">\(&lt;2.18\)</span> <code>cor</code> fitted what is now a <code>corg</code> structure. The reason for the change is to keep the <code>asreml</code> and <span class="math inline">\(\texttt{MCMCglmm}\)</span> syntax equivalent. However, the <code>corgh</code> structure in asreml is a reparameterised <code>us</code> structure whereas in <span class="math inline">\(\texttt{MCMCglmm}\)</span> the variances are fixed in the prior.<a href="technical-details.html#fnref44" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>
