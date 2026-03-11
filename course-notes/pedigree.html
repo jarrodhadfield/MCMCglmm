@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-03-09" />
+<meta name="date" content="2026-03-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -292,7 +292,7 @@ div.csl-indent {
 <li class="chapter" data-level="7.2.1" data-path="multi.html"><a href="multi.html#bern-gaus-sec"><i class="fa fa-check"></i><b>7.2.1</b> Bernoulli-Gaussian</a></li>
 <li class="chapter" data-level="7.2.2" data-path="multi.html"><a href="multi.html#all-bernoulli"><i class="fa fa-check"></i><b>7.2.2</b> All Bernoulli</a></li>
 </ul></li>
-<li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#wide-versus-long-format"><i class="fa fa-check"></i><b>7.3</b> Wide versus Long Format</a></li>
+<li class="chapter" data-level="7.3" data-path="multi.html"><a href="multi.html#sec-longwide"><i class="fa fa-check"></i><b>7.3</b> Wide versus Long Format</a></li>
 <li class="chapter" data-level="7.4" data-path="multi.html"><a href="multi.html#covu-sec"><i class="fa fa-check"></i><b>7.4</b> Covariances between random and residual terms (<span class="math inline">\(\texttt{covu}\)</span>)</a></li>
 <li class="chapter" data-level="7.5" data-path="multi.html"><a href="multi.html#scaled-linear-predictors-texttttheta_scale"><i class="fa fa-check"></i><b>7.5</b> Scaled linear predictors: <span class="math inline">\(\texttt{theta_scale}\)</span></a></li>
 <li class="chapter" data-level="7.6" data-path="multi.html"><a href="multi.html#multinomial-models"><i class="fa fa-check"></i><b>7.6</b> Multinomial Models</a></li>
@@ -306,10 +306,12 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="8" data-path="pedigree.html"><a href="pedigree.html"><i class="fa fa-check"></i><b>8</b> Structured Random Effects</a>
 <ul>
-<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigrees"><i class="fa fa-check"></i><b>8.1</b> Pedigrees</a></li>
-<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.2</b> Phylogenies</a></li>
-<li class="chapter" data-level="8.3" data-path="pedigree.html"><a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model"><i class="fa fa-check"></i><b>8.3</b> The animal model and the phylogenetic mixed model</a></li>
-<li class="chapter" data-level="8.4" data-path="pedigree.html"><a href="pedigree.html#general-correlation-matrices"><i class="fa fa-check"></i><b>8.4</b> General correlation matrices</a></li>
+<li class="chapter" data-level="8.1" data-path="pedigree.html"><a href="pedigree.html#pedigree-sec"><i class="fa fa-check"></i><b>8.1</b> Pedigrees</a></li>
+<li class="chapter" data-level="8.2" data-path="pedigree.html"><a href="pedigree.html#phylogenies"><i class="fa fa-check"></i><b>8.2</b> Phylogenies</a>
+<ul>
+<li class="chapter" data-level="8.2.1" data-path="pedigree.html"><a href="pedigree.html#nodestips"><i class="fa fa-check"></i><b>8.2.1</b> <code>nodes="TIPS"</code></a></li>
+</ul></li>
+<li class="chapter" data-level="8.3" data-path="pedigree.html"><a href="pedigree.html#general-correlation-matrices"><i class="fa fa-check"></i><b>8.3</b> General correlation matrices</a></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="measurement.html"><a href="measurement.html"><i class="fa fa-check"></i><b>9</b> Measurement Error, Meta-analysis an Missing Values</a>
 <ul>
@@ -362,7 +364,7 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="pedigree" class="section level1 hasAnchor" number="8">
 <h1><span class="header-section-number">8</span> Structured Random Effects<a href="pedigree.html#pedigree" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>In previous chapters we introduced variance functions that allow interactions between a categorical predictor (which usually has many levels and would normally be fitted as random in the absence of a interaction) and some other categorical (Chapters <a href="cat-int.html#cat-int">5</a> and <a href="multi.html#multi">7</a>) or continuous predictor (Chapter <a href="cont-int.html#cont-int">6</a>). For example, in Chapter <a href="cat-int.html#cat-int">5</a> we fitted a model with <span class="math inline">\(\texttt{us(virus):line}\)</span> in the random formula. We could visualise this as setting up 201 random effects for the three types of virus (France, Greece and Spain) across 67 genetically distinct lines of fly:</p>
+<p>In previous chapters we introduced variance functions that allow interactions between a categorical predictor (which usually has many levels and would normally be fitted as random in the absence of a interaction) and some other categorical (Chapters <a href="cat-int.html#cat-int">5</a> and <a href="multi.html#multi">7</a>) or continuous predictor (Chapter <a href="cont-int.html#cont-int">6</a>). For example, in Chapter <a href="cat-int.html#cat-int">5</a> we fitted a model with <span class="math inline">\(\texttt{us(virus):line}\)</span> in the random formula. We could visualise this as setting up 201 random effects for the three types of virus (<span class="math inline">\(\texttt{France}\)</span>, <span class="math inline">\(\texttt{Greece}\)</span> and <span class="math inline">\(\texttt{Spain}\)</span>) across 67 genetically distinct lines of fly (<span class="math inline">\(\texttt{101A}\)</span>, <span class="math inline">\(\texttt{109A}\)</span>, …):</p>
 <p><span class="math display">\[\begin{array}{c|rrrrrc}
 &amp;{\color{red}{\texttt{101A}}}&amp;{\color{red}{\texttt{109A}}}&amp;{\color{red}{\texttt{129A}}}&amp;{\color{red}{\texttt{142A}}}&amp;{\color{red}{\texttt{153A}}}&amp;\dots\\
 \hline
@@ -370,10 +372,10 @@ div.csl-indent {
 {\color{blue}{\texttt{Spain}}}&amp;{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{101A}}}&amp;{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{109A}}}&amp;{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{129A}}}&amp;{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{142A}}}&amp;{\color{blue}{\texttt{Spain}}}.{\color{red}{\texttt{153A}}}&amp;\dots\\
 {\color{blue}{\texttt{Greece}}}&amp;{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{101A}}}&amp;{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{109A}}}&amp;{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}&amp;{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{142A}}}&amp;{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{153A}}}&amp;\dots\\
 \end{array}\]</span></p>
-<p>The <span class="math inline">\(\texttt{us}\)</span> structure allows the line effects for each virus to have different variances, but it also allows the effects for the same line to be correlated across viruses: the effects <span class="math inline">\({\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}\)</span> and <span class="math inline">\({\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}\)</span> are allowed to be correlated. However, effects from different lines are assumed to be independent, both within and between virsus: the effects <span class="math inline">\({\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}\)</span> and <span class="math inline">\({\color{blue}{\texttt{France}}}.{\color{red}{\texttt{142A}}}\)</span> are assumed independent with zero correlation because they are associated with different lines.</p>
-<p>In some cases we would like to allow correlations between the effects associated with different lines. For example, lines 129A and 142A may be genetically very similar and so we may expect them to respond to viruses in a similar way. If the covariance structure of a set of random effects is known up to proportionality, <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows this to be specified and the constant or low-dimensional matrix of constants is estimated. We will start with the covariance structures that arise because individuals or species have shared ancestry. In the context of individuals, these models are known as ‘animal’ models and shared ancestry is represented by a pedigree. In the context of species, these models are known as phylogenetic mixed models and shared ancestry is represented by a phylogeny. The two models are almost identical, and are relatively minor modifications to the basic mixed model.</p>
-<div id="pedigrees" class="section level2 hasAnchor" number="8.1">
-<h2><span class="header-section-number">8.1</span> Pedigrees<a href="pedigree.html#pedigrees" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <span class="math inline">\(\texttt{us}\)</span> structure allows the line effects for each virus to have different variances, but it also allows the effects for the same line to be correlated across viruses: for example, the effects <span class="math inline">\({\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}\)</span> and <span class="math inline">\({\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}\)</span> are allowed to be correlated. However, effects from different lines are assumed to be independent, both within and between virsus: for example, the effects <span class="math inline">\({\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}\)</span> and <span class="math inline">\({\color{blue}{\texttt{France}}}.{\color{red}{\texttt{142A}}}\)</span> are assumed independent with zero correlation since they are associated with different lines.</p>
+<p>In some cases we would like to allow correlations between the effects associated with different lines. For example, lines 129A and 142A may be genetically very similar and so we may expect them to respond to viruses in a similar way. If the covariance structure of a set of random effects is known up to proportionality, <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows this to be specified and the constant or low-dimensional matrix of constants is estimated. We will start with the covariance structures that arise because individuals or species have shared ancestry. In the context of individuals, these models are known as ‘animal’ models and shared ancestry is represented by a pedigree. In the context of species, these models are known as phylogenetic or comparative (mixed) models and shared ancestry is represented by a phylogeny. The two models are almost identical, and are relatively minor modifications to the basic mixed model.</p>
+<div id="pedigree-sec" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> Pedigrees<a href="pedigree.html#pedigree-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p><span class="math inline">\(\texttt{MCMCglmm}\)</span> handles pedigrees stored in 3-column tabular form, with each row representing a single individual. The first column should contain the unique identifier of the individual, and columns 2 and 3 should be the unique identifiers of the individual’s parents. Parents must appear before their offspring in the table - the function <span class="math inline">\(\texttt{orderPed}\)</span> from the library <span class="math inline">\(\texttt{MasterBayes}\)</span> will reorder the pedigree of required. I usually have the dam (mother) in the first column and the sire (father) in the third. I prefer the words dam and sire because if I subscript things with <span class="math inline">\(m\)</span> and <span class="math inline">\(f\)</span> I can never remember whether I mean male and female, or mother and father. In hermaphrodite systems the same individual may appear in both columns, even within the same row if an individual was produced through selfing. This is not a problem, but <span class="math inline">\(\texttt{MCMCglmm}\)</span> will issue a warning in case hermaphrodites are not present and a data entry mistake has been made. Impossible pedigrees (for example individual’s that give birth to their own mother) are a problem and <span class="math inline">\(\texttt{MCMCglmm}\)</span> will issue an error, hopefully with an appropriate message, when impossibilities are detected.</p>
 <p>If the parent(s) of an individual are unknown then a missing value (<code>NA</code>) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. The function <span class="math inline">\(\texttt{insertPed}\)</span> will return a pedigree table with these individuals inserted if they are missing. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. <span class="math inline">\(\texttt{MCMCglmm}\)</span> can handle this, as long as all the individuals appearing in the data frame passed to <code>data</code> also appear in the pedigree. However, it will be more efficient to prune out individuals from the pedigree that lack phenotypic data and which are not required in order to determine the relatedness of two or more phenotyped individuals (e.g. the unphenotyped parents of two siblings) - the function <span class="math inline">\(\texttt{prunePed}\)</span> will do this <a href="#fn41" class="footnote-ref" id="fnref41"><sup>41</sup></a>.</p>
 <p>To illustrate, we can load a pedigree for a population of blue tits and display the pedigree for the nuclear family that has individuals <span class="math inline">\(\texttt{R187920}\)</span> and <span class="math inline">\(\texttt{R187921}\)</span> as parents:</p>
@@ -458,78 +460,222 @@ div.csl-indent {
 </div>
 <div id="phylogenies" class="section level2 hasAnchor" number="8.2">
 <h2><span class="header-section-number">8.2</span> Phylogenies<a href="pedigree.html#phylogenies" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Phylogenies can also be expressed in tabular form, although only two columns are required because for species we only need to record a single ‘parent’ - an immediate ancestor of that species. In general however, phylogenies are not expressed in this form presumably because it is hard to traverse phylogenies (and pedigrees) backwards in time when they are stored this way. For phylogenetic mixed models we generally only need to traverse phylogenies forward in time (if at all) but I have stuck with convention and used the <code>phylo</code> class from the <code>ape</code> package to store phylogenies. To illustrate, we can use the phylogeny of bird families included in the <code>ape</code> package.</p>
-<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="pedigree.html#cb317-1" tabindex="-1"></a><span class="fu">data</span>(bird.families)</span></code></pre></div>
-<p>This is plotted in Figure <a href="pedigree.html#fig:bird-families">8.1</a>.</p>
-<div class="figure"><span style="display:block;" id="fig:bird-families"></span>
-<img src="_bookdown_files/fig/bird-families-1.png" alt="A phylogeny of bird families from \citet{Sibley.1990} The families in red are the Tits (Paridae), Treecreepers (Certhiidae),  Cranes (Gruidae)  and the Ostriches (Struthionidae) from top to bottom. Blue tits are in the Paridae, and the word pedigree comes from the french for crane's foot." width="672" />
+<p>Phylogenies can also be expressed in tabular form, although only two columns are required because for each species we only need to record a single ‘parent’ - an immediate ancestor of that species. In general, however, phylogenies are stored as bifurcating trees and I have stuck with convention and used the <code>phylo</code> class from the <code>ape</code> package to store phylogenies. To illustrate, we can use the phylogeny of the world’s birds available through the package <span class="math inline">\(\texttt{clootl}\)</span>:</p>
+<div class="sourceCode" id="cb317"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb317-1"><a href="pedigree.html#cb317-1" tabindex="-1"></a>bird.tree <span class="ot">&lt;-</span> clootl<span class="sc">::</span><span class="fu">extractTree</span>(<span class="at">taxonomy_year =</span> <span class="st">&quot;2021&quot;</span>)</span></code></pre></div>
+<p>The phylogeny is plotted in Figure <a href="pedigree.html#fig:phylo">8.1</a>.</p>
+<div class="figure"><span style="display:block;" id="fig:phylo"></span>
+<img src="_bookdown_files/fig/phylo-1.png" alt="The phylogeny of the world's birds with species names omitted for legibility. I have had to guess what units time has been measured in due to lack of documentation." width="864" />
 <p class="caption">
-Figure 8.1: A phylogeny of bird families from The families in red are the Tits (Paridae), Treecreepers (Certhiidae), Cranes (Gruidae) and the Ostriches (Struthionidae) from top to bottom. Blue tits are in the Paridae, and the word pedigree comes from the french for crane’s foot.
+Figure 8.1: The phylogeny of the world’s birds with species names omitted for legibility. I have had to guess what units time has been measured in due to lack of documentation.
 </p>
 </div>
-<p>As with pedigrees, all species appearing in the data frame passed to <code>data</code> need to appear in the phylogeny. Typically, this will be the (extant) species at the tips of the phylogeny and so those species appearing in the data frame should appear in the <code>tip.label</code> element of the phylo object. The internal nodes in the phylogeny are the parents, and in general, phylogenies are already pruned: all non-measured ancestors have been stripped out except those that allow us to determine the relatedness between measured species. Data may also exist for ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data as long as the phylogeny has labelled internal nodes. If nodes are unlabelled then <span class="math inline">\(\texttt{MCMCglmm}\)</span> names them internally using the default arguments of <code>makeNodeLabel</code> from <code>ape</code>. In pedigrees a single generation elapses between a parent and an offspring. However, in phylogenies a variable number of generations (or amount of time) may elapse between parents and their daughter species and this is represented by the length of the branch that connects to nodes.</p>
-<p>We can, if we wish, extract the phylogeny in tabular form. Let’s do this for a subset of the taxa: the Paridae (Tits), Certhiidae (Treecreepers), Gruidae (Cranes) and the Struthionidae (Ostriches):</p>
-<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="pedigree.html#cb318-1" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.families, <span class="fu">setdiff</span>(bird.families<span class="sc">$</span>tip.label, some.families))</span></code></pre></div>
-<p>Note that when we do this, pruning is automatically done. The phylogeny is shown in Figure <a href="pedigree.html#fig:bird-families2">8.2</a> and we can see that all internal nodes have been stripped out except those that connect our four families.</p>
-<div class="figure"><span style="display:block;" id="fig:bird-families2"></span>
-<img src="_bookdown_files/fig/bird-families2-1.png" alt="A subset of the phylogeny of bird families from \citet{Sibley.1990} for Tits (Paridae), Treecreepers (Certhiidae),  Cranes (Gruidae) and the Ostriches (Struthionidae)" width="672" />
+<p>Each tip (on the right) corresponds to an extant (or recently extinct) species. If we follow the branches back from a pair of tips they will eventually meet at an internal node. This node is the most recent common ancestor of the two species. For some pairs, this node is at the very base of the tree (on the left) and the node is referred to as the root. In pedigrees, a single generation elapses between a parent and an offspring. However, in phylogenies a variable number of generations (or amount of time) may elapse between parents and their daughter species and this is represented by the length of the branch that connects two nodes.</p>
+<p>We can, if we wish, extract the phylogeny in tabular form. Let’s do this for a subset of species: Siberian Thrush (<em>Geokichla sibirica</em>), Blue tit (<em>Cyanistes caeruleus</em>), Tufted Puffin (<em>Fratercula cirrhata</em>), Common Crane (<em>Grus grus</em>) and Bean Goose (<em>Anser fabalis</em>).</p>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="pedigree.html#cb318-1" tabindex="-1"></a>my.species <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Geokichla_sibirica&quot;</span>, <span class="st">&quot;Cyanistes_caeruleus&quot;</span>, <span class="st">&quot;Fratercula_cirrhata&quot;</span>,</span>
+<span id="cb318-2"><a href="pedigree.html#cb318-2" tabindex="-1"></a>    <span class="st">&quot;Grus_grus&quot;</span>, <span class="st">&quot;Anser_fabalis&quot;</span>)</span>
+<span id="cb318-3"><a href="pedigree.html#cb318-3" tabindex="-1"></a>Nphylo <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.tree, <span class="fu">setdiff</span>(bird.tree<span class="sc">$</span>tip.label, my.species))</span></code></pre></div>
+<p>The phylogeny is shown in Figure <a href="pedigree.html#fig:phylo2">8.2</a> and it should be noted that pruning is automatically done: all ancestral species have been stripped out except those that allow us to determine the relatedness between the species at the tip.</p>
+<div class="figure"><span style="display:block;" id="fig:phylo2"></span>
+<img src="_bookdown_files/fig/phylo2-1.png" alt="The phylogeny for five bird species: Siberian Thrush (*Geokichla sibirica*), Blue tit (*Cyanistes caeruleus*), Tufted Puffin (*Fratercula cirrhata*), Common Crane (*Grus grus*) and Bean Goose (*Anser fabalis*). John Nelder, the father of GLM, found the UK's first Siberian Thrush.  Data from Blue Tits and Tufted Puffins appear in this Chapter and  Chapter \@ref(multi), respectively. The word pedigree comes from the French for Crane's foot, and I found a (Tundra) Bean Goose this week." width="672" />
 <p class="caption">
-Figure 8.2: A subset of the phylogeny of bird families from for Tits (Paridae), Treecreepers (Certhiidae), Cranes (Gruidae) and the Ostriches (Struthionidae)
+Figure 8.2: The phylogeny for five bird species: Siberian Thrush (<em>Geokichla sibirica</em>), Blue tit (<em>Cyanistes caeruleus</em>), Tufted Puffin (<em>Fratercula cirrhata</em>), Common Crane (<em>Grus grus</em>) and Bean Goose (<em>Anser fabalis</em>). John Nelder, the father of GLM, found the UK’s first Siberian Thrush. Data from Blue Tits and Tufted Puffins appear in this Chapter and Chapter <a href="multi.html#multi">7</a>, respectively. The word pedigree comes from the French for Crane’s foot, and I found a (Tundra) Bean Goose this week.
 </p>
 </div>
 <p>This phylogeny in tabular form looks like:</p>
 <div class="sourceCode" id="cb319"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb319-1"><a href="pedigree.html#cb319-1" tabindex="-1"></a>INphylo <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(Nphylo)</span>
 <span id="cb319-2"><a href="pedigree.html#cb319-2" tabindex="-1"></a>INphylo<span class="sc">$</span>pedigree</span></code></pre></div>
-<pre><code>##      node.names                
-## [1,] &quot;Node2&quot;         NA      NA
-## [2,] &quot;Node3&quot;         &quot;Node2&quot; NA
-## [3,] &quot;Struthionidae&quot; NA      NA
-## [4,] &quot;Gruidae&quot;       &quot;Node2&quot; NA
-## [5,] &quot;Certhiidae&quot;    &quot;Node3&quot; NA
-## [6,] &quot;Paridae&quot;       &quot;Node3&quot; NA</code></pre>
+<pre><code>##      node.names                      
+## [1,] &quot;Node2&quot;               NA      NA
+## [2,] &quot;Node3&quot;               &quot;Node2&quot; NA
+## [3,] &quot;Node4&quot;               &quot;Node2&quot; NA
+## [4,] &quot;Anser_fabalis&quot;       NA      NA
+## [5,] &quot;Geokichla_sibirica&quot;  &quot;Node3&quot; NA
+## [6,] &quot;Cyanistes_caeruleus&quot; &quot;Node3&quot; NA
+## [7,] &quot;Fratercula_cirrhata&quot; &quot;Node4&quot; NA
+## [8,] &quot;Grus_grus&quot;           &quot;Node4&quot; NA</code></pre>
 <p>You will notice that <span class="math inline">\(\texttt{Node1}\)</span> - the root - does not appear in the phylogeny in tabular form. This is because the root is equivalent to the base population in a pedigree analysis, something we will come back to later. Another piece of information that seems to be lacking in the tabular form is the branch length information. Branch lengths are equivalent to inbreeding coefficients in a pedigree. As with pedigrees the inbreeding coefficients are calculated by <code>inverseA</code>:</p>
 <div class="sourceCode" id="cb321"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb321-1"><a href="pedigree.html#cb321-1" tabindex="-1"></a>INphylo<span class="sc">$</span>inbreeding</span></code></pre></div>
-<pre><code>## [1] 0.2285714 0.3857143 1.0000000 0.7714286 0.3857143 0.3857143</code></pre>
-<p>You will notice that the Struthionidae have a branch length of one. This is because there are no internal nodes between the root and the Struthionidae, and we used the default <code>scale=TRUE</code> in the call to <span class="math inline">\(\texttt{inverseA}\)</span>. <code>scale=TRUE</code> rescales the branch lengths by a constant so that the total branch length from the root to each tip is one. This is only possible if the tree is ultrametric - the total branch length from the root to each tip is constant before rescaling.</p>
+<pre><code>## [1] 0.24470987 0.49315470 0.05737447 1.00000000 0.26213544 0.26213544 0.69791566
+## [8] 0.69791566</code></pre>
+<p>You will notice that the branch length for <em>Anser fabalis</em> is one. This is because there are no internal nodes between the root and the <em>Anser fabalis</em>, and we used the default <code>scale=TRUE</code> in the call to <span class="math inline">\(\texttt{inverseA}\)</span>. <code>scale=TRUE</code> rescales the branch lengths by a constant so that the total branch length from the root to each tip is one. For example, to get the total branch length from the root to <em>Geokichla sibirica</em> we need to sum the branch lengths from <span class="math inline">\(\texttt{Node1}\)</span> to <span class="math inline">\(\texttt{Node2}\)</span>, <span class="math inline">\(\texttt{Node2}\)</span> to <span class="math inline">\(\texttt{Node3}\)</span>, and <span class="math inline">\(\texttt{Node3}\)</span> to <span class="math inline">\(\texttt{Geokichla_sibirica}\)</span>:</p>
+<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="pedigree.html#cb323-1" tabindex="-1"></a><span class="fu">sum</span>(INphylo<span class="sc">$</span>inbreeding[<span class="fu">which</span>(INphylo<span class="sc">$</span>pedigree[, <span class="dv">1</span>] <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;Node2&quot;</span>, <span class="st">&quot;Node3&quot;</span>, <span class="st">&quot;Geokichla_sibirica&quot;</span>))])</span></code></pre></div>
+<pre><code>## [1] 1</code></pre>
+<p>and is also equal to one. It is only possible to scale the tree if the tree is ultrametric - the total branch length from the root to each tip is constant before rescaling. In fact the original <span class="math inline">\(\texttt{bird.tree}\)</span> obtained using <code>extractTree</code> was not exactly ultrametric - there were small differences in total branch lengths due to rounding errors and the the function <span class="math inline">\(\texttt{force.ultrametric}\)</span> from <span class="math inline">\(\texttt{phyltools}\)</span> had to be used. We can also generate the <span class="math inline">\({\bf A}\)</span> matrix for this small phylogeny and we can see that element <span class="math inline">\(i,j\)</span> is equal to the proportion of time species/node <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> have shared ancestry:</p>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="pedigree.html#cb325-1" tabindex="-1"></a>ANall <span class="ot">&lt;-</span> <span class="fu">solve</span>(INphylo<span class="sc">$</span>Ainv)</span>
+<span id="cb325-2"><a href="pedigree.html#cb325-2" tabindex="-1"></a><span class="fu">round</span>(ANall, <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## 8 x 8 sparse Matrix of class &quot;dgCMatrix&quot;
+##       Node2 Node3 Node4 A_fab G_sib C_cae F_cir G_gru
+## Node2 0.245 0.245 0.245     . 0.245 0.245 0.245 0.245
+## Node3 0.245 0.738 0.245     . 0.738 0.738 0.245 0.245
+## Node4 0.245 0.245 0.302     . 0.245 0.245 0.302 0.302
+## A_fab .     .     .         1 .     .     .     .    
+## G_sib 0.245 0.738 0.245     . 1.000 0.738 0.245 0.245
+## C_cae 0.245 0.738 0.245     . 0.738 1.000 0.245 0.245
+## F_cir 0.245 0.245 0.302     . 0.245 0.245 1.000 0.302
+## G_gru 0.245 0.245 0.302     . 0.245 0.245 0.302 1.000</code></pre>
+<p>The AVONET data-base, available through the package <span class="math inline">\(\texttt{PNC}\)</span>, contains information about the world’s birds:</p>
+<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="pedigree.html#cb327-1" tabindex="-1"></a>bird.data <span class="ot">&lt;-</span> PNC<span class="sc">::</span>AVONET</span></code></pre></div>
+<p>As with pedigrees, all species appearing in <span class="math inline">\(\texttt{data}\)</span> need to appear in the phylogeny. Typically, this will be the species at the tips of the phylogeny and so all species in <span class="math inline">\(\texttt{data}\)</span> should appear as a <span class="math inline">\(\texttt{tip.label}\)</span> in the <span class="math inline">\(\texttt{phylo}\)</span> object. The internal nodes in the phylogeny are typically ancestral species. Data may also exist for these ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data in the analysis as long as the phylogeny has labelled internal nodes that correspond to a species in <span class="math inline">\(\texttt{data}\)</span>. Before we proceed with an analysis we need to do a bit of housekeeping. The names in the data and phylogeny are formatted slightly differently - we need to replace the space between the generic and specific name with an underscore:</p>
+<div class="sourceCode" id="cb328"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb328-1"><a href="pedigree.html#cb328-1" tabindex="-1"></a>bird.data<span class="sc">$</span>species <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot; &quot;</span>, <span class="st">&quot;_&quot;</span>, bird.data<span class="sc">$</span>species)</span></code></pre></div>
+<p>We also need to rename the column <span class="math inline">\(\texttt{family}\)</span> in <span class="math inline">\(\texttt{bird.data}\)</span> as $ will then expect a long-format multi-response model with the <span class="math inline">\(\texttt{family}\)</span> column specifying the distribution (see Section <a href="multi.html#sec-longwide">7.3</a>):</p>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="pedigree.html#cb329-1" tabindex="-1"></a>bird.data <span class="ot">&lt;-</span> <span class="fu">rename</span>(bird.data, <span class="at">Family =</span> family)</span></code></pre></div>
+<p>Finally, there are 1297 species that appear in <span class="math inline">\(\texttt{bird.data}\)</span> that are not represented in the phylogeny. In many cases this is probably due to taxonomic revisions, and the species do appear but under a different name. Here, we will simply omit these species from the analysis.</p>
+<div class="sourceCode" id="cb330"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb330-1"><a href="pedigree.html#cb330-1" tabindex="-1"></a>bird.data <span class="ot">&lt;-</span> <span class="fu">subset</span>(bird.data, species <span class="sc">%in%</span> bird.tree<span class="sc">$</span>tip.label)</span></code></pre></div>
+<p>We will also prune the phylogeny so that species that are not present in <span class="math inline">\(\texttt{bird.data}\)</span> are dropped.</p>
+<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="pedigree.html#cb331-1" tabindex="-1"></a>bird.tree <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.tree, <span class="fu">setdiff</span>(bird.tree<span class="sc">$</span>tip.label, bird.data<span class="sc">$</span>species))</span></code></pre></div>
+<p>Let’s build a model for the tarsus lengths of the world’s birds. We’ll work on the log-scale since the lengths are heavily right skewed and span several orders of magnitude:</p>
+<div class="sourceCode" id="cb332"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb332-1"><a href="pedigree.html#cb332-1" tabindex="-1"></a>Ainv <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(bird.tree)<span class="sc">$</span>Ainv</span>
+<span id="cb332-2"><a href="pedigree.html#cb332-2" tabindex="-1"></a></span>
+<span id="cb332-3"><a href="pedigree.html#cb332-3" tabindex="-1"></a>prior.phylo <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">1</span>, <span class="dv">1000</span>))</span>
+<span id="cb332-4"><a href="pedigree.html#cb332-4" tabindex="-1"></a>m.phylo <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(Tarsus.Length) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>species, <span class="at">data =</span> bird.data,</span>
+<span id="cb332-5"><a href="pedigree.html#cb332-5" tabindex="-1"></a>    <span class="at">ginv =</span> <span class="fu">list</span>(<span class="at">species =</span> Ainv), <span class="at">prior =</span> prior.phylo)</span>
+<span id="cb332-6"><a href="pedigree.html#cb332-6" tabindex="-1"></a></span>
+<span id="cb332-7"><a href="pedigree.html#cb332-7" tabindex="-1"></a><span class="fu">summary</span>(m.phylo)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -20415.86 
+## 
+##  G-structure:  ~species
+## 
+##         post.mean l-95% CI u-95% CI eff.samp
+## species    0.2753   0.2653   0.2851    844.3
+## 
+##  R-structure:  ~units
+## 
+##       post.mean l-95% CI u-95% CI eff.samp
+## units  0.003319 0.003031 0.003633    573.6
+## 
+##  Location effects: log(Tarsus.Length) ~ 1 
+## 
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)     4.415    4.003    4.805     1050 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The intercept in a phylogentic model is the estimated value for the ancestor of all sampled taxa - the root of the phylogeny. On the arithmetic scale an intercept of 4.42 translates into 84.55mm - roughly the length of a Buzzard’s tarsus, and probably not too different from the tarsus length of <em>Archaeopteryx</em>. The phylogenetic variance is substantially larger than the residual variance. In general, comparing these two variances directly is not meaningful since the phylogenetic variance is in units of trait squared per unit time whereas the residual variance is in units of traits squared. Nevertheless, it is is common to treat them as comparable by multiplying the phylogenetic variance by the time (<span class="math inline">\(T\)</span>) that has elapsed from root to tip <a href="#fn42" class="footnote-ref" id="fnref42"><sup>42</sup></a>. Then, the variance in the response at the tips of the phylogeny is expected to be <span class="math inline">\(\sigma^2_{\texttt{units}}+T\sigma^2_{\texttt{phylo}}\)</span> and the proportion of the total variance that can be explained by the phylogeny is often reported: <span class="math inline">\(T\sigma^2_{\texttt{phylo}}/(\sigma^2_{\texttt{units}}+T\sigma^2_{\texttt{species}})\)</span>. This is commonly referred to as the phylogenetic heritability or phylogenetic signal. When calculating the inverse using the function <span class="math inline">\(\texttt{inverseA}\)</span>, the tree was scaled to unit length by default and so <span class="math inline">\(T=1\)</span> and the phylogenetic heritability is simply <span class="math inline">\(\sigma^2_{\texttt{phylo}}/(\sigma^2_{\texttt{units}}+\sigma^2_{\texttt{species}})\)</span>:</p>
+<div class="sourceCode" id="cb334"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb334-1"><a href="pedigree.html#cb334-1" tabindex="-1"></a><span class="fu">plot</span>(m.phylo<span class="sc">$</span>VCV[, <span class="st">&quot;species&quot;</span>]<span class="sc">/</span><span class="fu">rowSums</span>(m.phylo<span class="sc">$</span>VCV))</span></code></pre></div>
+<p><img src="_bookdown_files/fig/unnamed-chunk-177-1.png" alt="" width="672" /></p>
+<p>We can see that it is very high, with almost all of the variation explained by the phylogeny. However, I think the notion that the phylogenetic heritability is unitless and comparable across traits or taxa is misguided. When we perform an analysis with a scaled tree, the phylogenetic variance still has units, but rather than being in the tree’s original units, it’s in units of total time. Unfortunately, I can find no information about what units time is measured in, but given the root-to-tip branch length is 105.010005 I presume one unit is a million years. Consequently, <span class="math inline">\(\sigma^2_{\texttt{species}}\)</span> from the model is really in units of mm^2 per 105.010005^6 years$ and is not unitless. To understand the consequence of this, let’s use the tarsus lengths of the Tyrant flycatchers (<em>Tyrannidae</em>) - the most speciose bird family for which we have data on <code>sum(bird.data$species%in%tyrants)</code> species:</p>
+<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="pedigree.html#cb335-1" tabindex="-1"></a>tyrants <span class="ot">&lt;-</span> bird.data<span class="sc">$</span>species[<span class="fu">which</span>(bird.data<span class="sc">$</span>Family <span class="sc">==</span> <span class="st">&quot;Tyrannidae&quot;</span>)]</span>
+<span id="cb335-2"><a href="pedigree.html#cb335-2" tabindex="-1"></a>tyrant.data <span class="ot">&lt;-</span> <span class="fu">subset</span>(bird.data, species <span class="sc">%in%</span> tyrants)</span>
+<span id="cb335-3"><a href="pedigree.html#cb335-3" tabindex="-1"></a>tyrant.tree <span class="ot">&lt;-</span> <span class="fu">drop.tip</span>(bird.tree, <span class="fu">setdiff</span>(bird.tree<span class="sc">$</span>tip.label, tyrant.data<span class="sc">$</span>species))</span></code></pre></div>
+<p>As can be seen in Figure <a href="pedigree.html#fig:tyrant">8.3</a>, the tree has been re-rooted - the root node is not the most recent common ancestor off all birds, but the most recent common ancestor of those Tyrant flycatchers in <span class="math inline">\(\texttt{bird.data}\)</span>.</p>
+<div class="figure"><span style="display:block;" id="fig:tyrant"></span>
+<img src="_bookdown_files/fig/tyrant-1.png" alt="The phylogeny of the Tyrant flycatchers." width="864" />
+<p class="caption">
+Figure 8.3: The phylogeny of the Tyrant flycatchers.
+</p>
 </div>
-<div id="the-animal-model-and-the-phylogenetic-mixed-model" class="section level2 hasAnchor" number="8.3">
-<h2><span class="header-section-number">8.3</span> The animal model and the phylogenetic mixed model<a href="pedigree.html#the-animal-model-and-the-phylogenetic-mixed-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The structure of pedigrees and phylogenies can be expressed in terms of the relatedness matrix <span class="math inline">\({\bf A}\)</span>. This matrix is symmetric, square, and has dimensions equal to the number of individuals in the pedigree (or the number of taxa in the phylogeny). For pedigrees, element <span class="math inline">\(A_{i,j}\)</span> is twice the probability that an allele drawn from individual <span class="math inline">\(i\)</span> is identical by descent to an allele in individual <span class="math inline">\(j\)</span>. For phylogenies, element <span class="math inline">\(A_{i,j}\)</span> is the amount of time that elapsed (since the common ancestor of all sampled taxa) before the speciation event that resulted in taxa <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span>. Simple, but perhaps slow, recursive methods exist for calculating <span class="math inline">\({\bf A}\)</span> in both cases:</p>
-<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="pedigree.html#cb323-1" tabindex="-1"></a>Aped <span class="ot">&lt;-</span> <span class="dv">2</span> <span class="sc">*</span> kinship2<span class="sc">::</span><span class="fu">kinship</span>(Nped[, <span class="dv">1</span>], Nped[, <span class="dv">2</span>], Nped[, <span class="dv">3</span>])</span>
-<span id="cb323-2"><a href="pedigree.html#cb323-2" tabindex="-1"></a>Aped</span></code></pre></div>
-<pre><code>##         R187920 R187921 R187726 R187724 R187723 R187613 R187612 R187609
-## R187920     1.0     0.0     0.5     0.5     0.5     0.5     0.5     0.5
-## R187921     0.0     1.0     0.5     0.5     0.5     0.5     0.5     0.5
-## R187726     0.5     0.5     1.0     0.5     0.5     0.5     0.5     0.5
-## R187724     0.5     0.5     0.5     1.0     0.5     0.5     0.5     0.5
-## R187723     0.5     0.5     0.5     0.5     1.0     0.5     0.5     0.5
-## R187613     0.5     0.5     0.5     0.5     0.5     1.0     0.5     0.5
-## R187612     0.5     0.5     0.5     0.5     0.5     0.5     1.0     0.5
-## R187609     0.5     0.5     0.5     0.5     0.5     0.5     0.5     1.0</code></pre>
-<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="pedigree.html#cb325-1" tabindex="-1"></a>Aphylo <span class="ot">&lt;-</span> <span class="fu">vcv.phylo</span>(Nphylo, <span class="at">cor =</span> T)</span>
-<span id="cb325-2"><a href="pedigree.html#cb325-2" tabindex="-1"></a>Aphylo</span></code></pre></div>
-<pre><code>##               Struthionidae   Gruidae Certhiidae   Paridae
-## Struthionidae             1 0.0000000  0.0000000 0.0000000
-## Gruidae                   0 1.0000000  0.2285714 0.2285714
-## Certhiidae                0 0.2285714  1.0000000 0.6142857
-## Paridae                   0 0.2285714  0.6142857 1.0000000</code></pre>
-<p>Note that specifying <code>cor=T</code> is equivalent to scaling the tree as we did in the argument to <code>inverseA</code>.</p>
-<p>In fact, all of the mixed models we fitted in earlier sections also used an <span class="math inline">\({\bf A}\)</span> matrix, but in those cases the matrix was an identity matrix (i.e. <span class="math inline">\({\bf A}={\bf I}\)</span>) and we didn’t have to worry about it. Let’s reconsider the Blue tit model <code>m3a.1</code> from Section <a href="cat-int.html#cat-int">5</a> where we were interested in estimating <code>sex</code> effects for <code>tarsus</code> length together with the amount of variance explained by genetic mother (<code>dam</code>) and foster mother (<code>fosternest</code>):</p>
-<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="pedigree.html#cb327-1" tabindex="-1"></a><span class="fu">data</span>(BTdata)</span>
-<span id="cb327-2"><a href="pedigree.html#cb327-2" tabindex="-1"></a>m3a<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(tarsus <span class="sc">~</span> sex, <span class="at">random =</span> <span class="sc">~</span>dam <span class="sc">+</span> fosternest, <span class="at">data =</span> BTdata, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
-<p>All individuals that contributed to that analysis are from a single generation and appear in <code>BTped</code> together with their parents. However, individuals in the parental generation do not have tarsus length measurements so they do not have their own records in <code>BTdata</code>.</p>
-<p>The model can be expressed as:</p>
-<p><span class="math display">\[{\bf y}  = {\bf X}{\boldsymbol{\mathbf{\beta}}}+{\bf Z}_{1}{\bf u}_{1}+{\bf Z}_{2}{\bf u}_{2}+{\bf e}\]</span></p>
-<p>where the design matrices contain information relating each individual to a <code>sex</code> (<span class="math inline">\({\bf X}\)</span>) a <code>dam</code> (<span class="math inline">\({\bf Z}_{1}\)</span>) and a <code>fosternest</code>(<span class="math inline">\({\bf Z}_{2}\)</span>). The associated parameter vectors (<span class="math inline">\({\boldsymbol{\mathbf{\beta}}}\)</span>, <span class="math inline">\({\bf u}_{1}\)</span> and <span class="math inline">\({\bf u}_{2}\)</span>) are the effects of each <code>sex</code>, <code>mother</code> and <code>fosternest</code> on <code>tarsus</code> length, and <span class="math inline">\({\bf e}\)</span> is the vector of residuals.</p>
-<p>In the model, the <span class="math inline">\(u\)</span>’s are treated as random so we estimate their variance instead of fixing it in the prior at some (large) value, as we did with the <span class="math inline">\(\beta\)</span>’s. We can be a little more explicit about what this means:</p>
-<p><span class="math display">\[{\bf u}_{1}  \sim N({\bf 0},\ {\bf I}\sigma^{2}_{1})\]</span></p>
-<p>where <span class="math inline">\(\sim\)</span> stands for ‘is distributed as’ and <span class="math inline">\(N\)</span> a (multivariate) normal distribution. The distribution has two sets of parameters; a vector of means and a covariance matrix. We assume the random effects are deviations around the fixed effect part of the model and so they have a prior expectation of zero. The (co)variance matrix of the random
-effects is <span class="math inline">\({\bf I}\sigma^{2}_{1}\)</span> where <span class="math inline">\(\sigma^{2}_{1}\)</span> is the variance component to be estimated. The use of the identity matrix makes two things explicit. First, because all off-diagonal elements of an identity matrix are zero we are assuming that all <code>dam</code> effects are independent (no covariance exists between any two <code>dam</code> effects). Second, all diagonal elements of an identity matrix are 1 implying that the range of possible values the dam effect <em>could</em> take is equivalent for every <code>dam</code>, this range being governed by the magnitude of the variance component.</p>
-<p>Since <code>dam</code>’s have very little interaction with the subset of offspring that were moved to a <code>fosternest</code>, we may be willing to assume that any similarity that exists between the tarsus lengths of this susbset and the subset that remained at home must be due to genetic effects. Although not strictly true we can assume that individuals that shared the same dam also shared the same sire, and so share around 50% of their genes.</p>
-<p>While the numerical values are harder to interpret the patterns of zeros (represented as dots) and non-zeros in inverse covariance matrices are revealing: a zero indicates that two variables are <em>conditionally</em> independent. With Mendelian genetics you receive a random half of your dad’s genome and a random half of your mum’s genome. Consequently, once you condition on a parent’s breeding value, siblings’ breeding values are independent since they receive a random half of their parent’s genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being related. The reason for this is that information on a spouse’s genome provides information about the focal individual’s genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an <span class="math inline">\(a\)</span> allele and a <span class="math inline">\(A\)</span> allele). If we knew the spouse was <span class="math inline">\(AA\)</span> then the focal individual must either be <span class="math inline">\(aa\)</span> or <span class="math inline">\(Aa\)</span>, and most likely <span class="math inline">\(aa\)</span> if they have many offspring that are all heterozygote.</p>
+<p>Consequently, when we obtain the inverse covariance structure using the default <code>scale=TRUE</code> in <span class="math inline">\(\texttt{inverseA}\)</span> the associated variance will be in units of the trait squared per 19.8744913^6 years$. We can fit a model to the log tarsus lengths of Tyrant flycatchers:</p>
+<div class="sourceCode" id="cb336"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb336-1"><a href="pedigree.html#cb336-1" tabindex="-1"></a>tyrant.Ainv <span class="ot">&lt;-</span> <span class="fu">inverseA</span>(tyrant.tree)<span class="sc">$</span>Ainv</span>
+<span id="cb336-2"><a href="pedigree.html#cb336-2" tabindex="-1"></a></span>
+<span id="cb336-3"><a href="pedigree.html#cb336-3" tabindex="-1"></a>m.tyrant <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">log</span>(Tarsus.Length) <span class="sc">~</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span>species, <span class="at">data =</span> tyrant.data,</span>
+<span id="cb336-4"><a href="pedigree.html#cb336-4" tabindex="-1"></a>    <span class="at">ginv =</span> <span class="fu">list</span>(<span class="at">species =</span> tyrant.Ainv), <span class="at">prior =</span> prior.phylo)</span>
+<span id="cb336-5"><a href="pedigree.html#cb336-5" tabindex="-1"></a></span>
+<span id="cb336-6"><a href="pedigree.html#cb336-6" tabindex="-1"></a><span class="fu">summary</span>(m.tyrant)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -1108.995 
+## 
+##  G-structure:  ~species
+## 
+##         post.mean l-95% CI u-95% CI eff.samp
+## species    0.0439  0.03575  0.05233    436.1
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units  0.001785 0.0008237 0.002819    247.4
+## 
+##  Location effects: log(Tarsus.Length) ~ 1 
+## 
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)     2.804    2.646    2.949     1072 &lt;0.001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The model summary shows that the residual variance is comparable in magnitude to that obtained from the analysis of all birds (<code>m.phylo</code>), but the species variance is more than 6 times smaller. Similarly, the phylogentic heritability, although still large, is smaller than that obtained from the analysis of all birds.</p>
+<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="pedigree.html#cb338-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m.phylo<span class="sc">$</span>VCV[, <span class="st">&quot;species&quot;</span>]<span class="sc">/</span><span class="fu">rowSums</span>(m.phylo<span class="sc">$</span>VCV), m.tyrant<span class="sc">$</span>VCV[, <span class="st">&quot;species&quot;</span>]<span class="sc">/</span><span class="fu">rowSums</span>(m.tyrant<span class="sc">$</span>VCV)),</span>
+<span id="cb338-2"><a href="pedigree.html#cb338-2" tabindex="-1"></a>    <span class="at">density =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p><img src="_bookdown_files/fig/unnamed-chunk-180-1.png" alt="" width="672" /></p>
+<p>Naively, we might conclude that phylogenetic effects are less important for Tyrant flycatchers than they are for birds as a whole. However, if we express the variances in the same units (mm<span class="math inline">\(^2\)</span> per million years), the difference is much more subtle with the phylogenetic variance being only about `r round(mean(100*(m.phylo<span class="math inline">\(VCV[,&quot;species&quot;]/all.depth)/mean(m.tyrant\)</span>VCV[,“species”]/tyrant.depth)-100))% smaller in the Tyrant flycatchers.</p>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="pedigree.html#cb339-1" tabindex="-1"></a><span class="co"># root-to-tip distances</span></span>
+<span id="cb339-2"><a href="pedigree.html#cb339-2" tabindex="-1"></a>all.depth <span class="ot">&lt;-</span> <span class="fu">node.depth.edgelength</span>(bird.tree)[<span class="dv">1</span>]</span>
+<span id="cb339-3"><a href="pedigree.html#cb339-3" tabindex="-1"></a>tyrant.depth <span class="ot">&lt;-</span> <span class="fu">node.depth.edgelength</span>(tyrant.tree)[<span class="dv">1</span>]</span>
+<span id="cb339-4"><a href="pedigree.html#cb339-4" tabindex="-1"></a></span>
+<span id="cb339-5"><a href="pedigree.html#cb339-5" tabindex="-1"></a><span class="co"># posterior mean phylogenetic variances in units mm^2 per million years</span></span>
+<span id="cb339-6"><a href="pedigree.html#cb339-6" tabindex="-1"></a><span class="fu">mean</span>(m.phylo<span class="sc">$</span>VCV[, <span class="st">&quot;species&quot;</span>]<span class="sc">/</span>all.depth)</span></code></pre></div>
+<pre><code>## [1] 0.002621654</code></pre>
+<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="pedigree.html#cb341-1" tabindex="-1"></a><span class="fu">mean</span>(m.tyrant<span class="sc">$</span>VCV[, <span class="st">&quot;species&quot;</span>]<span class="sc">/</span>tyrant.depth)</span></code></pre></div>
+<pre><code>## [1] 0.002208867</code></pre>
+<div id="nodestips" class="section level3 hasAnchor" number="8.2.1">
+<h3><span class="header-section-number">8.2.1</span> <code>nodes="TIPS"</code><a href="pedigree.html#nodestips" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>For some reason, using the argument <code>nodes="TIPS"</code> in <span class="math inline">\(\texttt{inverseA}\)</span> became common-place around 2015. This argument only exists to show how inefficient the standard parameterisation of the phylogenetic mixed model is. The default argument <code>nodes="ALL"</code> should be used. For example, the model <code>m.phylo</code> involves 9712 species and takes around 30 seconds to run on my machine with <code>nodes="ALL"</code>. With <code>nodes="TIPS"</code> the same analysis would take weeks. Why such a large difference in speed? When thinking about the assumed covariance structure of effects in an animal or phylogenetic model it makes sense to think about the <span class="math inline">\({\bf A}\)</span> matrix. Previously, we looked at the <span class="math inline">\({\bf A}\)</span> matrix for our small 5-species phylogeny. The <span class="math inline">\({\bf A}\)</span> matrix was <span class="math inline">\(8\times 8\)</span> because it also included the three internal nodes (see Figure <a href="pedigree.html#fig:phylo2">8.2</a>). Let’s have a look at it again (note dots in a sparse matrix represent zeros):</p>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="pedigree.html#cb343-1" tabindex="-1"></a><span class="fu">round</span>(ANall, <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## 8 x 8 sparse Matrix of class &quot;dgCMatrix&quot;
+##       Node2 Node3 Node4 A_fab G_sib C_cae F_cir G_gru
+## Node2 0.245 0.245 0.245     . 0.245 0.245 0.245 0.245
+## Node3 0.245 0.738 0.245     . 0.738 0.738 0.245 0.245
+## Node4 0.245 0.245 0.302     . 0.245 0.245 0.302 0.302
+## A_fab .     .     .         1 .     .     .     .    
+## G_sib 0.245 0.738 0.245     . 1.000 0.738 0.245 0.245
+## C_cae 0.245 0.738 0.245     . 0.738 1.000 0.245 0.245
+## F_cir 0.245 0.245 0.302     . 0.245 0.245 1.000 0.302
+## G_gru 0.245 0.245 0.302     . 0.245 0.245 0.302 1.000</code></pre>
+<p>Including the internal nodes in the <span class="math inline">\({\bf A}\)</span> matrix seems silly - we don’t have observations for these nodes, why not just focus on the <span class="math inline">\({\bf A}\)</span> matrix for the 5 sampled species? By specifying <code>nodes="TIPS"</code>, this is exactly what is done - we work with the following <span class="math inline">\(5\times 5\)</span> matrix:</p>
+<div class="sourceCode" id="cb345"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb345-1"><a href="pedigree.html#cb345-1" tabindex="-1"></a>ANtips <span class="ot">&lt;-</span> ANall[<span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;Node&quot;</span>, <span class="fu">rownames</span>(ANall)), <span class="sc">!</span><span class="fu">grepl</span>(<span class="st">&quot;Node&quot;</span>, <span class="fu">rownames</span>(ANall))]</span>
+<span id="cb345-2"><a href="pedigree.html#cb345-2" tabindex="-1"></a><span class="fu">round</span>(ANtips, <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
+##       A_fab G_sib C_cae F_cir G_gru
+## A_fab     1 .     .     .     .    
+## G_sib     . 1.000 0.738 0.245 0.245
+## C_cae     . 0.738 1.000 0.245 0.245
+## F_cir     . 0.245 0.245 1.000 0.302
+## G_gru     . 0.245 0.245 0.302 1.000</code></pre>
+<p>However, the mixed model equations are not set up in terms of <span class="math inline">\({\bf A}\)</span>, but its inverse - <span class="math inline">\({\bf A}^{-1}\)</span>. For the tips, the inverse doesn’t seem to have any special properties:</p>
+<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="pedigree.html#cb347-1" tabindex="-1"></a>IAtips <span class="ot">&lt;-</span> <span class="fu">solve</span>(ANtips)</span>
+<span id="cb347-2"><a href="pedigree.html#cb347-2" tabindex="-1"></a><span class="fu">round</span>(IAtips, <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## 5 x 5 sparse Matrix of class &quot;dgCMatrix&quot;
+##       A_fab  G_sib  C_cae  F_cir  G_gru
+## A_fab     1  .      .      .      .    
+## G_sib     .  2.229 -1.586 -0.121 -0.121
+## C_cae     . -1.586  2.229 -0.121 -0.121
+## F_cir     . -0.121 -0.121  1.146 -0.287
+## G_gru     . -0.121 -0.121 -0.287  1.146</code></pre>
+<p>As with <span class="math inline">\({\bf A}\)</span>, all pairs of species that share a common ancestor before the root have a non-zero entry in the inverse. For the full bird phylogeny, a whopping 93183890 elements of <span class="math inline">\({\bf A}^{-1}\)</span> have a non-zero entry - around 98.8%. However, if we look of the inverse for the <span class="math inline">\(8\times 8\)</span> <span class="math inline">\({\bf A}\)</span> matrix, where internal nodes are included, the structure of <span class="math inline">\({\bf A}^{-1}\)</span> seems to differ from <span class="math inline">\({\bf A}\)</span> - it is sparser (has more zeros):</p>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="pedigree.html#cb349-1" tabindex="-1"></a>IAall <span class="ot">&lt;-</span> INphylo<span class="sc">$</span>Ainv</span>
+<span id="cb349-2"><a href="pedigree.html#cb349-2" tabindex="-1"></a><span class="fu">round</span>(IAall, <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## 8 x 8 sparse Matrix of class &quot;dgCMatrix&quot;
+##         Node2  Node3   Node4 A_fab  G_sib  C_cae  F_cir  G_gru
+## Node2  23.544 -2.028 -17.429     .  .      .      .      .    
+## Node3  -2.028  9.657   .         . -3.815 -3.815  .      .    
+## Node4 -17.429  .      20.295     .  .      .     -1.433 -1.433
+## A_fab   .      .       .         1  .      .      .      .    
+## G_sib   .     -3.815   .         .  3.815  .      .      .    
+## C_cae   .     -3.815   .         .  .      3.815  .      .    
+## F_cir   .      .      -1.433     .  .      .      1.433  .    
+## G_gru   .      .      -1.433     .  .      .      .      1.433</code></pre>
+<p>The increase in sparsity grows as the tree becomes larger, and for the full bird phylogeny a comparatively miniscule 58262 elements of <span class="math inline">\({\bf A}^{-1}\)</span> have a non-zero entry. However, the gain in efficiency is not so much due to the increase in the number of zeros, but their position. In inverse covariance matrices, a zero indicates that two variables are <em>conditionally</em> independent. In a phylogeny, two species/nodes are conditionally independent given their common ancestor. Consequently, the only non-zero elements (other than the diagonal) are between a species/node and it’s direct ancestor (which it only has one of) and its direct descendants (which it has up to two, usually[^polytomy]). When solving simultaneous equations (as is necessary in mixed models) large improvements in speed can be made by ordering the equations in a way that the number of substitutions can be minimised and general algorithms - such as minimum degree ordering - are used for finding good orderings. By including the internal nodes in <span class="math inline">\({\bf A}^{-1}\)</span> the pattern of conditional independence is revealed to such algorithms and the tip effects are solved first, followed by the effects of their immediate ancestors and so on until the root is reached. For simple models this results in Felsenstein’s peeling algorithm, which is reinvented every 10 years or so.</p>
+<p>In the context of pedigrees, similar sparsity patterns exist. With Mendelian genetics you receive a random half of your dad’s genome and a random half of your mum’s genome. Consequently, once you condition on a parent’s breeding value, siblings’ breeding values are independent since they receive a random half of their parent’s genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being related. The reason for this is that information on a spouse’s genome provides information about the focal individual’s genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an <span class="math inline">\(a\)</span> allele and a <span class="math inline">\(A\)</span> allele). If we knew the spouse was <span class="math inline">\(AA\)</span> then the focal individual must either be <span class="math inline">\(aa\)</span> or <span class="math inline">\(Aa\)</span>, and most likely <span class="math inline">\(aa\)</span> if they have many offspring that are all heterozygote. If we look at <span class="math inline">\({\bf A}^{-1}\)</span> for the nuclear family of Blue Tits from Section @ref{pedigree-sec} we can see this (the two parents are followed by their six offspring):</p>
+<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="pedigree.html#cb351-1" tabindex="-1"></a><span class="fu">inverseA</span>(Nped)<span class="sc">$</span>Ainv</span></code></pre></div>
+<pre><code>## 8 x 8 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                
+## R187920  4  3 -1 -1 -1 -1 -1 -1
+## R187921  3  4 -1 -1 -1 -1 -1 -1
+## R187726 -1 -1  2  .  .  .  .  .
+## R187724 -1 -1  .  2  .  .  .  .
+## R187723 -1 -1  .  .  2  .  .  .
+## R187613 -1 -1  .  .  .  2  .  .
+## R187612 -1 -1  .  .  .  .  2  .
+## R187609 -1 -1  .  .  .  .  .  2</code></pre>
 </div>
-<div id="general-correlation-matrices" class="section level2 hasAnchor" number="8.4">
-<h2><span class="header-section-number">8.4</span> General correlation matrices<a href="pedigree.html#general-correlation-matrices" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="general-correlation-matrices" class="section level2 hasAnchor" number="8.3">
+<h2><span class="header-section-number">8.3</span> General correlation matrices<a href="pedigree.html#general-correlation-matrices" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 
 </div>
 </div>
@@ -537,6 +683,7 @@ effects is <span class="math inline">\({\bf I}\sigma^{2}_{1}\)</span> where <spa
 <hr />
 <ol start="41">
 <li id="fn41"><p>If you pass a pedigree to <span class="math inline">\(\texttt{prunePed}\)</span> with the id’s of phenotyped individuals specified in the argument <span class="math inline">\(\texttt{keep}\)</span> a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed. In earlier versions of MCMCglmm (&lt;3.0) the default argument to <span class="math inline">\(\texttt{prunePed}\)</span> was <span class="math inline">\(\texttt{make.base=FALSE}\)</span> but this did not result in the optimal amount of mixing and was only retained for back compatibility.<a href="pedigree.html#fnref41" class="footnote-back">↩︎</a></p></li>
+<li id="fn42"><p>For non-ultrametric trees, the average time from root to tip is sometimes used.<a href="pedigree.html#fnref42" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

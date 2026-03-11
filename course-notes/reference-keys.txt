@@ -113,8 +113,9 @@ fig:mcmc-zip
 fig:ppzi
 fig:mcmc-hup
 fig:mzap1
-fig:bird-families
-fig:bird-families2
+fig:phylo
+fig:phylo2
+fig:tyrant
 eq:rs-Eq
 eq:pyl-Eq
 eq:pyl2-Eq
@@ -213,7 +214,7 @@ multi-response-non-gaussian-models
 multi-response-bernoulli-models
 bern-gaus-sec
 all-bernoulli
-wide-versus-long-format
+sec-longwide
 covu-sec
 scaled-linear-predictors-texttttheta_scale
 multinomial-models
@@ -223,9 +224,9 @@ Hurdle
 ZAP
 zero-modified-binomial-models
 pedigree
-pedigrees
+pedigree-sec
 phylogenies
-the-animal-model-and-the-phylogenetic-mixed-model
+nodestips
 general-correlation-matrices
 measurement
 error-in-the-response
