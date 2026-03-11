@@ -23,7 +23,7 @@ $\texttt{MCMCglmm}$ handles pedigrees stored in 3-column tabular form, with each
 
 If the parent(s) of an individual are unknown then a missing value (`NA`) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. The function $\texttt{insertPed}$ will return a pedigree table with these individuals inserted if they are missing. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. $\texttt{MCMCglmm}$ can handle this, as long as all the individuals appearing in the data frame passed to `data` also appear in the pedigree. However, it will be more efficient to prune out individuals from the pedigree that lack phenotypic data and which are not required in order to determine the relatedness of two or more phenotyped individuals (e.g. the unphenotyped parents of two siblings) - the function $\texttt{prunePed}$ will do this [^prune].
 
-[^prune]: If you pass a pedigree to $\texttt{prunePed}$ with the id's of phenotyped individuals specified in the argument $\texttt{keep}$ a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed.  In earlier versions of MCMCglmm (<3.0) the default argument to $\texttt{prunePed}$ was $\texttt{make.base=FALSE}$ but this did not result in the optimal amount of mixing and was only retained for back compatibility.  
+[^prune]: If you pass a pedigree to $\texttt{prunePed}$ with the id's of phenotyped individuals specified in the argument $\texttt{keep}$ a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed.  In earlier versions of MCMCglmm (<3.0) the default argument to $\texttt{prunePed}$ was $\texttt{make.base=FALSE}$ but this did not result in the optimal amount of pruning and was only retained for back compatibility.  
 
 To illustrate, we can load a pedigree for a population of blue tits and display the pedigree for the nuclear family that has individuals $\texttt{R187920}$ and $\texttt{R187921}$ as parents:
 
@@ -153,7 +153,7 @@ You will notice that the branch length for *Anser fabalis* is one. This is becau
 sum(INphylo$inbreeding[which(INphylo$pedigree[,1]%in%c("Node2", "Node3", "Geokichla_sibirica"))])
 ```
 
-and is also equal to one. It is only possible to scale the tree if the tree is ultrametric  - the total branch length from the root to each tip is constant before rescaling. In fact the original $\texttt{bird.tree}$ obtained using `extractTree` was not exactly ultrametric - there were small differences in total branch lengths due to rounding errors and the the function $\texttt{force.ultrametric}$ from $\texttt{phyltools}$ had to be used. We can also generate the ${\bf A}$ matrix for this small phylogeny and we can see that element $i,j$ is equal to the proportion of time species/node $i$ and $j$ have shared ancestry:
+and is also equal to one. It is only possible to scale the tree if the tree is ultrametric  - the total branch length from the root to each tip is constant before rescaling. In fact the original $\texttt{bird.tree}$ obtained using `extractTree` was not exactly ultrametric - there were small differences in total branch lengths due to rounding errors and the the function $\texttt{force.ultrametric}$ from $\texttt{phyltools}$ had to be used. We can also generate the ${\bf A}$ matrix for this small phylogeny and we can see that element $ij$ is equal to the proportion of time species/node $i$ and $j$ have shared ancestry.
 
 ``` {r eval=FALSE}
 ANall<-solve(INphylo$Ainv)
@@ -165,6 +165,8 @@ ANall<-solve(INphylo$Ainv)
 rownames(ANall)<-colnames(ANall)<-substr(gsub("[a-z]*_", "_", colnames(ANall)),1,5)
 round(ANall,3)
 ```
+
+If `scale=FALSE` had been passed to $\texttt{inverseA}$ the elements would be the amount of time shared rather than the proportion. 
 
 The AVONET data-base, available through the package $\texttt{PNC}$, contains information about the world's birds:
 
@@ -249,7 +251,7 @@ The model summary shows that the residual variance is comparable in magnitude to
 plot(mcmc.list(m.phylo$VCV[,"species"]/rowSums(m.phylo$VCV), m.tyrant$VCV[,"species"]/rowSums(m.tyrant$VCV)), density=FALSE)
 ```
 
-Naively, we might conclude that phylogenetic effects are less important for Tyrant flycatchers than they are for birds as a whole. However, if we express the variances in the same units (mm$^2$ per million years), the difference is much more subtle with the phylogenetic variance being only about `r round(mean(100*(m.phylo$VCV[,"species"]/all.depth)/mean(m.tyrant$VCV[,"species"]/tyrant.depth)-100))% smaller in the Tyrant flycatchers.
+Naively, we might conclude that phylogenetic effects are less important for Tyrant flycatchers than they are for birds as a whole. However, if we express the variances in the same units (mm$^2$ per million years)
 
 ```{r }
 # root-to-tip distances
@@ -260,6 +262,8 @@ tyrant.depth<-node.depth.edgelength(tyrant.tree)[1]
 mean(m.phylo$VCV[,"species"]/all.depth)
 mean(m.tyrant$VCV[,"species"]/tyrant.depth)
 ```
+
+the difference is much more subtle, with the phylogenetic variance being only about `r round(mean(100*(m.phylo$VCV[,"species"]/all.depth)/mean(m.tyrant$VCV[,"species"]/tyrant.depth)-100))`% smaller in the Tyrant flycatchers.
 
 ### `nodes="TIPS"`
 
@@ -299,13 +303,16 @@ rownames(IAall)<-colnames(IAall)<-substr(gsub("[a-z]*_", "_", rownames(IAall)),1
 round(IAall,3)
 ```
 
-The increase in sparsity grows as the tree becomes larger, and for the full bird phylogeny a comparatively miniscule `r length(Ainv@x)` elements of ${\bf A}^{-1}$ have a non-zero entry. However, the gain in efficiency is not so much due to the increase in the number of zeros, but their position.  In inverse covariance matrices, a zero indicates that two variables are *conditionally* independent. In a phylogeny, two species/nodes are conditionally independent given their common ancestor. Consequently, the only non-zero elements (other than the diagonal) are between a species/node and it's direct ancestor (which it only has one of) and its direct descendants (which it has up to two, usually[^polytomy]). When solving simultaneous equations (as is necessary in mixed models) large improvements in speed can be made by ordering the equations in a way that the number of substitutions can be minimised and general algorithms - such as minimum degree ordering - are used for finding good orderings. By including the internal nodes in ${\bf A}^{-1}$ the pattern of conditional independence is revealed to such algorithms and the tip effects are solved first, followed by the effects of their immediate ancestors and so on until the root is reached. For simple models this results in Felsenstein's peeling algorithm, which is reinvented every 10 years or so. 
+The increase in sparsity grows as the tree becomes larger, and for the full bird phylogeny a comparatively miniscule `r length(Ainv@x)` elements of ${\bf A}^{-1}$ have a non-zero entry. However, the gain in efficiency is not so much due to the increase in the number of zeros, but their position.  In inverse covariance matrices, a zero indicates that two variables are *conditionally* independent. In a phylogeny, two species/nodes are conditionally independent given their common ancestor. Consequently, the only non-zero elements (other than the diagonal) are between a species/node and it's direct ancestor (which it only has one of) and its direct descendants (which it has up to two, usually[^polytomy]). When solving simultaneous equations (as is necessary in mixed models) large improvements in speed can be made by ordering the equations in a way that the number of substitutions can be minimised and general algorithms - such as minimum degree ordering - are used for finding good orderings. By including the internal nodes in ${\bf A}^{-1}$ the pattern of conditional independence is revealed to such algorithms and the tip effects are solved first, followed by the effects of their immediate ancestors and so on until the root is reached. For simple models this results in Felsenstein's peeling algorithm, which is reinvented every 10 years or so. For more general models, algorithms such as minimum degree ordering will find good orderings without the need to spend time developing new algorithms for every new problem.   
 
-In the context of pedigrees, similar sparsity patterns exist.  With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's breeding value, siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being related. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and a $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygote.    If we look at ${\bf A}^{-1}$ for the nuclear family of Blue Tits from Section \@ref{pedigree-sec} we can see this (the two parents are followed by their six offspring):
+[^polytomy]: Sometimes there is not enough information in sequence data to resolve the topology for parts of the tree. For example, it may not be possible to distinguish between the trees $\{\{A, B\}, C\}$ $\{A, \{B, C\}\}$ and $\{\{A, C\}, B\}$ where the nesting of the brackets indicate ever closer relatedness. In such cases, all three species may be considered to originate from a single ancestral node: $\{A, B, C\}$ - this is called a polytomy. A lot of software that is dedicated to phylogenies will only accept bifurcating trees, and so represent the polytomy as one of the three possible topologies but with a zero branch length for the internal node. $\texttt{inverseA}$ will complain about such trees because the inverse will be singular. However, $\texttt{MCMCglmm}$ happily accepts polytomies and does not require the zero-branch length fudge. The function $\texttt{di2multi}$ from the package $\texttt{ape}$ will eliminate the zero-branch lengths. 
+
+In the context of pedigrees, similar sparsity patterns exist.  With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's effect (breeding value), siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from them. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being unrelated. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and a $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygote.  If we look at ${\bf A}^{-1}$ for the nuclear family of Blue Tits from Section \@ref{pedigree-sec} we can see this structure (the two parents are followed by their six offspring):
 
 ```{r }
 inverseA(Nped)$Ainv
 ```
 
-## General correlation matrices
+## User-defined covariance structures
 
+In the previous two sections we have looked at known (up to proportionality) covariance structures that arise from pedigrees and phylogenies. However, user-defined covariance structures can be fitted. The inverse must be obtained and stored as a sparse matrix of class $\texttt{dgCMatrix}$. It must also have $\texttt{rownames}$ that correspond to the associated predictor in the data frame. The inverse can then be passed using the $\texttt{ginverse}$ argument to $\texttt{MCMCglmm}$. If the inverse has little structure and few zero's, model fitting may take some time.
