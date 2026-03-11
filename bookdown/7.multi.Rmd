@@ -474,7 +474,7 @@ We don't expect the predicted probabilities to perfectly match what is observed 
 P
 ```
 
-## Wide versus Long Format
+## Wide versus Long Format {#sec-longwide}
 
 In the multi-response models we have fitted so far, all responses have been observed for every unit of observation. For example, there were no cases where a patient was assessed for $\texttt{ascites}$ but $\texttt{bili}$ was not measured. If there had been missing observations, these could have been recorded as $\texttt{NA}$ and $\texttt{MCMCglmm}$ will treat them as unknown observations to be sampled and averaged over. If the amount of missingness is low then this is generally not an issue. However, if there is a lot of missing data then updating the missing observations can be slow and result in poor mixing. In these cases it is usually best to store the data in long-format and remove the missing values [^missing]. When fitting multi-response models to long-format data it needs to be in a format shown in Equation \@ref(eq:multi). There needs to be two columns in the data-frame: $\texttt{family}$ specifying the distribution for each observation and $\texttt{trait}$ which has factors indexing the observation type. In such cases the $\texttt{family}$ argument to $\texttt{family}$ should be $\texttt{NULL}$.
 
