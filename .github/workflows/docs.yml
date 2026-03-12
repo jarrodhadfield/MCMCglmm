@@ -58,6 +58,8 @@ jobs:
             dplyr
             PNC
             clootl
+            icenReg
+            metadat
             local::.
           needs: website
 

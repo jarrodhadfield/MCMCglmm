@@ -40,6 +40,8 @@ library(tidyr)
 library(dplyr)
 library(PNC)
 library(clootl)
+library(icenReg)
+library(metadat)
 
 knitr::knit_hooks$set(webgl = hook_webgl)
 

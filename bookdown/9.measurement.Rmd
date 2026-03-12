@@ -1,7 +1,194 @@
-# Measurement Error, Meta-analysis an Missing Values {#measurement}
+# Measurement Error, Meta-analysis and Missing Values {#measurement}
+
+Sometimes, variables in the model are not perfectly observed. In the worst case they are completely missing, but often we have some information about them. We may only know the interval in which an observation lies, in which case the observation is said to be censored. In other cases, we have a 'best' estimate of the observation, but this estimate comes with error. Handling incomplete information about an observation is relatively straightforward when the observation is the response variable, but considerably more challenging when the observation is a predictor.   
 
 
-## Error in the Response
+## Missing values in the response
+
+## Censored response variables
+
+
+```{r echo=FALSE}
+data(IR_diabetes)
+```
+
+A censored observation is not perfectly known, but we do know it lies between two possible values.  If the lower possible value is not known we say we have left censoring and if the upper possible value is not known we say we have right censoring. When both the lower and upper possible values are known we have interval censoring. This terminology is not required when dealing with censoring in $\texttt{MCMCglmm}$ - all that is required is specifying the lower and upper possible values.  With left censoring we simply set the lower possible value to minus infinity and with right censoring we simply set the upper possible value to minus infinity. If the observation is perfectly observed we would make the lower and upper possible values equal, and if the observation is completely missing we set the lower and upper possible values to minus and plus infinity, respectively (or use $\texttt{NA}$). As an example, we will use the $\texttt{IR_diabetes}$ data from the package $\texttt{icenReg}$ which contains information about the time between the onset of diabetes and the development of diabetic nephropathy in `r nrow(IR_diabetes)` patients. 
+
+
+```{r }
+data(IR_diabetes)
+head(IR_diabetes)
+```
+
+The columns $\texttt{left}$ and $\texttt{right}$ give the minimum and maximum amount of time per patient (units aren't given, but I presume years). For the majority of patients (`r round(100*sum(IR_diabetes$left==IR_diabetes$right)/nrow(IR_diabetes))`%) the amount of time is known perfectly (for example the second patient) but for some patients the time is interval censored (for example the first patient). In $\texttt{MCMCglmm}$ the lower and upper censoring points are passed using $\texttt{cbind}$ and the chosen response is prefixed with $\texttt{cen}$:
+
+
+```{r }
+m.cens<-MCMCglmm(cbind(left, right)~gender, data=IR_diabetes, family="cengaussian")
+summary(m.cens)
+```
+
+Censoring is implemented for the Poisson, Gaussian and exponential distributions.
+
+## Meta-analysis and error in the response {#meta-sec}
+
+In reality, the true value is never really known for continuous variables - there will always be some discrepancy between the true value and its measured value. Usually we ignore this, and indeed, if the magnitude of the discrepancies have constant probability over observations, there is little to be gained from worrying about it - these discrepancies become part of the residual and the assumption of homogeneity of variance will still hold. In some cases, however, the magnitude of the discrepancies may vary over observations. In such cases there is an advantage to modelling the discrepancies since it allows us to give more weight to observations that have smaller discrepancies. To leverage this information we first need to assume (or know) what distribution these discrepancies follow. In this section we will start by assuming the discrepancies are normally distributed. Second, we need to know (at least up to proportionality) the expected variance of the discrepancies for each observation, something I'll refer to as the measurement error variance. The most common situation in which we have this information is when the observation is an *estimate* of some quantity and the measurement error variance is taken to be the standard error of the estimate squared. In such situations, the model is often referred to as a meta-analysis.  To illustrate we will analyse data collected from studies looking at the effectiveness of coaching on the performance on the Scholastic Aptitude Test (SAT). The data are in $\texttt{dat.kalaian1996}$ from the package $\texttt{metadat}$
+
+```{r }
+data(dat.kalaian1996)
+head(dat.kalaian1996[,2:8])
+```
+
+We will focus on the variable $\texttt{yi}$ which is the standardised mean difference in SAT scores between coached and uncoached students. The difference is standardised by the pooled standard deviation[^poolsd] and positive values indicate the coached students have higher scores. `r table(table(dat.kalaian1996$study))["1"]` studies contribute one observation - either for the verbal or math subtest (indicated by $\texttt{outcome}$) whereas `r table(table(dat.kalaian1996$study))["2"]` studies contribute two observations, one for  verbal and one for math. The variable $\texttt{vi}$ is the standard error squared of this difference - the assumed measurement error variance. A plot of $\texttt{yi}$ against the precision ($1/\sqrt{\texttt{vi}}$) is known as a funnel plot (Figure \@ref(fig:funnel)):
+
+[^poolsd]: To obtain the pooled standard deviation a weighted variance needs to be calculated. For two groups, the weighted variance is $\frac{w_1\widehat{\sigma^2_1}+w_2\widehat{\sigma^2_2}}{w_1+w_2}$$ where the $\widehat{\sigma^2}$ are estimates of the variance within each group. The weights are typically the sample size for each group minus one. The pooled standard deviation is the square root of the weighted variance and is the best estimate of the standard deviation under the assumption that it is the same in the two groups.
+
+
+```{r funnel, echo=FALSE, include=TRUE, fig.cap="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\\sqrt{\\texttt{vi}}$) on the x-axis.  Back dots are for the math subtest and red dots for verbal subtest.", fig.width=7, fig.height=5}
+plot(yi~I(1/sqrt(vi)), data=dat.kalaian1996, ylab="Difference in SAT score", xlab="Precision", col=as.factor(dat.kalaian1996$outcome))
+``` 
+
+Funnel plots are so called because the response shows high variance when precision is low (measurement error variance is high) and teh variance declines as sample sizes and precision increases. There are two flavours of meta-analysis: fixed-effect meta-analysis, which assumes that all of the variability between estimates is due to measurement error and random-effect meta-analysis, which assumes that estimates may also vary for other reasons (and usually that this variability does not depend on precision). In the context of the funnel plot, the fixed-effect meta-analysis assumes that at high precision all estimates converge on the same value whereas the random-effect meta-analysis allows some variability to exist. Both types of meta-analysis can be fitted in $\texttt{MCMCglmm}$, although to me at least, the plausibility of the assumptions that underpin fixed-effect meta-analysis seem dubious. I usually start with random-effect meta-analyses which actually converges on the fixed-effect meta-analysis as the residual ($\texttt{units}$) variance tends to zero. 
+
+There are multiple ways of setting up a (random-effect) meta-analysis in $\texttt{MCMCglmm}$. Here, I will go through the least intuitive method as it will provide the first step at understanding the next section. In Chapter \@ref(cont-int) we explored random regression and in Section \@ref(het-res) we saw that random regression models also impose assumptions about how the variances changes as function of the covariate. If a random slope model is fitted without random intercepts the variance across levels of the random effect is $\sigma^2_ux^2$ where $x$ is the covariate. Consequently, fitting an observation-level random regression model with the standard error ($\texttt{sqrt(vi)}$) as $x$ and fixing $\sigma^2_u$ at one results in the variance being equal to the measurement error variance $\texttt{vi}$ as required. The model formula `idh(sqrt(vi)):units` fits such a model and the associated variance can be fixed at one in the prior.
+
+```{r }
+prior.meta<-list(R=IW(1, 0.002), G=list(G1=list(V=1, fix=1)))
+m.meta<-MCMCglmm(yi~outcome, random=~idh(sqrt(vi)):units, data=dat.kalaian1996, prior=prior.meta)
+summary(m.meta)
+``` 
+
+We can see that the standardised difference is positive  - for math, the scores of coached students are on average `r round(mean(m.meta$Sol[,"(Intercept)"]), 2)` standard deviations higher, and the impact of coaching does not seem to be tremendously different for the verbal subtest. The residual ($\texttt{units}$) variance is small in comparison to the average measurement error variance (the average value of $\texttt{vi}$ ($\bar{\texttt{vi}}$) is `r round(mean(dat.kalaian1996$vi), 3)`) - often this is expressed as $$I^2=\sigma^2_{units}/(\sigma^2_{units}+\bar{\texttt{vi}})$$ the posterior mean of which is `r round(mean(m.meta$VCV[,"units"]/(m.meta$VCV[,"units"]+mean(dat.kalaian1996$vi))),3)`. In a fixed-effect meta-analysis, $I^2=0$.
+
+
+
+To the funnel plot in Figure \@ref(fig:funnel) we can add the 95% prediction intervals for the difference in math scores (black) and verbal scores (red) (Figure \@ref(fig:funnel2)). 
+
+```{r funnel2, echo=FALSE, include=TRUE, fig.cap="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\\sqrt{\\texttt{vi}}$) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained using a variance of $\\sigma^2_\\texttt{units}+\\texttt{vi}$. The solid grey line is the 95% prediction interval for the math subtest assuming $\\sigma^2_\\texttt{units}=0$.", fig.width=7, fig.height=5}
+plot(yi~I(1/sqrt(vi)), data=dat.kalaian1996, ylab="Difference in SAT score", xlab="Precision", col=as.factor(dat.kalaian1996$outcome))
+
+precision.x<-seq(min(1/sqrt(dat.kalaian1996$vi))*0.9, max(1/sqrt(dat.kalaian1996$vi))*1.1, length=100)
+v.x<-(1/precision.x)^2
+interval<-0.95
+mu.math<-mean(m.meta$Sol[,"(Intercept)"])
+mu.verbal<-mean(rowSums(m.meta$Sol))
+
+v.units<-mean(m.meta$VCV[,"units"])
+v.vi<-1
+
+abline(h=mu.math)
+abline(h=mu.verbal, col="red")
+
+lower<-qnorm((1-interval)/2, mu.math, sqrt(v.units+v.vi*v.x))
+upper<-qnorm(1-(1-interval)/2, mu.math, sqrt(v.units+v.vi*v.x))
+
+lines(lower~precision.x, lty=2)
+lines(upper~precision.x, lty=2)
+
+lower<-qnorm((1-interval)/2, mu.verbal, sqrt(v.units+v.vi*v.x))
+upper<-qnorm(1-(1-interval)/2, mu.verbal, sqrt(v.units+v.vi*v.x))
+
+lines(lower~precision.x, lty=2, col="red")
+lines(upper~precision.x, lty=2, col="red")
+
+lower<-qnorm((1-interval)/2, mu.math, sqrt(v.vi*v.x))
+upper<-qnorm(1-(1-interval)/2, mu.math, sqrt(v.vi*v.x))
+
+lines(lower~precision.x, col="grey")
+lines(upper~precision.x, col="grey")
+
+``` 
+
+The 95% prediction intervals suggest a problem - the observations look less variable than predicted when precision is high. With only `r nrow(dat.kalaian1996)` observations it is hard to be sure whether this couldn't be just due to chance, but it is tempting to suggest a problem exists because a random-effect meta-analysis was used and the estimate of $\sigma^2_\texttt{units}$ is somehow overestimated, perhaps because of an influential prior. However, the solid grey lines give the 95% prediction interval for the math subset (points in black) assuming $\sigma^2_\texttt{units}=0$ and the interval is almost unchanged. In my experience, this type of type of problem is relatively common in meta-analyses. For this reason, I often test, rather than assume, that the measurement error variance is exactly proportional to that stated - rather than fix $\sigma^2_{u}$ at one I allow it to be estimated.    
+
+
+```{r }
+prior.meta2<-list(R=IW(1, 0.002), G=F(1,1000))
+m.meta2<-MCMCglmm(yi~outcome, random=~idh(sqrt(vi)):units, data=dat.kalaian1996, prior=prior.meta2)
+summary(m.meta2)
+``` 
+
+Although the best estimate suggests that the measurement error variance only scales with $\texttt{vi}$ by a factor  `r round(mean(m.meta2$VCV[,1]),3)` rather than one (as assumed in the more standard model), the credible intervals do overlap one and the improvement in the diagnostic prediction interval plot is only marginal (Figure \@ref(fig:funnel3)).  
+
+
+```{r funnel3, echo=FALSE, include=TRUE, fig.cap="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\\sqrt{\\texttt{vi}}$) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained using a variance of $\\sigma^2_\\texttt{units}+\\texttt{vi}$.", fig.width=7, fig.height=5}
+plot(yi~I(1/sqrt(vi)), data=dat.kalaian1996, ylab="Difference in SAT score", xlab="Precision", col=as.factor(dat.kalaian1996$outcome))
+
+mu.math<-mean(m.meta2$Sol[,"(Intercept)"])
+mu.verbal<-mean(rowSums(m.meta2$Sol))
+
+v.units<-mean(m.meta2$VCV[,"units"])
+v.vi<-mean(m.meta2$VCV[,1])
+
+abline(h=mu.math)
+abline(h=mu.verbal, col="red")
+
+lower<-qnorm((1-interval)/2, mu.math, sqrt(v.units+v.vi*v.x))
+upper<-qnorm(1-(1-interval)/2, mu.math, sqrt(v.units+v.vi*v.x))
+
+lines(lower~precision.x, lty=2)
+lines(upper~precision.x, lty=2)
+
+lower<-qnorm((1-interval)/2, mu.verbal, sqrt(v.units+v.vi*v.x))
+upper<-qnorm(1-(1-interval)/2, mu.verbal, sqrt(v.units+v.vi*v.x))
+
+lines(lower~precision.x, lty=2, col="red")
+lines(upper~precision.x, lty=2, col="red")
+``` 
+
+### Exact meta-analysis
+
+Another possible source of model misspecification is the assumption that the measurement errors are normally distributed with a standard deviation equal to the standard error of the estimate. This is true for linear model coefficients, including the difference in the means for two groups, but only when the assumption of normality is met *and* the residual variance is known perfectly. In practice, the residual variance is not known exactly and is estimated from the data. The assumed measurement error distribution is then only approximate, although if the individual studies have moderate sample sizes ($>30$) the approximation is accurate enough that it is not worth worrying about.   Given `r sum((dat.kalaian1996$n1+dat.kalaian1996$n2)>30)` of the `r nrow(dat.kalaian1996)` differences in $\texttt{dat.kalaian1996}$ were estimated from sample sizes in excess of 30, it seems unlikely that using a more accurate distribution for the measurement errors will dramatically change the model, but let's try. Assuming the individual studies that contributed to $\texttt{dat.kalaian1996}$ were normally distributed, the distribution of the estimated difference follows a mean-shifted scaled t-distribution with a mean equal to the true difference, a scale equal to the reported standard error ($\sqrt{\texttt{vi}}$) and degrees of freedom equal to the residual degrees of freedom. If we are prepared to assume no moderator variables were included when estimating the difference in the means the residual degrees of freedom will be equal to the sum of the sample sizes in each group minus two:
+
+```{r }
+dat.kalaian1996$df<-dat.kalaian1996$n1+dat.kalaian1996$n2-2
+``` 
+
+However, the differences in $\texttt{dat.kalaian1996}$ ($\texttt{yi}$) are not raw differences, but have been standardised by the within group standard deviation.  After standard-deviation standardisation the distribution of estimates is no longer a mean-shifted scaled t-distribution but a noncentral scaled t-distribution. The true (standardised) value is equal to the noncentrality parameter, and the scale and degrees of freedom are equal to the reported standard error and residual degrees of freedom from the model. When the true value is non-zero the distribution of errors will be asymmetric with a longer tail to the right when the true value is positive. When the true value is zero we have the standard scaled t-distribution which compared to the normal has longer tails. As the degrees of freedom increases the noncentral scaled t-distribution converges on the normal.  $\texttt{MCMCglmm}$ allows the response to come from a noncentral scaled t-distribution (`family="ncst"`) if the scale and degrees of freedom are known and the linear model predicts the noncentrality parameter. When using `family="ncst"` three columns are expected: the estimate, it's standard error and the residual degrees of freedom. Note that for such models, the meausrement errors are built into the distribution and do not need to be modelled using random effects:
+
+```{r }
+m.meta3<-MCMCglmm(cbind(yi, sqrt(vi), df)~outcome, data=dat.kalaian1996, prior=list(R=list(V=1, nu=0.002)), family="ncst")
+summary(m.meta3)
+``` 
+
+The posterior distributions of the parameters are almost identical to those seen with the standard model (`m.meta`), as expected given the high sample sizes. Obtaining the prediction intervals is a little tricky with respect to the precision is a little tricky, since for a given precision the residual degrees of freedom might vary. Moreover the response is now assumed to be the sum of a normally distributed $\textttt{unit}$ effect and a noncentral scaled $t$ effect and so the quantiles of the distribution are unknown. We can of course obtain posterior predictive intervals for our observed data and overly them, and as expected it is very similar to Figure \@ref(fig:funnel2).
+
+```{r funnel4, echo=FALSE, include=TRUE, fig.cap="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\\sqrt{\\texttt{vi}}$) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained assuming the response follows a noncentral scaled t-distribution.", fig.width=7, fig.height=5}
+plot(yi~I(1/sqrt(vi)), data=dat.kalaian1996, ylab="Difference in SAT score", xlab="Precision", col=as.factor(dat.kalaian1996$outcome))
+
+pred.meta.3<-predict(m.meta3, interval="prediction")
+
+mu.math<-mean(m.meta3$Sol[,"(Intercept)"])
+mu.verbal<-mean(rowSums(m.meta3$Sol))
+
+abline(h=mu.math)
+abline(h=mu.verbal, col="red")
+
+order.x<-order(I(1/sqrt(dat.kalaian1996$vi)))
+math.obs<-which(dat.kalaian1996$outcome[order.x]=="math")
+
+lines(pred.meta.3[order.x[math.obs],2]~I(1/sqrt(dat.kalaian1996$vi[order.x[math.obs]])), lty=2)
+lines(pred.meta.3[order.x[math.obs],3]~I(1/sqrt(dat.kalaian1996$vi[order.x[math.obs]])), lty=2)
+
+lines(pred.meta.3[order.x[-math.obs],2]~I(1/sqrt(dat.kalaian1996$vi[order.x[-math.obs]])), lty=2, col="red")
+lines(pred.meta.3[order.x[-math.obs],3]~I(1/sqrt(dat.kalaian1996$vi[order.x[-math.obs]])), lty=2, col="red")
+``` 
+
+It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly when the case for standardisation seems to be misplaced: I bet coaching companies don't have statements on their websites saying they raise SAT grades by $x$ standard deviations - they will say they raise them by $x$ points (a raw difference) or by $x$ percent (a mean standardised difference). If raw differe
+
+
+### Multivariate meta-analysis
+
+
+```{r }
+prior.meta3<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(2), nu=1)))
+m.meta3<-MCMCglmm(yi~outcome, random=~corg(outcome:sqrt(vi)):units, data=dat.kalaian1996, prior=prior.meta3)
+summary(m.meta3)
+```
+
+
+
+## Missing values and error in the predictors
 
 Random intercept-slope models implicitly assume that the variance changes as a quadratic function of the predictor. This can be used to our advantage because it allows us to fit meta-analytic models. In meta-analysis the data are usually some standardised statistic which has been estimated with different levels of measurement error. If we wanted to know the expected value of these statistics we would want to weight our answer to those measurements made with the smallest amount of error. If we assume that measurement error around the true value is normally distributed then we could assume the model:
 
@@ -17,13 +204,7 @@ $$\begin{array}{rl}
 
 fixing $\sigma^{2}_{m}=1$ in the prior, the expected variance in the measurement errors are therefore the standard errors squared (the sampling variance) and all measurement errors are assumed to be independent of each other. The random regression therefore fits a random effect meta-analysis.
 
-### Meta-analysis {#meta-sec}
 
-### Interval Estimation
-
-## Error in the Predictors
-
-## Missing Values
 
 
 
