@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>9 Measurement Error, Meta-analysis an Missing Values | MCMCglmm Course Notes</title>
+  <title>9 Measurement Error, Meta-analysis and Missing Values | MCMCglmm Course Notes</title>
   <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
   <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="9 Measurement Error, Meta-analysis an Missing Values | MCMCglmm Course Notes" />
+  <meta property="og:title" content="9 Measurement Error, Meta-analysis and Missing Values | MCMCglmm Course Notes" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="9 Measurement Error, Meta-analysis an Missing Values | MCMCglmm Course Notes" />
+  <meta name="twitter:title" content="9 Measurement Error, Meta-analysis and Missing Values | MCMCglmm Course Notes" />
   
   <meta name="twitter:description" content="Extended documentation and course notes for the MCMCglmm R package." />
   
@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-03-11" />
+<meta name="date" content="2026-03-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -59,8 +59,25 @@
 <script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
 <script src="libs/rglWebGL-binding-1.3.36/rglWebGL.js"></script>
 <link href="libs/rglwidgetClass-1.3.36/rgl.css" rel="stylesheet" />
-<script src="libs/rglwidgetClass-1.3.36/rglClass.min.js"></script>
-<script src="libs/CanvasMatrix4-1.3.36/CanvasMatrix.min.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/rglClass.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/utils.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/buffer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/subscenes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/shaders.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/shadersrc.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/textures.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/projection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/mouse.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/init.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/pieces.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/draw.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/controls.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/selection.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/rglTimer.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/pretty.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/axes.src.js"></script>
+<script src="libs/rglwidgetClass-1.3.36/animation.src.js"></script>
+<script src="libs/CanvasMatrix4-1.3.36/CanvasMatrix.src.js"></script>
 
 
 <style type="text/css">
@@ -313,15 +330,16 @@ div.csl-indent {
 </ul></li>
 <li class="chapter" data-level="8.3" data-path="pedigree.html"><a href="pedigree.html#user-defined-covariance-structures"><i class="fa fa-check"></i><b>8.3</b> User-defined covariance structures</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="measurement.html"><a href="measurement.html"><i class="fa fa-check"></i><b>9</b> Measurement Error, Meta-analysis an Missing Values</a>
+<li class="chapter" data-level="9" data-path="measurement.html"><a href="measurement.html"><i class="fa fa-check"></i><b>9</b> Measurement Error, Meta-analysis and Missing Values</a>
 <ul>
-<li class="chapter" data-level="9.1" data-path="measurement.html"><a href="measurement.html#error-in-the-response"><i class="fa fa-check"></i><b>9.1</b> Error in the Response</a>
+<li class="chapter" data-level="9.1" data-path="measurement.html"><a href="measurement.html#missing-values-in-the-response"><i class="fa fa-check"></i><b>9.1</b> Missing values in the response</a></li>
+<li class="chapter" data-level="9.2" data-path="measurement.html"><a href="measurement.html#censored-response-variables"><i class="fa fa-check"></i><b>9.2</b> Censored response variables</a></li>
+<li class="chapter" data-level="9.3" data-path="measurement.html"><a href="measurement.html#meta-sec"><i class="fa fa-check"></i><b>9.3</b> Meta-analysis and error in the response</a>
 <ul>
-<li class="chapter" data-level="9.1.1" data-path="measurement.html"><a href="measurement.html#meta-sec"><i class="fa fa-check"></i><b>9.1.1</b> Meta-analysis</a></li>
-<li class="chapter" data-level="9.1.2" data-path="measurement.html"><a href="measurement.html#interval-estimation"><i class="fa fa-check"></i><b>9.1.2</b> Interval Estimation</a></li>
+<li class="chapter" data-level="9.3.1" data-path="measurement.html"><a href="measurement.html#exact-meta-analysis"><i class="fa fa-check"></i><b>9.3.1</b> Exact meta-analysis</a></li>
+<li class="chapter" data-level="9.3.2" data-path="measurement.html"><a href="measurement.html#multivariate-meta-analysis"><i class="fa fa-check"></i><b>9.3.2</b> Multivariate meta-analysis</a></li>
 </ul></li>
-<li class="chapter" data-level="9.2" data-path="measurement.html"><a href="measurement.html#error-in-the-predictors"><i class="fa fa-check"></i><b>9.2</b> Error in the Predictors</a></li>
-<li class="chapter" data-level="9.3" data-path="measurement.html"><a href="measurement.html#missing-values"><i class="fa fa-check"></i><b>9.3</b> Missing Values</a></li>
+<li class="chapter" data-level="9.4" data-path="measurement.html"><a href="measurement.html#missing-values-and-error-in-the-predictors"><i class="fa fa-check"></i><b>9.4</b> Missing values and error in the predictors</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
 <ul>
@@ -363,9 +381,214 @@ div.csl-indent {
 
             <section class="normal" id="section-">
 <div id="measurement" class="section level1 hasAnchor" number="9">
-<h1><span class="header-section-number">9</span> Measurement Error, Meta-analysis an Missing Values<a href="measurement.html#measurement" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<div id="error-in-the-response" class="section level2 hasAnchor" number="9.1">
-<h2><span class="header-section-number">9.1</span> Error in the Response<a href="measurement.html#error-in-the-response" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h1><span class="header-section-number">9</span> Measurement Error, Meta-analysis and Missing Values<a href="measurement.html#measurement" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Sometimes, variables in the model are not perfectly observed. In the worst case they are completely missing, but often we have some information about them. We may only know the interval in which an observation lies, in which case the observation is said to be censored. In other cases, we have a ‘best’ estimate of the observation, but this estimate comes with error. Handling incomplete information about an observation is relatively straightforward when the observation is the response variable, but considerably more challenging when the observation is a predictor.</p>
+<div id="missing-values-in-the-response" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> Missing values in the response<a href="measurement.html#missing-values-in-the-response" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+</div>
+<div id="censored-response-variables" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Censored response variables<a href="measurement.html#censored-response-variables" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A censored observation is not perfectly known, but we do know it lies between two possible values. If the lower possible value is not known we say we have left censoring and if the upper possible value is not known we say we have right censoring. When both the lower and upper possible values are known we have interval censoring. This terminology is not required when dealing with censoring in <span class="math inline">\(\texttt{MCMCglmm}\)</span> - all that is required is specifying the lower and upper possible values. With left censoring we simply set the lower possible value to minus infinity and with right censoring we simply set the upper possible value to minus infinity. If the observation is perfectly observed we would make the lower and upper possible values equal, and if the observation is completely missing we set the lower and upper possible values to minus and plus infinity, respectively (or use <span class="math inline">\(\texttt{NA}\)</span>). As an example, we will use the <span class="math inline">\(\texttt{IR_diabetes}\)</span> data from the package <span class="math inline">\(\texttt{icenReg}\)</span> which contains information about the time between the onset of diabetes and the development of diabetic nephropathy in 731 patients.</p>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="measurement.html#cb353-1" tabindex="-1"></a><span class="fu">data</span>(IR_diabetes)</span>
+<span id="cb353-2"><a href="measurement.html#cb353-2" tabindex="-1"></a><span class="fu">head</span>(IR_diabetes)</span></code></pre></div>
+<pre><code>##   left right gender
+## 1   24    27   male
+## 2   22    22 female
+## 3   37    39   male
+## 4   20    20   male
+## 5    1    16   male
+## 6    8    20 female</code></pre>
+<p>The columns <span class="math inline">\(\texttt{left}\)</span> and <span class="math inline">\(\texttt{right}\)</span> give the minimum and maximum amount of time per patient (units aren’t given, but I presume years). For the majority of patients (81%) the amount of time is known perfectly (for example the second patient) but for some patients the time is interval censored (for example the first patient). In <span class="math inline">\(\texttt{MCMCglmm}\)</span> the lower and upper censoring points are passed using <span class="math inline">\(\texttt{cbind}\)</span> and the chosen response is prefixed with <span class="math inline">\(\texttt{cen}\)</span>:</p>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="measurement.html#cb355-1" tabindex="-1"></a>m.cens<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(left, right)<span class="sc">~</span>gender, <span class="at">data=</span>IR_diabetes, <span class="at">family=</span><span class="st">&quot;cengaussian&quot;</span>)</span>
+<span id="cb355-2"><a href="measurement.html#cb355-2" tabindex="-1"></a><span class="fu">summary</span>(m.cens)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: 3876.685 
+## 
+##  R-structure:  ~units
+## 
+##       post.mean l-95% CI u-95% CI eff.samp
+## units     38.34    34.45    42.24     1000
+## 
+##  Location effects: cbind(left, right) ~ gender 
+## 
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)   16.1266  15.4139  16.8657     1000 &lt;0.001 ***
+## gendermale     1.1932   0.2121   2.1080     1000  0.012 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Censoring is implemented for the Poisson, Gaussian and exponential distributions.</p>
+</div>
+<div id="meta-sec" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> Meta-analysis and error in the response<a href="measurement.html#meta-sec" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In reality, the true value is never really known for continuous variables - there will always be some discrepancy between the true value and its measured value. Usually we ignore this, and indeed, if the magnitude of the discrepancies have constant probability over observations, there is little to be gained from worrying about it - these discrepancies become part of the residual and the assumption of homogeneity of variance will still hold. In some cases, however, the magnitude of the discrepancies may vary over observations. In such cases there is an advantage to modelling the discrepancies since it allows us to give more weight to observations that have smaller discrepancies. To leverage this information we first need to assume (or know) what distribution these discrepancies follow. In this section we will start by assuming the discrepancies are normally distributed. Second, we need to know (at least up to proportionality) the expected variance of the discrepancies for each observation, something I’ll refer to as the measurement error variance. The most common situation in which we have this information is when the observation is an <em>estimate</em> of some quantity and the measurement error variance is taken to be the standard error of the estimate squared. In such situations, the model is often referred to as a meta-analysis. To illustrate we will analyse data collected from studies looking at the effectiveness of coaching on the performance on the Scholastic Aptitude Test (SAT). The data are in <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> from the package <span class="math inline">\(\texttt{metadat}\)</span></p>
+<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="measurement.html#cb357-1" tabindex="-1"></a><span class="fu">data</span>(dat.kalaian1996)</span>
+<span id="cb357-2"><a href="measurement.html#cb357-2" tabindex="-1"></a><span class="fu">head</span>(dat.kalaian1996[,<span class="dv">2</span><span class="sc">:</span><span class="dv">8</span>])</span></code></pre></div>
+<pre><code>##                   study year n1i n2i outcome    yi     vi
+## 1 Alderman &amp; Powers (A) 1980  28  22  verbal  0.22 0.0817
+## 2 Alderman &amp; Powers (B) 1980  39  40  verbal  0.09 0.0507
+## 3 Alderman &amp; Powers (C) 1980  22  17  verbal  0.14 0.1045
+## 4 Alderman &amp; Powers (D) 1980  48  43  verbal  0.14 0.0442
+## 5 Alderman &amp; Powers (E) 1980  25  74  verbal -0.01 0.0535
+## 6 Alderman &amp; Powers (F) 1980  37  35  verbal  0.14 0.0557</code></pre>
+<p>We will focus on the variable <span class="math inline">\(\texttt{yi}\)</span> which is the standardised mean difference in SAT scores between coached and uncoached students. The difference is standardised by the pooled standard deviation<a href="#fn44" class="footnote-ref" id="fnref44"><sup>44</sup></a> and positive values indicate the coached students have higher scores. 27 studies contribute one observation - either for the verbal or math subtest (indicated by <span class="math inline">\(\texttt{outcome}\)</span>) whereas 20 studies contribute two observations, one for verbal and one for math. The variable <span class="math inline">\(\texttt{vi}\)</span> is the standard error squared of this difference - the assumed measurement error variance. A plot of <span class="math inline">\(\texttt{yi}\)</span> against the precision (<span class="math inline">\(1/\sqrt{\texttt{vi}}\)</span>) is known as a funnel plot (Figure <a href="measurement.html#fig:funnel">9.1</a>):</p>
+<div class="figure"><span style="display:block;" id="fig:funnel"></span>
+<img src="_bookdown_files/fig/funnel-1.png" alt="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\sqrt{\texttt{vi}}$) on the x-axis.  Back dots are for the math subtest and red dots for verbal subtest." width="672" />
+<p class="caption">
+Figure 9.1: Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision (<span class="math inline">\(1/\sqrt{\texttt{vi}}\)</span>) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest.
+</p>
+</div>
+<p>Funnel plots are so called because the response shows high variance when precision is low (measurement error variance is high) and teh variance declines as sample sizes and precision increases. There are two flavours of meta-analysis: fixed-effect meta-analysis, which assumes that all of the variability between estimates is due to measurement error and random-effect meta-analysis, which assumes that estimates may also vary for other reasons (and usually that this variability does not depend on precision). In the context of the funnel plot, the fixed-effect meta-analysis assumes that at high precision all estimates converge on the same value whereas the random-effect meta-analysis allows some variability to exist. Both types of meta-analysis can be fitted in <span class="math inline">\(\texttt{MCMCglmm}\)</span>, although to me at least, the plausibility of the assumptions that underpin fixed-effect meta-analysis seem dubious. I usually start with random-effect meta-analyses which actually converges on the fixed-effect meta-analysis as the residual (<span class="math inline">\(\texttt{units}\)</span>) variance tends to zero.</p>
+<p>There are multiple ways of setting up a (random-effect) meta-analysis in <span class="math inline">\(\texttt{MCMCglmm}\)</span>. Here, I will go through the least intuitive method as it will provide the first step at understanding the next section. In Chapter <a href="cont-int.html#cont-int">6</a> we explored random regression and in Section <a href="cont-int.html#het-res">6.2</a> we saw that random regression models also impose assumptions about how the variances changes as function of the covariate. If a random slope model is fitted without random intercepts the variance across levels of the random effect is <span class="math inline">\(\sigma^2_ux^2\)</span> where <span class="math inline">\(x\)</span> is the covariate. Consequently, fitting an observation-level random regression model with the standard error (<span class="math inline">\(\texttt{sqrt(vi)}\)</span>) as <span class="math inline">\(x\)</span> and fixing <span class="math inline">\(\sigma^2_u\)</span> at one results in the variance being equal to the measurement error variance <span class="math inline">\(\texttt{vi}\)</span> as required. The model formula <code>idh(sqrt(vi)):units</code> fits such a model and the associated variance can be fixed at one in the prior.</p>
+<div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="measurement.html#cb359-1" tabindex="-1"></a>prior.meta<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">fix=</span><span class="dv">1</span>)))</span>
+<span id="cb359-2"><a href="measurement.html#cb359-2" tabindex="-1"></a>m.meta<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(<span class="fu">sqrt</span>(vi))<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta)</span>
+<span id="cb359-3"><a href="measurement.html#cb359-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -185.792 
+## 
+##  G-structure:  ~idh(sqrt(vi)):units
+## 
+##                post.mean l-95% CI u-95% CI eff.samp
+## sqrt(vi).units         1        1        1        0
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units  0.002809 0.0002683 0.007807    254.9
+## 
+##  Location effects: yi ~ outcome 
+## 
+##               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## (Intercept)    0.129039  0.056073  0.206326      850 &lt;0.001 ***
+## outcomeverbal -0.009728 -0.112622  0.088928     1000  0.862    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>We can see that the standardised difference is positive - for math, the scores of coached students are on average 0.13 standard deviations higher, and the impact of coaching does not seem to be tremendously different for the verbal subtest. The residual (<span class="math inline">\(\texttt{units}\)</span>) variance is small in comparison to the average measurement error variance (the average value of <span class="math inline">\(\texttt{vi}\)</span> (<span class="math inline">\(\bar{\texttt{vi}}\)</span>) is 0.081) - often this is expressed as <span class="math display">\[I^2=\sigma^2_{units}/(\sigma^2_{units}+\bar{\texttt{vi}})\]</span> the posterior mean of which is 0.033. In a fixed-effect meta-analysis, <span class="math inline">\(I^2=0\)</span>.</p>
+<p>To the funnel plot in Figure <a href="measurement.html#fig:funnel">9.1</a> we can add the 95% prediction intervals for the difference in math scores (black) and verbal scores (red) (Figure <a href="measurement.html#fig:funnel2">9.2</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:funnel2"></span>
+<img src="_bookdown_files/fig/funnel2-1.png" alt="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\sqrt{\texttt{vi}}$) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained using a variance of $\sigma^2_\texttt{units}+\texttt{vi}$. The solid grey line is the 95% prediction interval for the math subtest assuming $\sigma^2_\texttt{units}=0$." width="672" />
+<p class="caption">
+Figure 9.2: Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision (<span class="math inline">\(1/\sqrt{\texttt{vi}}\)</span>) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained using a variance of <span class="math inline">\(\sigma^2_\texttt{units}+\texttt{vi}\)</span>. The solid grey line is the 95% prediction interval for the math subtest assuming <span class="math inline">\(\sigma^2_\texttt{units}=0\)</span>.
+</p>
+</div>
+<p>The 95% prediction intervals suggest a problem - the observations look less variable than predicted when precision is high. With only 67 observations it is hard to be sure whether this couldn’t be just due to chance, but it is tempting to suggest a problem exists because a random-effect meta-analysis was used and the estimate of <span class="math inline">\(\sigma^2_\texttt{units}\)</span> is somehow overestimated, perhaps because of an influential prior. However, the solid grey lines give the 95% prediction interval for the math subset (points in black) assuming <span class="math inline">\(\sigma^2_\texttt{units}=0\)</span> and the interval is almost unchanged. In my experience, this type of type of problem is relatively common in meta-analyses. For this reason, I often test, rather than assume, that the measurement error variance is exactly proportional to that stated - rather than fix <span class="math inline">\(\sigma^2_{u}\)</span> at one I allow it to be estimated.</p>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="measurement.html#cb361-1" tabindex="-1"></a>prior.meta2<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">F</span>(<span class="dv">1</span>,<span class="dv">1000</span>))</span>
+<span id="cb361-2"><a href="measurement.html#cb361-2" tabindex="-1"></a>m.meta2<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(<span class="fu">sqrt</span>(vi))<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta2)</span>
+<span id="cb361-3"><a href="measurement.html#cb361-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta2)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -181.3425 
+## 
+##  G-structure:  ~idh(sqrt(vi)):units
+## 
+##                post.mean l-95% CI u-95% CI eff.samp
+## sqrt(vi).units    0.7733    0.481    1.099    490.2
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units  0.003449 0.0001677  0.01008    267.4
+## 
+##  Location effects: yi ~ outcome 
+## 
+##               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)     0.12995  0.06866  0.20117     1000 &lt;0.001 ***
+## outcomeverbal  -0.01122 -0.10607  0.07267     1000  0.846    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Although the best estimate suggests that the measurement error variance only scales with <span class="math inline">\(\texttt{vi}\)</span> by a factor 0.773 rather than one (as assumed in the more standard model), the credible intervals do overlap one and the improvement in the diagnostic prediction interval plot is only marginal (Figure <a href="measurement.html#fig:funnel3">9.3</a>).</p>
+<div class="figure"><span style="display:block;" id="fig:funnel3"></span>
+<img src="_bookdown_files/fig/funnel3-1.png" alt="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\sqrt{\texttt{vi}}$) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained using a variance of $\sigma^2_\texttt{units}+\texttt{vi}$." width="672" />
+<p class="caption">
+Figure 9.3: Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision (<span class="math inline">\(1/\sqrt{\texttt{vi}}\)</span>) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained using a variance of <span class="math inline">\(\sigma^2_\texttt{units}+\texttt{vi}\)</span>.
+</p>
+</div>
+<div id="exact-meta-analysis" class="section level3 hasAnchor" number="9.3.1">
+<h3><span class="header-section-number">9.3.1</span> Exact meta-analysis<a href="measurement.html#exact-meta-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Another possible source of model misspecification is the assumption that the measurement errors are normally distributed with a standard deviation equal to the standard error of the estimate. This is true for linear model coefficients, including the difference in the means for two groups, but only when the assumption of normality is met <em>and</em> the residual variance is known perfectly. In practice, the residual variance is not known exactly and is estimated from the data. The assumed measurement error distribution is then only approximate, although if the individual studies have moderate sample sizes (<span class="math inline">\(&gt;30\)</span>) the approximation is accurate enough that it is not worth worrying about. Given 59 of the 67 differences in <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> were estimated from sample sizes in excess of 30, it seems unlikely that using a more accurate distribution for the measurement errors will dramatically change the model, but let’s try. Assuming the individual studies that contributed to <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> were normally distributed, the distribution of the estimated difference follows a mean-shifted scaled t-distribution with a mean equal to the true difference, a scale equal to the reported standard error (<span class="math inline">\(\sqrt{\texttt{vi}}\)</span>) and degrees of freedom equal to the residual degrees of freedom. If we are prepared to assume no moderator variables were included when estimating the difference in the means the residual degrees of freedom will be equal to the sum of the sample sizes in each group minus two:</p>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="measurement.html#cb363-1" tabindex="-1"></a>dat.kalaian1996<span class="sc">$</span>df<span class="ot">&lt;-</span>dat.kalaian1996<span class="sc">$</span>n1<span class="sc">+</span>dat.kalaian1996<span class="sc">$</span>n2<span class="dv">-2</span></span></code></pre></div>
+<p>However, the differences in <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> (<span class="math inline">\(\texttt{yi}\)</span>) are not raw differences, but have been standardised by the within group standard deviation. After standard-deviation standardisation the distribution of estimates is no longer a mean-shifted scaled t-distribution but a noncentral scaled t-distribution. The true (standardised) value is equal to the noncentrality parameter, and the scale and degrees of freedom are equal to the reported standard error and residual degrees of freedom from the model. When the true value is non-zero the distribution of errors will be asymmetric with a longer tail to the right when the true value is positive. When the true value is zero we have the standard scaled t-distribution which compared to the normal has longer tails. As the degrees of freedom increases the noncentral scaled t-distribution converges on the normal. <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows the response to come from a noncentral scaled t-distribution (<code>family="ncst"</code>) if the scale and degrees of freedom are known and the linear model predicts the noncentrality parameter. When using <code>family="ncst"</code> three columns are expected: the estimate, it’s standard error and the residual degrees of freedom. Note that for such models, the meausrement errors are built into the distribution and do not need to be modelled using random effects:</p>
+<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="measurement.html#cb364-1" tabindex="-1"></a>m.meta3<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(yi, <span class="fu">sqrt</span>(vi), df)<span class="sc">~</span>outcome, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">nu=</span><span class="fl">0.002</span>)), <span class="at">family=</span><span class="st">&quot;ncst&quot;</span>)</span>
+<span id="cb364-2"><a href="measurement.html#cb364-2" tabindex="-1"></a><span class="fu">summary</span>(m.meta3)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -8.503967 
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units   0.00219 0.0001578 0.006151    121.1
+## 
+##  Location effects: cbind(yi, sqrt(vi), df) ~ outcome 
+## 
+##               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## (Intercept)    0.128878  0.057199  0.195495    85.04 &lt;0.001 ***
+## outcomeverbal -0.007312 -0.094338  0.094081    77.52    0.9    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The posterior distributions of the parameters are almost identical to those seen with the standard model (<code>m.meta</code>), as expected given the high sample sizes. Obtaining the prediction intervals is a little tricky with respect to the precision is a little tricky, since for a given precision the residual degrees of freedom might vary. Moreover the response is now assumed to be the sum of a normally distributed <span class="math inline">\(\textttt{unit}\)</span> effect and a noncentral scaled <span class="math inline">\(t\)</span> effect and so the quantiles of the distribution are unknown. We can of course obtain posterior predictive intervals for our observed data and overly them, and as expected it is very similar to Figure <a href="measurement.html#fig:funnel2">9.2</a>.</p>
+<div class="figure"><span style="display:block;" id="fig:funnel4"></span>
+<img src="_bookdown_files/fig/funnel4-1.png" alt="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\sqrt{\texttt{vi}}$) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained assuming the response follows a noncentral scaled t-distribution." width="672" />
+<p class="caption">
+Figure 9.4: Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision (<span class="math inline">\(1/\sqrt{\texttt{vi}}\)</span>) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained assuming the response follows a noncentral scaled t-distribution.
+</p>
+</div>
+<p>It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly when the case for standardisation seems to be misplaced: I bet coaching companies don’t have statements on their websites saying they raise SAT grades by <span class="math inline">\(x\)</span> standard deviations - they will say they raise them by <span class="math inline">\(x\)</span> points (a raw difference) or by <span class="math inline">\(x\)</span> percent (a mean standardised difference). If raw differe</p>
+</div>
+<div id="multivariate-meta-analysis" class="section level3 hasAnchor" number="9.3.2">
+<h3><span class="header-section-number">9.3.2</span> Multivariate meta-analysis<a href="measurement.html#multivariate-meta-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="measurement.html#cb366-1" tabindex="-1"></a>prior.meta3<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu=</span><span class="dv">1</span>)))</span>
+<span id="cb366-2"><a href="measurement.html#cb366-2" tabindex="-1"></a>m.meta3<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">corg</span>(outcome<span class="sc">:</span><span class="fu">sqrt</span>(vi))<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta3)</span>
+<span id="cb366-3"><a href="measurement.html#cb366-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta3)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -189.2541 
+## 
+##  G-structure:  ~corg(outcome:sqrt(vi)):units
+## 
+##                                                     post.mean l-95% CI u-95% CI
+## outcomemath:sqrt(vi):outcomemath:sqrt(vi).units       1.00000   1.0000   1.0000
+## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).units     0.01753  -0.6259   0.6861
+## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).units     0.01753  -0.6259   0.6861
+## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).units   1.00000   1.0000   1.0000
+##                                                     eff.samp
+## outcomemath:sqrt(vi):outcomemath:sqrt(vi).units          0.0
+## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).units      457.2
+## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).units      457.2
+## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).units      0.0
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units  0.002801 0.0002141 0.008105    244.9
+## 
+##  Location effects: yi ~ outcome 
+## 
+##               post.mean l-95% CI u-95% CI eff.samp pMCMC   
+## (Intercept)     0.13022  0.05612  0.20437     1000 0.004 **
+## outcomeverbal  -0.01064 -0.11085  0.09036     1000 0.818   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+</div>
+<div id="missing-values-and-error-in-the-predictors" class="section level2 hasAnchor" number="9.4">
+<h2><span class="header-section-number">9.4</span> Missing values and error in the predictors<a href="measurement.html#missing-values-and-error-in-the-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Random intercept-slope models implicitly assume that the variance changes as a quadratic function of the predictor. This can be used to our advantage because it allows us to fit meta-analytic models. In meta-analysis the data are usually some standardised statistic which has been estimated with different levels of measurement error. If we wanted to know the expected value of these statistics we would want to weight our answer to those measurements made with the smallest amount of error. If we assume that measurement error around the true value is normally distributed then we could assume the model:</p>
 <p><span class="math display">\[y_{i} = \beta_{1} + m_{i} +e _{i}\]</span></p>
 <p>where <span class="math inline">\(\beta_{1}\)</span> is the expected value, <span class="math inline">\(m_{i}\)</span> is some deviation due to measurement error, and <span class="math inline">\(e_{i}\)</span> is the deviation of the statistic from the global intercept not due to measurement error. Some types of meta-analysis presume <span class="math inline">\(e_{i}\)</span> does not exist and that the only variation between studies is due to measurement error. This is not realistic, I think. Often, standard errors are reported in the literature, and these can be viewed as an approximation to the expected standard deviation of the measurement error. If we put the standard errors for each statistic as a column in the data frame (and call it <code>SE</code>) then the random term <code>idh(SE):units</code> defines a diagonal matrix with the standard errors on the diagonal. Using results from Equation <a href="#eq:RRvar-eq">(<strong>??</strong>)</a></p>
@@ -375,20 +598,14 @@ div.csl-indent {
                =&amp; \sigma^{2}_{m}{\bf Z}{\bf Z}^{&#39;}\\                               
 \end{array}\]</span></p>
 <p>fixing <span class="math inline">\(\sigma^{2}_{m}=1\)</span> in the prior, the expected variance in the measurement errors are therefore the standard errors squared (the sampling variance) and all measurement errors are assumed to be independent of each other. The random regression therefore fits a random effect meta-analysis.</p>
-<div id="meta-sec" class="section level3 hasAnchor" number="9.1.1">
-<h3><span class="header-section-number">9.1.1</span> Meta-analysis<a href="measurement.html#meta-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-</div>
-<div id="interval-estimation" class="section level3 hasAnchor" number="9.1.2">
-<h3><span class="header-section-number">9.1.2</span> Interval Estimation<a href="measurement.html#interval-estimation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-</div>
-</div>
-<div id="error-in-the-predictors" class="section level2 hasAnchor" number="9.2">
-<h2><span class="header-section-number">9.2</span> Error in the Predictors<a href="measurement.html#error-in-the-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-</div>
-<div id="missing-values" class="section level2 hasAnchor" number="9.3">
-<h2><span class="header-section-number">9.3</span> Missing Values<a href="measurement.html#missing-values" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 
 </div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="44">
+<li id="fn44"><p>To obtain the pooled standard deviation a weighted variance needs to be calculated. For two groups, the weighted variance is <span class="math inline">\(\frac{w_1\widehat{\sigma^2_1}+w_2\widehat{\sigma^2_2}}{w_1+w_2}\)</span>$ where the <span class="math inline">\(\widehat{\sigma^2}\)</span> are estimates of the variance within each group. The weights are typically the sample size for each group minus one. The pooled standard deviation is the square root of the weighted variance and is the best estimate of the standard deviation under the assumption that it is the same in the two groups.<a href="measurement.html#fnref44" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
             </section>
 

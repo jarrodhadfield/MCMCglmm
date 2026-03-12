@@ -44,7 +44,7 @@ Robert, C.P. (1995) Statistics & Computing 5 121-125
 
 ## See also
 
-[`rtnorm`](https://chjackson.github.io/msm/reference/tnorm.html)
+`rtnorm`
 
 ## Examples
 

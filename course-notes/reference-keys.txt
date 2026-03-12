@@ -116,6 +116,10 @@ fig:mzap1
 fig:phylo
 fig:phylo2
 fig:tyrant
+fig:funnel
+fig:funnel2
+fig:funnel3
+fig:funnel4
 eq:rs-Eq
 eq:pyl-Eq
 eq:pyl2-Eq
@@ -229,11 +233,12 @@ phylogenies
 nodestips
 user-defined-covariance-structures
 measurement
-error-in-the-response
+missing-values-in-the-response
+censored-response-variables
 meta-sec
-interval-estimation
-error-in-the-predictors
-missing-values
+exact-meta-analysis
+multivariate-meta-analysis
+missing-values-and-error-in-the-predictors
 path
 path-anlaysis
 scaling
