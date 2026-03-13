@@ -40,7 +40,7 @@ head(dat.kalaian1996[,2:8])
 
 We will focus on the variable $\texttt{yi}$ which is the standardised mean difference in SAT scores between coached and uncoached students. The difference is standardised by the pooled standard deviation[^poolsd] and positive values indicate the coached students have higher scores. `r table(table(dat.kalaian1996$study))["1"]` studies contribute one observation - either for the verbal or math subtest (indicated by $\texttt{outcome}$) whereas `r table(table(dat.kalaian1996$study))["2"]` studies contribute two observations, one for  verbal and one for math. The variable $\texttt{vi}$ is the standard error squared of this difference - the assumed measurement error variance. A plot of $\texttt{yi}$ against the precision ($1/\sqrt{\texttt{vi}}$) is known as a funnel plot (Figure \@ref(fig:funnel)):
 
-[^poolsd]: To obtain the pooled standard deviation a weighted variance needs to be calculated. For two groups, the weighted variance is $\frac{w_1\widehat{\sigma^2_1}+w_2\widehat{\sigma^2_2}}{w_1+w_2}$$ where the $\widehat{\sigma^2}$ are estimates of the variance within each group. The weights are typically the sample size for each group minus one. The pooled standard deviation is the square root of the weighted variance and is the best estimate of the standard deviation under the assumption that it is the same in the two groups.
+[^poolsd]: To obtain the pooled standard deviation a weighted variance needs to be calculated. For two groups, the weighted variance is $\frac{w_1\widehat{\sigma^2_1}+w_2\widehat{\sigma^2_2}}{w_1+w_2}$ where the $\widehat{\sigma^2}$ are estimates of the variance within each group. The weights are typically the sample size for each group minus one. The pooled standard deviation is the square root of the weighted variance and is the best estimate of the standard deviation under the assumption that it is the same in the two groups.
 
 
 ```{r funnel, echo=FALSE, include=TRUE, fig.cap="Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision ($1/\\sqrt{\\texttt{vi}}$) on the x-axis.  Back dots are for the math subtest and red dots for verbal subtest.", fig.width=7, fig.height=5}
@@ -49,7 +49,7 @@ plot(yi~I(1/sqrt(vi)), data=dat.kalaian1996, ylab="Difference in SAT score", xla
 
 Funnel plots are so called because the response shows high variance when precision is low (measurement error variance is high) and teh variance declines as sample sizes and precision increases. There are two flavours of meta-analysis: fixed-effect meta-analysis, which assumes that all of the variability between estimates is due to measurement error and random-effect meta-analysis, which assumes that estimates may also vary for other reasons (and usually that this variability does not depend on precision). In the context of the funnel plot, the fixed-effect meta-analysis assumes that at high precision all estimates converge on the same value whereas the random-effect meta-analysis allows some variability to exist. Both types of meta-analysis can be fitted in $\texttt{MCMCglmm}$, although to me at least, the plausibility of the assumptions that underpin fixed-effect meta-analysis seem dubious. I usually start with random-effect meta-analyses which actually converges on the fixed-effect meta-analysis as the residual ($\texttt{units}$) variance tends to zero. 
 
-There are multiple ways of setting up a (random-effect) meta-analysis in $\texttt{MCMCglmm}$. Here, I will go through the least intuitive method as it will provide the first step at understanding the next section. In Chapter \@ref(cont-int) we explored random regression and in Section \@ref(het-res) we saw that random regression models also impose assumptions about how the variances changes as function of the covariate. If a random slope model is fitted without random intercepts the variance across levels of the random effect is $\sigma^2_ux^2$ where $x$ is the covariate. Consequently, fitting an observation-level random regression model with the standard error ($\texttt{sqrt(vi)}$) as $x$ and fixing $\sigma^2_u$ at one results in the variance being equal to the measurement error variance $\texttt{vi}$ as required. The model formula `idh(sqrt(vi)):units` fits such a model and the associated variance can be fixed at one in the prior.
+There are multiple ways of setting up a (random-effect) meta-analysis in $\texttt{MCMCglmm}$ (see Section \@ref(sec-meta-alternatives)). Here, I will go through the least intuitive method as it will provide the first step at understanding the next section. In Chapter \@ref(cont-int) we explored random regression and in Section \@ref(het-res) we saw that random regression models also impose assumptions about how the variances changes as function of the covariate. If a random slope model is fitted without random intercepts the variance across levels of the random effect is $\sigma^2_ux^2$ where $x$ is the covariate. Consequently, fitting an observation-level random regression model with the standard error ($\texttt{sqrt(vi)}$) as $x$ and fixing $\sigma^2_u$ at one results in the variance being equal to the measurement error variance $\texttt{vi}$ as required. The model formula `idh(sqrt(vi)):units` fits such a model and the associated variance can be fixed at one in the prior.
 
 ```{r }
 prior.meta<-list(R=IW(1, 0.002), G=list(G1=list(V=1, fix=1)))
@@ -135,43 +135,8 @@ lines(lower~precision.x, lty=2, col="red")
 lines(upper~precision.x, lty=2, col="red")
 ``` 
 
-### $\texttt{mev}$, $\texttt{units}$ structure and $\texttt{ginverse}$
 
-When fitting a standard meta-analysis ($\texttt{m.meta}$) we set the problem up as a random regression using $\texttt{idh(sqrt(vi)):units}$ and fixed the corresponding variance at one. There are at least three other ways to achieve the same goal. 
-
-${\bf \texttt{mev}}$: The \texttt{mev} argument in $\texttt{MCMCglmm} takes a vector of measurement error variances 
-
-
-```{r }
-m.mev<-MCMCglmm(yi~outcome, data=dat.kalaian1996, mev=dat.kalaian1996$vi, prior=list(R=IW(1, 0.002)))
-``` 
-
-${\bf \texttt{units} \textrm{structure}}$: A $\texttt{units}$ by $\texttt{units}$ measurement error covariance matrix can be specified in the random formula and then fixed in the prior. In standard meta-analysis the measurement errors on different observations are uncorrelated and so the covariance matrix is diagonal and can be fitted using an $\texttt{idh}$ structure. While this is much more computationally efficient than fitting an equivalent $\texttt{us}$ structure, it may still be slow if the data set is large:
-
-```{r }
-prior.units<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(dat.kalaian1996$vi), fix=1)))
-m.idh<-MCMCglmm(yi~outcome, random=~idh(units):units, data=dat.kalaian1996, prior=prior.units)
-``` 
-
-${\bf \texttt{ginverse}}$: A $\texttt{units}$ by $\texttt{units}$ measurement error covariance matrix can be specified through the $\texttt{ginverse}$ argument to $\texttt{MCMCglmm}$. Conceptually this is equivalent to the specification above, but computationally more efficient.
-
-```{r }
-ivi<-as(Diagonal(nrow(dat.kalaian1996), 1/dat.kalaian1996$vi), "CsparseMatrix")
-rownames(ivi)<-dat.kalaian1996$id
-
-prior.ginv<-list(R=IW(1, 0.002), G=list(G1=list(V=1, fix=1)))
-
-m.ginv<-MCMCglmm(yi~outcome, random=~id, data=dat.kalaian1996, prior=prior.ginv, ginverse=list(id=ivi))
-``` 
-
-All of the above models are equivalent to the first model used ($\texttt{m.meta}$).
-
-
-```{r }
-plot(mcmc.list(m.meta$Sol, m.mev$Sol, m.idh$Sol, m.ginv$Sol))
-```
-
-### Exact meta-analysis
+### Exact meta-analysis {#sec-meta-exact}
 
 Another possible source of model misspecification is the assumption that the measurement errors are normally distributed with a standard deviation equal to the standard error of the estimate. This is true for linear model coefficients, including the difference in the means for two groups, but only when the assumption of normality is met *and* the residual variance is known perfectly. In practice, the residual variance is not known exactly and is estimated from the data. The assumed measurement error distribution is then only approximate, although if the individual studies have moderate sample sizes ($>30$) the approximation is accurate enough that it is not worth worrying about.   Given `r sum((dat.kalaian1996$n1+dat.kalaian1996$n2)>30)` of the `r nrow(dat.kalaian1996)` differences in $\texttt{dat.kalaian1996}$ were estimated from sample sizes in excess of 30, it seems unlikely that using a more accurate distribution for the measurement errors will dramatically change the model, but let's try. Assuming the individual studies that contributed to $\texttt{dat.kalaian1996}$ were normally distributed, the distribution of the estimated difference follows a mean-shifted scaled t-distribution with a mean equal to the true difference, a scale equal to the reported standard error ($\sqrt{\texttt{vi}}$) and degrees of freedom equal to the residual degrees of freedom. If we are prepared to assume no moderator variables were included when estimating the difference in the means the residual degrees of freedom will be equal to the sum of the sample sizes in each group minus two:
 
@@ -209,17 +174,161 @@ lines(pred.meta.3[order.x[-math.obs],2]~I(1/sqrt(dat.kalaian1996$vi[order.x[-mat
 lines(pred.meta.3[order.x[-math.obs],3]~I(1/sqrt(dat.kalaian1996$vi[order.x[-math.obs]])), lty=2, col="red")
 ``` 
 
-It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly so, when the case for standardisation seems to be misplaced: I bet coaching companies don't have statements on their websites saying they raise SAT grades by $x$ standard deviations - they will say they raise them by $x$ points (a raw difference) or by $x$ percent (a mean standardised difference). If raw differences and their standard errors had been reported an exact meta-analysis could have been performed by specifying the response to be a mean-shifted scaled t-distribution ( `family = "msst"`). As with the noncentral scaled $t$-distribution, three columns are expected: the estimate followed by its standard error and the residual degrees of freedom. 
+It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly so, when the case for standardisation seems to be misplaced: I bet coaching companies don't have statements on their websites saying they raise SAT grades by $x$ standard deviations - they will say they raise them by $x$ points (a raw difference) or by $x$ percent (a mean standardised difference). If raw differences and their standard errors had been reported an exact meta-analysis on the raw differences could have been performed by specifying the response to be a mean-shifted scaled t-distribution ( `family = "msst"`). As with the noncentral scaled $t$-distribution, three columns are expected: the estimate followed by its standard error and the residual degrees of freedom. 
+
+### $\texttt{mev}$, $\texttt{units}$ structure and $\texttt{ginverse}$ {#sec-meta-alternatives}
+
+When fitting a standard meta-analysis ($\texttt{m.meta}$) we set the problem up as a random regression using $\texttt{idh(sqrt(vi)):units}$ and fixed the corresponding variance at one. There are at least three other ways to achieve the same goal. 
+
+${\bf \texttt{mev}}$: The \texttt{mev} argument in $\texttt{MCMCglmm} takes a vector of measurement error variances 
+
+
+```{r }
+m.mev<-MCMCglmm(yi~outcome, data=dat.kalaian1996, mev=dat.kalaian1996$vi, prior=list(R=IW(1, 0.002)))
+``` 
+
+${\bf \texttt{units} \textrm{structure}}$: A $\texttt{units}$ by $\texttt{units}$ measurement error covariance matrix can be specified in the random formula and then fixed in the prior. In standard meta-analysis the measurement errors on different observations are uncorrelated and so the covariance matrix is diagonal and can be fitted using an $\texttt{idh}$ structure. While this is much more computationally efficient than fitting an equivalent $\texttt{us}$ structure, it may still be slow if the data set is large:
+
+```{r }
+prior.units<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(dat.kalaian1996$vi), fix=1)))
+m.idh<-MCMCglmm(yi~outcome, random=~idh(units):units, data=dat.kalaian1996, prior=prior.units)
+``` 
+
+${\bf \texttt{ginverse}}$: A $\texttt{units}$ by $\texttt{units}$ measurement error covariance matrix can be specified through the $\texttt{ginverse}$ argument to $\texttt{MCMCglmm}$. Conceptually this is equivalent to the specification above, but computationally more efficient.
+
+```{r }
+ivi<-as(Diagonal(nrow(dat.kalaian1996), 1/dat.kalaian1996$vi), "CsparseMatrix")
+rownames(ivi)<-dat.kalaian1996$id
+
+prior.ginv<-list(R=IW(1, 0.002), G=list(G1=list(V=1, fix=1)))
+
+m.ginv<-MCMCglmm(yi~outcome, random=~id, data=dat.kalaian1996, prior=prior.ginv, ginverse=list(id=ivi))
+``` 
+
+All of the above models are equivalent to the first model used ($\texttt{m.meta}$).
+
+
+```{r }
+plot(mcmc.list(m.meta$Sol, m.mev$Sol, m.idh$Sol, m.ginv$Sol))
+```
 
 
 ### Multivariate meta-analysis
 
+In some cases measurement errors may be correlated across observations. For example, in $\texttt{dat.kalaian1996}$, `r table(table(dat.kalaian1996$study))["2"]` studies contributed two differences, one for verbal and one for math subtests. The pair of differences were calculated from data on the same set of students and so we might expect their estimation error to be correlated - for example, if the coached students for a particular study happened to be intrinsically poor students we might expect the two differences to be smaller than their expectation. In some cases, we might know the measurement error correlation between observations (for example, if we were to analyses pairs of coefficients obtained from linear models) but often  - as here - we do not. The help file for $\texttt{dat.kalaian1996}$ performs an analysis where the measurement error correlation between observations from the same study is assumed to be 0.66. We can impose this assumption in a $\texttt{MCMCglmm}$ model by forming the inverse measurement error covariance matrix as we did in the previous section. Formatting the matrix is a bit painful and so I'll hide the details 
+
+<details>
+<summary>here</summary>
+```{r }
+inverse.cor<-function(v, r){
+
+	R<-matrix(r, length(v), length(v))
+	diag(R)<-1
+    # create the correlation matrix
+
+    V<-crossprod(t(sqrt(v)))
+    # create the covariance matrix had r been 1.
+
+    return(solve(V*R))
+} 
+# a function for creating an inverse covariance matrix given the variances (v) and a constant correlation (r) 
+
+ivi<-tapply(dat.kalaian1996$vi, dat.kalaian1996$study, inverse.cor, r=0.66)
+# for each study create the inverse measurement error covariance matrix
+
+ivi<-bdiag(ivi)
+# turn the list of matrices into a sparse block diagonal
+
+idx.after.sort <- order(dat.kalaian1996$study, seq_along(dat.kalaian1996$study))
+# for situations where observations aren't ordered (within studies in this example)
+# need to make sure rows/columns of ivi correspond to the correct obseravtions
+
+rownames(ivi)<-dat.kalaian1996$id[idx.after.sort]
+```
+</details><br>
+but it is instructive to look at the output. For example, if we look at row/columns 60 to 63 of the inverse (stored as $\texttt{ivi}$) we get
 
 ```{r }
-prior.meta3<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(2), nu=1)))
-m.meta3<-MCMCglmm(yi~outcome, random=~corg(outcome:sqrt(vi)):units, data=dat.kalaian1996, prior=prior.meta3)
+ivi[c(60:63), c(60:63)]
+```
+
+This matrix corresponds to observations with $\texttt{id}$'s `r paste(paste(rownames(ivi)[c(60:62)], collapse=", "), "and", rownames(ivi)[63])`:
+
+
+```{r }
+dat.kalaian1996[match(rownames(ivi)[60:63], dat.kalaian1996$id),c("id", "study", "vi")]
+```
+
+The first two studies only contributed one observation and so their rows/columns only have a diagonal element equal to 1/$\texttt{vi}$. The final two observations are from the same study and so the inverse has a non-zero element in the off-diagonal. As in the previous section we can simply fit this as a ginverse with the associated variance fixed at one:
+
+```{r }
+prior.meta3<-list(R=IW(1, 0.002), G=list(G1=list(V=1, fix=1)))
+m.meta3<-MCMCglmm(yi~outcome, random=~id, data=dat.kalaian1996, ginverse=list(id=ivi), prior=prior.meta3)
 summary(m.meta3)
 ```
+
+An equivalent way to fit this model is to allow the pair of random slopes from our standard model to be correlated when they come from the same study, and fix the correlation at 0.66[^bivmeta]: 
+
+[^bivmeta]: It might not be clear why this works. In our standard meta-analysis model we used the random formula $\texttt{idh(sqrt(vi)):units}$.  As was covered in Chapters \@ref(cat-int) and \@ref(cont-int), the term inside the variance function, in this case $\texttt{sqrt(vi)}$, should be treated as a model formula with the intercept removed. The model term therefore determines a slope parameter for the covariate $\sqrt{\texttt{vi}}$. This slope parameter is allowed to vary across levels of the predictor that is interacted with the variance structure, in this case $\texttt{units}$. Since each observation is associated with a unique level of $\texttt{units}$ the random effect model prediction for observation $i$ is $\sqrt{\texttt{vi}_i}u_{i}$. The marginal distribution of $\sqrt{\texttt{vi}_i}u_{i}$ is normal with zero mean and variance $\texttt{vi}_i\sigma^2_u$. Setting $\sigma^2_u=1$, the marginal distribution for the measurement error associated with observation $i$ is normal with zero mean and variance $\texttt{vi}_i$, as desired.
+
+	In the multivariate meta-analysis model we used the random formula $\texttt{us(outcome:sqrt(vi)):study}$. Since $\texttt{outcome}$ has two levels, the term inside the variance function, $\texttt{outcome:sqrt(vi)}$, defines two parameters: a slope for $\texttt{math}$ and a slope for $\texttt{verbal}$. These slopes are allowed to vary across studies since $\texttt{study}$ is interacted with the variance function. Consequently, for each study there are two slopes. These slopes are allowed to covary since a $\texttt{us}$ structure was used. Imagine observations $k$ and $l$ are the $\texttt{math}$ and $\texttt{verbal}$ scores from study $j$. If we designate the slopes for study $j$ as $u^{(\texttt{math})}_j$ and $u^{(\texttt{verbal})}_j$, the random effect model prediction for observations $k$ and $l$ are $u^{(\texttt{math})}_j\sqrt{\texttt{vi}_k}$ and $u^{(\texttt{verbal})}_j\sqrt{\texttt{vi}_l}$. The marginal variances of these two predictions are $\sigma^2_\texttt{math}\texttt{vi}_k$ and $\sigma^2_\texttt{verbal}\texttt{vi}_l$, respectively. If $\sigma^2_\texttt{math}$ and $\sigma^2_\texttt{verbal}$ are set to one, each observation has the desired distribution for its measurement error, as in the univariate model. The marginal covariance between the observations is $\sigma_{\texttt{math},\texttt{verbal}}\sqrt{\texttt{vi}_k}\sqrt{\texttt{vi}_l}$, and with $\sigma^2_\texttt{math}=\sigma^2_\texttt{verbal}=1$ the marginal correlation is $\sigma_{\texttt{math},\texttt{verbal}}$. Consequently, fixing the variances of the slopes to one, and their covariance to 0.66, gives the desired model. We can also set $\sigma^2_\texttt{math}=\sigma^2_\texttt{verbal}=1$ but allow the correlation, $\sigma_{\texttt{math},\texttt{verbal}}$, to be estimated, as was done in model $\texttt{m.meta5}$
+
+```{r }
+V<-matrix(0.66, 2, 2)
+diag(V)<-1
+
+prior.meta4<-list(R=IW(1, 0.002), G=list(G1=list(V=V, fix=1)))
+m.meta4<-MCMCglmm(yi~outcome, random=~us(outcome:sqrt(vi)):study, data=dat.kalaian1996, prior=prior.meta4)
+summary(m.meta4)
+```
+
+It's not clear where the value 0.66 comes from, and in fact rather than fixing the correlation to be 0.66 we could try to estimate it. This can be achieved by replacing the $\texttt{us}$ variance structure with a $\texttt{corg}$ variance structure. This fixes the diagonal elements of the covariance matrix to one, but allows the correlation to be estimated. For a $2\times 2$ correlation matrix, specifying the off-diagonal elements of $\texttt{V} to be zero and having $\texttt{nu=1}$ results in a flat prior for the correlation (Section \@ref(VCVprior-r-sec)). 
+
+```{r }
+prior.meta5<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(2), nu=1)))
+m.meta5<-MCMCglmm(yi~outcome, random=~corg(outcome:sqrt(vi)):study, data=dat.kalaian1996, prior=prior.meta5)
+summary(m.meta5)
+```
+
+The credible intervals on the correlation are very wide (`r round(HPDinterval(m.meta5$VCV[,2])[1],3)` -- `r round(HPDinterval(m.meta5$VCV[,2])[2],3)`) but it does seem like the value of 0.66 assumed in model $\texttt{m.meta4}$ is unjustifiably high.
+
+## Interval Data
+
+In the meta-analyses covered in Section \@ref(meta-sec) we worked with the measurement error variance associated with an estimate. If only confidence/credible intervals are given for an estimate, it is possible to obtain the measurement error variance assuming a distribution for the errors. For example, if the distribution is normal and the lower and upper interval are $l$ and $u$ respectively, then the estimate would be the midpoint $y=(l+u)/2$ and the measurement error standard deviation would be 
+
+$$\sigma_m = \frac{u-l}{2Q(1-\alpha/2)}$$
+
+where $Q$ is the quantile function of the unit normal ($\texttt{qnorm}$) and $\alpha$ is one minus the confidence level (e.g. 0.05 for 95% confidence intervals).
+
+In some cases, intervals are given but without the corresponding confidence level. For example, in @Phillimore.2016 we analysed citizen-science data on when birds lay their eggs. Exact dates are not known and only an interval is given. The standard way of treating such data is to treat them as censored. Censoring assumes that before model building, the probability density for the true value is flat across the interval. However, for the laying date data quite a lot of information goes into calculating the interval such that the true value is more likely to be close to the centre of the interval. In addition, the intervals are calculated in the hope they are comparable between observations - two observations may have very different interval lengths, but it is still hoped that the probability the true value lies inside the interval is the same in both cases. In such cases, $\alpha$ and therefore $2Q(1-\alpha/2)$ is constant. In Section \@ref(meta-sec) we fitted a model ($\texttt{m.meta2}$) which allowed the measurement error variance to be proportional to, rather than exactly equal to, the reported measurement error variance ($\texttt{vi}$). The constant of proportionality could be estimated since $\texttt{vi}$ varied and the empirical change in variance with $\texttt{vi}$ could be assessed. Analysing interval data[^interval] is essentially the same problem: we can treat $y$ as the observation and $(l-u)^2$ as $\texttt{vi}$. The estimate of the constant of proportionality, $c$, is then equal to $(1/2Q(1-\alpha/2))^{2}$ and so we can obtain an estimate of the unknown confidence interval as $1-\alpha = 2F(1/2\sqrt{c})-1$, where $F$ is the cumulative distribution function of the unit normal ($\texttt{pnorm}$).      
+ 
+
+For \texttt{dat.kalaian1996} we can obtain the 95% ($\alpha=0.05$) confidence intervals from $\texttt{vi}$:
+
+
+```{r }
+dat.kalaian1996$l<-qnorm(0.025, dat.kalaian1996$yi, sqrt(dat.kalaian1996$vi))
+dat.kalaian1996$u<-qnorm(0.975, dat.kalaian1996$yi, sqrt(dat.kalaian1996$vi))
+```
+
+```{r }
+prior.meta6<-list(R=IW(1, 0.002), G=F(1,1000))
+m.meta6<-MCMCglmm(yi~outcome, random=~idh(I(u-l)):units, data=dat.kalaian1996, prior=prior.meta2)
+summary(m.meta6)
+``` 
+
+Given an $\alpha$ of 0.05 we expect the estimated variance to be $(1/2Q(1-\alpha/2))^{2}=`r round((1/(2*qnorm(1-0.05/2)))^2,3)` and we can see the best estimate is lower than this although the credible intervals overlap `r round((1/(2*qnorm(1-0.05/2)))^2,3)`. The best estimate of the confidence level can also be obtained:
+
+```{r }
+c<-m.meta6$VCV[,"I(u - l).units"]
+ci<-2*pnorm(1/(2*sqrt(c)))-1
+plot(ci)
+```
+
+and we can see that 0.95 has some support but much of the posterior density is above this and the posterior mean is `r round(mean(ci),3))`. As we saw from model $\texttt{m.meta2}$, the best estimate is that the measurement error variance scales by a factor `r round(mean(m.meta2$VCV[,1]),3)` with the reported measurement error variance, $\texttt{vi}$. Since the reported measurement error variance may be inflated the assumed confidence level may have been deflated and the actual level may exceed 95%.  
+
+[^interval]: I'm not aware of a name for data like this so I just made one up. If anyone knows of a term already in use for such data please let me know.
+
 
 ## Missing values and error in the predictors
 
