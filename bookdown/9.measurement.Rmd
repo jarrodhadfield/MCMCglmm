@@ -325,7 +325,7 @@ ci<-2*pnorm(1/(2*sqrt(c)))-1
 plot(ci)
 ```
 
-and we can see that 0.95 has some support but much of the posterior density is above this and the posterior mean is `r round(mean(ci),3))`. As we saw from model $\texttt{m.meta2}$, the best estimate is that the measurement error variance scales by a factor `r round(mean(m.meta2$VCV[,1]),3)` with the reported measurement error variance, $\texttt{vi}$. Since the reported measurement error variance may be inflated the assumed confidence level may have been deflated and the actual level may exceed 95%.  
+and we can see that 0.95 has some support but much of the posterior density is above this and the posterior mean is `r round(mean(ci),3)`. As we saw from model $\texttt{m.meta2}$, the best estimate is that the measurement error variance scales by a factor `r round(mean(m.meta2$VCV[,1]),3)` with the reported measurement error variance, $\texttt{vi}$. Since the reported measurement error variance may be inflated the assumed confidence level may have been deflated and the actual level may exceed 95%.  
 
 [^interval]: I'm not aware of a name for data like this so I just made one up. If anyone knows of a term already in use for such data please let me know.
 
