@@ -1,7 +1,6 @@
 # Measurement Error, Meta-analysis and Missing Values {#measurement}
 
-Sometimes, variables in the model are not perfectly observed. In the worst case they are completely missing, but often we have some information about them. We may only know the interval in which an observation lies, in which case the observation is said to be censored. In other cases, we have a 'best' estimate of the observation, but this estimate comes with error. Handling incomplete information about an observation is relatively straightforward when the observation is the response variable, but considerably more challenging when the observation is a predictor.   
-
+Variables in the model may not be perfectly observed. In the worst case they are completely missing, but often we have some information about their possible or likely value. We may only know the interval in which the value lies, in which case the observation is said to be censored. In other cases, we have a 'best' estimate of the value, but this estimate comes with error. Handling incomplete information about an observation is relatively straightforward when the observation is a response variable since, but considerably more challenging when the observation is a predictor.   
 
 ## Missing values in the response
 
@@ -32,7 +31,7 @@ Censoring is implemented for the Poisson, Gaussian and exponential distributions
 
 ## Meta-analysis and error in the response {#meta-sec}
 
-In reality, the true value is never really known for continuous variables - there will always be some discrepancy between the true value and its measured value. Usually we ignore this, and indeed, if the magnitude of the discrepancies have constant probability over observations, there is little to be gained from worrying about it - these discrepancies become part of the residual and the assumption of homogeneity of variance will still hold. In some cases, however, the magnitude of the discrepancies may vary over observations. In such cases there is an advantage to modelling the discrepancies since it allows us to give more weight to observations that have smaller discrepancies. To leverage this information we first need to assume (or know) what distribution these discrepancies follow. In this section we will start by assuming the discrepancies are normally distributed. Second, we need to know (at least up to proportionality) the expected variance of the discrepancies for each observation, something I'll refer to as the measurement error variance. The most common situation in which we have this information is when the observation is an *estimate* of some quantity and the measurement error variance is taken to be the standard error of the estimate squared. In such situations, the model is often referred to as a meta-analysis.  To illustrate we will analyse data collected from studies looking at the effectiveness of coaching on the performance on the Scholastic Aptitude Test (SAT). The data are in $\texttt{dat.kalaian1996}$ from the package $\texttt{metadat}$
+In reality, the true value is never really known for continuous variables - there will always be some discrepancy between the true value and its measured value. Usually we ignore this, and indeed, if the magnitude of the discrepancies have constant probability over observations, there is little to be gained from worrying about it - these discrepancies become part of the residual and the assumption of homogeneity of variance will still hold. In some cases, however, the magnitude of the discrepancies may vary over observations. In such cases there is an advantage to modelling the discrepancies since it allows us to give more weight to observations that have smaller discrepancies. To leverage this information we first need to assume (or know) what distribution these discrepancies follow. In this section we will start by assuming the discrepancies are normally distributed. Second, we need to know (at least up to proportionality) the expected variance of the discrepancies for each observation, something I'll refer to as the measurement error variance. The most common situation in which we have this information is when the observation is an *estimate* of some quantity and the measurement error variance is taken to be the standard error of the estimate squared. In such situations, the model is often referred to as a meta-analysis.  To illustrate we will analyse data collected from studies looking at the effectiveness of coaching on the performance on the Scholastic Aptitude Test (SAT). The data are in $\texttt{dat.kalaian1996}$ from the package $\texttt{metadat}$:
 
 ```{r }
 data(dat.kalaian1996)
@@ -136,6 +135,42 @@ lines(lower~precision.x, lty=2, col="red")
 lines(upper~precision.x, lty=2, col="red")
 ``` 
 
+### $\texttt{mev}$, $\texttt{units}$ structure and $\texttt{ginverse}$
+
+When fitting a standard meta-analysis ($\texttt{m.meta}$) we set the problem up as a random regression using $\texttt{idh(sqrt(vi)):units}$ and fixed the corresponding variance at one. There are at least three other ways to achieve the same goal. 
+
+${\bf \texttt{mev}}$: The \texttt{mev} argument in $\texttt{MCMCglmm} takes a vector of measurement error variances 
+
+
+```{r }
+m.mev<-MCMCglmm(yi~outcome, data=dat.kalaian1996, mev=dat.kalaian1996$vi, prior=list(R=IW(1, 0.002)))
+``` 
+
+${\bf \texttt{units} \textrm{structure}}$: A $\texttt{units}$ by $\texttt{units}$ measurement error covariance matrix can be specified in the random formula and then fixed in the prior. In standard meta-analysis the measurement errors on different observations are uncorrelated and so the covariance matrix is diagonal and can be fitted using an $\texttt{idh}$ structure. While this is much more computationally efficient than fitting an equivalent $\texttt{us}$ structure, it may still be slow if the data set is large:
+
+```{r }
+prior.units<-list(R=IW(1, 0.002), G=list(G1=list(V=diag(dat.kalaian1996$vi), fix=1)))
+m.idh<-MCMCglmm(yi~outcome, random=~idh(units):units, data=dat.kalaian1996, prior=prior.units)
+``` 
+
+${\bf \texttt{ginverse}}$: A $\texttt{units}$ by $\texttt{units}$ measurement error covariance matrix can be specified through the $\texttt{ginverse}$ argument to $\texttt{MCMCglmm}$. Conceptually this is equivalent to the specification above, but computationally more efficient.
+
+```{r }
+ivi<-as(Diagonal(nrow(dat.kalaian1996), 1/dat.kalaian1996$vi), "CsparseMatrix")
+rownames(ivi)<-dat.kalaian1996$id
+
+prior.ginv<-list(R=IW(1, 0.002), G=list(G1=list(V=1, fix=1)))
+
+m.ginv<-MCMCglmm(yi~outcome, random=~id, data=dat.kalaian1996, prior=prior.ginv, ginverse=list(id=ivi))
+``` 
+
+All of the above models are equivalent to the first model used ($\texttt{m.meta}$).
+
+
+```{r }
+plot(mcmc.list(m.meta$Sol, m.mev$Sol, m.idh$Sol, m.ginv$Sol))
+```
+
 ### Exact meta-analysis
 
 Another possible source of model misspecification is the assumption that the measurement errors are normally distributed with a standard deviation equal to the standard error of the estimate. This is true for linear model coefficients, including the difference in the means for two groups, but only when the assumption of normality is met *and* the residual variance is known perfectly. In practice, the residual variance is not known exactly and is estimated from the data. The assumed measurement error distribution is then only approximate, although if the individual studies have moderate sample sizes ($>30$) the approximation is accurate enough that it is not worth worrying about.   Given `r sum((dat.kalaian1996$n1+dat.kalaian1996$n2)>30)` of the `r nrow(dat.kalaian1996)` differences in $\texttt{dat.kalaian1996}$ were estimated from sample sizes in excess of 30, it seems unlikely that using a more accurate distribution for the measurement errors will dramatically change the model, but let's try. Assuming the individual studies that contributed to $\texttt{dat.kalaian1996}$ were normally distributed, the distribution of the estimated difference follows a mean-shifted scaled t-distribution with a mean equal to the true difference, a scale equal to the reported standard error ($\sqrt{\texttt{vi}}$) and degrees of freedom equal to the residual degrees of freedom. If we are prepared to assume no moderator variables were included when estimating the difference in the means the residual degrees of freedom will be equal to the sum of the sample sizes in each group minus two:
@@ -174,7 +209,7 @@ lines(pred.meta.3[order.x[-math.obs],2]~I(1/sqrt(dat.kalaian1996$vi[order.x[-mat
 lines(pred.meta.3[order.x[-math.obs],3]~I(1/sqrt(dat.kalaian1996$vi[order.x[-math.obs]])), lty=2, col="red")
 ``` 
 
-It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly when the case for standardisation seems to be misplaced: I bet coaching companies don't have statements on their websites saying they raise SAT grades by $x$ standard deviations - they will say they raise them by $x$ points (a raw difference) or by $x$ percent (a mean standardised difference). If raw differe
+It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly so, when the case for standardisation seems to be misplaced: I bet coaching companies don't have statements on their websites saying they raise SAT grades by $x$ standard deviations - they will say they raise them by $x$ points (a raw difference) or by $x$ percent (a mean standardised difference). If raw differences and their standard errors had been reported an exact meta-analysis could have been performed by specifying the response to be a mean-shifted scaled t-distribution ( `family = "msst"`). As with the noncentral scaled $t$-distribution, three columns are expected: the estimate followed by its standard error and the residual degrees of freedom. 
 
 
 ### Multivariate meta-analysis
@@ -186,26 +221,5 @@ m.meta3<-MCMCglmm(yi~outcome, random=~corg(outcome:sqrt(vi)):units, data=dat.kal
 summary(m.meta3)
 ```
 
-
-
 ## Missing values and error in the predictors
-
-Random intercept-slope models implicitly assume that the variance changes as a quadratic function of the predictor. This can be used to our advantage because it allows us to fit meta-analytic models. In meta-analysis the data are usually some standardised statistic which has been estimated with different levels of measurement error. If we wanted to know the expected value of these statistics we would want to weight our answer to those measurements made with the smallest amount of error. If we assume that measurement error around the true value is normally distributed then we could assume the model:
-
-$$y_{i} = \beta_{1} + m_{i} +e _{i}$$
-
-where $\beta_{1}$ is the expected value, $m_{i}$ is some deviation due to measurement error, and $e_{i}$ is the deviation of the statistic from the global intercept not due to measurement error. Some types of meta-analysis presume $e_{i}$ does not exist and that the only variation between studies is due to measurement error. This is not realistic, I think. Often, standard errors are reported in the literature, and these can be viewed as an approximation to the expected standard deviation of the measurement error. If we put the standard errors for each statistic as a column in the data frame (and call it `SE`) then the random term `idh(SE):units` defines a diagonal matrix with the standard errors on the diagonal. Using results from Equation \@ref(eq:RRvar-eq)
-
-$$\begin{array}{rl}
-\textrm{VAR}[{\bf m}] =& {\bf Z}{\bf V}{\bf Z}^{'}\\ 
-               =& {\bf Z}\sigma^{2}_{m}{\bf I}{\bf Z}^{'}\\ 
-               =& \sigma^{2}_{m}{\bf Z}{\bf Z}^{'}\\                               
-\end{array}$$
-
-fixing $\sigma^{2}_{m}=1$ in the prior, the expected variance in the measurement errors are therefore the standard errors squared (the sampling variance) and all measurement errors are assumed to be independent of each other. The random regression therefore fits a random effect meta-analysis.
-
-
-
-
-
 
