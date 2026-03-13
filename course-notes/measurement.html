@@ -336,11 +336,12 @@ div.csl-indent {
 <li class="chapter" data-level="9.2" data-path="measurement.html"><a href="measurement.html#censored-response-variables"><i class="fa fa-check"></i><b>9.2</b> Censored response variables</a></li>
 <li class="chapter" data-level="9.3" data-path="measurement.html"><a href="measurement.html#meta-sec"><i class="fa fa-check"></i><b>9.3</b> Meta-analysis and error in the response</a>
 <ul>
-<li class="chapter" data-level="9.3.1" data-path="measurement.html"><a href="measurement.html#textttmev-textttunits-structure-and-textttginverse"><i class="fa fa-check"></i><b>9.3.1</b> <span class="math inline">\(\texttt{mev}\)</span>, <span class="math inline">\(\texttt{units}\)</span> structure and <span class="math inline">\(\texttt{ginverse}\)</span></a></li>
-<li class="chapter" data-level="9.3.2" data-path="measurement.html"><a href="measurement.html#exact-meta-analysis"><i class="fa fa-check"></i><b>9.3.2</b> Exact meta-analysis</a></li>
+<li class="chapter" data-level="9.3.1" data-path="measurement.html"><a href="measurement.html#sec-meta-exact"><i class="fa fa-check"></i><b>9.3.1</b> Exact meta-analysis</a></li>
+<li class="chapter" data-level="9.3.2" data-path="measurement.html"><a href="measurement.html#sec-meta-alternatives"><i class="fa fa-check"></i><b>9.3.2</b> <span class="math inline">\(\texttt{mev}\)</span>, <span class="math inline">\(\texttt{units}\)</span> structure and <span class="math inline">\(\texttt{ginverse}\)</span></a></li>
 <li class="chapter" data-level="9.3.3" data-path="measurement.html"><a href="measurement.html#multivariate-meta-analysis"><i class="fa fa-check"></i><b>9.3.3</b> Multivariate meta-analysis</a></li>
 </ul></li>
-<li class="chapter" data-level="9.4" data-path="measurement.html"><a href="measurement.html#missing-values-and-error-in-the-predictors"><i class="fa fa-check"></i><b>9.4</b> Missing values and error in the predictors</a></li>
+<li class="chapter" data-level="9.4" data-path="measurement.html"><a href="measurement.html#interval-data"><i class="fa fa-check"></i><b>9.4</b> Interval Data</a></li>
+<li class="chapter" data-level="9.5" data-path="measurement.html"><a href="measurement.html#missing-values-and-error-in-the-predictors"><i class="fa fa-check"></i><b>9.5</b> Missing values and error in the predictors</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
 <ul>
@@ -443,7 +444,7 @@ Figure 9.1: Standardised mean difference in SAT scores between coached and uncoa
 </p>
 </div>
 <p>Funnel plots are so called because the response shows high variance when precision is low (measurement error variance is high) and teh variance declines as sample sizes and precision increases. There are two flavours of meta-analysis: fixed-effect meta-analysis, which assumes that all of the variability between estimates is due to measurement error and random-effect meta-analysis, which assumes that estimates may also vary for other reasons (and usually that this variability does not depend on precision). In the context of the funnel plot, the fixed-effect meta-analysis assumes that at high precision all estimates converge on the same value whereas the random-effect meta-analysis allows some variability to exist. Both types of meta-analysis can be fitted in <span class="math inline">\(\texttt{MCMCglmm}\)</span>, although to me at least, the plausibility of the assumptions that underpin fixed-effect meta-analysis seem dubious. I usually start with random-effect meta-analyses which actually converges on the fixed-effect meta-analysis as the residual (<span class="math inline">\(\texttt{units}\)</span>) variance tends to zero.</p>
-<p>There are multiple ways of setting up a (random-effect) meta-analysis in <span class="math inline">\(\texttt{MCMCglmm}\)</span>. Here, I will go through the least intuitive method as it will provide the first step at understanding the next section. In Chapter <a href="cont-int.html#cont-int">6</a> we explored random regression and in Section <a href="cont-int.html#het-res">6.2</a> we saw that random regression models also impose assumptions about how the variances changes as function of the covariate. If a random slope model is fitted without random intercepts the variance across levels of the random effect is <span class="math inline">\(\sigma^2_ux^2\)</span> where <span class="math inline">\(x\)</span> is the covariate. Consequently, fitting an observation-level random regression model with the standard error (<span class="math inline">\(\texttt{sqrt(vi)}\)</span>) as <span class="math inline">\(x\)</span> and fixing <span class="math inline">\(\sigma^2_u\)</span> at one results in the variance being equal to the measurement error variance <span class="math inline">\(\texttt{vi}\)</span> as required. The model formula <code>idh(sqrt(vi)):units</code> fits such a model and the associated variance can be fixed at one in the prior.</p>
+<p>There are multiple ways of setting up a (random-effect) meta-analysis in <span class="math inline">\(\texttt{MCMCglmm}\)</span> (see Section <a href="measurement.html#sec-meta-alternatives">9.3.2</a>). Here, I will go through the least intuitive method as it will provide the first step at understanding the next section. In Chapter <a href="cont-int.html#cont-int">6</a> we explored random regression and in Section <a href="cont-int.html#het-res">6.2</a> we saw that random regression models also impose assumptions about how the variances changes as function of the covariate. If a random slope model is fitted without random intercepts the variance across levels of the random effect is <span class="math inline">\(\sigma^2_ux^2\)</span> where <span class="math inline">\(x\)</span> is the covariate. Consequently, fitting an observation-level random regression model with the standard error (<span class="math inline">\(\texttt{sqrt(vi)}\)</span>) as <span class="math inline">\(x\)</span> and fixing <span class="math inline">\(\sigma^2_u\)</span> at one results in the variance being equal to the measurement error variance <span class="math inline">\(\texttt{vi}\)</span> as required. The model formula <code>idh(sqrt(vi)):units</code> fits such a model and the associated variance can be fixed at one in the prior.</p>
 <div class="sourceCode" id="cb359"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb359-1"><a href="measurement.html#cb359-1" tabindex="-1"></a>prior.meta<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">fix=</span><span class="dv">1</span>)))</span>
 <span id="cb359-2"><a href="measurement.html#cb359-2" tabindex="-1"></a>m.meta<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(<span class="fu">sqrt</span>(vi))<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta)</span>
 <span id="cb359-3"><a href="measurement.html#cb359-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta)</span></code></pre></div>
@@ -514,49 +515,30 @@ Figure 9.2: Standardised mean difference in SAT scores between coached and uncoa
 Figure 9.3: Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision (<span class="math inline">\(1/\sqrt{\texttt{vi}}\)</span>) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained using a variance of <span class="math inline">\(\sigma^2_\texttt{units}+\texttt{vi}\)</span>.
 </p>
 </div>
-<div id="textttmev-textttunits-structure-and-textttginverse" class="section level3 hasAnchor" number="9.3.1">
-<h3><span class="header-section-number">9.3.1</span> <span class="math inline">\(\texttt{mev}\)</span>, <span class="math inline">\(\texttt{units}\)</span> structure and <span class="math inline">\(\texttt{ginverse}\)</span><a href="measurement.html#textttmev-textttunits-structure-and-textttginverse" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>When fitting a standard meta-analysis (<span class="math inline">\(\texttt{m.meta}\)</span>) we set the problem up as a random regression using <span class="math inline">\(\texttt{idh(sqrt(vi)):units}\)</span> and fixed the corresponding variance at one. There are at least three other ways to achieve the same goal.</p>
-<p><span class="math inline">\({\bf \texttt{mev}}\)</span>: The argument in $ takes a vector of measurement error variances</p>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="measurement.html#cb363-1" tabindex="-1"></a>m.mev<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">data=</span>dat.kalaian1996, <span class="at">mev=</span>dat.kalaian1996<span class="sc">$</span>vi, <span class="at">prior=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>)))</span></code></pre></div>
-<p><span class="math inline">\({\bf \texttt{units} \textrm{structure}}\)</span>: A <span class="math inline">\(\texttt{units}\)</span> by <span class="math inline">\(\texttt{units}\)</span> measurement error covariance matrix can be specified in the random formula and then fixed in the prior. In standard meta-analysis the measurement errors on different observations are uncorrelated and so the covariance matrix is diagonal and can be fitted using an <span class="math inline">\(\texttt{idh}\)</span> structure. While this is much more computationally efficient than fitting an equivalent <span class="math inline">\(\texttt{us}\)</span> structure, it may still be slow if the data set is large:</p>
-<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="measurement.html#cb364-1" tabindex="-1"></a>prior.units<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(dat.kalaian1996<span class="sc">$</span>vi), <span class="at">fix=</span><span class="dv">1</span>)))</span>
-<span id="cb364-2"><a href="measurement.html#cb364-2" tabindex="-1"></a>m.idh<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(units)<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.units)</span></code></pre></div>
-<p><span class="math inline">\({\bf \texttt{ginverse}}\)</span>: A <span class="math inline">\(\texttt{units}\)</span> by <span class="math inline">\(\texttt{units}\)</span> measurement error covariance matrix can be specified through the <span class="math inline">\(\texttt{ginverse}\)</span> argument to <span class="math inline">\(\texttt{MCMCglmm}\)</span>. Conceptually this is equivalent to the specification above, but computationally more efficient.</p>
-<div class="sourceCode" id="cb365"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb365-1"><a href="measurement.html#cb365-1" tabindex="-1"></a>ivi<span class="ot">&lt;-</span><span class="fu">as</span>(<span class="fu">Diagonal</span>(<span class="fu">nrow</span>(dat.kalaian1996), <span class="dv">1</span><span class="sc">/</span>dat.kalaian1996<span class="sc">$</span>vi), <span class="st">&quot;CsparseMatrix&quot;</span>)</span>
-<span id="cb365-2"><a href="measurement.html#cb365-2" tabindex="-1"></a><span class="fu">rownames</span>(ivi)<span class="ot">&lt;-</span>dat.kalaian1996<span class="sc">$</span>id</span>
-<span id="cb365-3"><a href="measurement.html#cb365-3" tabindex="-1"></a></span>
-<span id="cb365-4"><a href="measurement.html#cb365-4" tabindex="-1"></a>prior.ginv<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">fix=</span><span class="dv">1</span>)))</span>
-<span id="cb365-5"><a href="measurement.html#cb365-5" tabindex="-1"></a></span>
-<span id="cb365-6"><a href="measurement.html#cb365-6" tabindex="-1"></a>m.ginv<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span>id, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.ginv, <span class="at">ginverse=</span><span class="fu">list</span>(<span class="at">id=</span>ivi))</span></code></pre></div>
-<p>All of the above models are equivalent to the first model used (<span class="math inline">\(\texttt{m.meta}\)</span>).</p>
-<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="measurement.html#cb366-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m.meta<span class="sc">$</span>Sol, m.mev<span class="sc">$</span>Sol, m.idh<span class="sc">$</span>Sol, m.ginv<span class="sc">$</span>Sol))</span></code></pre></div>
-<p><img src="_bookdown_files/fig/unnamed-chunk-197-1.png" alt="" width="672" /></p>
-</div>
-<div id="exact-meta-analysis" class="section level3 hasAnchor" number="9.3.2">
-<h3><span class="header-section-number">9.3.2</span> Exact meta-analysis<a href="measurement.html#exact-meta-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div id="sec-meta-exact" class="section level3 hasAnchor" number="9.3.1">
+<h3><span class="header-section-number">9.3.1</span> Exact meta-analysis<a href="measurement.html#sec-meta-exact" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Another possible source of model misspecification is the assumption that the measurement errors are normally distributed with a standard deviation equal to the standard error of the estimate. This is true for linear model coefficients, including the difference in the means for two groups, but only when the assumption of normality is met <em>and</em> the residual variance is known perfectly. In practice, the residual variance is not known exactly and is estimated from the data. The assumed measurement error distribution is then only approximate, although if the individual studies have moderate sample sizes (<span class="math inline">\(&gt;30\)</span>) the approximation is accurate enough that it is not worth worrying about. Given 59 of the 67 differences in <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> were estimated from sample sizes in excess of 30, it seems unlikely that using a more accurate distribution for the measurement errors will dramatically change the model, but let’s try. Assuming the individual studies that contributed to <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> were normally distributed, the distribution of the estimated difference follows a mean-shifted scaled t-distribution with a mean equal to the true difference, a scale equal to the reported standard error (<span class="math inline">\(\sqrt{\texttt{vi}}\)</span>) and degrees of freedom equal to the residual degrees of freedom. If we are prepared to assume no moderator variables were included when estimating the difference in the means the residual degrees of freedom will be equal to the sum of the sample sizes in each group minus two:</p>
-<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="measurement.html#cb367-1" tabindex="-1"></a>dat.kalaian1996<span class="sc">$</span>df<span class="ot">&lt;-</span>dat.kalaian1996<span class="sc">$</span>n1<span class="sc">+</span>dat.kalaian1996<span class="sc">$</span>n2<span class="dv">-2</span></span></code></pre></div>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="measurement.html#cb363-1" tabindex="-1"></a>dat.kalaian1996<span class="sc">$</span>df<span class="ot">&lt;-</span>dat.kalaian1996<span class="sc">$</span>n1<span class="sc">+</span>dat.kalaian1996<span class="sc">$</span>n2<span class="dv">-2</span></span></code></pre></div>
 <p>However, the differences in <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> (<span class="math inline">\(\texttt{yi}\)</span>) are not raw differences, but have been standardised by the within group standard deviation. After standard-deviation standardisation the distribution of estimates is no longer a mean-shifted scaled t-distribution but a noncentral scaled t-distribution. The true (standardised) value is equal to the noncentrality parameter, and the scale and degrees of freedom are equal to the reported standard error and residual degrees of freedom from the model. When the true value is non-zero the distribution of errors will be asymmetric with a longer tail to the right when the true value is positive. When the true value is zero we have the standard scaled t-distribution which compared to the normal has longer tails. As the degrees of freedom increases the noncentral scaled t-distribution converges on the normal. <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows the response to come from a noncentral scaled t-distribution (<code>family="ncst"</code>) if the scale and degrees of freedom are known and the linear model predicts the noncentrality parameter. When using <code>family="ncst"</code> three columns are expected: the estimate, it’s standard error and the residual degrees of freedom. Note that for such models, the meausrement errors are built into the distribution and do not need to be modelled using random effects:</p>
-<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="measurement.html#cb368-1" tabindex="-1"></a>m.meta3<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(yi, <span class="fu">sqrt</span>(vi), df)<span class="sc">~</span>outcome, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">nu=</span><span class="fl">0.002</span>)), <span class="at">family=</span><span class="st">&quot;ncst&quot;</span>)</span>
-<span id="cb368-2"><a href="measurement.html#cb368-2" tabindex="-1"></a><span class="fu">summary</span>(m.meta3)</span></code></pre></div>
+<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="measurement.html#cb364-1" tabindex="-1"></a>m.meta3<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(yi, <span class="fu">sqrt</span>(vi), df)<span class="sc">~</span>outcome, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">nu=</span><span class="fl">0.002</span>)), <span class="at">family=</span><span class="st">&quot;ncst&quot;</span>)</span>
+<span id="cb364-2"><a href="measurement.html#cb364-2" tabindex="-1"></a><span class="fu">summary</span>(m.meta3)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: -7.406884 
+##  DIC: -8.503967 
 ## 
 ##  R-structure:  ~units
 ## 
 ##       post.mean  l-95% CI u-95% CI eff.samp
-## units  0.002498 0.0001876 0.007052    118.7
+## units   0.00219 0.0001578 0.006151    121.1
 ## 
 ##  Location effects: cbind(yi, sqrt(vi), df) ~ outcome 
 ## 
-##               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## (Intercept)     0.13216  0.05435  0.21159   111.80 &lt;0.001 ***
-## outcomeverbal  -0.01775 -0.12948  0.08703    79.79  0.726    
+##               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## (Intercept)    0.128878  0.057199  0.195495    85.04 &lt;0.001 ***
+## outcomeverbal -0.007312 -0.094338  0.094081    77.52    0.9    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>The posterior distributions of the parameters are almost identical to those seen with the standard model (<code>m.meta</code>), as expected given the high sample sizes. Obtaining the prediction intervals is a little tricky with respect to the precision is a little tricky, since for a given precision the residual degrees of freedom might vary. Moreover the response is now assumed to be the sum of a normally distributed <span class="math inline">\(\textttt{unit}\)</span> effect and a noncentral scaled <span class="math inline">\(t\)</span> effect and so the quantiles of the distribution are unknown. We can of course obtain posterior predictive intervals for our observed data and overly them, and as expected it is very similar to Figure <a href="measurement.html#fig:funnel2">9.2</a>.</p>
@@ -566,56 +548,236 @@ Figure 9.3: Standardised mean difference in SAT scores between coached and uncoa
 Figure 9.4: Standardised mean difference in SAT scores between coached and uncoached students on the y-axis against precision (<span class="math inline">\(1/\sqrt{\texttt{vi}}\)</span>) on the x-axis. Back dots are for the math subtest and red dots for verbal subtest. The solid horizontal lines are the predicted means and the dashed lines are the 95% prediction intervals obtained assuming the response follows a noncentral scaled t-distribution.
 </p>
 </div>
-<p>It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly so, when the case for standardisation seems to be misplaced: I bet coaching companies don’t have statements on their websites saying they raise SAT grades by <span class="math inline">\(x\)</span> standard deviations - they will say they raise them by <span class="math inline">\(x\)</span> points (a raw difference) or by <span class="math inline">\(x\)</span> percent (a mean standardised difference). If raw differences and their standard errors had been reported an exact meta-analysis could have been performed by specifying the response to be a mean-shifted scaled t-distribution ( <code>family = "msst"</code>). As with the noncentral scaled <span class="math inline">\(t\)</span>-distribution, three columns are expected: the estimate followed by its standard error and the residual degrees of freedom.</p>
+<p>It is always a little annoying when standardised values are published without the accompanying raw values or the values used to standardise. Particularly so, when the case for standardisation seems to be misplaced: I bet coaching companies don’t have statements on their websites saying they raise SAT grades by <span class="math inline">\(x\)</span> standard deviations - they will say they raise them by <span class="math inline">\(x\)</span> points (a raw difference) or by <span class="math inline">\(x\)</span> percent (a mean standardised difference). If raw differences and their standard errors had been reported an exact meta-analysis on the raw differences could have been performed by specifying the response to be a mean-shifted scaled t-distribution ( <code>family = "msst"</code>). As with the noncentral scaled <span class="math inline">\(t\)</span>-distribution, three columns are expected: the estimate followed by its standard error and the residual degrees of freedom.</p>
+</div>
+<div id="sec-meta-alternatives" class="section level3 hasAnchor" number="9.3.2">
+<h3><span class="header-section-number">9.3.2</span> <span class="math inline">\(\texttt{mev}\)</span>, <span class="math inline">\(\texttt{units}\)</span> structure and <span class="math inline">\(\texttt{ginverse}\)</span><a href="measurement.html#sec-meta-alternatives" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When fitting a standard meta-analysis (<span class="math inline">\(\texttt{m.meta}\)</span>) we set the problem up as a random regression using <span class="math inline">\(\texttt{idh(sqrt(vi)):units}\)</span> and fixed the corresponding variance at one. There are at least three other ways to achieve the same goal.</p>
+<p><span class="math inline">\({\bf \texttt{mev}}\)</span>: The argument in $ takes a vector of measurement error variances</p>
+<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="measurement.html#cb366-1" tabindex="-1"></a>m.mev<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">data=</span>dat.kalaian1996, <span class="at">mev=</span>dat.kalaian1996<span class="sc">$</span>vi, <span class="at">prior=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>)))</span></code></pre></div>
+<p><span class="math inline">\({\bf \texttt{units} \textrm{structure}}\)</span>: A <span class="math inline">\(\texttt{units}\)</span> by <span class="math inline">\(\texttt{units}\)</span> measurement error covariance matrix can be specified in the random formula and then fixed in the prior. In standard meta-analysis the measurement errors on different observations are uncorrelated and so the covariance matrix is diagonal and can be fitted using an <span class="math inline">\(\texttt{idh}\)</span> structure. While this is much more computationally efficient than fitting an equivalent <span class="math inline">\(\texttt{us}\)</span> structure, it may still be slow if the data set is large:</p>
+<div class="sourceCode" id="cb367"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb367-1"><a href="measurement.html#cb367-1" tabindex="-1"></a>prior.units<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(dat.kalaian1996<span class="sc">$</span>vi), <span class="at">fix=</span><span class="dv">1</span>)))</span>
+<span id="cb367-2"><a href="measurement.html#cb367-2" tabindex="-1"></a>m.idh<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(units)<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.units)</span></code></pre></div>
+<p><span class="math inline">\({\bf \texttt{ginverse}}\)</span>: A <span class="math inline">\(\texttt{units}\)</span> by <span class="math inline">\(\texttt{units}\)</span> measurement error covariance matrix can be specified through the <span class="math inline">\(\texttt{ginverse}\)</span> argument to <span class="math inline">\(\texttt{MCMCglmm}\)</span>. Conceptually this is equivalent to the specification above, but computationally more efficient.</p>
+<div class="sourceCode" id="cb368"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb368-1"><a href="measurement.html#cb368-1" tabindex="-1"></a>ivi<span class="ot">&lt;-</span><span class="fu">as</span>(<span class="fu">Diagonal</span>(<span class="fu">nrow</span>(dat.kalaian1996), <span class="dv">1</span><span class="sc">/</span>dat.kalaian1996<span class="sc">$</span>vi), <span class="st">&quot;CsparseMatrix&quot;</span>)</span>
+<span id="cb368-2"><a href="measurement.html#cb368-2" tabindex="-1"></a><span class="fu">rownames</span>(ivi)<span class="ot">&lt;-</span>dat.kalaian1996<span class="sc">$</span>id</span>
+<span id="cb368-3"><a href="measurement.html#cb368-3" tabindex="-1"></a></span>
+<span id="cb368-4"><a href="measurement.html#cb368-4" tabindex="-1"></a>prior.ginv<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">fix=</span><span class="dv">1</span>)))</span>
+<span id="cb368-5"><a href="measurement.html#cb368-5" tabindex="-1"></a></span>
+<span id="cb368-6"><a href="measurement.html#cb368-6" tabindex="-1"></a>m.ginv<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span>id, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.ginv, <span class="at">ginverse=</span><span class="fu">list</span>(<span class="at">id=</span>ivi))</span></code></pre></div>
+<p>All of the above models are equivalent to the first model used (<span class="math inline">\(\texttt{m.meta}\)</span>).</p>
+<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="measurement.html#cb369-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">mcmc.list</span>(m.meta<span class="sc">$</span>Sol, m.mev<span class="sc">$</span>Sol, m.idh<span class="sc">$</span>Sol, m.ginv<span class="sc">$</span>Sol))</span></code></pre></div>
+<p><img src="_bookdown_files/fig/unnamed-chunk-199-1.png" alt="" width="672" /></p>
 </div>
 <div id="multivariate-meta-analysis" class="section level3 hasAnchor" number="9.3.3">
 <h3><span class="header-section-number">9.3.3</span> Multivariate meta-analysis<a href="measurement.html#multivariate-meta-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="measurement.html#cb370-1" tabindex="-1"></a>prior.meta3<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu=</span><span class="dv">1</span>)))</span>
-<span id="cb370-2"><a href="measurement.html#cb370-2" tabindex="-1"></a>m.meta3<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">corg</span>(outcome<span class="sc">:</span><span class="fu">sqrt</span>(vi))<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta3)</span>
-<span id="cb370-3"><a href="measurement.html#cb370-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta3)</span></code></pre></div>
+<p>In some cases measurement errors may be correlated across observations. For example, in <span class="math inline">\(\texttt{dat.kalaian1996}\)</span>, 20 studies contributed two differences, one for verbal and one for math subtests. The pair of differences were calculated from data on the same set of students and so we might expect their estimation error to be correlated - for example, if the coached students for a particular study happened to be intrinsically poor students we might expect the two differences to be smaller than their expectation. In some cases, we might know the measurement error correlation between observations (for example, if we were to analyses pairs of coefficients obtained from linear models) but often - as here - we do not. The help file for <span class="math inline">\(\texttt{dat.kalaian1996}\)</span> performs an analysis where the measurement error correlation between observations from the same study is assumed to be 0.66. We can impose this assumption in a <span class="math inline">\(\texttt{MCMCglmm}\)</span> model by forming the inverse measurement error covariance matrix as we did in the previous section. Formatting the matrix is a bit painful and so I’ll hide the details</p>
+<details>
+<summary>
+here
+</summary>
+<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="measurement.html#cb370-1" tabindex="-1"></a>inverse.cor<span class="ot">&lt;-</span><span class="cf">function</span>(v, r){</span>
+<span id="cb370-2"><a href="measurement.html#cb370-2" tabindex="-1"></a></span>
+<span id="cb370-3"><a href="measurement.html#cb370-3" tabindex="-1"></a>    R<span class="ot">&lt;-</span><span class="fu">matrix</span>(r, <span class="fu">length</span>(v), <span class="fu">length</span>(v))</span>
+<span id="cb370-4"><a href="measurement.html#cb370-4" tabindex="-1"></a>    <span class="fu">diag</span>(R)<span class="ot">&lt;-</span><span class="dv">1</span></span>
+<span id="cb370-5"><a href="measurement.html#cb370-5" tabindex="-1"></a>    <span class="co"># create the correlation matrix</span></span>
+<span id="cb370-6"><a href="measurement.html#cb370-6" tabindex="-1"></a></span>
+<span id="cb370-7"><a href="measurement.html#cb370-7" tabindex="-1"></a>    V<span class="ot">&lt;-</span><span class="fu">crossprod</span>(<span class="fu">t</span>(<span class="fu">sqrt</span>(v)))</span>
+<span id="cb370-8"><a href="measurement.html#cb370-8" tabindex="-1"></a>    <span class="co"># create the covariance matrix had r been 1.</span></span>
+<span id="cb370-9"><a href="measurement.html#cb370-9" tabindex="-1"></a></span>
+<span id="cb370-10"><a href="measurement.html#cb370-10" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">solve</span>(V<span class="sc">*</span>R))</span>
+<span id="cb370-11"><a href="measurement.html#cb370-11" tabindex="-1"></a>} </span>
+<span id="cb370-12"><a href="measurement.html#cb370-12" tabindex="-1"></a><span class="co"># a function for creating an inverse covariance matrix given the variances (v) and a constant correlation (r) </span></span>
+<span id="cb370-13"><a href="measurement.html#cb370-13" tabindex="-1"></a></span>
+<span id="cb370-14"><a href="measurement.html#cb370-14" tabindex="-1"></a>ivi<span class="ot">&lt;-</span><span class="fu">tapply</span>(dat.kalaian1996<span class="sc">$</span>vi, dat.kalaian1996<span class="sc">$</span>study, inverse.cor, <span class="at">r=</span><span class="fl">0.66</span>)</span>
+<span id="cb370-15"><a href="measurement.html#cb370-15" tabindex="-1"></a><span class="co"># for each study create the inverse measurement error covariance matrix</span></span>
+<span id="cb370-16"><a href="measurement.html#cb370-16" tabindex="-1"></a></span>
+<span id="cb370-17"><a href="measurement.html#cb370-17" tabindex="-1"></a>ivi<span class="ot">&lt;-</span><span class="fu">bdiag</span>(ivi)</span>
+<span id="cb370-18"><a href="measurement.html#cb370-18" tabindex="-1"></a><span class="co"># turn the list of matrices into a sparse block diagonal</span></span>
+<span id="cb370-19"><a href="measurement.html#cb370-19" tabindex="-1"></a></span>
+<span id="cb370-20"><a href="measurement.html#cb370-20" tabindex="-1"></a>idx.after.sort <span class="ot">&lt;-</span> <span class="fu">order</span>(dat.kalaian1996<span class="sc">$</span>study, <span class="fu">seq_along</span>(dat.kalaian1996<span class="sc">$</span>study))</span>
+<span id="cb370-21"><a href="measurement.html#cb370-21" tabindex="-1"></a><span class="co"># for situations where observations aren&#39;t ordered (within studies in this example)</span></span>
+<span id="cb370-22"><a href="measurement.html#cb370-22" tabindex="-1"></a><span class="co"># need to make sure rows/columns of ivi correspond to the correct obseravtions</span></span>
+<span id="cb370-23"><a href="measurement.html#cb370-23" tabindex="-1"></a></span>
+<span id="cb370-24"><a href="measurement.html#cb370-24" tabindex="-1"></a><span class="fu">rownames</span>(ivi)<span class="ot">&lt;-</span>dat.kalaian1996<span class="sc">$</span>id[idx.after.sort]</span></code></pre></div>
+</details>
+<p><br>
+but it is instructive to look at the output. For example, if we look at row/columns 60 to 63 of the inverse (stored as <span class="math inline">\(\texttt{ivi}\)</span>) we get</p>
+<div class="sourceCode" id="cb371"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb371-1"><a href="measurement.html#cb371-1" tabindex="-1"></a>ivi[<span class="fu">c</span>(<span class="dv">60</span><span class="sc">:</span><span class="dv">63</span>), <span class="fu">c</span>(<span class="dv">60</span><span class="sc">:</span><span class="dv">63</span>)]</span></code></pre></div>
+<pre><code>## 4 x 4 sparse Matrix of class &quot;dsCMatrix&quot;
+##          29       65        41        42
+## 29 7.674597 .          .         .      
+## 65 .        5.885815   .         .      
+## 41 .        .         46.02060 -29.76147
+## 42 .        .        -29.76147  44.18437</code></pre>
+<p>This matrix corresponds to observations with <span class="math inline">\(\texttt{id}\)</span>’s 29, 65, 41 and 42:</p>
+<div class="sourceCode" id="cb373"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb373-1"><a href="measurement.html#cb373-1" tabindex="-1"></a>dat.kalaian1996[<span class="fu">match</span>(<span class="fu">rownames</span>(ivi)[<span class="dv">60</span><span class="sc">:</span><span class="dv">63</span>], dat.kalaian1996<span class="sc">$</span>id),<span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;study&quot;</span>, <span class="st">&quot;vi&quot;</span>)]</span></code></pre></div>
+<pre><code>##    id                   study     vi
+## 29 29 Roberts &amp; Oppenheim (N) 0.1303
+## 65 65                  Teague 0.1699
+## 41 41                  Whitla 0.0385
+## 42 42                  Whitla 0.0401</code></pre>
+<p>The first two studies only contributed one observation and so their rows/columns only have a diagonal element equal to 1/<span class="math inline">\(\texttt{vi}\)</span>. The final two observations are from the same study and so the inverse has a non-zero element in the off-diagonal. As in the previous section we can simply fit this as a ginverse with the associated variance fixed at one:</p>
+<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="measurement.html#cb375-1" tabindex="-1"></a>prior.meta3<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">fix=</span><span class="dv">1</span>)))</span>
+<span id="cb375-2"><a href="measurement.html#cb375-2" tabindex="-1"></a>m.meta3<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span>id, <span class="at">data=</span>dat.kalaian1996, <span class="at">ginverse=</span><span class="fu">list</span>(<span class="at">id=</span>ivi), <span class="at">prior=</span>prior.meta3)</span>
+<span id="cb375-3"><a href="measurement.html#cb375-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta3)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: -189.2541 
+##  DIC: -107.6008 
 ## 
-##  G-structure:  ~corg(outcome:sqrt(vi)):units
+##  G-structure:  ~id
 ## 
-##                                                     post.mean l-95% CI u-95% CI
-## outcomemath:sqrt(vi):outcomemath:sqrt(vi).units       1.00000   1.0000   1.0000
-## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).units     0.01753  -0.6259   0.6861
-## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).units     0.01753  -0.6259   0.6861
-## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).units   1.00000   1.0000   1.0000
-##                                                     eff.samp
-## outcomemath:sqrt(vi):outcomemath:sqrt(vi).units          0.0
-## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).units      457.2
-## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).units      457.2
-## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).units      0.0
+##    post.mean l-95% CI u-95% CI eff.samp
+## id         1        1        1        0
 ## 
 ##  R-structure:  ~units
 ## 
 ##       post.mean  l-95% CI u-95% CI eff.samp
-## units  0.002801 0.0002141 0.008105    244.9
+## units  0.007692 0.0006589  0.01684    278.3
 ## 
 ##  Location effects: yi ~ outcome 
 ## 
-##               post.mean l-95% CI u-95% CI eff.samp pMCMC   
-## (Intercept)     0.13022  0.05612  0.20437     1000 0.004 **
-## outcomeverbal  -0.01064 -0.11085  0.09036     1000 0.818   
+##               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)     0.13684  0.05972  0.21299     1000 &lt;0.001 ***
+## outcomeverbal  -0.01841 -0.10029  0.06581     1000  0.626    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>An equivalent way to fit this model is to allow the pair of random slopes from our standard model to be correlated when they come from the same study, and fix the correlation at 0.66<a href="#fn45" class="footnote-ref" id="fnref45"><sup>45</sup></a>:</p>
+<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="measurement.html#cb377-1" tabindex="-1"></a>V<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="fl">0.66</span>, <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<span id="cb377-2"><a href="measurement.html#cb377-2" tabindex="-1"></a><span class="fu">diag</span>(V)<span class="ot">&lt;-</span><span class="dv">1</span></span>
+<span id="cb377-3"><a href="measurement.html#cb377-3" tabindex="-1"></a></span>
+<span id="cb377-4"><a href="measurement.html#cb377-4" tabindex="-1"></a>prior.meta4<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span>V, <span class="at">fix=</span><span class="dv">1</span>)))</span>
+<span id="cb377-5"><a href="measurement.html#cb377-5" tabindex="-1"></a>m.meta4<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">us</span>(outcome<span class="sc">:</span><span class="fu">sqrt</span>(vi))<span class="sc">:</span>study, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta4)</span>
+<span id="cb377-6"><a href="measurement.html#cb377-6" tabindex="-1"></a><span class="fu">summary</span>(m.meta4)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -108.0545 
+## 
+##  G-structure:  ~us(outcome:sqrt(vi)):study
+## 
+##                                                     post.mean l-95% CI u-95% CI
+## outcomemath:sqrt(vi):outcomemath:sqrt(vi).study          1.00     1.00     1.00
+## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).study        0.66     0.66     0.66
+## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).study        0.66     0.66     0.66
+## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).study      1.00     1.00     1.00
+##                                                     eff.samp
+## outcomemath:sqrt(vi):outcomemath:sqrt(vi).study            0
+## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).study          0
+## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).study          0
+## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).study        0
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units  0.007759 0.0007515  0.01771    418.2
+## 
+##  Location effects: yi ~ outcome 
+## 
+##               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)     0.13831  0.05480  0.21404     1000 &lt;0.001 ***
+## outcomeverbal  -0.02001 -0.10931  0.05660     1000   0.64    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>It’s not clear where the value 0.66 comes from, and in fact rather than fixing the correlation to be 0.66 we could try to estimate it. This can be achieved by replacing the <span class="math inline">\(\texttt{us}\)</span> variance structure with a <span class="math inline">\(\texttt{corg}\)</span> variance structure. This fixes the diagonal elements of the covariance matrix to one, but allows the correlation to be estimated. For a <span class="math inline">\(2\times 2\)</span> correlation matrix, specifying the off-diagonal elements of $ to be zero and having <span class="math inline">\(\texttt{nu=1}\)</span> results in a flat prior for the correlation (Section <a href="cat-int.html#VCVprior-r-sec">5.3.2</a>).</p>
+<div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="measurement.html#cb379-1" tabindex="-1"></a>prior.meta5<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">list</span>(<span class="at">G1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu=</span><span class="dv">1</span>)))</span>
+<span id="cb379-2"><a href="measurement.html#cb379-2" tabindex="-1"></a>m.meta5<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">corg</span>(outcome<span class="sc">:</span><span class="fu">sqrt</span>(vi))<span class="sc">:</span>study, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta5)</span>
+<span id="cb379-3"><a href="measurement.html#cb379-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta5)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -182.0488 
+## 
+##  G-structure:  ~corg(outcome:sqrt(vi)):study
+## 
+##                                                     post.mean l-95% CI u-95% CI
+## outcomemath:sqrt(vi):outcomemath:sqrt(vi).study        1.0000   1.0000   1.0000
+## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).study      0.1056  -0.3279   0.5128
+## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).study      0.1056  -0.3279   0.5128
+## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).study    1.0000   1.0000   1.0000
+##                                                     eff.samp
+## outcomemath:sqrt(vi):outcomemath:sqrt(vi).study            0
+## outcomeverbal:sqrt(vi):outcomemath:sqrt(vi).study       1000
+## outcomemath:sqrt(vi):outcomeverbal:sqrt(vi).study       1000
+## outcomeverbal:sqrt(vi):outcomeverbal:sqrt(vi).study        0
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units  0.003067 0.0001518 0.008255    279.1
+## 
+##  Location effects: yi ~ outcome 
+## 
+##               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## (Intercept)    0.129378  0.059329  0.197668     1000 &lt;0.001 ***
+## outcomeverbal -0.009422 -0.100556  0.089569     1000  0.836    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The credible intervals on the correlation are very wide (-0.328 – 0.513) but it does seem like the value of 0.66 assumed in model <span class="math inline">\(\texttt{m.meta4}\)</span> is unjustifiably high.</p>
 </div>
 </div>
-<div id="missing-values-and-error-in-the-predictors" class="section level2 hasAnchor" number="9.4">
-<h2><span class="header-section-number">9.4</span> Missing values and error in the predictors<a href="measurement.html#missing-values-and-error-in-the-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="interval-data" class="section level2 hasAnchor" number="9.4">
+<h2><span class="header-section-number">9.4</span> Interval Data<a href="measurement.html#interval-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the meta-analyses covered in Section <a href="measurement.html#meta-sec">9.3</a> we worked with the measurement error variance associated with an estimate. If only confidence/credible intervals are given for an estimate, it is possible to obtain the measurement error variance assuming a distribution for the errors. For example, if the distribution is normal and the lower and upper interval are <span class="math inline">\(l\)</span> and <span class="math inline">\(u\)</span> respectively, then the estimate would be the midpoint <span class="math inline">\(y=(l+u)/2\)</span> and the measurement error standard deviation would be</p>
+<p><span class="math display">\[\sigma_m = \frac{u-l}{2Q(1-\alpha/2)}\]</span></p>
+<p>where <span class="math inline">\(Q\)</span> is the quantile function of the unit normal (<span class="math inline">\(\texttt{qnorm}\)</span>) and <span class="math inline">\(\alpha\)</span> is one minus the confidence level (e.g. 0.05 for 95% confidence intervals).</p>
+<p>In some cases, intervals are given but without the corresponding confidence level. For example, in <span class="citation">(<a href="#ref-Phillimore.2016"><strong>Phillimore.2016?</strong></a>)</span> we analysed citizen-science data on when birds lay their eggs. Exact dates are not known and only an interval is given. The standard way of treating such data is to treat them as censored. Censoring assumes that before model building, the probability density for the true value is flat across the interval. However, for the laying date data quite a lot of information goes into calculating the interval such that the true value is more likely to be close to the centre of the interval. In addition, the intervals are calculated in the hope they are comparable between observations - two observations may have very different interval lengths, but it is still hoped that the probability the true value lies inside the interval is the same in both cases. In such cases, <span class="math inline">\(\alpha\)</span> and therefore <span class="math inline">\(2Q(1-\alpha/2)\)</span> is constant. In Section <a href="measurement.html#meta-sec">9.3</a> we fitted a model (<span class="math inline">\(\texttt{m.meta2}\)</span>) which allowed the measurement error variance to be proportional to, rather than exactly equal to, the reported measurement error variance (<span class="math inline">\(\texttt{vi}\)</span>). The constant of proportionality could be estimated since <span class="math inline">\(\texttt{vi}\)</span> varied and the empirical change in variance with <span class="math inline">\(\texttt{vi}\)</span> could be assessed. Analysing interval data<a href="#fn46" class="footnote-ref" id="fnref46"><sup>46</sup></a> is essentially the same problem: we can treat <span class="math inline">\(y\)</span> as the observation and <span class="math inline">\((l-u)^2\)</span> as <span class="math inline">\(\texttt{vi}\)</span>. The estimate of the constant of proportionality, <span class="math inline">\(c\)</span>, is then equal to <span class="math inline">\((1/2Q(1-\alpha/2))^{2}\)</span> and so we can obtain an estimate of the unknown confidence interval as <span class="math inline">\(1-\alpha = 2F(1/2\sqrt{c})-1\)</span>, where <span class="math inline">\(F\)</span> is the cumulative distribution function of the unit normal (<span class="math inline">\(\texttt{pnorm}\)</span>).</p>
+<p>For we can obtain the 95% (<span class="math inline">\(\alpha=0.05\)</span>) confidence intervals from <span class="math inline">\(\texttt{vi}\)</span>:</p>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="measurement.html#cb381-1" tabindex="-1"></a>dat.kalaian1996<span class="sc">$</span>l<span class="ot">&lt;-</span><span class="fu">qnorm</span>(<span class="fl">0.025</span>, dat.kalaian1996<span class="sc">$</span>yi, <span class="fu">sqrt</span>(dat.kalaian1996<span class="sc">$</span>vi))</span>
+<span id="cb381-2"><a href="measurement.html#cb381-2" tabindex="-1"></a>dat.kalaian1996<span class="sc">$</span>u<span class="ot">&lt;-</span><span class="fu">qnorm</span>(<span class="fl">0.975</span>, dat.kalaian1996<span class="sc">$</span>yi, <span class="fu">sqrt</span>(dat.kalaian1996<span class="sc">$</span>vi))</span></code></pre></div>
+<div class="sourceCode" id="cb382"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb382-1"><a href="measurement.html#cb382-1" tabindex="-1"></a>prior.meta6<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G=</span><span class="fu">F</span>(<span class="dv">1</span>,<span class="dv">1000</span>))</span>
+<span id="cb382-2"><a href="measurement.html#cb382-2" tabindex="-1"></a>m.meta6<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(yi<span class="sc">~</span>outcome, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(<span class="fu">I</span>(u<span class="sc">-</span>l))<span class="sc">:</span>units, <span class="at">data=</span>dat.kalaian1996, <span class="at">prior=</span>prior.meta2)</span>
+<span id="cb382-3"><a href="measurement.html#cb382-3" tabindex="-1"></a><span class="fu">summary</span>(m.meta6)</span></code></pre></div>
+<pre><code>## 
+##  Iterations = 3001:12991
+##  Thinning interval  = 10
+##  Sample size  = 1000 
+## 
+##  DIC: -181.8545 
+## 
+##  G-structure:  ~idh(I(u - l)):units
+## 
+##                post.mean l-95% CI u-95% CI eff.samp
+## I(u - l).units   0.04933  0.02968  0.06946    502.1
+## 
+##  R-structure:  ~units
+## 
+##       post.mean  l-95% CI u-95% CI eff.samp
+## units  0.003973 0.0002097  0.01247    210.2
+## 
+##  Location effects: yi ~ outcome 
+## 
+##               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)     0.13005  0.06348  0.20410     1000 &lt;0.001 ***
+## outcomeverbal  -0.01292 -0.10285  0.08485     1000  0.788    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>Given an <span class="math inline">\(\alpha\)</span> of 0.05 we expect the estimated variance to be $(1/2Q(1-/2))^{2}=0.065 and we can see the best estimate is lower than this although the credible intervals overlap 0.065. The best estimate of the confidence level can also be obtained:</p>
+<div class="sourceCode" id="cb384"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb384-1"><a href="measurement.html#cb384-1" tabindex="-1"></a>c<span class="ot">&lt;-</span>m.meta6<span class="sc">$</span>VCV[,<span class="st">&quot;I(u - l).units&quot;</span>]</span>
+<span id="cb384-2"><a href="measurement.html#cb384-2" tabindex="-1"></a>ci<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">pnorm</span>(<span class="dv">1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">sqrt</span>(c)))<span class="sc">-</span><span class="dv">1</span></span>
+<span id="cb384-3"><a href="measurement.html#cb384-3" tabindex="-1"></a><span class="fu">plot</span>(ci)</span></code></pre></div>
+<p><img src="_bookdown_files/fig/unnamed-chunk-208-1.png" alt="" width="672" /></p>
+<p>and we can see that 0.95 has some support but much of the posterior density is above this and the posterior mean is 0.974. As we saw from model <span class="math inline">\(\texttt{m.meta2}\)</span>, the best estimate is that the measurement error variance scales by a factor 0.773 with the reported measurement error variance, <span class="math inline">\(\texttt{vi}\)</span>. Since the reported measurement error variance may be inflated the assumed confidence level may have been deflated and the actual level may exceed 95%.</p>
+</div>
+<div id="missing-values-and-error-in-the-predictors" class="section level2 hasAnchor" number="9.5">
+<h2><span class="header-section-number">9.5</span> Missing values and error in the predictors<a href="measurement.html#missing-values-and-error-in-the-predictors" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 
 </div>
 </div>
 <div class="footnotes">
 <hr />
 <ol start="44">
-<li id="fn44"><p>To obtain the pooled standard deviation a weighted variance needs to be calculated. For two groups, the weighted variance is <span class="math inline">\(\frac{w_1\widehat{\sigma^2_1}+w_2\widehat{\sigma^2_2}}{w_1+w_2}\)</span>$ where the <span class="math inline">\(\widehat{\sigma^2}\)</span> are estimates of the variance within each group. The weights are typically the sample size for each group minus one. The pooled standard deviation is the square root of the weighted variance and is the best estimate of the standard deviation under the assumption that it is the same in the two groups.<a href="measurement.html#fnref44" class="footnote-back">↩︎</a></p></li>
+<li id="fn44"><p>To obtain the pooled standard deviation a weighted variance needs to be calculated. For two groups, the weighted variance is <span class="math inline">\(\frac{w_1\widehat{\sigma^2_1}+w_2\widehat{\sigma^2_2}}{w_1+w_2}\)</span> where the <span class="math inline">\(\widehat{\sigma^2}\)</span> are estimates of the variance within each group. The weights are typically the sample size for each group minus one. The pooled standard deviation is the square root of the weighted variance and is the best estimate of the standard deviation under the assumption that it is the same in the two groups.<a href="measurement.html#fnref44" class="footnote-back">↩︎</a></p></li>
+<li id="fn45"><p>It might not be clear why this works. In our standard meta-analysis model we used the random formula <span class="math inline">\(\texttt{idh(sqrt(vi)):units}\)</span>. As was covered in Chapters <a href="cat-int.html#cat-int">5</a> and <a href="cont-int.html#cont-int">6</a>, the term inside the variance function, in this case <span class="math inline">\(\texttt{sqrt(vi)}\)</span>, should be treated as a model formula with the intercept removed. The model term therefore determines a slope parameter for the covariate <span class="math inline">\(\sqrt{\texttt{vi}}\)</span>. This slope parameter is allowed to vary across levels of the predictor that is interacted with the variance structure, in this case <span class="math inline">\(\texttt{units}\)</span>. Since each observation is associated with a unique level of <span class="math inline">\(\texttt{units}\)</span> the random effect model prediction for observation <span class="math inline">\(i\)</span> is <span class="math inline">\(\sqrt{\texttt{vi}_i}u_{i}\)</span>. The marginal distribution of <span class="math inline">\(\sqrt{\texttt{vi}_i}u_{i}\)</span> is normal with zero mean and variance <span class="math inline">\(\texttt{vi}_i\sigma^2_u\)</span>. Setting <span class="math inline">\(\sigma^2_u=1\)</span>, the marginal distribution for the measurement error associated with observation <span class="math inline">\(i\)</span> is normal with zero mean and variance <span class="math inline">\(\texttt{vi}_i\)</span>, as desired.</p>
+<p>In the multivariate meta-analysis model we used the random formula <span class="math inline">\(\texttt{us(outcome:sqrt(vi)):study}\)</span>. Since <span class="math inline">\(\texttt{outcome}\)</span> has two levels, the term inside the variance function, <span class="math inline">\(\texttt{outcome:sqrt(vi)}\)</span>, defines two parameters: a slope for <span class="math inline">\(\texttt{math}\)</span> and a slope for <span class="math inline">\(\texttt{verbal}\)</span>. These slopes are allowed to vary across studies since <span class="math inline">\(\texttt{study}\)</span> is interacted with the variance function. Consequently, for each study there are two slopes. These slopes are allowed to covary since a <span class="math inline">\(\texttt{us}\)</span> structure was used. Imagine observations <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span> are the <span class="math inline">\(\texttt{math}\)</span> and <span class="math inline">\(\texttt{verbal}\)</span> scores from study <span class="math inline">\(j\)</span>. If we designate the slopes for study <span class="math inline">\(j\)</span> as <span class="math inline">\(u^{(\texttt{math})}_j\)</span> and <span class="math inline">\(u^{(\texttt{verbal})}_j\)</span>, the random effect model prediction for observations <span class="math inline">\(k\)</span> and <span class="math inline">\(l\)</span> are <span class="math inline">\(u^{(\texttt{math})}_j\sqrt{\texttt{vi}_k}\)</span> and <span class="math inline">\(u^{(\texttt{verbal})}_j\sqrt{\texttt{vi}_l}\)</span>. The marginal variances of these two predictions are <span class="math inline">\(\sigma^2_\texttt{math}\texttt{vi}_k\)</span> and <span class="math inline">\(\sigma^2_\texttt{verbal}\texttt{vi}_l\)</span>, respectively. If <span class="math inline">\(\sigma^2_\texttt{math}\)</span> and <span class="math inline">\(\sigma^2_\texttt{verbal}\)</span> are set to one, each observation has the desired distribution for its measurement error, as in the univariate model. The marginal covariance between the observations is <span class="math inline">\(\sigma_{\texttt{math},\texttt{verbal}}\sqrt{\texttt{vi}_k}\sqrt{\texttt{vi}_l}\)</span>, and with <span class="math inline">\(\sigma^2_\texttt{math}=\sigma^2_\texttt{verbal}=1\)</span> the marginal correlation is <span class="math inline">\(\sigma_{\texttt{math},\texttt{verbal}}\)</span>. Consequently, fixing the variances of the slopes to one, and their covariance to 0.66, gives the desired model. We can also set <span class="math inline">\(\sigma^2_\texttt{math}=\sigma^2_\texttt{verbal}=1\)</span> but allow the correlation, <span class="math inline">\(\sigma_{\texttt{math},\texttt{verbal}}\)</span>, to be estimated, as was done in model <span class="math inline">\(\texttt{m.meta5}\)</span><a href="measurement.html#fnref45" class="footnote-back">↩︎</a></p></li>
+<li id="fn46"><p>I’m not aware of a name for data like this so I just made one up. If anyone knows of a term already in use for such data please let me know.<a href="measurement.html#fnref46" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
             </section>

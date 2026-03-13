@@ -236,9 +236,10 @@ measurement
 missing-values-in-the-response
 censored-response-variables
 meta-sec
-textttmev-textttunits-structure-and-textttginverse
-exact-meta-analysis
+sec-meta-exact
+sec-meta-alternatives
 multivariate-meta-analysis
+interval-data
 missing-values-and-error-in-the-predictors
 path
 path-anlaysis
