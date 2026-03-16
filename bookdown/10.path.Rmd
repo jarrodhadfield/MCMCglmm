@@ -1,9 +1,19 @@
-# Path Analysis & Antedependence Structures {#path}
+# Path Analysis {#path}
 
-There are many situations where it would seem reasonable to put some aspect of a response variable in as a predictor, and the only thing that stops us is some (often vague) notion that this is a bad thing to do from a statistical point of view. The approach appears to have a long history in economics but I came across the idea in a paper written by @Gianola.2004. The notation of this section, and indeed the sampling strategy employed in MCMCglmm is derived from this paper.
+In previous chapters, variables could be neatly divided into predictor variables and a response variable (or variables, in the multi-response models covered in Chapter \@ref(multi)). However, sometimes we may want to allow observations of a response variable to serve as predictors for other observations. The $\texttt{sir}$ function can be used to specify linear dependencies between elements of the response that are arbitrarily complex in their pattern. However, the $\texttt{sir}$ function is hard to use and so we will start with the simpler $\texttt{path}$ function where dependencies only exist between observations within a residual block.  In both cases, it is important to realise that when the response is non-Gaussian, dependencies are defined at the level of the latent variable, not the observation.    
 
-## Path Anlaysis
 
+## $\texttt{path}$
+
+
+## $\texttt{sir}$
+
+```{r }
+library(sand) 
+data(lazega)           
+A<-as_adjacency_matrix(lazega, sparse = TRUE)                             
+
+```
 $\boldsymbol{\Psi}^{(l)}$ is a square matrix of dimension $N \times N$ where $\Psi_{i,j}^{(l)}=k$ sets up the equation $y_{i} = \lambda_{l}ky_{j} \dots$. In matrix terms:
 
 $$\boldsymbol{\Lambda}{\bf y} = {\bf y} - \sum_{l}\boldsymbol{\Psi}^{(l)}{\bf y}{\lambda_{l}}$$
