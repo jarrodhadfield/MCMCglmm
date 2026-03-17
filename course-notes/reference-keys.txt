@@ -242,6 +242,8 @@ multivariate-meta-analysis
 interval-data
 error-in-the-predictors
 classical-and-berkson-errors.
+continuous-predictors
+discrete-predictors
 path
 path-anlaysis
 scaling
