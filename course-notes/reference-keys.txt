@@ -240,7 +240,8 @@ sec-meta-exact
 sec-meta-alternatives
 multivariate-meta-analysis
 interval-data
-missing-values-and-error-in-the-predictors
+error-in-the-predictors
+classical-and-berkson-errors.
 path
 path-anlaysis
 scaling

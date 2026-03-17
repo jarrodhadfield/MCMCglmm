@@ -27,7 +27,7 @@ me(formula, error=NULL, group=NULL, type="classical")
   name of column in
   [`data.frame`](https://rdrr.io/r/base/data.frame.html) in which groups
   are stored. Rows of the design matrix with the same `group` level are
-  assumed to pertain to the same obsevation of the covariate that is
+  assumed to pertain to the same observation of the covariate that is
   measured with error.
 
 - type:
