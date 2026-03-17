@@ -348,6 +348,11 @@ $$E_b[\hat{\beta}] = \frac{\beta Var(\hat{x})}{Var(\hat{x})}=\beta$$
 
 The effects of the extra or fewer cigarettes smoked will appear in the residuals and the residual variance will be estimated as $\beta^2Var(e_b)+Var(e)$. As in meta-analysis, if the magnitude of $e_b$ varies over patients and we have information about this - for example, we monitor a subset of patients carefully and we know exactly how many cigarettes they smoked -  then modelling the Berkson errors can increase the precision of the estimate. 
 
+### Continuous Predictors
+
+
+
+### Discrete Predictors
 
 
 
