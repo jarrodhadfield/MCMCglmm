@@ -329,6 +329,26 @@ and we can see that 0.95 has some support but much of the posterior density is a
 
 [^interval]: I'm not aware of a name for data like this so I just made one up. If anyone knows of a term already in use for such data please let me know.
 
+## Error in the predictors
 
-## Missing values and error in the predictors
+Since the object of an analysis is to model the response, accommodating missing values or error in the response is relatively straightforward - we've already done the hard work of thinking about how the response may be distributed. On the other hand, we generally condition on the predictor variables in a GLMM and while we must consider how the response depends on them, we do not need to consider their distribution. However, when we need to accommodating missing values or error in predictor variables we have little option but to consider how their true values and errors might be distributed. We can do this formally by fitting a multi-response variable where the would-be predictor is treated as a response variable and a shared parameter exists that links the predictor variable with the target response variable. However, this is only really feasible when we have one or few such predictor variables. Alternatively, we can use more heuristic approaches that impute true values using an approximate distribution. Before addressing each in turn it will be necessary to draw a distinction between two types of error - classical and Berkson.
+
+### Classical and Berkson errors.
+
+
+To understand the distinction between classical and Berkson errors, imagine a predictor variable $x$ for which we can only observe $\hat{x}$.  With classical errors, $\hat{x}$ is distributed around $x$ with some error: $\hat{x} = x+e_c$. With Berkson errors, $x$ is distributed around $\hat{x}$ with some deviation: $x = \hat{x}+e_b$. The subtle difference between the two types of error is best understood in terms of an example. Imagine, I wanted to assess the impact of smoking on health and so I recruit two groups of patients. Patients in Group A smoke ten ten cigarettes a day and patients in Group B smoke twenty cigarettes a day. However, rather than using 10 and 20 as my predictor values, I use the number of cigarettes each patient tells me they smoked, and they have fallible memories. Here we have classical errors: the true value ($x$) is either 10 or 20 but my observed values (${\hat x}$) vary around this due to bad memory: $Var({\hat x})>Var(x)$. Another possibility is that I *tell* patients in Group A to smoke ten ten cigarettes a day and patients in Group B to smoke twenty cigarettes a day. However, although patients in the two groups *on average* smoke 10 or 20 cigarettes each patient may smoke slightly more or less than the average. However, I am not party to this information and the true number of cigarettes smoked ($x$) deviates from my predictor variable ${\hat x}$ by an unknown amount. Here we have Berkson errors and $Var({\hat x})<Var(x)$. With classical errors, $e_c$ does not affect the response: $e_c=1$ implies that I thought I smoked 11 (or 21) cigarettes when in fact I only smoked 10 (or 20) - this imaginary cigarette will not impact my health.  With Berkson errors, $e_b$ does affect the response: $e_b=1$ implies that I smoked one more cigarette than I was told to and this very real  cigarette may well impact my health. The consequence of this is that if I use $\hat{x}$ as a predictor in a regression the estimated coefficient will be biased towards zero (attenuated) with classical errors but unbiased with Berkson errors. To see this, note that in both cases the causal model is $y = \beta x+e$ and the regression coefficient that we would expect to obtain had we measured $x$ perfectly would be $E[\hat{\beta}] = \beta =Cov(y,x)/Var(x)$. With classical error $Cov(y, x+e_c)=Cov(y,x)$ since $e_c$ does not affect the response. However, $Var(x+e_c)=Var(x)+Var(e_c)$ and so the regression is downwardly biased:  
+
+$$E_c[\hat{\beta}] = \frac{Cov(y,x)}{Var(x)+Var(e_c)}= \beta\frac{Var(x)}{Var(x)+Var(e_c)}$$
+
+The estimated regression coefficient is equal to the true coefficient multiplied by the repeatability of the measurements. Since the repeatability lies between zero and one the estimate is attenuated. 
+
+With Berkson error, the causal model $y = \beta x+e$ results in $y = \beta(\hat{x}+e_b)+e$ and so the covariance between $y$ and $\hat{x}$ is $\beta Var(\hat{x})$ and the estimated regression will be:
+
+$$E_b[\hat{\beta}] = \frac{\beta Var(\hat{x})}{Var(\hat{x})}=\beta$$
+
+The effects of the extra or fewer cigarettes smoked will appear in the residuals and the residual variance will be estimated as $\beta^2Var(e_b)+Var(e)$. As in meta-analysis, if the magnitude of $e_b$ varies over patients and we have information about this - for example, we monitor a subset of patients carefully and we know exactly how many cigarettes they smoked -  then modelling the Berkson errors can increase the precision of the estimate. 
+
+
+
+
 
