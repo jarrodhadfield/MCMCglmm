@@ -10,21 +10,15 @@ In previous chapters, variables could be neatly divided into predictor variables
 data(mtcars)
 
 m.path<-MCMCglmm(cbind(mpg, hp)~trait-1+at.level(trait, 1):(gear+cyl+disp+carb+am+wt)+at.level(trait, 2):(cyl+disp+carb)+path(2, 1, 2), rcov=~idh(trait):units, data=mtcars, family=rep("gaussian", 2),prior=list(R=list(V=diag(2),nu=0.002)), longer=50)
-
-library(vars) 
-data(Canada)
-Canada<-as.data.frame(Canada)           
-m.path<-MCMCglmm(cbind(e-mean(e), prod-mean(prod), rw-mean(rw))~trait-1+path(2, 3, 3)+path(3, 1, 3)+path(1, 2, 3), rcov=~idhm(trait):units, data=Canada, family=rep("gaussian", 3),prior=list(R=list(V=diag(3),nu=0.002)))
 ```
 
 
 ## $\texttt{sir}$
 
 ```{r }
-library(sand) 
-data(lazega)           
-A<-as_adjacency_matrix(lazega, sparse = TRUE)                             
-
+#library(sand) 
+#data(lazega)           
+#A<-as_adjacency_matrix(lazega, sparse = TRUE)                             
 ```
 $\boldsymbol{\Psi}^{(l)}$ is a square matrix of dimension $N \times N$ where $\Psi_{i,j}^{(l)}=k$ sets up the equation $y_{i} = \lambda_{l}ky_{j} \dots$. In matrix terms:
 
