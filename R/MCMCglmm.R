@@ -906,13 +906,14 @@ if(nadded>0){
 
 sir<-any(grepl("sir\\(", dimnames(X)[[2]]))
 
-if(sir & !is.null(path.terms)){"path and sir functions cannot be used together: fit using sir function only"}
 
-  if(sir | !is.null(path.terms)){  # Do structural parameters exist?
-  if(!is.null(theta_scale)){"path and sir functions cannot be used together with theta_scale"}
+if(sir | !is.null(path.terms)){  # Do structural parameters exist?
+
+  if(sir & !is.null(path.terms)){"path and sir functions cannot be used together: fit using sir function only"}
+  if(!is.null(theta_scale)){"path and sir functions cannot be used with theta_scale"}
 
   if(sir){
-   if(any(family.names!="gaussian")){stop("currently simultaneous/recursive models can only be fitted to Gaussian data unless path() is used")}
+   if(any(family.names!="gaussian")){stop("currently simultaneous/recursive models can only be fitted to Gaussian data if path() is used")}
    L<-X[,grep("sir\\(", dimnames(X)[[2]]),drop=FALSE]
    L<-as(L, "sparseMatrix")
    if(any(is.na(data$MCMC_y) & rowSums(L)!=0)){

@@ -12,50 +12,54 @@ $$\begin{array}{c|rrrrrc}
 {\color{blue}{\texttt{Greece}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{101A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{109A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{142A}}}&{\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{153A}}}&\dots\\
 \end{array}$$
 
-The $\texttt{us}$ structure allows the line effects for each virus to have different variances, but it also allows the effects for the same line to be correlated across viruses: for example, the effects ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}$ and ${\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}$ are allowed to be correlated. However, effects from different lines are assumed to be independent, both within and between virsus: for example, the effects ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}$ and ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{142A}}}$ are assumed independent with zero correlation since they are associated with different lines.
+The $\texttt{us}$ structure allows the line effects for each virus to have different variances, but it also allows the effects for the same line to be correlated across viruses: for example, the effects ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}$ and ${\color{blue}{\texttt{Greece}}}.{\color{red}{\texttt{129A}}}$ are allowed to be correlated. However, effects from different lines are assumed to be independent, both within and between viruses: for example, the effects ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{129A}}}$ and ${\color{blue}{\texttt{France}}}.{\color{red}{\texttt{142A}}}$ are assumed independent with zero correlation since they are associated with different lines.
 
-In some cases we would like to allow correlations between the effects associated with different lines. For example, lines 129A and 142A may be genetically very similar and so we may expect them to respond to viruses in a similar way. If the covariance structure of a set of random effects is known up to proportionality, $\texttt{MCMCglmm}$ allows this to be specified and the constant or low-dimensional matrix of constants is estimated. We will start with the covariance structures that arise because individuals or species have shared ancestry.  In the context of individuals, these models are known as 'animal' models and shared ancestry is represented by a pedigree. In the context of species, these models are known as phylogenetic or comparative (mixed) models and shared ancestry is represented by a phylogeny. The two models are almost identical, and are relatively minor modifications to the basic mixed model. 
+In some cases we would like to allow correlations between the effects associated with different lines. For example, lines 129A and 142A may be genetically very similar and so we may expect them to respond to viruses in a similar way. If the covariance structure of a set of random effects is known up to proportionality, $\texttt{MCMCglmm}$ allows this to be specified and the constant, or low-dimensional matrix of constants, is estimated. We will start with the covariance structures that arise because individuals or species have shared ancestry.  In the context of individuals, these models are known as 'animal' models and shared ancestry is represented by a pedigree. In the context of species, these models are known as phylogenetic or comparative (mixed) models and shared ancestry is represented by a phylogeny. The two models are almost identical, and are relatively minor modifications to the basic mixed model. 
 
 
 ## Pedigrees {#pedigree-sec}
 
-$\texttt{MCMCglmm}$ handles pedigrees stored in 3-column tabular form, with each row representing a single individual. The first column should contain the unique identifier of the individual, and columns 2 and 3 should be the unique identifiers of the individual's parents. Parents must appear before their offspring in the table - the function $\texttt{orderPed}$ from the library $\texttt{MasterBayes}$ will reorder the pedigree of required. I usually have the dam (mother) in the first column and the sire (father) in the third. I prefer the words dam and sire because if I subscript things with $m$ and $f$ I can never remember whether I mean male and female, or mother and father. In hermaphrodite systems the same individual may appear in both columns, even within the same row if an individual was produced through selfing. This is not a problem, but $\texttt{MCMCglmm}$ will issue a warning in case hermaphrodites are not present and a data entry mistake has been made. Impossible pedigrees (for example individual's that give birth to their own mother) are a problem and $\texttt{MCMCglmm}$ will issue an error, hopefully with an appropriate message, when impossibilities are detected.
+$\texttt{MCMCglmm}$ handles pedigrees stored in three-column tabular form, with each row representing a single individual. The first column should contain the unique identifier of the individual, and columns two and three should be the unique identifiers of the individual's parents. Parents must appear before their offspring in the table - the function $\texttt{orderPed}$ from the library $\texttt{MasterBayes}$ will reorder the pedigree if required. I usually have the dam (mother) in the first column and the sire (father) in the third. I prefer the words dam and sire because if I subscript things with $m$ and $f$, I can never remember whether I mean male and female, or mother and father! In hermaphroditic systems the same individual may appear as both the dam and sire. This is not a problem, but $\texttt{MCMCglmm}$ will issue a warning in case the system is not hermaphroditic and a data entry mistake has been made. Impossible pedigrees (for example individual's that give birth to their own mother) are a problem and $\texttt{MCMCglmm}$ will issue an error when impossibilities are detected.
 
-If the parent(s) of an individual are unknown then a missing value (`NA`) should be assigned in the relevant column. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. The function $\texttt{insertPed}$ will return a pedigree table with these individuals inserted if they are missing. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. $\texttt{MCMCglmm}$ can handle this, as long as all the individuals appearing in the data frame passed to `data` also appear in the pedigree. However, it will be more efficient to prune out individuals from the pedigree that lack phenotypic data and which are not required in order to determine the relatedness of two or more phenotyped individuals (e.g. the unphenotyped parents of two siblings) - the function $\texttt{prunePed}$ will do this [^prune].
+If the parent(s) of an individual are unknown then a missing value (`NA`) can be assigned in the relevant column[^missingpar]. All individuals appearing as dams or sires need to have their own record, even if both of their parents are unknown. The function $\texttt{insertPed}$ will return a pedigree table with these individuals inserted if they are missing. Often the number of individuals in a pedigree will be greater than the number of individuals for which phenotypic data exist. $\texttt{MCMCglmm}$ can handle this, as long as all the individuals appearing in the data frame passed to `data` also appear in the pedigree. However, it will be more efficient to prune out individuals from the pedigree that lack phenotypic data and which are not required in order to determine the relatedness of two or more phenotyped individuals (for example, the unphenotyped parents of two siblings shold not be pruned) - the function $\texttt{prunePed}$ will do this [^prune].
 
-[^prune]: If you pass a pedigree to $\texttt{prunePed}$ with the id's of phenotyped individuals specified in the argument $\texttt{keep}$ a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed.  In earlier versions of MCMCglmm (<3.0) the default argument to $\texttt{prunePed}$ was $\texttt{make.base=FALSE}$ but this did not result in the optimal amount of pruning and was only retained for back compatibility.  
+
+[^missingpar]: Sometimes we might not know the identify of a parent for a group of individuals, but we do know those individuals share that parent. In such cases, $\texttt{NA}$'s are not appropriate and a dummy ID should be set up for that parent so that the individuals are recognised as siblings.  
+
+[^prune]: If you pass a pedigree to $\texttt{prunePed}$ with the ID's of phenotyped individuals specified in the argument $\texttt{keep}$, a pruned pedigree is returned. Pruning the pedigree has no impact on the posterior distribution but it can improve mixing and speed.  In earlier versions of MCMCglmm (<3.0) the default argument to $\texttt{prunePed}$ was $\texttt{make.base=FALSE}$ but this did not result in the optimal amount of pruning and so, at the expense of back compatibility, the new default is $\texttt{make.base=TRUE}$.  
+
 
 To illustrate, we can load a pedigree for a population of blue tits and display the pedigree for the nuclear family that has individuals $\texttt{R187920}$ and $\texttt{R187921}$ as parents:
 
 ```{r }
 data(BTped)
-Nped <- BTped[which(apply(BTped, 1, function(x) {any(x == "R187920" | x == "R187921")})), ]
-Nped
+mini.ped <- BTped[which(apply(BTped, 1, function(x) {any(x == "R187920" | x == "R187921")})), ]
+mini.ped
 ```
 
 Both parents form part of what is known as the base population - they are assumed to be outbred and unrelated to anybody else in the pedigree.  A pedigree can also be expressed in terms of a relatedness matrix ${\bf A}$. This matrix is symmetric, square, and has dimensions equal to the number of individuals in the pedigree. Simple, but perhaps slow, recursive methods exist for calculating ${\bf A}$:
 
 ```{r }
-Aped <- 2 * kinship2::kinship(Nped[, 1], Nped[, 2], Nped[, 3])
-Aped
+A.mini.ped <- 2 * kinship2::kinship(mini.ped[, 1], mini.ped[, 2], mini.ped[, 3])
+A.mini.ped
 ```
 
 In 'animal' models, each individual is associated with a unique random effect (often called a 'breeding value') and their covariance structure is assumed to proportional to ${\bf A}$ rather than an identity matrix. This non-identity covariance structure allows the associated variance to be estimated even when there is only one observation per individual.  Although ${\bf A}$ has quite a straightforward interpretation, $\texttt{MCMCglmm}$ actually requires the inverse of ${\bf A}$ which can be obtained using the function $\texttt{inverseA}$. We can create this for the full pedigree which consists of `r nlevels(BTped$dam)` nuclear families with two parents and between `r min(table(BTped$sire))` and `r max(table(BTped$sire))` of their offspring offspring. 
 
 
 ```{r }
-Ainv<-inverseA(BTped)$Ainv
+Ainv.ped<-inverseA(BTped)$Ainv
 ```
 
-The data set $\texttt{BTdata}$ contains information collected on their offspring: the length of one of their leg bones ($\texttt{tarsus}$) together with their identifier ($\texttt{animal}$) their sex ($\texttt{sex}$) and the nest they were raised in ($\texttt{fosternest}$). Note that roughly half the chicks in each nest were switched into another nest soon after hatching and so the identity of the nuclear family and $\texttt{fosternest}$ are not completely confounded. We can fit a model which includes both $\texttt{fosternest}$ nest effects and also $\texttt{animal}$ effects that are correlated through a pedigree:
+The data set $\texttt{BTdata}$ contains information collected on their offspring: the length of one of their leg bones ($\texttt{tarsus}$ in mm) together with their identifier ($\texttt{animal}$) their sex ($\texttt{sex}$) and the nest they were raised in ($\texttt{fosternest}$). Note that roughly half the chicks in each nest were switched into another nest soon after hatching and so the identity of the nuclear family and $\texttt{fosternest}$ are not completely confounded. We can fit a model which includes both $\texttt{fosternest}$ effects and also $\texttt{animal}$ effects that are correlated through a pedigree:
 
 ```{r animal}
 data(BTdata)
 prior.animal<-list(R=IW(1, 0.002), G=F(1, 1000))
-m.animal <- MCMCglmm(tarsus ~ sex, random = ~fosternest+animal, data = BTdata, ginv=list(animal=Ainv), prior=prior.animal, longer=10)
+m.animal <- MCMCglmm(tarsus ~ sex, random = ~fosternest+animal, data = BTdata, ginv=list(animal=Ainv.ped), prior=prior.animal, longer=10)
 ```
 
-The $\texttt{ginv}$ argument takes a list of inverse covariance structures (just $\texttt{Ainv}$ in this example) where the names of the list elements state the name of the effects the covariance structure is associated with (just $\texttt{animal}$ in this example). 
+The $\texttt{ginv}$ argument takes a list of inverse covariance structures (just $\texttt{Ainv.ped}$ in this example) where the names of the list elements state the name of the effects the covariance structure is associated with (just $\texttt{animal}$ in this example). 
 
 
 ```{r }
@@ -64,26 +68,27 @@ summary(m.animal)
 
 Often, the variances of the random effects are expressed as proportions of the total variance:
 
-```{r }
+```{r fig.width=7, fig.height=5, include=TRUE, fig.cap="MCMC trace and density plot for the proportion of the total variance explained by $\\texttt{fosternest}$, $\\texttt{animal}$ and residual ($\\texttt{units}$)."}
 plot(m.animal$VCV/rowSums(m.animal$VCV))
 ```
 
 and can see that the while the nest a chick is raised in ($\texttt{fosternest}$) explains relatively little variation, the genetic variance (the variance in $\texttt{animal}$ effects) explains around half the total. It is also apparent from the MCMC traces that despite the chain being run for 10 times longer than the default ($\texttt{longer=10}$) there is still a bit of autocorrelation. In general, animal models mix less well than most models, in part because of strong posterior correlations between the genetic and residual variance:
 
-```{r }
+```{r fig.width=7, fig.height=5, include=TRUE, fig.cap="Posterior distribution of the $\\texttt{animal}$ and residual ($\\texttt{units}$) variances."}
 plot(c(m.animal$VCV[,"animal"])~c(m.animal$VCV[,"units"]), ylab=expression(sigma[animal]^2), xlab=expression(sigma[units]^2))
 ```
 
-This correlation exists because each offspring receives a unique jumble of it's parents genome, the effect of which (the Mendelian sampling deviation) is confounded with the effect of the unique environmental factors the offspring experiences (the residual). This can be observed in the relatedness matrix $\texttt{Aped}$ where the diagonal elements are one yet the off-diagonal elements are at best a half.  In this particular example, the relatedness structure of phenotyped individuals is very simple: either individuals share a mother (or father) and are related by a half since they are full-siblings or they are completely unrelated. Consequently, an equivalent model is to fit nuclear family as an effect (by fitting mother ($\texttt{dam}$) effects) rather than pedigree ($\texttt{animal}$) effects:
+This correlation exists because each offspring receives a unique jumble of its parents genome, the effect of which (the Mendelian sampling deviation) is confounded with the effect of the unique environmental factors the offspring experiences (the residual). This can be observed in the relatedness matrix $\texttt{A.mini.ped}$ where, in the absence of inbreeding, the diagonal elements are one yet the off-diagonal elements are at most a half.  In this particular example, the relatedness structure of phenotyped individuals is very simple: either individuals are full-siblings and are related by a half or they are completely unrelated. Consequently, an equivalent model is to fit nuclear family as an effect (by fitting either mother ($\texttt{dam}$) or father ($\texttt{sire}$) effects) rather than pedigree ($\texttt{animal}$) effects:
 
 
 ```{r sib}
 prior.sib<-list(R=IW(1, 0.002), G=F(1, 1000))
 m.sib <- MCMCglmm(tarsus ~ sex, random = ~fosternest+dam, data = BTdata, prior=prior.sib)
 ```
-In this model, the $\texttt{units}$ variance is the variance due to environmental effects and the genetic effects unique to an individual. Under the assumptions of the animal model, the variance of the unique genetic effects is assumed to be half the genetic variance. Under the assumptions of the animal model, the $\texttt{dam}$ variance should be half the genetic variance since it is the variance due to the 50% of the genome full siblings share. Consequently, $2\sigma^2_{dam}$ from `m.sib` should be equivalent to the $\texttt{animal}$ variance from `m.animal`, and  $\sigma^2_{units}-\sigma^2_{dam}$ from `m.sib` should be equivalent to the $\texttt{units}$ variance from `m.animal`: 
 
-```{r echo=FALSE}
+In this model, the $\texttt{units}$ variance is the variance due to environmental effects and the genetic effects unique to an individual. Under the assumptions of the inifinitesimal model on which the animal model is founded, the variance of the unique genetic effects is assumed to be half the genetic variance. In the the model $\texttt{m.sib}, the $\texttt{dam}$ variance should be half the genetic variance since it is the variance due to the 50% of the genome full siblings share. Consequently, $2\sigma^2_{dam}$ from `m.sib` should be equivalent to the $\texttt{animal}$ variance from `m.animal`, and  $\sigma^2_{units}-\sigma^2_{dam}$ from `m.sib` should be equivalent to the $\texttt{units}$ variance from `m.animal`: 
+
+```{r fig.width=7, fig.height=5, include=TRUE, fig.cap="MCMC traces of the $\\texttt{fosternest}$, genetic and residual ($\\texttt{units}$) variances from a sib model ($\\texttt{m.sib}$) in black and an animal model ($\\texttt{m.animal}$) in red."}
 sibV<-m.sib$VCV
 sibV[,"units"]<-sibV[,"units"]-sibV[,"dam"]
 sibV[,"dam"]<-sibV[,"dam"]*2
@@ -92,7 +97,7 @@ attr(sibV, "mcpar")<-attr(m.animal$VCV, "mcpar")
 plot(mcmc.list(sibV, m.animal$VCV), density=FALSE)
 ```
 
-Slight discrepancies exist because the prior specifications are not equivalent.  
+Very slight differences exist because the prior specifications are not exactly equivalent.  
 
 ## Phylogenies
 
@@ -122,51 +127,51 @@ We can, if we wish, extract the phylogeny in tabular form. Let's do this for a s
 
 ```{r }
 my.species<-c("Geokichla_sibirica", "Cyanistes_caeruleus", "Fratercula_cirrhata", "Grus_grus", "Anser_fabalis") 
-Nphylo <- drop.tip(bird.tree, setdiff(bird.tree$tip.label, my.species))
+mini.phylo <- drop.tip(bird.tree, setdiff(bird.tree$tip.label, my.species))
 ```
 
-The phylogeny is shown in Figure \@ref(fig:phylo2) and it should be noted that pruning is automatically done: all ancestral species have been stripped out except those that allow us to determine the relatedness between the species at the tip. 
+The phylogeny is shown in Figure \@ref(fig:phylo2) and it should be noted that pruning is automatically done: all internal nodes have been stripped out except those that allow us to determine the relatedness between the species at the tip. 
 
 ```{r phylo2, echo=FALSE, include=TRUE, fig.cap="The phylogeny for five bird species: Siberian Thrush (*Geokichla sibirica*), Blue tit (*Cyanistes caeruleus*), Tufted Puffin (*Fratercula cirrhata*), Common Crane (*Grus grus*) and Bean Goose (*Anser fabalis*). John Nelder, the father of GLM, found the UK's first Siberian Thrush.  Data from Blue Tits and Tufted Puffins appear in this Chapter and  Chapter \\@ref(multi), respectively. The word pedigree comes from the French for Crane's foot, and I found a (Tundra) Bean Goose this week.", fig.width=7, fig.height=7}
-Nphylo <- makeNodeLabel(Nphylo)
-plot(Nphylo, cex=1, show.node.label=TRUE)
+mini.phylo <- makeNodeLabel(mini.phylo)
+plot(mini.phylo, cex=1, show.node.label=TRUE)
 ```
 
 This phylogeny in tabular form looks like:
 
 
 ``` {r }
-INphylo <- inverseA(Nphylo)
-INphylo$pedigree
+Ainv.mini.phylo <- inverseA(mini.phylo)
+Ainv.mini.phylo$pedigree
 ```
 
-You will notice that $\texttt{Node1}$ - the root - does not appear in the phylogeny in tabular form. This is because the root is equivalent to the base population in a pedigree analysis, something we will come back to later. Another piece of information that seems to be lacking in the tabular form is the branch length information. Branch lengths are equivalent to inbreeding coefficients in a pedigree. As with pedigrees the inbreeding coefficients are calculated by `inverseA`:
+You will notice that $\texttt{Node1}$ - the root - does not appear in the phylogeny in tabular form. This is because the root is equivalent to the base population in a pedigree analysis, something we will come back to later. Another piece of information that seems to be lacking in the tabular form is the branch length information. Branch lengths are equivalent to inbreeding coefficients in a pedigree. As with pedigrees, the inbreeding coefficients are calculated by `inverseA`:
 
 ``` {r echo=TRUE}
-INphylo$inbreeding
+Ainv.mini.phylo$inbreeding
 ```
 
 You will notice that the branch length for *Anser fabalis* is one. This is because there are no internal nodes between the root and the *Anser fabalis*, and we used the default `scale=TRUE` in the call to $\texttt{inverseA}$. `scale=TRUE` rescales the branch lengths by a constant so that the total branch length from the root to each tip is one. For example, to get the total branch length from the root to *Geokichla sibirica* we need to sum the branch lengths from $\texttt{Node1}$ to $\texttt{Node2}$, $\texttt{Node2}$ to $\texttt{Node3}$, and $\texttt{Node3}$ to $\texttt{Geokichla_sibirica}$:
 
 
 ``` {r echo=TRUE}
-sum(INphylo$inbreeding[which(INphylo$pedigree[,1]%in%c("Node2", "Node3", "Geokichla_sibirica"))])
+sum(Ainv.mini.phylo$inbreeding[which(Ainv.mini.phylo$pedigree[,1]%in%c("Node2", "Node3", "Geokichla_sibirica"))])
 ```
 
-and is also equal to one. It is only possible to scale the tree if the tree is ultrametric  - the total branch length from the root to each tip is constant before rescaling. In fact the original $\texttt{bird.tree}$ obtained using `extractTree` was not exactly ultrametric - there were small differences in total branch lengths due to rounding errors and the the function $\texttt{force.ultrametric}$ from $\texttt{phyltools}$ had to be used. We can also generate the ${\bf A}$ matrix for this small phylogeny and we can see that element $ij$ is equal to the proportion of time species/node $i$ and $j$ have shared ancestry.
+and is also equal to one. It is only possible to scale the tree if the tree is ultrametric  - the total branch length from the root to each tip is constant before rescaling. In fact the original $\texttt{bird.tree}$ obtained using `extractTree` was not exactly ultrametric - there were small differences in total branch lengths due to rounding errors. The function $\texttt{force.ultrametric}$ from $\texttt{phyltools}$ was used to make the tree exactly ultrametric. We can also generate the ${\bf A}$ matrix for this small phylogeny and we can see that element $ij$ is equal to the proportion of time species/node $i$ and $j$ have shared ancestry.
 
 ``` {r eval=FALSE}
-ANall<-solve(INphylo$Ainv)
-round(ANall,3)
+A.mini.phylo<-solve(Ainv.mini.phylo$Ainv)
+round(A.mini.phylo,3)
 ```
 
 ``` {r echo=FALSE}
-ANall<-solve(INphylo$Ainv)
-rownames(ANall)<-colnames(ANall)<-substr(gsub("[a-z]*_", "_", colnames(ANall)),1,5)
-round(ANall,3)
+A.mini.phylo<-solve(Ainv.mini.phylo$Ainv)
+rownames(A.mini.phylo)<-colnames(A.mini.phylo)<-substr(gsub("[a-z]*_", "_", colnames(A.mini.phylo)),1,5)
+round(A.mini.phylo,3)
 ```
 
-If `scale=FALSE` had been passed to $\texttt{inverseA}$ the elements would be the amount of time shared rather than the proportion. 
+If `scale=FALSE` had been passed to $\texttt{inverseA}$ the elements would be the *amount* of time shared rather than the proportion. 
 
 The AVONET data-base, available through the package $\texttt{PNC}$, contains information about the world's birds:
 
@@ -181,7 +186,7 @@ As with pedigrees, all species appearing in $\texttt{data}$ need to appear in th
 bird.data$species<-gsub(" ", "_", bird.data$species)
 ```
 
-We also need to rename the column $\texttt{family}$ in $\texttt{bird.data}$ as $\texttt{MCMCglmm} will then expect a long-format multi-response model with the $\texttt{family}$ column specifying the distribution (see Section \@ref(sec-longwide)):
+We also need to rename the column $\texttt{family}$ in $\texttt{bird.data}$ otherwise $\texttt{MCMCglmm}$ will be expecting a long-format multi-response model with the $\texttt{family}$ column specifying the distribution (see Section \@ref(sec-longwide)):
 
 ```{r }
 bird.data<-rename(bird.data, Family = family)
@@ -203,51 +208,51 @@ bird.tree <- drop.tip(bird.tree , setdiff(bird.tree$tip.label, bird.data$species
 Let's build a model for the tarsus lengths of the world's birds.  We'll work on the log-scale since the lengths are heavily right skewed and span several orders of magnitude:
 
 ```{r }
-Ainv<-inverseA(bird.tree)$Ainv
+Ainv.phylo<-inverseA(bird.tree)$Ainv
 
 prior.phylo=list(R=IW(1,0.002), G=F(1,1000))
-m.phylo<-MCMCglmm(log(Tarsus.Length)~1, random=~species, data=bird.data, ginv=list(species=Ainv), prior=prior.phylo)
+m.phylo<-MCMCglmm(log(Tarsus.Length)~1, random=~species, data=bird.data, ginv=list(species=Ainv.phylo), prior=prior.phylo)
 
 summary(m.phylo)
 ```
 
-The intercept in a phylogentic model is the estimated value for the ancestor of all sampled taxa - the root of the phylogeny. On the arithmetic scale an intercept of `r round(mean(m.phylo$Sol),2)` translates into `r round(mean(exp(m.phylo$Sol)),2)`mm - roughly the length of a Buzzard's tarsus, and probably not too different from the tarsus length of *Archaeopteryx*. The phylogenetic variance is substantially larger than the residual variance. In general, comparing these two variances directly is not meaningful since the phylogenetic variance is in units of trait squared per unit time whereas the residual variance is in units of traits squared. Nevertheless, it is is common to treat them as comparable by multiplying the phylogenetic variance by the time ($T$) that has elapsed from root to tip [^ultrametric]. Then, the variance in the response at the tips of the phylogeny is expected to be $\sigma^2_{\texttt{units}}+T\sigma^2_{\texttt{phylo}}$ and the proportion of the total variance that can be explained by the phylogeny is often reported: $T\sigma^2_{\texttt{phylo}}/(\sigma^2_{\texttt{units}}+T\sigma^2_{\texttt{species}})$. This is commonly referred to as the phylogenetic heritability or phylogenetic signal.  When calculating the inverse using the function $\texttt{inverseA}$, the tree was scaled to unit length by default and so $T=1$ and the phylogenetic heritability is simply $\sigma^2_{\texttt{phylo}}/(\sigma^2_{\texttt{units}}+\sigma^2_{\texttt{species}})$:
+The intercept in a phylogentic model is the estimated value for the ancestor of all sampled taxa - the root of the phylogeny. On the arithmetic scale an intercept of `r round(mean(m.phylo$Sol),2)` translates into `r round(mean(exp(m.phylo$Sol)),2)`mm - roughly the length of a Buzzard's tarsus, and probably not too different from the tarsus length of *Archaeopteryx*. The phylogenetic variance is substantially larger than the residual variance. In general, comparing these two variances directly is not meaningful since the phylogenetic variance is in units of trait squared per unit time whereas the residual variance is in units of traits squared only. Nevertheless, it is is common to treat them as comparable by multiplying the phylogenetic variance by the time ($T$) that has elapsed from root to tip [^ultrametric]. Then, the variance in the response at the tips of the phylogeny is expected to be $\sigma^2_{\texttt{units}}+T\sigma^2_{\texttt{phylo}}$ and the proportion of the total variance that can be explained by the phylogeny is often reported: $T\sigma^2_{\texttt{phylo}}/(\sigma^2_{\texttt{units}}+T\sigma^2_{\texttt{species}})$. This is commonly referred to as the phylogenetic heritability or phylogenetic signal.  When calculating the inverse using the function $\texttt{inverseA}$, the tree was scaled to unit length by default and so $T=1$ and the phylogenetic heritability is simply $\sigma^2_{\texttt{phylo}}/(\sigma^2_{\texttt{units}}+\sigma^2_{\texttt{species}})$:
 
 [^ultrametric]: For non-ultrametric trees, the average time from root to tip is sometimes used.
 
-```{r }
+```{r fig.width=7, fig.height=5, include=TRUE, fig.cap="MCMC trace of the phylogenetic heritability of tarsus length estimated using all the World's birds."}
 plot(m.phylo$VCV[,"species"]/rowSums(m.phylo$VCV))
 ```
 
-We can see that it is very high, with almost all of the variation explained by the phylogeny. However, I think the notion that the phylogenetic heritability is unitless and comparable across traits or taxa is misguided. When we perform an analysis with a scaled tree, the phylogenetic variance still has units, but rather than being in the tree's original units, it's in units of total time. Unfortunately, I can find no information about what units time is measured in, but given the root-to-tip branch length is `r diag(vcv.phylo(bird.tree))[1]` I presume one unit is a million years. Consequently, $\sigma^2_{\texttt{species}}$ from the model is really in units of mm^2 per `r diag(vcv.phylo(bird.tree))[1]`\time10^6 years$ and is not unitless. To understand the consequence of this, let's use the tarsus lengths of the Tyrant flycatchers (*Tyrannidae*) - the most speciose bird family for which we have data on `sum(bird.data$species%in%tyrants)` species:  
+We can see that it is very high, with almost all of the variation explained by the phylogeny. However, I think the notion that the phylogenetic heritability is unitless and comparable across traits or taxa is misguided. When we perform an analysis with a scaled tree, the phylogenetic variance still has units, but rather than being in the tree's original units, it's in units of total time. Unfortunately, the units in which time is measured is not stated, but given the root-to-tip branch length is `r round(diag(vcv.phylo(bird.tree))[1],2)`, I presume one unit is a million years. Consequently, $\sigma^2_{\texttt{species}}$ from the model is really in units of $mm^2$ per `r round(diag(vcv.phylo(bird.tree))[1],2)` $\times 10^6$ years and is not unitless. To understand the consequence of this, let's use the tarsus lengths of the Tyrant flycatchers (*Tyrannidae*) - the most speciose bird family for which we have data on, with `r sum(bird.data$Family=="Tyrannidae")` species:  
 
 ```{r }
-tyrants<-bird.data$species[which(bird.data$Family=="Tyrannidae")]
-tyrant.data<-subset(bird.data, species%in%tyrants)
+tyrant.data<-subset(bird.data, Family=="Tyrannidae")
 tyrant.tree <- drop.tip(bird.tree , setdiff(bird.tree$tip.label, tyrant.data$species))
 ```
 
 As can be seen in Figure \@ref(fig:tyrant), the tree has been re-rooted - the root node is not the most recent common ancestor off all birds, but the most recent common ancestor of those Tyrant flycatchers in $\texttt{bird.data}$. 
 
-``` {r tyrant, echo=FALSE, include=TRUE, fig.cap="The phylogeny of the Tyrant flycatchers.", fig.width=9, fig.height=7}
-plot(tyrant.tree)
+
+``` {r tyrant, echo=FALSE, include=TRUE, fig.cap="The phylogeny of the Tyrant flycatchers with species names omitted for legibility.", fig.width=9, fig.height=7}
+plot(tyrant.tree, show.tip.label=FALSE)
 axisPhylo()
 mtext("Time (millions of years ago)", side = 1, line=3)     
 ```
 
-Consequently, when we obtain the inverse covariance structure using the default `scale=TRUE` in $\texttt{inverseA}$ the associated variance will be in units of the trait squared per `r diag(vcv.phylo(tyrant.tree))[1]`\time10^6 years$.  We can fit a model to the log tarsus lengths of Tyrant flycatchers:
+Consequently, when we obtain the inverse covariance structure using the default `scale=TRUE` in $\texttt{inverseA}$ the associated variance will be in units of the trait squared per `r round(diag(vcv.phylo(tyrant.tree))[1],2)` $\times10^6$ years.  We can fit a model to the log tarsus lengths of Tyrant flycatchers:
 
 ```{r }
-tyrant.Ainv<-inverseA(tyrant.tree)$Ainv
+Ainv.tyrant<-inverseA(tyrant.tree)$Ainv
 
-m.tyrant<-MCMCglmm(log(Tarsus.Length)~1, random=~species, data=tyrant.data, ginv=list(species=tyrant.Ainv), prior=prior.phylo)
+m.tyrant<-MCMCglmm(log(Tarsus.Length)~1, random=~species, data=tyrant.data, ginv=list(species=Ainv.tyrant), prior=prior.phylo)
 
 summary(m.tyrant)
 ```
 
 The model summary shows that the residual variance is comparable in magnitude to that obtained from the analysis of all birds (`m.phylo`), but the species variance is more than `r floor(mean(m.phylo$VCV[,"species"])/mean(m.tyrant$VCV[,"species"]))` times smaller. Similarly, the phylogentic heritability, although still large, is smaller than that obtained from the analysis of all birds.
 
-```{r }
+```{r fig.width=7, fig.height=5, include=TRUE, fig.cap="MCMC trace of the phylogenetic heritability of tarsus length estimated using all the World's birds (black) or only species in the family *Tyrannidae* (red)."}
 plot(mcmc.list(m.phylo$VCV[,"species"]/rowSums(m.phylo$VCV), m.tyrant$VCV[,"species"]/rowSums(m.tyrant$VCV)), density=FALSE)
 ```
 
@@ -271,48 +276,51 @@ For some reason, using the argument `nodes="TIPS"` in $\texttt{inverseA}$ became
 
 
 ```{r }
-round(ANall,3)
+round(A.mini.phylo,3)
 ``` 
 
 Including the internal nodes in the ${\bf A}$ matrix seems silly - we don't have observations for these nodes, why not just focus on the ${\bf A}$ matrix for the 5 sampled species? By specifying `nodes="TIPS"`, this is exactly what is done - we work with the following $5\times 5$ matrix:
 
 
 ```{r }
-ANtips<-ANall[!grepl("Node", rownames(ANall)), !grepl("Node", rownames(ANall))]
-round(ANtips,3)
+A.tips<-A.mini.phylo[!grepl("Node", rownames(A.mini.phylo)), !grepl("Node", rownames(A.mini.phylo))]
+round(A.tips,3)
 ``` 
 
-However, the mixed model equations are not set up in terms of ${\bf A}$, but its inverse - ${\bf A}^{-1}$.  For the tips, the inverse doesn't seem to have any special properties:
+However, the mixed model equations are not set up in terms of ${\bf A}$, but its inverse, ${\bf A}^{-1}$.  For the tips, the inverse doesn't seem to have any special properties:
 
 ```{r }
-IAtips<-solve(ANtips)
-round(IAtips,3)
+Ainv.tips<-solve(A.tips)
+round(Ainv.tips,3)
 ``` 
 
-As with ${\bf A}$, all pairs of species that share a common ancestor before the root have a non-zero entry in the inverse. For the full bird phylogeny, a whopping `r sum(vcv(bird.tree)!=0)` elements of ${\bf A}^{-1}$ have a non-zero entry - around `r round(100*sum(vcv(bird.tree)!=0)/prod(dim(vcv(bird.tree))),1)`%. However, if we look of the inverse for the $8\times 8$ ${\bf A}$ matrix, where internal nodes are included, the structure of ${\bf A}^{-1}$ seems to differ from ${\bf A}$ - it is sparser (has more zeros):
+As with ${\bf A}$, all pairs of species that share a common ancestor before the root have a non-zero entry in the inverse. For the full bird phylogeny, a whopping `r formatC(sum(vcv(bird.tree)!=0), format="f", big.mark = ",", digits=0)` elements of ${\bf A}^{-1}$ have a non-zero entry - around `r round(100*sum(vcv(bird.tree)!=0)/prod(dim(vcv(bird.tree))),1)`%. However, if we look of the inverse for the $8\times 8$ ${\bf A}$ matrix, where internal nodes are included, the structure of ${\bf A}^{-1}$ seems to differ from ${\bf A}$ - it is sparser (has more zeros):
 
 
 ```{r eval=FALSE}
-IAall<-INphylo$Ainv
-round(IAall,3)
+Ainv.mini.phylo<-Ainv.mini.phylo$Ainv
+round(Ainv.mini.phylo,3)
 ```
 
 ```{r echo=FALSE}
-IAall<-INphylo$Ainv
-rownames(IAall)<-colnames(IAall)<-substr(gsub("[a-z]*_", "_", rownames(IAall)),1,5)
-round(IAall,3)
+Ainv.mini.phylo<-Ainv.mini.phylo$Ainv
+rownames(Ainv.mini.phylo)<-colnames(Ainv.mini.phylo)<-substr(gsub("[a-z]*_", "_", rownames(Ainv.mini.phylo)),1,5)
+round(Ainv.mini.phylo,3)
 ```
 
-The increase in sparsity grows as the tree becomes larger, and for the full bird phylogeny a comparatively miniscule `r length(Ainv@x)` elements of ${\bf A}^{-1}$ have a non-zero entry. However, the gain in efficiency is not so much due to the increase in the number of zeros, but their position.  In inverse covariance matrices, a zero indicates that two variables are *conditionally* independent. In a phylogeny, two species/nodes are conditionally independent given their common ancestor. Consequently, the only non-zero elements (other than the diagonal) are between a species/node and it's direct ancestor (which it only has one of) and its direct descendants (which it has up to two, usually[^polytomy]). When solving simultaneous equations (as is necessary in mixed models) large improvements in speed can be made by ordering the equations in a way that the number of substitutions can be minimised and general algorithms - such as minimum degree ordering - are used for finding good orderings. By including the internal nodes in ${\bf A}^{-1}$ the pattern of conditional independence is revealed to such algorithms and the tip effects are solved first, followed by the effects of their immediate ancestors and so on until the root is reached. For simple models this results in Felsenstein's peeling algorithm, which is reinvented every 10 years or so. For more general models, algorithms such as minimum degree ordering will find good orderings without the need to spend time developing new algorithms for every new problem.   
+The increase in sparsity grows as the tree becomes larger, and for the full bird phylogeny a comparatively miniscule `r formatC(length(Ainv.phylo@x), format="f", big.mark = ",", digits=0)` elements of ${\bf A}^{-1}$ have a non-zero entry. However, the gain in efficiency is as much to do with the increase in the number of zeros as their position.  In inverse covariance matrices, a zero indicates that two variables are *conditionally* independent. In a phylogeny, two species/nodes are conditionally independent given their common ancestor. Consequently, the only non-zero elements (other than the diagonal) are between a species/node and it's direct ancestor (which it only has one of) and its direct descendants (which it has up to two, usually[^polytomy]). When solving simultaneous equations (as is necessary in mixed models) large improvements in speed can be made by ordering the equations in a way that the number of substitutions can be minimised and general algorithms - such as minimum degree ordering - are used for finding good orderings. By including the internal nodes in ${\bf A}^{-1}$ the pattern of conditional independence is revealed to such algorithms and the tip effects are solved first, followed by the effects of their immediate ancestors and so on until the root is reached. For simple models this results in Felsenstein's peeling algorithm, which is reinvented every 10 years or so. For more general models, algorithms such as minimum degree ordering will find good orderings without the need to spend time developing new algorithms for every new problem.   
 
-[^polytomy]: Sometimes there is not enough information in sequence data to resolve the topology for parts of the tree. For example, it may not be possible to distinguish between the trees $\{\{A, B\}, C\}$ $\{A, \{B, C\}\}$ and $\{\{A, C\}, B\}$ where the nesting of the brackets indicate ever closer relatedness. In such cases, all three species may be considered to originate from a single ancestral node: $\{A, B, C\}$ - this is called a polytomy. A lot of software that is dedicated to phylogenies will only accept bifurcating trees, and so represent the polytomy as one of the three possible topologies but with a zero branch length for the internal node. $\texttt{inverseA}$ will complain about such trees because the inverse will be singular. However, $\texttt{MCMCglmm}$ happily accepts polytomies and does not require the zero-branch length fudge. The function $\texttt{di2multi}$ from the package $\texttt{ape}$ will eliminate the zero-branch lengths. 
+[^polytomy]: Sometimes there is not enough information in sequence data to resolve the topology for parts of the tree. For example, it may not be possible to distinguish between the trees $\{\{A, B\}, C\}$ $\{A, \{B, C\}\}$ and $\{\{A, C\}, B\}$ where the nesting of the brackets indicate ever closer relatedness. In such cases, all three species may be considered to originate from a single ancestral node: $\{A, B, C\}$ - this is called a polytomy. A lot of software that is dedicated to phylogenies will only accept bifurcating trees, and so a polytomy is often represented as one of the three possible topologies but with a zero branch length for the internal node. $\texttt{inverseA}$ will complain about such trees because the inverse will be singular. However, $\texttt{MCMCglmm}$ happily accepts polytomies and does not require the zero-branch-length fudge. The function $\texttt{di2multi}$ from the package $\texttt{ape}$ will eliminate the zero-branch lengths. 
 
-In the context of pedigrees, similar sparsity patterns exist.  With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's effect (breeding value), siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from them. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being unrelated. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and a $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygote.  If we look at ${\bf A}^{-1}$ for the nuclear family of Blue Tits from Section \@ref{pedigree-sec} we can see this structure (the two parents are followed by their six offspring):
+In the context of pedigrees, similar sparsity patterns exist. For example, let's look at ${\bf A}^{-1}$ for the nuclear family of Blue Tits from Section \@ref(pedigree-sec) where there are two parents followed by their six offspring:
 
 ```{r }
-inverseA(Nped)$Ainv
+inverseA(mini.ped)$Ainv
 ```
+
+ With Mendelian genetics you receive a random half of your dad's genome and a random half of your mum's genome. Consequently, once you condition on a parent's effect (breeding value), siblings' breeding values are independent since they receive a random half of their parent's genome. There are no individuals that could make offspring conditionally independent of their parents since they receive their genetic material directly from them, and so non-zero elements always exist between parents and offspring. Perhaps more surprisingly, we also have a non-zero element between the mum and dad, despite them being unrelated. The reason for this is that information on a spouse's genome provides information about the focal individual's genome if they have offspring together. To see this, imagine all offspring are heterozygous at a site (carry an $a$ allele and an $A$ allele). If we knew the spouse was $AA$ then the focal individual must either be $aa$ or $Aa$, and most likely $aa$ if they have many offspring that are all heterozygous.  
+
 
 ## User-defined covariance structures
 
-In the previous two sections we have looked at known (up to proportionality) covariance structures that arise from pedigrees and phylogenies. However, user-defined covariance structures can be fitted. The inverse must be obtained and stored as a sparse matrix of class $\texttt{dgCMatrix}$. It must also have $\texttt{rownames}$ that correspond to the associated predictor in the data frame. The inverse can then be passed using the $\texttt{ginverse}$ argument to $\texttt{MCMCglmm}$. If the inverse has little structure and few zero's, model fitting may take some time.
+In the previous two sections we have looked at known (up to proportionality) covariance structures that arise from pedigrees and phylogenies. However, user-defined covariance structures can be fitted. The inverse must be obtained and stored as a sparse matrix of class $\texttt{dgCMatrix}$. It must also have $\texttt{rownames}$ that correspond to the levels of the associated predictor in the data frame. The inverse can then be passed using the $\texttt{ginverse}$ argument to $\texttt{MCMCglmm}$. If the inverse has little structure and few zeros, model fitting may take some time.
