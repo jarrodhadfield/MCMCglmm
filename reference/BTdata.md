@@ -12,11 +12,11 @@ data(BTdata)
 ## Format
 
 a data frame with 828 rows and 7 columns, with variables tarsus length
-(`tarsus`) and colour (`back`) measured on 828 individuals (`animal`).
-The mother of each is also recorded (`dam`) together with the foster
-nest (`fosternest`) in which the chicks were reared. The date on which
-the first egg in each nest hatched (`hatchdate`) is recorded together
-with the sex (`sex`) of the individuals.
+(`tarsus` in mm) and colour (`back`) measured on 828 individuals
+(`animal`). The mother of each is also recorded (`dam`) together with
+the foster nest (`fosternest`) in which the chicks were reared. The date
+on which the first egg in each nest hatched (`hatchdate`) is recorded
+together with the sex (`sex`) of the individuals.
 
 ## References
 

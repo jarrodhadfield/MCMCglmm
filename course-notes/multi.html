@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-03-17" />
+<meta name="date" content="2026-03-18" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -348,11 +348,12 @@ div.csl-indent {
 <li class="chapter" data-level="9.5.3" data-path="measurement.html"><a href="measurement.html#discrete-predictors"><i class="fa fa-check"></i><b>9.5.3</b> Discrete Predictors</a></li>
 </ul></li>
 </ul></li>
-<li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis &amp; Antedependence Structures</a>
+<li class="chapter" data-level="10" data-path="path.html"><a href="path.html"><i class="fa fa-check"></i><b>10</b> Path Analysis</a>
 <ul>
-<li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#path-anlaysis"><i class="fa fa-check"></i><b>10.1</b> Path Anlaysis</a></li>
-<li class="chapter" data-level="10.2" data-path="cont-int.html"><a href="cont-int.html#ante-sec"><i class="fa fa-check"></i><b>10.2</b> Antedependence</a></li>
-<li class="chapter" data-level="10.3" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.3</b> Scaling</a></li>
+<li class="chapter" data-level="10.1" data-path="path.html"><a href="path.html#textttpath"><i class="fa fa-check"></i><b>10.1</b> <span class="math inline">\(\texttt{path}\)</span></a></li>
+<li class="chapter" data-level="10.2" data-path="path.html"><a href="path.html#textttsir"><i class="fa fa-check"></i><b>10.2</b> <span class="math inline">\(\texttt{sir}\)</span></a></li>
+<li class="chapter" data-level="10.3" data-path="cont-int.html"><a href="cont-int.html#ante-sec"><i class="fa fa-check"></i><b>10.3</b> Antedependence</a></li>
+<li class="chapter" data-level="10.4" data-path="path.html"><a href="path.html#scaling"><i class="fa fa-check"></i><b>10.4</b> Scaling</a></li>
 </ul></li>
 <li class="chapter" data-level="11" data-path="technical-details.html"><a href="technical-details.html"><i class="fa fa-check"></i><b>11</b> Technical Details</a>
 <ul>
@@ -407,25 +408,25 @@ div.csl-indent {
 <span id="cb233-13"><a href="multi.html#cb233-13" tabindex="-1"></a></span>
 <span id="cb233-14"><a href="multi.html#cb233-14" tabindex="-1"></a>Spending<span class="ot">&lt;-</span><span class="fu">data.frame</span>(<span class="at">y.hol=</span><span class="fu">log</span>(y.hol), <span class="at">y.car=</span><span class="fu">log</span>(y.car), <span class="at">id=</span>id)</span></code></pre></div>
 <p>A simple model suggests the two types of spending (on the log-scale) are positively related:</p>
-<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="multi.html#cb234-1" tabindex="-1"></a>mspending<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">data =</span> Spending)</span>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb234-1"><a href="multi.html#cb234-1" tabindex="-1"></a>mspending<span class="fl">.1</span><span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(y.car<span class="sc">~</span>y.hol, <span class="at">data=</span>Spending)</span>
 <span id="cb234-2"><a href="multi.html#cb234-2" tabindex="-1"></a><span class="fu">summary</span>(mspending<span class="fl">.1</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 2634.549 
+##  DIC: 2715.422 
 ## 
 ##  R-structure:  ~units
 ## 
 ##       post.mean l-95% CI u-95% CI eff.samp
-## units      1.57    1.416    1.733     1000
+## units     1.738    1.581    1.902     1000
 ## 
 ##  Location effects: y.car ~ y.hol 
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## (Intercept)   -0.6410  -0.7455  -0.5447     1000 &lt;0.001 ***
-## y.hol          0.3129   0.2485   0.3785     1000 &lt;0.001 ***
+## (Intercept)   -0.7092  -0.8365  -0.6039     1000 &lt;0.001 ***
+## y.hol          0.2807   0.2137   0.3474     1000 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>This conclusion seems to be supported by just looking at a scatter plot of the two variables (Figure <a href="multi.html#fig:spending">7.1</a>).</p>
@@ -436,30 +437,30 @@ Figure 7.1: Money spent on car versus money spent on holiday (both logged) with 
 </p>
 </div>
 <p>An obvious problem with the model is that we have repeated measures (the spending habits of each individual have been recorded for each of four years) and yet we haven’t dealt with any possible non-independence. We can remedy this by fitting <code>id</code> effects as random:</p>
-<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="multi.html#cb236-1" tabindex="-1"></a>mspending<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y.car <span class="sc">~</span> y.hol, <span class="at">random =</span> <span class="sc">~</span>id, <span class="at">data =</span> Spending)</span>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb236-1"><a href="multi.html#cb236-1" tabindex="-1"></a>mspending<span class="fl">.2</span><span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(y.car<span class="sc">~</span>y.hol, <span class="at">random=</span><span class="sc">~</span>id, <span class="at">data=</span>Spending)</span>
 <span id="cb236-2"><a href="multi.html#cb236-2" tabindex="-1"></a><span class="fu">summary</span>(mspending<span class="fl">.2</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 3001:12991
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 1922.517 
+##  DIC: 2039.254 
 ## 
 ##  G-structure:  ~id
 ## 
 ##    post.mean l-95% CI u-95% CI eff.samp
-## id     1.674    1.313    2.045     1000
+## id     1.792    1.339    2.176     1000
 ## 
 ##  R-structure:  ~units
 ## 
 ##       post.mean l-95% CI u-95% CI eff.samp
-## units    0.5132   0.4589   0.5733     1131
+## units    0.5948    0.533   0.6699     1000
 ## 
 ##  Location effects: y.car ~ y.hol 
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## (Intercept)   -1.1801  -1.3688  -0.9852     1000 &lt;0.001 ***
-## y.hol         -0.2762  -0.3447  -0.2111     1053 &lt;0.001 ***
+## (Intercept)   -1.2760  -1.4988  -1.0957     1000 &lt;0.001 ***
+## y.hol         -0.2992  -0.3660  -0.2240     1000 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Strangely, and in contradiction to the scatter plot, the model suggests that spending more on a holiday means less is spent on a car - the regression slope is negative. If I hadn’t looked at the raw data, I would probably report the negative relationship and move on. But I have looked at the raw data and simply reporting a negative relationship without caveats makes me feel uneasy.</p>
@@ -467,31 +468,29 @@ Figure 7.1: Money spent on car versus money spent on holiday (both logged) with 
 <p><span class="math display" id="eq:multi">\[\begin{array}{cc}
 \begin{array}{cccc}
 &amp;{\color{blue}{\texttt{y.hol}}}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{id}\\
-{\color{red}{\texttt{1}}}&amp;\texttt{0.058057}&amp;\texttt{1.475391}&amp;\texttt{1}\\
-{\color{red}{\texttt{2}}}&amp;\texttt{0.763508}&amp;\texttt{0.759238}&amp;\texttt{1}\\
+{\color{red}{\texttt{1}}}&amp;\texttt{0.888491}&amp;\texttt{-3.320300}&amp;\texttt{1}\\
+{\color{red}{\texttt{2}}}&amp;\texttt{-0.067398}&amp;\texttt{0.423423}&amp;\texttt{1}\\
 \vdots&amp;\vdots&amp;\vdots\\
-{\color{red}{\texttt{800}}}&amp;\texttt{-2.304347}&amp;\texttt{0.774078}&amp;\texttt{200}\\
+{\color{red}{\texttt{800}}}&amp;\texttt{-1.367001}&amp;\texttt{-2.366404}&amp;\texttt{200}\\
 \end{array}&amp;
 \Longrightarrow
 \begin{array}{ccccc}
 &amp;\texttt{y}&amp;{\color{blue}{\texttt{trait}}}&amp;\texttt{id}&amp;{\color{red}{\texttt{units}}}\\
-1&amp;\texttt{0.058057}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
-2&amp;\texttt{0.763508}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
+1&amp;\texttt{0.888491}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
+2&amp;\texttt{-0.067398}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
 \vdots&amp;\vdots&amp;\vdots&amp;\vdots\\
-800&amp;\texttt{-2.304347}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
-801&amp;\texttt{1.475391}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
-802&amp;\texttt{0.759238}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
+800&amp;\texttt{-1.367001}&amp;{\color{blue}{\texttt{y.hol}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
+801&amp;\texttt{-3.320300}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{1}}}\\
+802&amp;\texttt{0.423423}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{1}&amp;{\color{red}{\texttt{2}}}\\
 \vdots&amp;\vdots&amp;\vdots&amp;\vdots\\
-1600&amp;\texttt{0.774078}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
+1600&amp;\texttt{-2.366404}&amp;{\color{blue}{\texttt{y.car}}}&amp;\texttt{200}&amp;{\color{red}{\texttt{800}}}\\
 \end{array}
 \end{array}
 \label{multi-eq}   \tag{7.1}\]</span></p>
 <p>From this we can see that fitting a multi-response model is a direct extension to how we fitted models with categorical random interactions (Chapter <a href="cat-int.html#cat-int">5</a>):</p>
-<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="multi.html#cb238-1" tabindex="-1"></a>prior.mspending<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">2</span>, <span class="dv">1000</span>))</span>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb238-1"><a href="multi.html#cb238-1" tabindex="-1"></a>prior.mspending<span class="fl">.3</span><span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>),<span class="at">G=</span><span class="fu">F</span>(<span class="dv">2</span>,<span class="dv">1000</span>))</span>
 <span id="cb238-2"><a href="multi.html#cb238-2" tabindex="-1"></a></span>
-<span id="cb238-3"><a href="multi.html#cb238-3" tabindex="-1"></a>mspending<span class="fl">.3</span> <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span>, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id,</span>
-<span id="cb238-4"><a href="multi.html#cb238-4" tabindex="-1"></a>    <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> Spending, <span class="at">prior =</span> prior.mspending<span class="fl">.3</span>, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>,</span>
-<span id="cb238-5"><a href="multi.html#cb238-5" tabindex="-1"></a>        <span class="st">&quot;gaussian&quot;</span>))</span></code></pre></div>
+<span id="cb238-3"><a href="multi.html#cb238-3" tabindex="-1"></a>mspending<span class="fl">.3</span><span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(y.hol, y.car)<span class="sc">~</span>trait<span class="dv">-1</span>, <span class="at">random=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data=</span>Spending, <span class="at">prior=</span>prior.mspending<span class="fl">.3</span>, <span class="at">family=</span><span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;gaussian&quot;</span>))</span></code></pre></div>
 <p>The only real difference is that we must now specify the distribution for each response in <span class="math inline">\(\texttt{family}\)</span>. While the interpretation of the model is identical to that covered in Chapter <a href="cat-int.html#cat-int">5</a>, it does take a little time to get used to working with the new categorical factor, <span class="math inline">\(\texttt{trait}\)</span>.</p>
 <p>I have fitted a fixed <span class="math inline">\(\texttt{trait}\)</span> effect so that the two types of spending can have different intercepts. I usually suppress the global intercept (<code>-1</code>) for these types of models so the second coefficient is not the difference between the intercept for the first level of <span class="math inline">\(\texttt{trait}\)</span> (<code>y.hol</code>) and the second level (<code>y.car</code>) but the actual trait specific intercepts. Note that the levels of <span class="math inline">\(\texttt{trait}\)</span> are ordered as they appear in the response (<span class="math inline">\(\texttt{y.hol}\)</span> then <span class="math inline">\(\texttt{y.car}\)</span> in this instance). A <span class="math inline">\(2\times2\)</span> covariance matrix is estimated for the random term where the diagonal elements are the variance in consistent individual (<span class="math inline">\(\texttt{id}\)</span>) effects for each type of spending. The off-diagonal is the covariance between these effects which if positive suggests that people that consistently spend more on their holidays consistently spend more on their cars. A <span class="math inline">\(2\times2\)</span> residual covariance matrix is also fitted. In Section<a href="cat-int.html#idh-sec">5.1.1</a> we fitted heterogeneous error models using <code>idh():units</code> which made sense for single-response models because each level of <code>unit</code> was specific to a particular observation and so any covariances could not be estimated. In multi-response models this is not the case because both traits have often been measured on the same observational unit and so the covariance can be measured. In the context of this example a positive covariance would indicate that in those years an individual spent a lot on their car they also spent a lot on their holiday. Let’s take a look at the model summary:</p>
 <div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="multi.html#cb239-1" tabindex="-1"></a><span class="fu">summary</span>(mspending<span class="fl">.3</span>)</span></code></pre></div>
@@ -500,41 +499,41 @@ Figure 7.1: Money spent on car versus money spent on holiday (both logged) with 
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 4011.721 
+##  DIC: 4218.162 
 ## 
 ##  G-structure:  ~us(trait):id
 ## 
 ##                          post.mean l-95% CI u-95% CI eff.samp
-## traity.hol:traity.hol.id    1.0040   0.7859    1.264     1000
-## traity.car:traity.hol.id    0.8399   0.6449    1.040     1000
-## traity.hol:traity.car.id    0.8399   0.6449    1.040     1000
-## traity.car:traity.car.id    1.1357   0.8967    1.404     1000
+## traity.hol:traity.hol.id     1.089   0.8438    1.358     1000
+## traity.car:traity.hol.id     0.889   0.6952    1.120     1000
+## traity.hol:traity.car.id     0.889   0.6952    1.120     1000
+## traity.car:traity.car.id     1.158   0.9288    1.436      739
 ## 
 ##  R-structure:  ~us(trait):units
 ## 
 ##                             post.mean l-95% CI u-95% CI eff.samp
-## traity.hol:traity.hol.units    0.7258   0.6525   0.8182   1000.0
-## traity.car:traity.hol.units   -0.3025  -0.3649  -0.2497   1000.0
-## traity.hol:traity.car.units   -0.3025  -0.3649  -0.2497   1000.0
-## traity.car:traity.car.units    0.6231   0.5573   0.6940    909.4
+## traity.hol:traity.hol.units    0.8171   0.7302   0.8994     1000
+## traity.car:traity.hol.units   -0.3657  -0.4360  -0.3050     1000
+## traity.hol:traity.car.units   -0.3657  -0.4360  -0.3050     1000
+## traity.car:traity.car.units    0.7378   0.6509   0.8166     1000
 ## 
 ##  Location effects: cbind(y.hol, y.car) ~ trait - 1 
 ## 
 ##            post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## traity.hol   -0.9060  -1.0823  -0.7671     1000 &lt;0.001 ***
-## traity.car   -0.9268  -1.0699  -0.7610     1000 &lt;0.001 ***
+## traity.hol   -0.9677  -1.1318  -0.7964     1000 &lt;0.001 ***
+## traity.car   -0.9805  -1.1497  -0.8312     1000 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>we can see that the between-individual covariance (<span class="math inline">\(\texttt{traity.car:traity.hol.id}\)</span>) is strongly positive but the with-individual covariance (<span class="math inline">\(\texttt{traity.car:traity.hol.unit}\)</span>) is strongly negative.</p>
 <p>With a single predictors, a regression is defined as the covariance between the response and the predictor divided by the variance in the predictor<a href="#fn29" class="footnote-ref" id="fnref29"><sup>29</sup></a>. We can therefore obtain the coefficients of a regression of <span class="math inline">\(\texttt{y.car}\)</span> on <span class="math inline">\(\texttt{y.hol}\)</span> at the level of both <span class="math inline">\(\texttt{id}\)</span> and <span class="math inline">\(\texttt{units}\)</span><a href="#fn30" class="footnote-ref" id="fnref30"><sup>30</sup></a>:</p>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="multi.html#cb241-1" tabindex="-1"></a>id.regression <span class="ot">&lt;-</span> mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.car:traity.hol.id&quot;</span>]</span>
+<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="multi.html#cb241-1" tabindex="-1"></a>id.regression<span class="ot">&lt;-</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[,<span class="st">&quot;traity.car:traity.hol.id&quot;</span>]</span>
 <span id="cb241-2"><a href="multi.html#cb241-2" tabindex="-1"></a><span class="co"># covariance between individuals</span></span>
-<span id="cb241-3"><a href="multi.html#cb241-3" tabindex="-1"></a>id.regression <span class="ot">&lt;-</span> id.regression<span class="sc">/</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.hol:traity.hol.id&quot;</span>]</span>
+<span id="cb241-3"><a href="multi.html#cb241-3" tabindex="-1"></a>id.regression<span class="ot">&lt;-</span>id.regression<span class="sc">/</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.hol:traity.hol.id&quot;</span>]</span>
 <span id="cb241-4"><a href="multi.html#cb241-4" tabindex="-1"></a><span class="co"># regression across individual</span></span>
 <span id="cb241-5"><a href="multi.html#cb241-5" tabindex="-1"></a></span>
-<span id="cb241-6"><a href="multi.html#cb241-6" tabindex="-1"></a>units.regression <span class="ot">&lt;-</span> mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.car:traity.hol.units&quot;</span>]</span>
+<span id="cb241-6"><a href="multi.html#cb241-6" tabindex="-1"></a>units.regression<span class="ot">&lt;-</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[,<span class="st">&quot;traity.car:traity.hol.units&quot;</span>]</span>
 <span id="cb241-7"><a href="multi.html#cb241-7" tabindex="-1"></a><span class="co"># covariance within individuals</span></span>
-<span id="cb241-8"><a href="multi.html#cb241-8" tabindex="-1"></a>units.regression <span class="ot">&lt;-</span> units.regression<span class="sc">/</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[, <span class="st">&quot;traity.hol:traity.hol.units&quot;</span>]</span>
+<span id="cb241-8"><a href="multi.html#cb241-8" tabindex="-1"></a>units.regression<span class="ot">&lt;-</span>units.regression<span class="sc">/</span>mspending<span class="fl">.3</span><span class="sc">$</span>VCV[,<span class="st">&quot;traity.hol:traity.hol.units&quot;</span>]</span>
 <span id="cb241-9"><a href="multi.html#cb241-9" tabindex="-1"></a><span class="co"># regression within individuals</span></span></code></pre></div>
 <p>Conceptually, the regression at the level of <span class="math inline">\(\texttt{id}\)</span> is a regression of average expenditures across people, whereas the regression at the level of <span class="math inline">\(\texttt{units}\)</span> is a regression of yearly expenditures within individuals. We can compare these two regression with those that we got from the single response models that did (<code>mspending.2</code>) or did not (<code>mspending.1</code>) fit <span class="math inline">\(\texttt{id}\)</span> effects (Figure <a href="multi.html#fig:asUV">7.2</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:asUV"></span>
@@ -546,8 +545,7 @@ Figure 7.2: MCMC summary plot of the coefficient from a regression of car spendi
 <p>The regression coefficients differ substantially at the within individual (blue) and between
 individual (red) levels, and neither is entirely consistent with the regression coefficient from the single response models (black). The process by which we generated the data gives rise to this phenomenon - large variation between individuals in their disposable income means that people who are able to spend a lot on their holiday can also afford to spend a lot on their holidays (hence positive covariation between <span class="math inline">\(\texttt{id}\)</span> effects). However, a person that spent a large proportion of their disposable income in a particular year on a holiday, must have less to spend that year on a car (hence negative residual (within year) covariation).</p>
 <p>When fitting the simpler single-response models we make the assumption that the effect of spending money on a holiday directly effects how much you spend on a car. If this relationship was purely causal then the regression coefficients at the level of <span class="math inline">\(\texttt{id}\)</span> and <span class="math inline">\(\texttt{units}\)</span> would have the same expectation, and the simpler model would be justified. For example, we could simulate data where the expected car expenditure depends directly on holiday expenditure (using a regression coefficient of -0.3) with some variation around this due to between and within-individual effects:</p>
-<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="multi.html#cb242-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2 <span class="ot">&lt;-</span> Spending<span class="sc">$</span>y.hol <span class="sc">*</span> <span class="sc">-</span><span class="fl">0.3</span> <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">200</span>, <span class="dv">0</span>, <span class="dv">1</span>)[Spending<span class="sc">$</span>id] <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">800</span>,</span>
-<span id="cb242-2"><a href="multi.html#cb242-2" tabindex="-1"></a>    <span class="dv">0</span>, <span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="multi.html#cb242-1" tabindex="-1"></a>Spending<span class="sc">$</span>y.car2<span class="ot">&lt;-</span>Spending<span class="sc">$</span>y.hol<span class="sc">*-</span><span class="fl">0.3</span><span class="sc">+</span><span class="fu">rnorm</span>(<span class="dv">200</span>,<span class="dv">0</span>,<span class="dv">1</span>)[Spending<span class="sc">$</span>id]<span class="sc">+</span><span class="fu">rnorm</span>(<span class="dv">800</span>,<span class="dv">0</span>,<span class="fu">sqrt</span>(<span class="dv">2</span>))</span></code></pre></div>
 <p>We can fit the univariate and multivariate models to these data, and compare the regression coefficients as we did before. Figure <a href="multi.html#fig:MVvUV2">7.3</a> shows that the regression coefficients are all similar and a value of -0.3 has a reasonably high posterior probability.</p>
 <div class="figure"><span style="display:block;" id="fig:MVvUV2"></span>
 <img src="_bookdown_files/fig/MVvUV2-1.png" alt="MCMC trace plot of the coefficient from a regression of car spending on holiday spending in black. The red and blue traces are from a model where the regression coefficient is estimated at two levels: within an individual (blue) and across individuals (red). In simulated data the relationship between the two types of spending is causal and the regression coefficients have the same expectation. However, the posterior standard deviation from the simple regression is smaller because information from the two different levels is pooled." width="672" />
@@ -573,7 +571,7 @@ Figure 7.3: MCMC trace plot of the coefficient from a regression of car spending
 <h2><span class="header-section-number">7.2</span> Multi-response Bernoulli Models<a href="multi.html#multi-response-bernoulli-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>As in single-response models, Bernoulli responses require some thought because the <span class="math inline">\(\texttt{units}\)</span> variance is not identifiable in the likelihood. However, the <span class="math inline">\(\texttt{units}\)</span> correlation between a Bernoulli response and other responses (including other Bernoulli responses) is identifiable. To explore multi-response Bernoulli models we will use longitudinal data collected on patients with primary biliary cirrhosis from the Mayo Clinic. The data are available from the <span class="math inline">\(\texttt{survival}\)</span> package</p>
 <div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="multi.html#cb243-1" tabindex="-1"></a><span class="fu">data</span>(pbc)</span>
-<span id="cb243-2"><a href="multi.html#cb243-2" tabindex="-1"></a><span class="fu">head</span>(pbcseq[, <span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;ascites&quot;</span>, <span class="st">&quot;bili&quot;</span>, <span class="st">&quot;hepato&quot;</span>)])</span></code></pre></div>
+<span id="cb243-2"><a href="multi.html#cb243-2" tabindex="-1"></a><span class="fu">head</span>(pbcseq[,<span class="fu">c</span>(<span class="st">&quot;id&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;ascites&quot;</span>, <span class="st">&quot;bili&quot;</span>, <span class="st">&quot;hepato&quot;</span>)])</span></code></pre></div>
 <pre><code>##   id      age sex ascites bili hepato
 ## 1  1 58.76523   f       1 14.5      1
 ## 2  1 58.76523   f       1 21.3      1
@@ -585,11 +583,9 @@ Figure 7.3: MCMC trace plot of the coefficient from a regression of car spending
 <div id="bern-gaus-sec" class="section level3 hasAnchor" number="7.2.1">
 <h3><span class="header-section-number">7.2.1</span> Bernoulli-Gaussian<a href="multi.html#bern-gaus-sec" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>First, we will simultaneously model log(<span class="math inline">\(\texttt{bili}\)</span>) as Gaussian and <span class="math inline">\(\texttt{ascites}\)</span> as Bernoulli with threshold link (probit). As we will see, in multi-response models, modelling Bernoulli responses as <span class="math inline">\(\texttt{family=&quot;threshold&quot;}\)</span> has some nice advantages.</p>
-<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="multi.html#cb245-1" tabindex="-1"></a>prior.pbc1 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">1.002</span>, <span class="at">fix =</span> <span class="dv">2</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">2</span>, <span class="dv">1000</span>))</span>
+<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="multi.html#cb245-1" tabindex="-1"></a>prior.pbc1<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">2</span>),<span class="at">nu=</span><span class="fl">1.002</span>, <span class="at">fix=</span><span class="dv">2</span>), <span class="at">G=</span><span class="fu">F</span>(<span class="dv">2</span>,<span class="dv">1000</span>))</span>
 <span id="cb245-2"><a href="multi.html#cb245-2" tabindex="-1"></a></span>
-<span id="cb245-3"><a href="multi.html#cb245-3" tabindex="-1"></a>m.pbc1 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(<span class="fu">log</span>(bili), ascites) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> trait<span class="sc">:</span>(age <span class="sc">+</span> sex), <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id,</span>
-<span id="cb245-4"><a href="multi.html#cb245-4" tabindex="-1"></a>    <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> pbcseq, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;threshold&quot;</span>),</span>
-<span id="cb245-5"><a href="multi.html#cb245-5" tabindex="-1"></a>    <span class="at">prior =</span> prior.pbc1, <span class="at">longer =</span> <span class="dv">10</span>)</span></code></pre></div>
+<span id="cb245-3"><a href="multi.html#cb245-3" tabindex="-1"></a>m.pbc1<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(<span class="fu">log</span>(bili), ascites)<span class="sc">~</span>trait<span class="dv">-1</span><span class="sc">+</span>trait<span class="sc">:</span>(age<span class="sc">+</span>sex), <span class="at">random=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">data=</span>pbcseq, <span class="at">family=</span><span class="fu">c</span>(<span class="st">&quot;gaussian&quot;</span>, <span class="st">&quot;threshold&quot;</span>), <span class="at">prior=</span>prior.pbc1, <span class="at">longer=</span><span class="dv">10</span>)</span></code></pre></div>
 <p>One difference from the previous model on car and holiday expenditure is that I’ve added some predictors to the fixed effect model. Interacting <span class="math inline">\(\texttt{trait}\)</span> with <code>age+sex</code> fits an <span class="math inline">\(\texttt{age}\)</span> effect for each trait and a <span class="math inline">\(\texttt{sex}\)</span> effect for each trait. If <code>age+sex</code> had not been interacted with <span class="math inline">\(\texttt{trait}\)</span> the effects of the predictors are assumed to be the same for the two traits. It is also possible to specify response-specific fixed-effect models using the function <span class="math inline">\(\texttt{at.level}\)</span>. For example, <span class="math inline">\(\texttt{at.level(trait, 1):(age+sex)+at.level(trait, 2):(sex)}\)</span> would fit an age and sex effect for <span class="math inline">\(\texttt{trait}\)</span> 1 (log(<span class="math inline">\(\texttt{bili}\)</span>)) and a sex effect for <span class="math inline">\(\texttt{trait}\)</span> 2 (<span class="math inline">\(\texttt{ascites}\)</span>)<a href="#fn33" class="footnote-ref" id="fnref33"><sup>33</sup></a>. The main difference, however, from the previous model of two Gaussian responses is that <code>fix=2</code> has been added to the prior specification. For a <span class="math inline">\(2\times 2\)</span> covariance matrix this simply fixes the second variance (the <span class="math inline">\(\texttt{units}\)</span> variance for the Bernoulli trait, <span class="math inline">\(\texttt{ascites}\)</span>) at whatever is specified in <span class="math inline">\(\texttt{V}\)</span> (1 in this case)<a href="#fn34" class="footnote-ref" id="fnref34"><sup>34</sup></a>. However, the <span class="math inline">\(\texttt{units}\)</span> variance for the Gaussian trait, and the <span class="math inline">\(\texttt{units}\)</span> covariance between the Gaussian and Bernoulii trait, are still estimated.</p>
 <div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="multi.html#cb246-1" tabindex="-1"></a><span class="fu">summary</span>(m.pbc1)</span></code></pre></div>
 <pre><code>## 
@@ -597,33 +593,33 @@ Figure 7.3: MCMC trace plot of the coefficient from a regression of car spending
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 4333.734 
+##  DIC: 4334.148 
 ## 
 ##  G-structure:  ~us(trait):id
 ## 
 ##                              post.mean l-95% CI u-95% CI eff.samp
-## traitbili:traitbili.id          1.0291   0.8707   1.2147    810.6
-## traitascites:traitbili.id       0.6457   0.4465   0.8523   1000.0
-## traitbili:traitascites.id       0.6457   0.4465   0.8523   1000.0
-## traitascites:traitascites.id    0.8721   0.4709   1.2919    808.9
+## traitbili:traitbili.id          1.0280   0.8500   1.2151   1083.8
+## traitascites:traitbili.id       0.6469   0.4518   0.8578   1000.0
+## traitbili:traitascites.id       0.6469   0.4518   0.8578   1000.0
+## traitascites:traitascites.id    0.8709   0.5241   1.2564    836.7
 ## 
 ##  R-structure:  ~us(trait):units
 ## 
 ##                                 post.mean l-95% CI u-95% CI eff.samp
-## traitbili:traitbili.units          0.3197   0.2982   0.3421    912.9
-## traitascites:traitbili.units       0.2673   0.2205   0.3113   1000.0
-## traitbili:traitascites.units       0.2673   0.2205   0.3113   1000.0
-## traitascites:traitascites.units    1.0000   1.0000   1.0000      0.0
+## traitbili:traitbili.units          0.3201   0.2980   0.3429     1000
+## traitascites:traitbili.units       0.2670   0.2195   0.3185     1000
+## traitbili:traitascites.units       0.2670   0.2195   0.3185     1000
+## traitascites:traitascites.units    1.0000   1.0000   1.0000        0
 ## 
 ##  Location effects: cbind(log(bili), ascites) ~ trait - 1 + trait:(age + sex) 
 ## 
 ##                   post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## traitbili          1.371771  0.592765  2.075652   1000.0 &lt;0.001 ***
-## traitascites      -3.060259 -4.055639 -2.021530   1000.0 &lt;0.001 ***
-## traitbili:age     -0.004100 -0.016049  0.006663   1000.0  0.464    
-## traitascites:age   0.027939  0.012933  0.042015    573.4  0.002 ** 
-## traitbili:sexf    -0.446576 -0.851819 -0.069735   1000.0  0.032 *  
-## traitascites:sexf  0.033496 -0.468967  0.494346   1000.0  0.898    
+## traitbili          1.390059  0.692547  2.063199   1000.0  0.002 ** 
+## traitascites      -3.043868 -4.005294 -2.017199   1000.0 &lt;0.001 ***
+## traitbili:age     -0.004398 -0.015013  0.006118    897.8  0.438    
+## traitascites:age   0.027481  0.012166  0.042823   1000.0  0.002 ** 
+## traitbili:sexf    -0.450712 -0.832682 -0.099044   1000.0  0.020 *  
+## traitascites:sexf  0.028799 -0.431070  0.546919   1000.0  0.930    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>We can see that the covariance between the traits is strongly positive both across and within patients. Patients with constitutively high concentrations of bilirunbin are prone to ascites, and periods when a patient has high concentrations of bilirunbin they are more prone to ascites. Looking at the correlations can give a better feel for the magnitude of the associations.</p>
@@ -641,11 +637,11 @@ Figure 7.5: MCMC trace plot of the coefficient from a probit regression of ascit
 </p>
 </div>
 <p>Note that this conclusion is opposite to the one you might draw from looking at the correlations. Why? The reason is that the proportion of variation that is within patients (Section <a href="ranef.html#ICC">4.4</a>) is quite different for the two traits: for log(<span class="math inline">\(\texttt{bili}\)</span>) the posterior mean is 0.24 and for <span class="math inline">\(\texttt{acites}\)</span> it is 0.54. The within-patient effects for log(<span class="math inline">\(\texttt{bili}\)</span>) have proportionally little variation yet they still strongly correlate with the within-patient <span class="math inline">\(\texttt{acites}\)</span> effects which have proportionally greater variation. We can also more formally assess whether the within-patient (<span class="math inline">\(\texttt{units}\)</span>) regression is stronger than the between-patient regression:</p>
-<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="multi.html#cb248-1" tabindex="-1"></a>preg.id <span class="ot">&lt;-</span> m.pbc1<span class="sc">$</span>VCV[, <span class="st">&quot;traitbili:traitascites.id&quot;</span>]<span class="sc">/</span>m.pbc1<span class="sc">$</span>VCV[, <span class="st">&quot;traitbili:traitbili.id&quot;</span>]</span>
-<span id="cb248-2"><a href="multi.html#cb248-2" tabindex="-1"></a>preg.units <span class="ot">&lt;-</span> m.pbc1<span class="sc">$</span>VCV[, <span class="st">&quot;traitbili:traitascites.units&quot;</span>]<span class="sc">/</span>m.pbc1<span class="sc">$</span>VCV[, <span class="st">&quot;traitbili:traitbili.units&quot;</span>]</span>
-<span id="cb248-3"><a href="multi.html#cb248-3" tabindex="-1"></a><span class="fu">HPDinterval</span>(preg.units <span class="sc">-</span> preg.id)</span></code></pre></div>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="multi.html#cb248-1" tabindex="-1"></a>preg.id<span class="ot">&lt;-</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitascites.id&quot;</span>]<span class="sc">/</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitbili.id&quot;</span>]</span>
+<span id="cb248-2"><a href="multi.html#cb248-2" tabindex="-1"></a>preg.units<span class="ot">&lt;-</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitascites.units&quot;</span>]<span class="sc">/</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitbili.units&quot;</span>]</span>
+<span id="cb248-3"><a href="multi.html#cb248-3" tabindex="-1"></a><span class="fu">HPDinterval</span>(preg.units<span class="sc">-</span>preg.id)</span></code></pre></div>
 <pre><code>##            lower     upper
-## var1 -0.02136848 0.4267755
+## var1 -0.02286305 0.4562448
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>The 95% credible interval overlaps zero, just.</p>
@@ -674,11 +670,9 @@ Figure 7.7: MCMC trace plot of the regression coefficient of log serum concentra
 <div id="all-bernoulli" class="section level3 hasAnchor" number="7.2.2">
 <h3><span class="header-section-number">7.2.2</span> All Bernoulli<a href="multi.html#all-bernoulli" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>We can also consider a bivariate model of the two Bernoulli variables <span class="math inline">\(\texttt{ascites}\)</span> and <span class="math inline">\(\texttt{hepato}\)</span>. The model set-up is almost identical, although we need to add the constraint that the residual variances of both traits are not identifiable in the likelihood but the residual correlation is: we need o restrict the residual covariance matrix to a residual correlation matrix. Replacing the <span class="math inline">\(\texttt{us}\)</span> variance structure with <span class="math inline">\(\texttt{corg}\)</span> achieves this. The prior specification only requires a degree-belief parameter <span class="math inline">\(\texttt{nu}\)</span> which results in a beta distribution for each correlation with shape and scale equal to <span class="math inline">\((\texttt{nu}-k+1)/2\)</span>. Since <span class="math inline">\(k=2\)</span>, I set <span class="math inline">\(\texttt{nu}=3\)</span> which results in a flat prior for the correlation. Note that specifying the marginal prior <code>F(2,1000)</code> for the (co)variance matrix of <span class="math inline">\(\texttt{id}\)</span> effects also results in <span class="math inline">\(\texttt{nu}=3\)</span> (See Section <a href="cat-int.html#VCVprior-r-sec">5.3.2</a>).</p>
-<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="multi.html#cb251-1" tabindex="-1"></a>prior.pbc2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="dv">3</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">2</span>, <span class="dv">1000</span>))</span>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="multi.html#cb251-1" tabindex="-1"></a>prior.pbc2<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">2</span>),<span class="at">nu=</span><span class="dv">3</span>), <span class="at">G=</span><span class="fu">F</span>(<span class="dv">2</span>,<span class="dv">1000</span>))</span>
 <span id="cb251-2"><a href="multi.html#cb251-2" tabindex="-1"></a></span>
-<span id="cb251-3"><a href="multi.html#cb251-3" tabindex="-1"></a>m.pbc2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(hepato, ascites) <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> trait<span class="sc">:</span>(age <span class="sc">+</span> sex), <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id,</span>
-<span id="cb251-4"><a href="multi.html#cb251-4" tabindex="-1"></a>    <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">corg</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> pbcseq, <span class="at">family =</span> <span class="fu">c</span>(<span class="st">&quot;threshold&quot;</span>, <span class="st">&quot;threshold&quot;</span>),</span>
-<span id="cb251-5"><a href="multi.html#cb251-5" tabindex="-1"></a>    <span class="at">prior =</span> prior.pbc2, <span class="at">longer =</span> <span class="dv">10</span>)</span></code></pre></div>
+<span id="cb251-3"><a href="multi.html#cb251-3" tabindex="-1"></a>m.pbc2<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(hepato, ascites)<span class="sc">~</span>trait<span class="dv">-1</span><span class="sc">+</span>trait<span class="sc">:</span>(age<span class="sc">+</span>sex), <span class="at">random=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>id, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">corg</span>(trait)<span class="sc">:</span>units, <span class="at">data=</span>pbcseq, <span class="at">family=</span><span class="fu">c</span>(<span class="st">&quot;threshold&quot;</span>, <span class="st">&quot;threshold&quot;</span>), <span class="at">prior=</span>prior.pbc2, <span class="at">longer=</span><span class="dv">10</span>)</span></code></pre></div>
 <p>On the latent scale we see a reasonably strong correlation between the two outcomes:</p>
 <div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="multi.html#cb252-1" tabindex="-1"></a><span class="fu">summary</span>(m.pbc2)</span></code></pre></div>
 <pre><code>## 
@@ -691,41 +685,41 @@ Figure 7.7: MCMC trace plot of the regression coefficient of log serum concentra
 ##  G-structure:  ~us(trait):id
 ## 
 ##                              post.mean l-95% CI u-95% CI eff.samp
-## traithepato:traithepato.id      1.8991   1.3529    2.525     1000
-## traitascites:traithepato.id     0.9516   0.6336    1.296     1000
-## traithepato:traitascites.id     0.9516   0.6336    1.296     1000
-## traitascites:traitascites.id    1.0250   0.5998    1.520      849
+## traithepato:traithepato.id      1.8985   1.3595    2.526     1000
+## traitascites:traithepato.id     0.9391   0.6284    1.311     1000
+## traithepato:traitascites.id     0.9391   0.6284    1.311     1000
+## traitascites:traitascites.id    1.0110   0.6128    1.457     1000
 ## 
 ##  R-structure:  ~corg(trait):units
 ## 
 ##                                 post.mean l-95% CI u-95% CI eff.samp
-## traithepato:traithepato.units      1.0000  1.00000   1.0000        0
-## traitascites:traithepato.units     0.2441  0.08559   0.4155     1000
-## traithepato:traitascites.units     0.2441  0.08559   0.4155     1000
-## traitascites:traitascites.units    1.0000  1.00000   1.0000        0
+## traithepato:traithepato.units      1.0000  1.00000   1.0000      0.0
+## traitascites:traithepato.units     0.2394  0.07852   0.4175    903.7
+## traithepato:traitascites.units     0.2394  0.07852   0.4175    903.7
+## traitascites:traitascites.units    1.0000  1.00000   1.0000      0.0
 ## 
 ##  Location effects: cbind(hepato, ascites) ~ trait - 1 + trait:(age + sex) 
 ## 
 ##                   post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## traithepato        0.377939 -0.699259  1.422358     1000  0.492    
-## traitascites      -3.051553 -4.090771 -1.907037     1000 &lt;0.001 ***
-## traithepato:age    0.007085 -0.009985  0.023202     1000  0.408    
-## traitascites:age   0.024262  0.007002  0.038508     1000  0.004 ** 
-## traithepato:sexf  -0.577105 -1.112530 -0.013496     1000  0.044 *  
-## traitascites:sexf  0.118815 -0.391260  0.657897     1000  0.658    
+## traithepato        0.402183 -0.792992  1.505713    872.8  0.478    
+## traitascites      -3.023644 -4.031956 -1.912948   1000.0 &lt;0.001 ***
+## traithepato:age    0.006753 -0.010265  0.024141    878.4  0.490    
+## traitascites:age   0.023952  0.006669  0.038642   1000.0 &lt;0.001 ***
+## traithepato:sexf  -0.580279 -1.153023  0.015449   1000.0  0.056 .  
+## traitascites:sexf  0.109574 -0.382191  0.659287   1000.0  0.720    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>If we wish, we can also characterise the relationship in terms of a contingency table. The model defines a multivariate normal distribution of latent variables around the fixed-effect prediction, and the probability of falling in any of the four quadrants defined by the origin can be calculated. We can imagine a population of individuals all of which have the same expected latent variables (the weighted average of the male and female means at the average age, where the weights are the frequencies of males and females in the data frame):</p>
-<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="multi.html#cb254-1" tabindex="-1"></a>mu <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb254-2"><a href="multi.html#cb254-2" tabindex="-1"></a>nobs <span class="ot">&lt;-</span> <span class="fu">nrow</span>(pbcseq)  <span class="co"># number of obseravtions</span></span>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="multi.html#cb254-1" tabindex="-1"></a>mu<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>)</span>
+<span id="cb254-2"><a href="multi.html#cb254-2" tabindex="-1"></a>nobs<span class="ot">&lt;-</span><span class="fu">nrow</span>(pbcseq) <span class="co"># number of obseravtions</span></span>
 <span id="cb254-3"><a href="multi.html#cb254-3" tabindex="-1"></a></span>
-<span id="cb254-4"><a href="multi.html#cb254-4" tabindex="-1"></a>mu[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(m.pbc2, <span class="at">type =</span> <span class="st">&quot;terms&quot;</span>)[<span class="dv">1</span><span class="sc">:</span>nobs])</span>
+<span id="cb254-4"><a href="multi.html#cb254-4" tabindex="-1"></a>mu[<span class="dv">1</span>]<span class="ot">&lt;-</span><span class="fu">mean</span>(<span class="fu">predict</span>(m.pbc2, <span class="at">type=</span><span class="st">&quot;terms&quot;</span>)[<span class="dv">1</span><span class="sc">:</span>nobs])</span>
 <span id="cb254-5"><a href="multi.html#cb254-5" tabindex="-1"></a><span class="co"># predicted mean for hepato latent variable</span></span>
 <span id="cb254-6"><a href="multi.html#cb254-6" tabindex="-1"></a></span>
-<span id="cb254-7"><a href="multi.html#cb254-7" tabindex="-1"></a>mu[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(m.pbc2, <span class="at">type =</span> <span class="st">&quot;terms&quot;</span>)[nobs <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span>nobs])</span>
+<span id="cb254-7"><a href="multi.html#cb254-7" tabindex="-1"></a>mu[<span class="dv">2</span>]<span class="ot">&lt;-</span><span class="fu">mean</span>(<span class="fu">predict</span>(m.pbc2, <span class="at">type=</span><span class="st">&quot;terms&quot;</span>)[nobs<span class="sc">+</span><span class="dv">1</span><span class="sc">:</span>nobs])</span>
 <span id="cb254-8"><a href="multi.html#cb254-8" tabindex="-1"></a><span class="co"># predicted mean for ascites latent variable</span></span></code></pre></div>
 <p>Around these means the latent variables for a particular individual at a particular time (as a vector are) <span class="math inline">\({\bf u}_i+{\bf e}_{ij}\)</span>. These vectors are a drawn from a multivariate normal with zero mean and (co)variance <span class="math inline">\({\bf V}_{\texttt{id}}+{\bf V}_{\texttt{units}}\)</span>:</p>
-<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="multi.html#cb255-1" tabindex="-1"></a>V <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">colMeans</span>(m.pbc2<span class="sc">$</span>VCV[, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>] <span class="sc">+</span> m.pbc2<span class="sc">$</span>VCV[, <span class="dv">4</span> <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]), <span class="dv">2</span>, <span class="dv">2</span>)</span>
+<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="multi.html#cb255-1" tabindex="-1"></a>V<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="fu">colMeans</span>(m.pbc2<span class="sc">$</span>VCV[,<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]<span class="sc">+</span>m.pbc2<span class="sc">$</span>VCV[,<span class="dv">4</span><span class="sc">+</span><span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>]),<span class="dv">2</span>,<span class="dv">2</span>)</span>
 <span id="cb255-2"><a href="multi.html#cb255-2" tabindex="-1"></a><span class="co"># posterior mean covariance matrix</span></span></code></pre></div>
 <p>Figure <a href="multi.html#fig:terachoric">7.8</a> gives a visual representation of this distribution, and the quadrants that correspond to different outcomes.</p>
 <div class="figure"><span style="display:block;" id="fig:terachoric"></span>
@@ -735,31 +729,31 @@ Figure 7.8: Representation of a bivariate Bernoulli model. The solid point repre
 </p>
 </div>
 <p>The raw contingency table for the data is:</p>
-<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="multi.html#cb256-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(<span class="at">hepato =</span> pbcseq<span class="sc">$</span>hepato, <span class="at">ascites =</span> pbcseq<span class="sc">$</span>ascites))</span></code></pre></div>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="multi.html#cb256-1" tabindex="-1"></a><span class="fu">prop.table</span>(<span class="fu">table</span>(<span class="at">hepato=</span>pbcseq<span class="sc">$</span>hepato, <span class="at">ascites=</span>pbcseq<span class="sc">$</span>ascites))</span></code></pre></div>
 <pre><code>##       ascites
 ## hepato          0          1
 ##      0 0.49016481 0.01594896
 ##      1 0.41998937 0.07389686</code></pre>
 <p>The <span class="math inline">\(\texttt{pmnorm}\)</span> function in the package <span class="math inline">\(\texttt{mnorm}\)</span> calculates the cumulative density function for the multivariate normal, and we can use this to calculate the four probabilities. I’ve done this in a rather long winded way so that the code could be extended to ordinal data that falls into more than two categories (Section <a href="glm.html#ordinal-sec">3.7</a>):</p>
-<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="multi.html#cb258-1" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb258-2"><a href="multi.html#cb258-2" tabindex="-1"></a>m <span class="ot">&lt;-</span> <span class="dv">2</span></span>
-<span id="cb258-3"><a href="multi.html#cb258-3" tabindex="-1"></a>P <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, n, m)</span>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="multi.html#cb258-1" tabindex="-1"></a>n<span class="ot">&lt;-</span><span class="dv">2</span></span>
+<span id="cb258-2"><a href="multi.html#cb258-2" tabindex="-1"></a>m<span class="ot">&lt;-</span><span class="dv">2</span></span>
+<span id="cb258-3"><a href="multi.html#cb258-3" tabindex="-1"></a>P<span class="ot">&lt;-</span><span class="fu">matrix</span>(<span class="cn">NA</span>, n, m)</span>
 <span id="cb258-4"><a href="multi.html#cb258-4" tabindex="-1"></a></span>
-<span id="cb258-5"><a href="multi.html#cb258-5" tabindex="-1"></a>thresh1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="dv">0</span>, <span class="cn">Inf</span>)</span>
-<span id="cb258-6"><a href="multi.html#cb258-6" tabindex="-1"></a>thresh2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="dv">0</span>, <span class="cn">Inf</span>)</span>
+<span id="cb258-5"><a href="multi.html#cb258-5" tabindex="-1"></a>thresh1<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="dv">0</span>, <span class="cn">Inf</span>)</span>
+<span id="cb258-6"><a href="multi.html#cb258-6" tabindex="-1"></a>thresh2<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="sc">-</span><span class="cn">Inf</span>, <span class="dv">0</span>, <span class="cn">Inf</span>)</span>
 <span id="cb258-7"><a href="multi.html#cb258-7" tabindex="-1"></a></span>
-<span id="cb258-8"><a href="multi.html#cb258-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n) {</span>
-<span id="cb258-9"><a href="multi.html#cb258-9" tabindex="-1"></a>    <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>m) {</span>
-<span id="cb258-10"><a href="multi.html#cb258-10" tabindex="-1"></a>        lower <span class="ot">&lt;-</span> <span class="fu">c</span>(thresh1[i], thresh2[j])</span>
-<span id="cb258-11"><a href="multi.html#cb258-11" tabindex="-1"></a>        upper <span class="ot">&lt;-</span> <span class="fu">c</span>(thresh1[i <span class="sc">+</span> <span class="dv">1</span>], thresh2[j <span class="sc">+</span> <span class="dv">1</span>])</span>
-<span id="cb258-12"><a href="multi.html#cb258-12" tabindex="-1"></a>        P[i, j] <span class="ot">&lt;-</span> mnorm<span class="sc">::</span><span class="fu">pmnorm</span>(lower, upper, <span class="at">mean =</span> mu, <span class="at">sigma =</span> V)<span class="sc">$</span>prob</span>
+<span id="cb258-8"><a href="multi.html#cb258-8" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n){</span>
+<span id="cb258-9"><a href="multi.html#cb258-9" tabindex="-1"></a>    <span class="cf">for</span>(j <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>m){</span>
+<span id="cb258-10"><a href="multi.html#cb258-10" tabindex="-1"></a>        lower<span class="ot">&lt;-</span><span class="fu">c</span>(thresh1[i], thresh2[j])</span>
+<span id="cb258-11"><a href="multi.html#cb258-11" tabindex="-1"></a>        upper<span class="ot">&lt;-</span><span class="fu">c</span>(thresh1[i<span class="sc">+</span><span class="dv">1</span>], thresh2[j<span class="sc">+</span><span class="dv">1</span>])</span>
+<span id="cb258-12"><a href="multi.html#cb258-12" tabindex="-1"></a>        P[i,j]<span class="ot">&lt;-</span>mnorm<span class="sc">::</span><span class="fu">pmnorm</span>(lower, upper, <span class="at">mean =</span> mu, <span class="at">sigma =</span> V)<span class="sc">$</span>prob</span>
 <span id="cb258-13"><a href="multi.html#cb258-13" tabindex="-1"></a>    }</span>
 <span id="cb258-14"><a href="multi.html#cb258-14" tabindex="-1"></a>}</span></code></pre></div>
 <p>We don’t expect the predicted probabilities to perfectly match what is observed since the data are unbalanced (individuals vary in how many times they are observed) and individuals vary in their sex and age but our prediction is for a population of individuals that are in some way average. Nevertheless, the predicted probabilities are close:</p>
 <div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="multi.html#cb259-1" tabindex="-1"></a>P</span></code></pre></div>
 <pre><code>##           [,1]       [,2]
-## [1,] 0.4335509 0.01500272
-## [2,] 0.4573340 0.09411244</code></pre>
+## [1,] 0.4321614 0.01520272
+## [2,] 0.4589253 0.09371065</code></pre>
 </div>
 </div>
 <div id="sec-longwide" class="section level2 hasAnchor" number="7.3">
@@ -797,10 +791,8 @@ Figure 7.8: Representation of a bivariate Bernoulli model. The solid point repre
 ## 2  14.5 bili   gaussian      1
 ## 3  21.3 bili   gaussian      1</code></pre>
 <p>In addition lets log transform <span class="math inline">\(\texttt{bili}\)</span> and turn <span class="math inline">\(\texttt{status}\)</span> into a 2-level outcome dead (1) or not (0):</p>
-<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="multi.html#cb264-1" tabindex="-1"></a>pbcseq_long <span class="ot">&lt;-</span> pbcseq_long <span class="sc">%&gt;%</span></span>
-<span id="cb264-2"><a href="multi.html#cb264-2" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">y =</span> <span class="fu">if_else</span>(trait <span class="sc">==</span> <span class="st">&quot;bili&quot;</span>, <span class="fu">log</span>(y), y))</span>
-<span id="cb264-3"><a href="multi.html#cb264-3" tabindex="-1"></a>pbcseq_long <span class="ot">&lt;-</span> pbcseq_long <span class="sc">%&gt;%</span></span>
-<span id="cb264-4"><a href="multi.html#cb264-4" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">y =</span> <span class="fu">if_else</span>(trait <span class="sc">==</span> <span class="st">&quot;status&quot;</span>, <span class="fu">as.numeric</span>(y <span class="sc">==</span> <span class="dv">2</span>), y))</span></code></pre></div>
+<div class="sourceCode" id="cb264"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb264-1"><a href="multi.html#cb264-1" tabindex="-1"></a>pbcseq_long <span class="ot">&lt;-</span> pbcseq_long <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">y =</span> <span class="fu">if_else</span>(trait <span class="sc">==</span> <span class="st">&quot;bili&quot;</span>, <span class="fu">log</span>(y),y))</span>
+<span id="cb264-2"><a href="multi.html#cb264-2" tabindex="-1"></a>pbcseq_long <span class="ot">&lt;-</span> pbcseq_long <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">y =</span> <span class="fu">if_else</span>(trait <span class="sc">==</span> <span class="st">&quot;status&quot;</span>, <span class="fu">as.numeric</span>(y <span class="sc">==</span> <span class="dv">2</span>),y))</span></code></pre></div>
 <p>If we wish to model death and <span class="math inline">\(\texttt{bili}\)</span> simultaneously, the Bernoulli-Gaussian model covered in Section <a href="multi.html#bern-gaus-sec">7.2.1</a> seems appropriate. However, since we only have a single-record of <span class="math inline">\(\texttt{status}\)</span> for each patient, it doesn’t make sense to fit <span class="math inline">\(\texttt{id}\)</span> effects for <span class="math inline">\(\texttt{status}\)</span> as they are not identifiable from the <span class="math inline">\(\texttt{unit}\)</span> effects (which themselves have non-identifiable variance because <span class="math inline">\(\texttt{status}\)</span> is Bernoulli). However, <span class="math inline">\(\texttt{bili}\)</span> is repeat-measure and so it does make sense to fit <span class="math inline">\(\texttt{id}\)</span> effects for this traits. In addition, allowing the <span class="math inline">\(\texttt{id}\)</span> effects for <span class="math inline">\(\texttt{bili}\)</span> to be correlated with the <span class="math inline">\(\texttt{unit}\)</span> effects of <span class="math inline">\(\texttt{status}\)</span> also seems reasonable - perhaps the long-term concentration of bilirunbin dictates whether a patient will live or not. In Section <a href="cat-int.html#link-func-sec">5.2</a> we covered ways in which we could link two (or more) sets of random effects and estimate their covariance matrix. Here, we need to link a set of random effects with a set of residuals. <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows the set of random effects appearing in the final random term of the <code>random</code> specification to be correlated with the set of residuals appearing in the first residual term of the <code>rcov</code> specification. The linking is specified by adding a <code>covu=TRUE</code> to the prior specification for the first residual term.</p>
 <div class="sourceCode" id="cb265"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb265-1"><a href="multi.html#cb265-1" tabindex="-1"></a>prior.pbc_long<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">R1=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">2</span>),<span class="at">nu=</span><span class="dv">3</span>, <span class="at">covu=</span><span class="cn">TRUE</span>, <span class="at">fix=</span><span class="dv">2</span>), </span>
 <span id="cb265-2"><a href="multi.html#cb265-2" tabindex="-1"></a>                            <span class="at">R2=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="fl">0.002</span>)))</span>
@@ -816,7 +808,7 @@ Figure 7.8: Representation of a bivariate Bernoulli model. The solid point repre
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3890.949 
+##  DIC: 3890.091 
 ## 
 ##  G-structure:  ~us(at.level(trait, &quot;bili&quot;)):id
 ## 
@@ -825,31 +817,37 @@ Figure 7.8: Representation of a bivariate Bernoulli model. The solid point repre
 ##  R-structure:  ~us(at.level(trait, &quot;status&quot;)):id
 ## 
 ##                                                           post.mean l-95% CI
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id         1.048   0.8714
-## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id       0.683   0.5624
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id       0.683   0.5624
-## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;status&quot;).id     1.000   1.0000
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id        1.0526   0.8665
+## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id      0.6843   0.5586
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id      0.6843   0.5586
+## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;status&quot;).id    1.0000   1.0000
 ##                                                           u-95% CI eff.samp
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id       1.2256    828.9
-## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id     0.7957   1132.5
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id     0.7957   1132.5
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id       1.2296   1000.0
+## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id     0.8056    900.8
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id     0.8056    900.8
 ## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;status&quot;).id   1.0000      0.0
 ## 
 ##                ~us(at.level(trait, &quot;bili&quot;)):units
 ## 
 ##                                                       post.mean l-95% CI
-## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units     0.319   0.2966
+## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units    0.3181   0.2966
 ##                                                       u-95% CI eff.samp
-## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units   0.3388     1000
+## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units   0.3392     1000
 ## 
 ##  Location effects: y ~ trait - 1 + at.level(trait, &quot;bili&quot;):(age + sex) - 1 + at.level(trait, &quot;status&quot;):sex 
 ## 
-##                                post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## traitbili                        2.22043  1.56302  2.86707     1112 &lt;0.001 ***
-## traitstatus                     -0.20370 -0.34516 -0.04858     1000  0.006 ** 
-## at.level(trait, &quot;bili&quot;):age     -0.01884 -0.02855 -0.00846     1000  0.004 ** 
-## at.level(trait, &quot;bili&quot;):sexf    -0.56767 -0.93859 -0.22381     1093 &lt;0.001 ***
-## sexm:at.level(trait, &quot;status&quot;)   0.73497  0.29862  1.16791     1000 &lt;0.001 ***
+##                                post.mean  l-95% CI  u-95% CI eff.samp  pMCMC
+## traitbili                       2.200768  1.510415  2.858600   1000.0 &lt;0.001
+## traitstatus                    -0.202017 -0.363184 -0.060197    911.2  0.010
+## at.level(trait, &quot;bili&quot;):age    -0.018561 -0.028616 -0.008165   1000.0 &lt;0.001
+## at.level(trait, &quot;bili&quot;):sexf   -0.560530 -0.974695 -0.201330   1000.0  0.002
+## sexm:at.level(trait, &quot;status&quot;)  0.717815  0.289289  1.185448   1000.0 &lt;0.001
+##                                   
+## traitbili                      ***
+## traitstatus                    ** 
+## at.level(trait, &quot;bili&quot;):age    ***
+## at.level(trait, &quot;bili&quot;):sexf   ** 
+## sexm:at.level(trait, &quot;status&quot;) ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>There is a strong positive association between the expected long-term value of (log) <span class="math inline">\(\texttt{bili}\)</span> and whether a patient dies before the end of the study. Figure <a href="multi.html#fig:covu-r">7.9</a> shows the posterior distribution for the correlation in <span class="math inline">\(\texttt{id}\)</span> effects.</p>
@@ -860,11 +858,10 @@ Figure 7.9: Posterior distribution of the correlation between patient effects on
 </p>
 </div>
 <p>A more usual way to fit this type of model is to use a single-response for death and simply fit the average of each patient’s (log) <span class="math inline">\(\texttt{bili}\)</span> as a predictor.</p>
-<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="multi.html#cb268-1" tabindex="-1"></a>pbcseq_status <span class="ot">&lt;-</span> <span class="fu">subset</span>(pbcseq_long, trait <span class="sc">==</span> <span class="st">&quot;status&quot;</span>)</span>
-<span id="cb268-2"><a href="multi.html#cb268-2" tabindex="-1"></a>pbcseq_status<span class="sc">$</span>mean.bili <span class="ot">&lt;-</span> <span class="fu">with</span>(pbcseq, <span class="fu">tapply</span>(<span class="fu">log</span>(bili), id, mean))[pbcseq_status<span class="sc">$</span>id]</span>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="multi.html#cb268-1" tabindex="-1"></a>pbcseq_status<span class="ot">&lt;-</span><span class="fu">subset</span>(pbcseq_long, trait<span class="sc">==</span><span class="st">&quot;status&quot;</span>)</span>
+<span id="cb268-2"><a href="multi.html#cb268-2" tabindex="-1"></a>pbcseq_status<span class="sc">$</span>mean.bili<span class="ot">&lt;-</span><span class="fu">with</span>(pbcseq, <span class="fu">tapply</span>(<span class="fu">log</span>(bili), id, mean))[pbcseq_status<span class="sc">$</span>id]</span>
 <span id="cb268-3"><a href="multi.html#cb268-3" tabindex="-1"></a></span>
-<span id="cb268-4"><a href="multi.html#cb268-4" tabindex="-1"></a>m.pbc_status <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(y <span class="sc">~</span> mean.bili, <span class="at">data =</span> pbcseq_status, <span class="at">family =</span> <span class="cn">NULL</span>, <span class="at">prior =</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="dv">1</span>,</span>
-<span id="cb268-5"><a href="multi.html#cb268-5" tabindex="-1"></a>    <span class="at">fix =</span> <span class="dv">1</span>)))</span></code></pre></div>
+<span id="cb268-4"><a href="multi.html#cb268-4" tabindex="-1"></a>m.pbc_status<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(y<span class="sc">~</span>mean.bili, <span class="at">data=</span>pbcseq_status, <span class="at">family=</span><span class="cn">NULL</span>, <span class="at">prior=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="dv">1</span>, <span class="at">fix=</span><span class="dv">1</span>)))</span></code></pre></div>
 <p>In Figure <a href="multi.html#fig:mu-vs-sing">7.10</a> the regression coefficient from the multi-response model (in black) is compared to that from the single-response model (in red) and we can see that the multi-response model gives a regression coefficient that is greater in magnitude<a href="#fn37" class="footnote-ref" id="fnref37"><sup>37</sup></a>.</p>
 <div class="figure"><span style="display:block;" id="fig:mu-vs-sing"></span>
 <img src="_bookdown_files/fig/mu-vs-sing-1.png" alt="Posterior distributions for the probit regression of $\texttt{status}$ (death) on a patient's (log) $\texttt{bili}$ value. The black trace is obtained from a multi-response model and the predictor is the expected value of log $\texttt{bili}$ for each patient, whereas the red trace is obtained from a single-response model and the predictor is the sample mean of log $\texttt{bili}$ for each patient." width="672" />
@@ -877,7 +874,8 @@ Figure 7.10: Posterior distributions for the probit regression of <span class="m
 <div id="scaled-linear-predictors-texttttheta_scale" class="section level2 hasAnchor" number="7.5">
 <h2><span class="header-section-number">7.5</span> Scaled linear predictors: <span class="math inline">\(\texttt{theta_scale}\)</span><a href="multi.html#scaled-linear-predictors-texttttheta_scale" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>In the previous sections of this Chapter we’ve often thought about multi-response models in terms of regression. In some cases, the regression coefficient was different at different levels. For example, in Section <a href="multi.html#bern-gaus-sec">7.2.1</a> the regression within patients differed from the regression across patients. In other cases, the regression coefficient was only fitted for specific levels. For example, in Section <a href="multi.html#covu-sec">7.4</a> the regression was only fitted across patients not within. Although we parameterised the model in terms of unstructured covariance matrices (<span class="math inline">\(\texttt{us}\)</span>) we could have fitted the same model parameterised in terms of regression coefficients and innovation variances using antedependence structures (see Section <a href="cont-int.html#ante-sec">6.5</a>). Sometimes, however, we would like a model where the regression is held constant across two or more levels but is allowed to be different (or zero) at others. The <span class="math inline">\(\texttt{theta_scale}\)</span> argument in <span class="math inline">\(\texttt{MCMCglmm}\)</span> allows two sets of parameters to be fitted that differ by a common scaling factor. For example, we may have two vectors of random effects <span class="math inline">\(\{{\bf u}_1 {\bf u}_2\}\)</span> that appear in the linear predictor of one set of observations and would like to fit the effects <span class="math inline">\(\{\theta_s{\bf u}_1 \theta_s{\bf u}_2\}\)</span> for another set of observations. By fitting the first set of effects for one trait (the predictor) and the second set of effects to the other trait (the response) we can hold the regression constant (<span class="math inline">\(\theta_s\)</span>) at the two levels defined by the random effects.</p>
-<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="multi.html#cb269-1" tabindex="-1"></a><span class="co"># library(mlmRev) data(star)</span></span></code></pre></div>
+<div class="sourceCode" id="cb269"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb269-1"><a href="multi.html#cb269-1" tabindex="-1"></a><span class="co">#library(mlmRev)</span></span>
+<span id="cb269-2"><a href="multi.html#cb269-2" tabindex="-1"></a><span class="co">#data(star)</span></span></code></pre></div>
 </div>
 <div id="multinomial-models" class="section level2 hasAnchor" number="7.6">
 <h2><span class="header-section-number">7.6</span> Multinomial Models<a href="multi.html#multinomial-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -901,7 +899,7 @@ Figure 7.11: Number of prey items of different types in 150 randomly selected sa
 </p>
 </div>
 <p>In terms of numbers, Capelin and the Pacific sand lance are the most common prey items, with ‘Other’ being the rarest</p>
-<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="multi.html#cb272-1" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span></code></pre></div>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="multi.html#cb272-1" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span></code></pre></div>
 <pre><code>##   Capelin   Herring   Pollock SandLance     Other 
 ## 1.7238938 1.1522124 0.6141593 1.6300885 0.5150442</code></pre>
 <p>However, there is tremendous variation in the total number of prey items per sample and it looks as if those samples with many prey items are dominated by Capelin. The multinomial ignores (conditions on) the total number of prey items and essentially works with the proportions of each prey item, as shown in Figure <a href="multi.html#fig:tufted-prop">7.12</a> for the 150 random samples.</p>
@@ -912,8 +910,8 @@ Figure 7.12: Proportion of prey items that are of each type in 150 randomly sele
 </p>
 </div>
 <p>Once we control for the total number of prey items we see that Capelin actually makes up the lowest proportion of the diet and Pacific sand lance dominates:</p>
-<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="multi.html#cb274-1" tabindex="-1"></a>total_counts <span class="ot">&lt;-</span> <span class="fu">rowSums</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span>
-<span id="cb274-2"><a href="multi.html#cb274-2" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[, <span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]<span class="sc">/</span>total_counts)</span></code></pre></div>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="multi.html#cb274-1" tabindex="-1"></a>total_counts<span class="ot">&lt;-</span><span class="fu">rowSums</span>(tufted_puffin[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)])</span>
+<span id="cb274-2"><a href="multi.html#cb274-2" tabindex="-1"></a><span class="fu">colMeans</span>(tufted_puffin[,<span class="sc">-</span><span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>)]<span class="sc">/</span>total_counts)</span></code></pre></div>
 <pre><code>##   Capelin   Herring   Pollock SandLance     Other 
 ## 0.1200594 0.1316400 0.1449124 0.4062647 0.1971235</code></pre>
 <p>It is also apparent from Figure <a href="multi.html#fig:tufted-prop">7.12</a> (and Figure <a href="multi.html#fig:tufted-num">7.11</a>) that samples from the same year seem to have very similar compositions. Although less obvious, it also looks like there will be overdispersion - even within years, samples seem to vary in composition more than you would expect from multinomial sampling alone. In Figure <a href="multi.html#fig:tufted-sim">7.13</a> I have sampled from the multinomial with the probabilities given above and the observed total number of prey items for each of the 150 samples plotted. It is clear that the simulated data are much less structured than the real data shown in Figure <a href="multi.html#fig:tufted-prop">7.12</a>.</p>
@@ -924,10 +922,8 @@ Figure 7.13: Simulated proportion of prey items that are of each type assuming t
 </p>
 </div>
 <p>Let’s fit a multinomial model to these data, using <span class="math inline">\(\texttt{Other}\)</span> as the base-line category. We will also fit fully unstructured, <span class="math inline">\(4\times 4\)</span>, covariance matrices at the level of year and sample (<span class="math inline">\(\texttt{unit}\)</span>):</p>
-<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="multi.html#cb276-1" tabindex="-1"></a>prior.tufted <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">IW</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">G =</span> <span class="fu">F</span>(<span class="dv">2</span>, <span class="dv">1000</span>))</span>
-<span id="cb276-2"><a href="multi.html#cb276-2" tabindex="-1"></a>m.tufted <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb276-3"><a href="multi.html#cb276-3" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>,</span>
-<span id="cb276-4"><a href="multi.html#cb276-4" tabindex="-1"></a>    <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="multi.html#cb276-1" tabindex="-1"></a>prior.tufted<span class="ot">&lt;-</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">IW</span>(<span class="dv">1</span>, <span class="dv">2</span>), <span class="at">G=</span><span class="fu">F</span>(<span class="dv">2</span>,<span class="dv">1000</span>))</span>
+<span id="cb276-2"><a href="multi.html#cb276-2" tabindex="-1"></a>m.tufted<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other)<span class="sc">~</span>trait<span class="dv">-1</span>, <span class="at">data=</span>tufted_puffin, <span class="at">random=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>year, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family=</span><span class="st">&quot;multinomial&quot;</span>, <span class="at">longer=</span><span class="dv">20</span>, <span class="at">prior=</span>prior.tufted, <span class="at">pr=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>With two <span class="math inline">\(4\times 4\)</span> covariance matrices, the model summary is pretty overwhelming. To get a feel for the broad patterns, I have summarised the two matrices in terms of correlations (upper-triangle), variances (diagonals) and covariances (lower-triangle) in Table <a href="multi.html#tab:puffin">7.1</a>. The posterior means together with the 95% credible intervals (in square brackets) are reported.</p>
 <table class="table" style="font-size: 14px; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
@@ -962,16 +958,16 @@ SandLance
 Capelin
 </td>
 <td style="text-align:left;">
-63.63 [13.58-141.35]
+73.70 [17.46-155.58]
 </td>
 <td style="text-align:left;">
-0.09 [-0.40-0.55]
+0.09 [-0.38-0.58]
 </td>
 <td style="text-align:left;">
-0.21 [-0.29-0.64]
+0.23 [-0.21-0.71]
 </td>
 <td style="text-align:left;">
--0.13 [-0.54-0.32]
+-0.14 [-0.55-0.34]
 </td>
 </tr>
 <tr>
@@ -979,16 +975,16 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
-3.95 [-21.33-31.63]
+4.06 [-22.30-34.93]
 </td>
 <td style="text-align:left;">
-38.06 [10.77-79.25]
+37.63 [9.17-82.47]
 </td>
 <td style="text-align:left;">
--0.16 [-0.57-0.29]
+-0.16 [-0.55-0.33]
 </td>
 <td style="text-align:left;">
-0.37 [-0.02-0.73]
+0.36 [-0.03-0.73]
 </td>
 </tr>
 <tr>
@@ -996,16 +992,16 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
-5.90 [-12.16-20.04]
+7.10 [-7.95-29.48]
 </td>
 <td style="text-align:left;">
--3.53 [-14.44-7.44]
+-3.52 [-15.62-7.27]
 </td>
 <td style="text-align:left;">
-12.79 [3.18-26.06]
+12.91 [3.65-25.38]
 </td>
 <td style="text-align:left;">
--0.23 [-0.61-0.18]
+-0.23 [-0.62-0.20]
 </td>
 </tr>
 <tr>
@@ -1013,16 +1009,16 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
--4.21 [-21.24-10.62]
+-5.02 [-22.75-13.27]
 </td>
 <td style="text-align:left;">
-9.66 [-2.66-25.76]
+9.23 [-1.94-25.83]
 </td>
 <td style="text-align:left;">
--3.39 [-10.99-3.62]
+-3.40 [-11.26-2.55]
 </td>
 <td style="text-align:left;">
-17.54 [6.09-32.76]
+17.01 [6.12-30.69]
 </td>
 </tr>
 <tr grouplength="4">
@@ -1035,16 +1031,16 @@ SandLance
 Capelin
 </td>
 <td style="text-align:left;">
-60.09 [22.95-99.82]
+65.79 [25.13-115.29]
 </td>
 <td style="text-align:left;">
--0.15 [-0.60-0.24]
+-0.14 [-0.55-0.30]
 </td>
 <td style="text-align:left;">
--0.09 [-0.60-0.42]
+-0.04 [-0.51-0.53]
 </td>
 <td style="text-align:left;">
--0.02 [-0.46-0.36]
+-0.03 [-0.45-0.39]
 </td>
 </tr>
 <tr>
@@ -1052,16 +1048,16 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
--4.53 [-18.84-8.02]
+-4.24 [-19.31-9.92]
 </td>
 <td style="text-align:left;">
-17.13 [9.46-26.71]
+16.96 [8.44-26.08]
 </td>
 <td style="text-align:left;">
--0.01 [-0.45-0.44]
+-0.00 [-0.49-0.44]
 </td>
 <td style="text-align:left;">
-0.68 [0.48-0.84]
+0.68 [0.49-0.84]
 </td>
 </tr>
 <tr>
@@ -1069,16 +1065,16 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
--1.27 [-9.11-7.63]
+-0.42 [-9.44-9.01]
 </td>
 <td style="text-align:left;">
-0.08 [-3.67-4.12]
+0.10 [-3.53-4.33]
 </td>
 <td style="text-align:left;">
-4.41 [1.72-7.23]
+4.33 [1.77-7.07]
 </td>
 <td style="text-align:left;">
-0.02 [-0.51-0.50]
+0.03 [-0.42-0.50]
 </td>
 </tr>
 <tr>
@@ -1086,16 +1082,16 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
--0.38 [-12.84-13.70]
+-0.77 [-15.71-13.58]
 </td>
 <td style="text-align:left;">
-11.30 [5.72-18.83]
+11.25 [5.35-18.40]
 </td>
 <td style="text-align:left;">
-0.30 [-4.12-4.43]
+0.40 [-3.57-4.26]
 </td>
 <td style="text-align:left;">
-15.85 [9.02-23.29]
+15.93 [8.95-24.26]
 </td>
 </tr>
 </tbody>
@@ -1103,7 +1099,7 @@ SandLance
 <p><br></p>
 <p>There seems to be substantial variation, both between years and between samples, in the linear predictors for each prey item. Although credible intervals are wide, the generally pattern seems to be that the between year variation exceeds the between sample variation. Correlations between the linear predictors for different prey items also have wide credible intervals, but in general they seem fairly small. The exception to this is between the <span class="math inline">\(\texttt{Herring}\)</span> and <span class="math inline">\(\texttt{SandLance}\)</span> predictors, where the correlation is moderately positive, particularly at the level of samples (<span class="math inline">\(\texttt{units}\)</span>).</p>
 <p>Does the model fit the data? We can generate a draw from the posterior predictive distribution for the specific years sampled using the predict function and specifying <span class="math inline">\(\texttt{marginal=NULL}\)</span>:</p>
-<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="multi.html#cb277-1" tabindex="-1"></a>sim_tufted <span class="ot">&lt;-</span> <span class="fu">simulate</span>(m.tufted, <span class="at">marginal =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb277"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb277-1"><a href="multi.html#cb277-1" tabindex="-1"></a>sim_tufted<span class="ot">&lt;-</span><span class="fu">simulate</span>(m.tufted, <span class="at">marginal=</span><span class="cn">NULL</span>)</span></code></pre></div>
 <p>This is a vector of counts of length <span class="math inline">\(n(K-1)\)</span> where the first <span class="math inline">\(n\)</span> values are the counts (in this example) for Capelin and the second set of <span class="math inline">\(n\)</span> values are for Herring and so on. The counts for <span class="math inline">\(\texttt{Other}\)</span> are not returned but can be obtained by taking the difference between the total number of counts for each observation and the sum of the counts across the other <span class="math inline">\(K-1\)</span> categories. If we plot the quantiles of the observed number of counts against the quantiles of the posterior prediction for the number of counts we see a very strong 1:1 relationship (Figure <a href="multi.html#fig:qq-counts">7.14</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:qq-counts"></span>
 <img src="_bookdown_files/fig/qq-counts-1.png" alt="qq-plot of prey item counts from a posterior predictive simulation of model $\texttt{m.tufted}$ (x-axis) versus the empirical quantiles (y-axis)." width="864" />
@@ -1159,10 +1155,8 @@ VAR(u^{(\texttt{C-O})})=&amp;VAR(u^{(\texttt{C})})+VAR(u^{(\texttt{O})})-2COV(u^
 \]</span></p>
 <p>Even if the abundance of Capelin and <span class="math inline">\(\texttt{Other}\)</span> are independent across years, the variance in the log-odds depends on the year variance of both categories: <span class="math inline">\(VAR(u^{(\texttt{C})})+VAR(u^{(\texttt{O})})\)</span>.</p>
 <p>When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log abundances of different prey items are independent across years but have the same yearly variation, then our null for the covariance matrix of multinomial year effects would have <span class="math inline">\(2\sigma^2_{u}\)</span> along the diagonal and <span class="math inline">\(\sigma^2_{u}\)</span> on the off-diagonals. Looking at the estimates when we fitted a fully unstructured covariance matrix for the year effects (Table <a href="multi.html#tab:puffin">7.1</a>) suggest this model may not perform that well. While the between-year variances have large credible intervals, and so a common variance of around 20 may not be too bad, a common covariance of 10 (correlation of 0.5) looks too large. Nevertheless, we can fit this model and assess the fit. We can represent the covariance structure of the year effects in this model as <span class="math inline">\({\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(4\times 4\)</span> identity and unit matrices, respectively<a href="#fn38" class="footnote-ref" id="fnref38"><sup>38</sup></a>. To fit a year covariance matrix of this form we can use an <span class="math inline">\(\texttt{idv}\)</span> variance structure with model formula <code>trait+at.set(trait, 1:(K-1))</code><a href="#fn39" class="footnote-ref" id="fnref39"><sup>39</sup></a>:</p>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="multi.html#cb278-1" tabindex="-1"></a>m.tuftedb <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb278-2"><a href="multi.html#cb278-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idv</span>(<span class="sc">~</span>trait <span class="sc">+</span> <span class="fu">at.set</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>))<span class="sc">:</span>year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb278-3"><a href="multi.html#cb278-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>The posterior mean and 95% credible interval of <span class="math inline">\(\sigma^2_u\)</span> is 12.94 [7.40-19.62]. In the fully unstructured model (<span class="math inline">\(\texttt{m.tufted}\)</span>) the average of the four between-year variances halved was 16.5 and the average of the six between-year covariances was 2.4 (see Table <a href="multi.html#tab:puffin">7.1</a>). The estimate of <span class="math inline">\(\sigma^2_u\)</span> can be seen as a compromise estimate of these ten parameters. To assess whether this simpler model does a good job at capturing the differences between years we can decide on a suitable metric and compare the metric calculated on the observed data with that calculated on posterior predictive simulations. One possible metric would be to calculate the mean proportions of Capelin, Herring, Pollock and Sand lance across samples for each year and then take the variance in these year means for each prey item or the correlation between year means for pairs of prey items. Relating this metric to the parameters of the model is not straight forward since the sample means for each year will, in part, reflect between sample variability, particularly in years where replication is low. In addition, the model works with log-probabilities, yet the described metric works with raw proportions since these are often zero and logging isn’t an option. Despite the metric’s limitations, I would still expect it to reveal major problems with the specified year effects.</p>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="multi.html#cb278-1" tabindex="-1"></a>m.tuftedb<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other)<span class="sc">~</span>trait<span class="dv">-1</span>, <span class="at">data=</span>tufted_puffin, <span class="at">random=</span><span class="sc">~</span><span class="fu">idv</span>(<span class="sc">~</span>trait<span class="sc">+</span><span class="fu">at.set</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>))<span class="sc">:</span>year, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family=</span><span class="st">&quot;multinomial&quot;</span>, <span class="at">longer=</span><span class="dv">20</span>, <span class="at">prior=</span>prior.tufted, <span class="at">pr=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p>The posterior mean and 95% credible interval of <span class="math inline">\(\sigma^2_u\)</span> is 13.19 [7.94-19.57]. In the fully unstructured model (<span class="math inline">\(\texttt{m.tufted}\)</span>) the average of the four between-year variances halved was 17.66 and the average of the six between-year covariances was 2.55 (see Table <a href="multi.html#tab:puffin">7.1</a>). The estimate of <span class="math inline">\(\sigma^2_u\)</span> can be seen as a compromise estimate of these ten parameters. To assess whether this simpler model does a good job at capturing the differences between years we can decide on a suitable metric and compare the metric calculated on the observed data with that calculated on posterior predictive simulations. One possible metric would be to calculate the mean proportions of Capelin, Herring, Pollock and Sand lance across samples for each year and then take the variance in these year means for each prey item or the correlation between year means for pairs of prey items. Relating this metric to the parameters of the model is not straight forward since the sample means for each year will, in part, reflect between sample variability, particularly in years where replication is low. In addition, the model works with log-probabilities, yet the described metric works with raw proportions since these are often zero and logging isn’t an option. Despite the metric’s limitations, I would still expect it to reveal major problems with the specified year effects.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-sim3"></span>
 <img src="_bookdown_files/fig/tufted-sim3-1.png" alt="The mean proportion of each prey item across samples in a given year were calculated for one thousand posterior predictive simulations from model $\texttt{m.tuftedb}$. This histograms represent the posterior predictive distributions for the variances of the yearly means (diagonal) or the correlations in yearly means between prey items. The red lines are the values calculated from the data." width="864" />
 <p class="caption">
@@ -1171,9 +1165,7 @@ Figure 7.17: The mean proportion of each prey item across samples in a given yea
 </div>
 <p>The posterior predictive simulations suggest that the model is not too disastrous. The posterior distributions for the covariances are centred a little above the observed values, and the posterior distributions for the variances are concentrated a little below the observed values. Nevertheless, the discrepancies are not extreme, and even for Capelin, the posterior predictive distribution includes higher variances than that observed.</p>
 <p>We can also fit a model which retains the assumption of independence but allows the amount of yearly variation in abundance to differ across categories. The (co)variance in multinomial year effects would then be <span class="math inline">\({\bf V}_{\texttt{year}} = {\bf D}+\sigma^2_{\texttt{O}}{\bf J}\)</span> where <span class="math inline">\({\bf D}\)</span> is a diagonal matrix with four variances to be estimated in addition to <span class="math inline">\(\sigma^2_{\texttt{O}}\)</span>. This can be achieved using the model structure <code>idh(trait):year+year</code>. The first term fits independent effects for each of the four traits but allows them to have different variances which can interpreted as <span class="math inline">\(VAR(u^{(\texttt{C})})\)</span>, <span class="math inline">\(VAR(u^{(\texttt{H})})\)</span>, <span class="math inline">\(VAR(u^{(\texttt{P})})\)</span> and <span class="math inline">\(VAR(u^{(\texttt{S})})\)</span> from the Poisson model. The second term fits a year effect common to all traits, which can interpreted as <span class="math inline">\(VAR(u^{(\texttt{O})})\)</span> from the Poisson model.</p>
-<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="multi.html#cb279-1" tabindex="-1"></a>m.tuftedc <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb279-2"><a href="multi.html#cb279-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year <span class="sc">+</span> year, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb279-3"><a href="multi.html#cb279-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb279"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb279-1"><a href="multi.html#cb279-1" tabindex="-1"></a>m.tuftedc<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other)<span class="sc">~</span>trait<span class="dv">-1</span>, <span class="at">data=</span>tufted_puffin, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year<span class="sc">+</span>year, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family=</span><span class="st">&quot;multinomial&quot;</span>, <span class="at">longer=</span><span class="dv">20</span>, <span class="at">prior=</span>prior.tufted, <span class="at">pr=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>The posterior means and 95% credible intervals for the year variances are displayed in table <a href="multi.html#tab:puffinc">7.2</a>. Again, the credible intervals are wide and a common variance of around 20 may not be too bad for all categories except <span class="math inline">\(\texttt{Other}\)</span>. The yearly variance for <span class="math inline">\(\texttt{Other}\)</span> is considerably smaller, which is to be expected since this represents the covariance between year effects in the fully unstructured model which were consistently less than half the variances. A reduced between-year variance for the <span class="math inline">\(\texttt{Other}\)</span> category seems biologically reasonable: since this category lumps 40 prey items which are likely to show some degree of independence in their abundances across years.</p>
 <table class="table" style="font-size: 14px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
@@ -1200,13 +1192,13 @@ u-95% CI
 Capelin
 </td>
 <td style="text-align:right;">
-57.43
+58.98
 </td>
 <td style="text-align:right;">
-12.65
+11.34
 </td>
 <td style="text-align:right;">
-123.53
+134.65
 </td>
 </tr>
 <tr>
@@ -1214,13 +1206,13 @@ Capelin
 Herring
 </td>
 <td style="text-align:right;">
-29.45
+28.10
 </td>
 <td style="text-align:right;">
-5.10
+7.70
 </td>
 <td style="text-align:right;">
-62.91
+57.05
 </td>
 </tr>
 <tr>
@@ -1228,13 +1220,13 @@ Herring
 Pollock
 </td>
 <td style="text-align:right;">
-11.06
+10.96
 </td>
 <td style="text-align:right;">
-2.72
+1.89
 </td>
 <td style="text-align:right;">
-23.11
+22.17
 </td>
 </tr>
 <tr>
@@ -1242,13 +1234,13 @@ Pollock
 SandLance
 </td>
 <td style="text-align:right;">
-14.02
+14.21
 </td>
 <td style="text-align:right;">
-5.12
+3.70
 </td>
 <td style="text-align:right;">
-27.91
+26.65
 </td>
 </tr>
 <tr>
@@ -1256,13 +1248,13 @@ SandLance
 Other
 </td>
 <td style="text-align:right;">
-1.55
+1.35
 </td>
 <td style="text-align:right;">
 0.00
 </td>
 <td style="text-align:right;">
-5.32
+4.46
 </td>
 </tr>
 </tbody>
@@ -1275,9 +1267,7 @@ Figure 7.18: The mean proportion of each prey item across samples in a given yea
 </p>
 </div>
 <p>We could also consider a similar model for the sample <span class="math inline">\(\texttt{unit}\)</span> effects:</p>
-<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="multi.html#cb280-1" tabindex="-1"></a>m.tuftedd <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other) <span class="sc">~</span> trait <span class="sc">-</span></span>
-<span id="cb280-2"><a href="multi.html#cb280-2" tabindex="-1"></a>    <span class="dv">1</span>, <span class="at">data =</span> tufted_puffin, <span class="at">random =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year <span class="sc">+</span> year <span class="sc">+</span> units, <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb280-3"><a href="multi.html#cb280-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;multinomial&quot;</span>, <span class="at">longer =</span> <span class="dv">20</span>, <span class="at">prior =</span> prior.tufted, <span class="at">pr =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="multi.html#cb280-1" tabindex="-1"></a>m.tuftedd<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other)<span class="sc">~</span>trait<span class="dv">-1</span>, <span class="at">data=</span>tufted_puffin, <span class="at">random=</span><span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>year<span class="sc">+</span>year<span class="sc">+</span>units, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">family=</span><span class="st">&quot;multinomial&quot;</span>, <span class="at">longer=</span><span class="dv">20</span>, <span class="at">prior=</span>prior.tufted, <span class="at">pr=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 <p>The magnitude of the units variances show similar patterns to the year variances, with <span class="math inline">\(\texttt{Other}\)</span> being small and Capelin being large (Table <a href="multi.html#tab:puffind">7.3</a>).</p>
 <table class="table" style="font-size: 14px; margin-left: auto; margin-right: auto;">
 <caption style="font-size: initial !important;">
@@ -1301,10 +1291,10 @@ units
 Capelin
 </td>
 <td style="text-align:left;">
-75.95 [15.70-162.35]
+68.14 [15.38-151.53]
 </td>
 <td style="text-align:left;">
-82.48 [34.52-137.49]
+77.44 [32.96-126.39]
 </td>
 </tr>
 <tr>
@@ -1312,10 +1302,10 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
-33.22 [7.32-73.18]
+33.78 [8.89-74.79]
 </td>
 <td style="text-align:left;">
-11.29 [5.42-17.93]
+11.12 [5.05-17.50]
 </td>
 </tr>
 <tr>
@@ -1323,10 +1313,10 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
-12.45 [3.17-25.32]
+12.82 [2.80-26.37]
 </td>
 <td style="text-align:left;">
-4.28 [0.62-8.42]
+4.21 [0.56-7.92]
 </td>
 </tr>
 <tr>
@@ -1334,10 +1324,10 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
-12.95 [3.90-25.01]
+13.35 [3.95-26.65]
 </td>
 <td style="text-align:left;">
-9.78 [5.41-15.48]
+9.91 [5.42-15.20]
 </td>
 </tr>
 <tr>
@@ -1345,10 +1335,10 @@ SandLance
 Other
 </td>
 <td style="text-align:left;">
-1.69 [0.00-5.75]
+1.57 [0.00-5.55]
 </td>
 <td style="text-align:left;">
-3.07 [0.00-6.06]
+3.23 [0.00-6.22]
 </td>
 </tr>
 </tbody>
@@ -1382,12 +1372,12 @@ Figure 7.20: Probability mass function for a zero-modified Poisson. The blue and
 ## 5   0 Women  Single    0 3.75   26
 ## 6   0 Women Married    2 3.59    2</code></pre>
 <p>Approximately, 30% of students do not publish a paper</p>
-<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="multi.html#cb283-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>)<span class="sc">/</span><span class="dv">915</span></span></code></pre></div>
+<div class="sourceCode" id="cb283"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb283-1"><a href="multi.html#cb283-1" tabindex="-1"></a><span class="fu">table</span>(bioChemists<span class="sc">$</span>art<span class="sc">==</span><span class="dv">0</span>)<span class="sc">/</span><span class="dv">915</span></span></code></pre></div>
 <pre><code>## 
 ##     FALSE      TRUE 
 ## 0.6994536 0.3005464</code></pre>
 <p>which is considerably more than expected from a Poisson distribution with a mean equal to the mean number of papers published (1.69).</p>
-<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="multi.html#cb285-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>, <span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
+<div class="sourceCode" id="cb285"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb285-1"><a href="multi.html#cb285-1" tabindex="-1"></a><span class="fu">ppois</span>(<span class="dv">0</span>,<span class="fu">mean</span>(bioChemists<span class="sc">$</span>art))</span></code></pre></div>
 <pre><code>## [1] 0.1839859</code></pre>
 <p>If we compare the observed frequencies of the number of papers published with a standard Poisson, we can see than not only is there an excess of zero’s but also an excess of students publishing four or more papers (Figure <a href="multi.html#fig:art">7.21</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:art"></span>
@@ -1416,10 +1406,8 @@ V_{\texttt{units}} =\left[
 <div id="zero-inflated-poisson" class="section level3 hasAnchor" number="7.7.1">
 <h3><span class="header-section-number">7.7.1</span> Zero-inflated Poisson<a href="multi.html#zero-inflated-poisson" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>To the biochemsirty student data, we can fit a zero-inflated model where we specify constant odds for a zero belonging to the inflation process rather than the Poisson process, but the mean of the Poisson may depend on a suite of predictors such as the categorical predictors sex (<span class="math inline">\(\texttt{fem}\)</span>) and marital status (<span class="math inline">\(\texttt{Married}\)</span>) and continuous predictors such as the number of children aged 5 or younger (<span class="math inline">\(\texttt{kid5}\)</span>) prestige of the department (<span class="math inline">\(\texttt{phd}\)</span>) and how many papers the student’s mentor published over the same period (<span class="math inline">\(\texttt{ment}\)</span>).</p>
-<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="multi.html#cb287-1" tabindex="-1"></a>prior.zip <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu =</span> <span class="fl">0.002</span>, <span class="at">fix =</span> <span class="dv">2</span>))</span>
-<span id="cb287-2"><a href="multi.html#cb287-2" tabindex="-1"></a>m.zip <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span></span>
-<span id="cb287-3"><a href="multi.html#cb287-3" tabindex="-1"></a>    ment), <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.zip, <span class="at">family =</span> <span class="st">&quot;zipoisson&quot;</span>,</span>
-<span id="cb287-4"><a href="multi.html#cb287-4" tabindex="-1"></a>    <span class="at">longer =</span> <span class="dv">10</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb287"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb287-1"><a href="multi.html#cb287-1" tabindex="-1"></a>prior.zip<span class="ot">=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">2</span>), <span class="at">nu=</span><span class="fl">0.002</span>, <span class="at">fix=</span><span class="dv">2</span>))</span>
+<span id="cb287-2"><a href="multi.html#cb287-2" tabindex="-1"></a>m.zip<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(art<span class="sc">~</span>trait<span class="dv">-1</span><span class="sc">+</span><span class="fu">at.level</span>(trait,<span class="dv">1</span>)<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span>ment), <span class="at">rcov=</span><span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data=</span>bioChemists, <span class="at">prior=</span>prior.zip, <span class="at">family=</span><span class="st">&quot;zipoisson&quot;</span>, <span class="at">longer=</span><span class="dv">10</span>)</span></code></pre></div>
 <p>Let’s look at the model summary:</p>
 <div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="multi.html#cb288-1" tabindex="-1"></a><span class="fu">summary</span>(m.zip)</span></code></pre></div>
 <pre><code>## 
@@ -1427,27 +1415,35 @@ V_{\texttt{units}} =\left[
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3015.031 
+##  DIC: 3021.529 
 ## 
 ##  R-structure:  ~idh(trait):units
 ## 
 ##                   post.mean l-95% CI u-95% CI eff.samp
-## traitart.units        0.406   0.3106   0.5121    532.8
-## traitzi_art.units     1.000   1.0000   1.0000      0.0
+## traitart.units       0.3972   0.2951   0.4904    353.8
+## traitzi_art.units    1.0000   1.0000   1.0000      0.0
 ## 
 ##  Location effects: art ~ trait - 1 + at.level(trait, 1):(fem + mar + kid5 + phd + ment) 
 ## 
-##                               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## traitart                       -0.18899 -0.48020  0.07266  908.993  0.188    
-## traitzi_art                    -7.14062 -9.78402 -3.91286    5.976 &lt;0.001 ***
-## at.level(trait, 1):femMen       0.20713  0.08430  0.37723 1000.000  0.004 ** 
-## at.level(trait, 1):marMarried   0.15426 -0.02155  0.31146 1000.000  0.092 .  
-## at.level(trait, 1):kid5        -0.17719 -0.27411 -0.08102 1000.000 &lt;0.001 ***
-## at.level(trait, 1):phd          0.02866 -0.04564  0.09548 1215.734  0.462    
-## at.level(trait, 1):ment         0.02820  0.02156  0.03488 1000.000 &lt;0.001 ***
+##                                post.mean   l-95% CI   u-95% CI eff.samp  pMCMC
+## traitart                       -0.169215  -0.443890   0.117923   649.77  0.238
+## traitzi_art                    -7.719087 -14.715896  -2.610300     2.53 &lt;0.001
+## at.level(trait, 1):femMen       0.204749   0.064065   0.342074  1171.70  0.004
+## at.level(trait, 1):marMarried   0.151521  -0.006506   0.328658  1000.00  0.074
+## at.level(trait, 1):kid5        -0.177760  -0.285810  -0.077662  1000.00  0.002
+## at.level(trait, 1):phd          0.027820  -0.054340   0.090490  1122.33  0.458
+## at.level(trait, 1):ment         0.027788   0.021779   0.033844  1000.00 &lt;0.001
+##                                  
+## traitart                         
+## traitzi_art                   ***
+## at.level(trait, 1):femMen     ** 
+## at.level(trait, 1):marMarried .  
+## at.level(trait, 1):kid5       ** 
+## at.level(trait, 1):phd           
+## at.level(trait, 1):ment       ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>The first ‘trait’ has the same name as the response (<span class="math inline">\(\texttt{art}\)</span> in this example) and is the latent variable for the Poisson process. The second ‘trait’ is the latent variable for the zero-inflation and has the same name as the response prefixed by <span class="math inline">\(\texttt{zi_}\)</span> (<span class="math inline">\(\texttt{zi_art}\)</span>). We can see that there is good evidence for overdispersion: the <span class="math inline">\(\texttt{units}\)</span> variance for the Poisson process (<span class="math inline">\(\texttt{traitart.units}\)</span>) is far from zero and several of the covariates seem to impact the Poisson mean. However, note that the log odds of a zero belonging to the zero-inflation process is extremely small (-7.14) - essentially a probability of zero - and the mixing is very poor for this parameter which has a very low effective sample size. We can see this visually by looking at the MCMC traces from the model (Figure <a href="multi.html#fig:mcmc-zip">7.23</a>).</p>
+<p>The first ‘trait’ has the same name as the response (<span class="math inline">\(\texttt{art}\)</span> in this example) and is the latent variable for the Poisson process. The second ‘trait’ is the latent variable for the zero-inflation and has the same name as the response prefixed by <span class="math inline">\(\texttt{zi_}\)</span> (<span class="math inline">\(\texttt{zi_art}\)</span>). We can see that there is good evidence for overdispersion: the <span class="math inline">\(\texttt{units}\)</span> variance for the Poisson process (<span class="math inline">\(\texttt{traitart.units}\)</span>) is far from zero and several of the covariates seem to impact the Poisson mean. However, note that the log odds of a zero belonging to the zero-inflation process is extremely small (-7.72) - essentially a probability of zero - and the mixing is very poor for this parameter which has a very low effective sample size. We can see this visually by looking at the MCMC traces from the model (Figure <a href="multi.html#fig:mcmc-zip">7.23</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:mcmc-zip"></span>
 <img src="_bookdown_files/fig/mcmc-zip-1.png" alt="MCMC traces for the first four fixed effects from the zero-inflated Poisson model `m.zip` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the zero-inflation." width="672" />
 <p class="caption">
@@ -1455,19 +1451,18 @@ Figure 7.23: MCMC traces for the first four fixed effects from the zero-inflated
 </p>
 </div>
 <p>The reason that the model mixes so poorly for the zero-inflation parameter is that there is essentially no zero-inflation. We have complete separation where the likelihood is favouring estimates of the probability that are close to zero and therefore minus infinity on the logit scale (Section <a href="glm.html#sec-complete-separation">3.9</a>). Before worrying about zero-inflation I usually fit a standard (over-dispersed) Poisson:</p>
-<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="multi.html#cb290-1" tabindex="-1"></a>prior.odp <span class="ot">=</span> <span class="fu">list</span>(<span class="at">R =</span> <span class="fu">list</span>(<span class="at">V =</span> <span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu =</span> <span class="fl">0.002</span>))</span>
-<span id="cb290-2"><a href="multi.html#cb290-2" tabindex="-1"></a>m.odp <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.odp,</span>
-<span id="cb290-3"><a href="multi.html#cb290-3" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;poisson&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="multi.html#cb290-1" tabindex="-1"></a>prior.odp<span class="ot">=</span><span class="fu">list</span>(<span class="at">R=</span><span class="fu">list</span>(<span class="at">V=</span><span class="fu">diag</span>(<span class="dv">1</span>), <span class="at">nu=</span><span class="fl">0.002</span>))</span>
+<span id="cb290-2"><a href="multi.html#cb290-2" tabindex="-1"></a>m.odp<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(art<span class="sc">~</span>fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">data=</span>bioChemists, <span class="at">prior=</span>prior.odp, <span class="at">family=</span><span class="st">&quot;poisson&quot;</span>)</span></code></pre></div>
 <p>and then use posterior predictive checks to see how many zero’s you would expect under this simpler model:</p>
 <div class="sourceCode" id="cb291"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb291-1"><a href="multi.html#cb291-1" tabindex="-1"></a><span class="co"># simulate from model</span></span>
-<span id="cb291-2"><a href="multi.html#cb291-2" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="fu">simulate</span>(m.odp, <span class="at">nsim =</span> <span class="dv">1000</span>)</span>
+<span id="cb291-2"><a href="multi.html#cb291-2" tabindex="-1"></a>ysim<span class="ot">&lt;-</span><span class="fu">simulate</span>(m.odp, <span class="at">nsim=</span><span class="dv">1000</span>)</span>
 <span id="cb291-3"><a href="multi.html#cb291-3" tabindex="-1"></a></span>
 <span id="cb291-4"><a href="multi.html#cb291-4" tabindex="-1"></a><span class="co"># count the number of zeros for each simulated data set</span></span>
-<span id="cb291-5"><a href="multi.html#cb291-5" tabindex="-1"></a>nzsim <span class="ot">&lt;-</span> <span class="fu">colSums</span>(ysim <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb291-5"><a href="multi.html#cb291-5" tabindex="-1"></a>nzsim<span class="ot">&lt;-</span><span class="fu">colSums</span>(ysim<span class="sc">==</span><span class="dv">0</span>)</span>
 <span id="cb291-6"><a href="multi.html#cb291-6" tabindex="-1"></a></span>
 <span id="cb291-7"><a href="multi.html#cb291-7" tabindex="-1"></a><span class="co"># plot posterior predictive distribution with observed value</span></span>
-<span id="cb291-8"><a href="multi.html#cb291-8" tabindex="-1"></a><span class="fu">hist</span>(nzsim, <span class="at">main =</span> <span class="st">&quot;&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Number of zeros&quot;</span>)</span>
-<span id="cb291-9"><a href="multi.html#cb291-9" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v =</span> <span class="fu">sum</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>), <span class="at">col =</span> <span class="st">&quot;red&quot;</span>, <span class="at">lwd =</span> <span class="dv">2</span>)</span></code></pre></div>
+<span id="cb291-8"><a href="multi.html#cb291-8" tabindex="-1"></a><span class="fu">hist</span>(nzsim, <span class="at">main=</span><span class="st">&quot;&quot;</span>, <span class="at">xlab=</span><span class="st">&quot;Number of zeros&quot;</span>)</span>
+<span id="cb291-9"><a href="multi.html#cb291-9" tabindex="-1"></a><span class="fu">abline</span>(<span class="at">v=</span><span class="fu">sum</span>(bioChemists<span class="sc">$</span>art<span class="sc">==</span><span class="dv">0</span>), <span class="at">col=</span><span class="st">&quot;red&quot;</span>, <span class="at">lwd=</span><span class="dv">2</span>)</span></code></pre></div>
 <div class="figure"><span style="display:block;" id="fig:ppzi"></span>
 <img src="_bookdown_files/fig/ppzi-1.png" alt="Posterior predictive distribution from an (overdispersed) Poisson model fitted to the number of biochemistry students (out of 915) that publish no papers during their PhD. The red line is the observed number." width="672" />
 <p class="caption">
@@ -1479,33 +1474,31 @@ Figure 7.24: Posterior predictive distribution from an (overdispersed) Poisson m
 <div id="Hurdle" class="section level3 hasAnchor" number="7.7.2">
 <h3><span class="header-section-number">7.7.2</span> Hurdle Poisson models<a href="multi.html#Hurdle" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>In hurdle and zero-altered models, it is the probability of a zero versus non-zero that is modelled, rather than the probability a zero belongs to the zero-inflation process (Figure <a href="multi.html#fig:zm-poisson">7.20</a>). Consequently, complete separation only occurs when no zeros are observed and the probability tends to zero. The equivalent model to <span class="math inline">\(\texttt{m.zip}\)</span> but using a hurdle distribution therefore behaves better</p>
-<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="multi.html#cb292-1" tabindex="-1"></a>m.hup <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">at.level</span>(trait, <span class="dv">1</span>)<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span></span>
-<span id="cb292-2"><a href="multi.html#cb292-2" tabindex="-1"></a>    ment), <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.zip, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>,</span>
-<span id="cb292-3"><a href="multi.html#cb292-3" tabindex="-1"></a>    <span class="at">longer =</span> <span class="dv">10</span>)</span>
-<span id="cb292-4"><a href="multi.html#cb292-4" tabindex="-1"></a><span class="fu">summary</span>(m.hup)</span></code></pre></div>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="multi.html#cb292-1" tabindex="-1"></a>m.hup<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(art<span class="sc">~</span>trait<span class="dv">-1</span><span class="sc">+</span><span class="fu">at.level</span>(trait,<span class="dv">1</span>)<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span>ment), <span class="at">rcov=</span><span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data=</span>bioChemists, <span class="at">prior=</span>prior.zip, <span class="at">family=</span><span class="st">&quot;hupoisson&quot;</span>, <span class="at">longer=</span><span class="dv">10</span>)</span>
+<span id="cb292-2"><a href="multi.html#cb292-2" tabindex="-1"></a><span class="fu">summary</span>(m.hup)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 30001:129901
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3105.693 
+##  DIC: 3106.443 
 ## 
 ##  R-structure:  ~idh(trait):units
 ## 
 ##                   post.mean l-95% CI u-95% CI eff.samp
-## traitart.units       0.3529   0.2503   0.4621    753.2
+## traitart.units       0.3555   0.2485   0.4669    630.4
 ## traithu_art.units    1.0000   1.0000   1.0000      0.0
 ## 
 ##  Location effects: art ~ trait - 1 + at.level(trait, 1):(fem + mar + kid5 + phd + ment) 
 ## 
-##                               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## traitart                       0.144434 -0.163386  0.462698   1000.0  0.362    
-## traithu_art                   -1.017939 -1.175358 -0.845119   1000.0 &lt;0.001 ***
-## at.level(trait, 1):femMen      0.202624  0.031164  0.374296    804.3  0.014 *  
-## at.level(trait, 1):marMarried  0.086344 -0.110559  0.273742   1187.1  0.358    
-## at.level(trait, 1):kid5       -0.132514 -0.252916 -0.003691   1000.0  0.034 *  
-## at.level(trait, 1):phd         0.013413 -0.070314  0.095427   1000.0  0.736    
-## at.level(trait, 1):ment        0.019536  0.013008  0.026733   1000.0 &lt;0.001 ***
+##                               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## traitart                        0.14783 -0.15160  0.46039    763.7  0.384    
+## traithu_art                    -1.01029 -1.16686 -0.81848   1000.0 &lt;0.001 ***
+## at.level(trait, 1):femMen       0.20113  0.02404  0.36258   1000.0  0.008 ** 
+## at.level(trait, 1):marMarried   0.08908 -0.08282  0.29976   1000.0  0.346    
+## at.level(trait, 1):kid5        -0.13458 -0.27209 -0.01632   1000.0  0.038 *  
+## at.level(trait, 1):phd          0.01341 -0.06609  0.09980    744.7  0.760    
+## at.level(trait, 1):ment         0.01956  0.01239  0.02649   1000.0 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Compared to the zero-inflated traces plotted in Figure <a href="multi.html#fig:mcmc-zip">7.23</a> the equivalent parameters in the hurdle model show better mixing (Figure <a href="multi.html#fig:mcmc-hup">7.25</a>).</p>
@@ -1516,57 +1509,56 @@ Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisso
 </p>
 </div>
 <p>However, the interpretation of the hurdle model is slightly different than the zero-inflated model. In the hurdle model, fitting just an intercept for the zero-modification process implies that the proportion of zeros observed across different combinations of fixed effects is constant. Our 95% credible intervals for this proportion is (See section <a href="glm.html#binom-pred-sec">3.6.2</a>):</p>
-<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="multi.html#cb294-1" tabindex="-1"></a>c2 <span class="ot">&lt;-</span> (<span class="dv">16</span> <span class="sc">*</span> <span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span> <span class="sc">*</span> pi))<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb294-2"><a href="multi.html#cb294-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m.hup<span class="sc">$</span>Sol[, <span class="st">&quot;traithu_art&quot;</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span> <span class="sc">+</span> c2)))</span></code></pre></div>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="multi.html#cb294-1" tabindex="-1"></a>c2<span class="ot">&lt;-</span>(<span class="dv">16</span><span class="sc">*</span><span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span><span class="sc">*</span>pi))<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb294-2"><a href="multi.html#cb294-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m.hup<span class="sc">$</span>Sol[,<span class="st">&quot;traithu_art&quot;</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">+</span>c2))) </span></code></pre></div>
 <pre><code>##          lower     upper
-## var1 0.2642268 0.3233664
+## var1 0.2657294 0.3283723
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>While this is consistent with the overall frequency of zeros in the data set it is unclear whether it is consistent with the observed frequency of zeros across different groups of students. For example, the frequency of zero’s is perhaps lower in men than women and increases with the number of children under 5 (there is only one observation for a women with 3 children under 5).</p>
-<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="multi.html#cb296-1" tabindex="-1"></a><span class="fu">tapply</span>(bioChemists<span class="sc">$</span>art <span class="sc">==</span> <span class="dv">0</span>, <span class="fu">list</span>(bioChemists<span class="sc">$</span>fem, bioChemists<span class="sc">$</span>kid5), mean)</span></code></pre></div>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="multi.html#cb296-1" tabindex="-1"></a><span class="fu">tapply</span>(bioChemists<span class="sc">$</span>art<span class="sc">==</span><span class="dv">0</span>, <span class="fu">list</span>(bioChemists<span class="sc">$</span>fem, bioChemists<span class="sc">$</span>kid5), mean)</span></code></pre></div>
 <pre><code>##               0         1         2         3
 ## Men   0.2441860 0.2877698 0.3170732 0.4666667
 ## Women 0.3255132 0.3214286 0.4347826 0.0000000</code></pre>
 <p>In standard and zero-inflated Poisson models, these frequencies would be expected to change depending on how the predictors affect the mean number of papers (including zeros). For example, when we fitted the standard Poisson model to these data the predicted frequency of zeros is:</p>
-<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="multi.html#cb298-1" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="fu">simulate</span>(m.odp, <span class="at">nsim =</span> <span class="dv">1000</span>) <span class="sc">==</span> <span class="dv">0</span></span>
-<span id="cb298-2"><a href="multi.html#cb298-2" tabindex="-1"></a>ysim <span class="ot">&lt;-</span> <span class="fu">apply</span>(ysim, <span class="dv">1</span>, sum)<span class="sc">/</span><span class="dv">1000</span></span>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="multi.html#cb298-1" tabindex="-1"></a>ysim<span class="ot">&lt;-</span><span class="fu">simulate</span>(m.odp, <span class="at">nsim=</span><span class="dv">1000</span>)<span class="sc">==</span><span class="dv">0</span></span>
+<span id="cb298-2"><a href="multi.html#cb298-2" tabindex="-1"></a>ysim<span class="ot">&lt;-</span><span class="fu">apply</span>(ysim, <span class="dv">1</span>, sum)<span class="sc">/</span><span class="dv">1000</span></span>
 <span id="cb298-3"><a href="multi.html#cb298-3" tabindex="-1"></a></span>
 <span id="cb298-4"><a href="multi.html#cb298-4" tabindex="-1"></a><span class="fu">tapply</span>(ysim, <span class="fu">list</span>(bioChemists<span class="sc">$</span>fem, bioChemists<span class="sc">$</span>kid5), mean)</span></code></pre></div>
-<pre><code>##               0         1         2         3
-## Men   0.2477946 0.2725324 0.3202317 0.4167333
-## Women 0.3216804 0.3499107 0.3873043 0.4310000</code></pre>
+<pre><code>##               0         1         2      3
+## Men   0.2475814 0.2734820 0.3222439 0.4166
+## Women 0.3200704 0.3479821 0.3827826 0.4160</code></pre>
 <p>which largely recapitulates what is seen in the data. We can relax the assumption of a fixed proportion of zeros by fitting the same predictors for the zero-modified process</p>
-<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="multi.html#cb300-1" tabindex="-1"></a>m.hup2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">-</span> <span class="dv">1</span> <span class="sc">+</span> trait<span class="sc">:</span>(fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units,</span>
-<span id="cb300-2"><a href="multi.html#cb300-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.zip, <span class="at">family =</span> <span class="st">&quot;hupoisson&quot;</span>, <span class="at">longer =</span> <span class="dv">10</span>)</span>
-<span id="cb300-3"><a href="multi.html#cb300-3" tabindex="-1"></a><span class="fu">summary</span>(m.hup2)</span></code></pre></div>
+<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="multi.html#cb300-1" tabindex="-1"></a>m.hup2<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(art<span class="sc">~</span>trait<span class="dv">-1</span><span class="sc">+</span>trait<span class="sc">:</span>(fem<span class="sc">+</span>mar<span class="sc">+</span>kid5<span class="sc">+</span>phd<span class="sc">+</span>ment), <span class="at">rcov=</span><span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data=</span>bioChemists, <span class="at">prior=</span>prior.zip, <span class="at">family=</span><span class="st">&quot;hupoisson&quot;</span>, <span class="at">longer=</span><span class="dv">10</span>)</span>
+<span id="cb300-2"><a href="multi.html#cb300-2" tabindex="-1"></a><span class="fu">summary</span>(m.hup2)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 30001:129901
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3047.146 
+##  DIC: 3047.131 
 ## 
 ##  R-structure:  ~idh(trait):units
 ## 
 ##                   post.mean l-95% CI u-95% CI eff.samp
-## traitart.units       0.3574   0.2556   0.4811    708.9
+## traitart.units       0.3529   0.2429   0.4605    584.9
 ## traithu_art.units    1.0000   1.0000   1.0000      0.0
 ## 
 ##  Location effects: art ~ trait - 1 + trait:(fem + mar + kid5 + phd + ment) 
 ## 
 ##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## traitart                0.342904  0.020018  0.656384    744.2  0.034 *  
-## traithu_art            -0.283081 -0.978961  0.449033   1000.0  0.452    
-## traitart:femWomen      -0.200897 -0.370564 -0.025107   1000.0  0.016 *  
-## traithu_art:femWomen    0.295391 -0.076915  0.660072   1000.0  0.118    
-## traitart:marMarried     0.084553 -0.098330  0.284480    891.4  0.390    
-## traithu_art:marMarried -0.399522 -0.775345  0.042801   1000.0  0.060 .  
-## traitart:kid5          -0.128080 -0.253677 -0.006791   1000.0  0.032 *  
-## traithu_art:kid5        0.348513  0.084561  0.583487   1000.0  0.004 ** 
-## traitart:phd            0.014379 -0.062054  0.102265    744.7  0.746    
-## traithu_art:phd        -0.031943 -0.226316  0.135083    889.3  0.736    
-## traitart:ment           0.019563  0.013140  0.027176   1000.0 &lt;0.001 ***
-## traithu_art:ment       -0.093599 -0.123049 -0.065413    552.1 &lt;0.001 ***
+## traitart                0.336746 -0.003901  0.660538    898.1  0.050 .  
+## traithu_art            -0.286291 -0.937922  0.463449   1000.0  0.410    
+## traitart:femWomen      -0.197487 -0.357091  0.004876   1000.0  0.042 *  
+## traithu_art:femWomen    0.294816 -0.081355  0.623314   1097.5  0.100    
+## traitart:marMarried     0.088297 -0.119298  0.285623   1000.0  0.398    
+## traithu_art:marMarried -0.386799 -0.826199 -0.002998   1000.0  0.056 .  
+## traitart:kid5          -0.130792 -0.259294 -0.003182   1000.0  0.048 *  
+## traithu_art:kid5        0.331153  0.060392  0.591070    801.0  0.016 *  
+## traitart:phd            0.016407 -0.057650  0.100150   1000.0  0.716    
+## traithu_art:phd        -0.031913 -0.217134  0.162858   1000.0  0.756    
+## traitart:ment           0.019494  0.012362  0.026042   1000.0 &lt;0.001 ***
+## traithu_art:ment       -0.092044 -0.119956 -0.061384    578.3 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>However, the fully parameterised model involves almost doubling the number of location parameters. This highlights one of the disadvantages of hurdle models. If zeros do arise through the same process that generate the non-zero counts (either with zero-inflation or not) then the proportion of zero’s observed across a set of explanatory variables will vary if those predictors affect the expectation of the Poisson. It may then be necessary to fit an equally complicated model for both processes even though no additional parameter would be required if the model was fitted as a standard Poisson and a single intercept parameter may suffice in a zero-inflated model if there were excess zeros.</p>
@@ -1574,30 +1566,29 @@ Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisso
 <div id="ZAP" class="section level3 hasAnchor" number="7.7.3">
 <h3><span class="header-section-number">7.7.3</span> Zero-altered Poisson Models<a href="multi.html#ZAP" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>Zero-altered Poisson (ZAP) models are identical to Poisson hurdle models except the second latent variable models the probability of a non-zero (rather than a zero) and the complementary log-log link is used<a href="#fn40" class="footnote-ref" id="fnref40"><sup>40</sup></a>. The motivation behind this is that the standard Poisson can then become a special case of the zero-altered Poisson. With complementary log-log link, the probability of a zero is equal to <span class="math inline">\(exp(-exp(l_2))\)</span>, where <span class="math inline">\(l_2\)</span> is the second latent variable. The probability of obtaining a zero from a Poisson distribution with mean <span class="math inline">\(\lambda\)</span> is <span class="math inline">\(exp(-\lambda)\)</span>. Consequently, in a Poisson GLM with log-link, the probability of a zero is <span class="math inline">\(exp(-exp(l_1))\)</span>, where <span class="math inline">\(l_1\)</span> is the first latent variable. Applying the constraint that <span class="math inline">\(l_1=l_2\)</span> across all observations, the zero-altered Poisson model is equivalent to the standard Poisson. In MCMCglmm, <span class="math inline">\(l_1\)</span> and <span class="math inline">\(l_2\)</span> cannot be constrained to be equal because they must at least differ in their residual, since each ‘trait’ must have a unique residual. Nevertheless, the residuals can be forced to have the same residual (<span class="math inline">\(\texttt{unit}\)</span>) variance, although all of the information comes from the Poisson part.</p>
-<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="multi.html#cb302-1" tabindex="-1"></a>m.zap1 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment, <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units, <span class="at">data =</span> bioChemists,</span>
-<span id="cb302-2"><a href="multi.html#cb302-2" tabindex="-1"></a>    <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>, <span class="at">prior =</span> prior.odp, <span class="at">longer =</span> <span class="dv">10</span>)</span>
-<span id="cb302-3"><a href="multi.html#cb302-3" tabindex="-1"></a><span class="fu">summary</span>(m.zap1)</span></code></pre></div>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="multi.html#cb302-1" tabindex="-1"></a>m.zap1<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(art<span class="sc">~</span>fem<span class="sc">+</span>mar<span class="sc">+</span>kid5<span class="sc">+</span>phd<span class="sc">+</span>ment, <span class="at">rcov=</span><span class="sc">~</span>trait<span class="sc">:</span>units, <span class="at">data=</span>bioChemists, <span class="at">family=</span><span class="st">&quot;zapoisson&quot;</span>, <span class="at">prior=</span>prior.odp, <span class="at">longer=</span><span class="dv">10</span>)</span>
+<span id="cb302-2"><a href="multi.html#cb302-2" tabindex="-1"></a><span class="fu">summary</span>(m.zap1)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 30001:129901
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3033.376 
+##  DIC: 3033.201 
 ## 
 ##  R-structure:  ~trait:units
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp
-## trait:units    0.4221   0.3235   0.5397    551.9
+## trait:units    0.4245   0.3346   0.5382    653.2
 ## 
 ##  Location effects: art ~ fem + mar + kid5 + phd + ment 
 ## 
-##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## (Intercept)   0.09498 -0.15444  0.36050   1000.0  0.478    
-## femWomen     -0.19168 -0.34735 -0.06270   1000.0  0.004 ** 
-## marMarried    0.15026 -0.01676  0.30970   1000.0  0.066 .  
-## kid5         -0.17207 -0.27737 -0.07455    851.9 &lt;0.001 ***
-## phd           0.02810 -0.03254  0.09571   1000.0  0.396    
-## ment          0.02733  0.02081  0.03329   1000.0 &lt;0.001 ***
+##             post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## (Intercept)  0.093893 -0.195988  0.346553   1000.0  0.496    
+## femWomen    -0.201294 -0.333646 -0.054387   1170.3  0.004 ** 
+## marMarried   0.150736  0.002764  0.308497    826.2  0.056 .  
+## kid5        -0.172630 -0.273023 -0.071454    830.2  0.002 ** 
+## phd          0.030223 -0.043338  0.097853    947.7  0.392    
+## ment         0.027010  0.021281  0.033506   1000.0 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>If we plot the coefficients and <span class="math inline">\(\texttt{units}\)</span> variance for this model and compare it to the standard (overdispersed) Poisson we see that the posteriors are in close agreement, for all but the intercept (Figure <a href="multi.html#fig:mzap1">7.26</a>). The difference in intercept presumably arises because of the separate <span class="math inline">\(\txttt{unit}\)</span> effect for the two processes.</p>
@@ -1608,36 +1599,35 @@ Figure 7.26: In red is are the MCMC traces for the fixed effects and $ exttt{uni
 </p>
 </div>
 <p>Consequently, we can test for zero-modification by setting up the contrasts so that the zero-altered regression coefficients are expressed as differences from the Poisson regression coefficients. When this difference is zero the variable causes no zero-modification, when it is negative it causes zero-inflation and when it is positive it causes zero-deflation:</p>
-<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="multi.html#cb304-1" tabindex="-1"></a>m.zap2 <span class="ot">&lt;-</span> <span class="fu">MCMCglmm</span>(art <span class="sc">~</span> trait <span class="sc">*</span> (fem <span class="sc">+</span> mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov =</span> <span class="sc">~</span>trait<span class="sc">:</span>units,</span>
-<span id="cb304-2"><a href="multi.html#cb304-2" tabindex="-1"></a>    <span class="at">data =</span> bioChemists, <span class="at">prior =</span> prior.odp, <span class="at">family =</span> <span class="st">&quot;zapoisson&quot;</span>, <span class="at">longer =</span> <span class="dv">10</span>)</span>
-<span id="cb304-3"><a href="multi.html#cb304-3" tabindex="-1"></a><span class="fu">summary</span>(m.zap2)</span></code></pre></div>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="multi.html#cb304-1" tabindex="-1"></a>m.zap2<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(art<span class="sc">~</span>trait<span class="sc">*</span>(fem <span class="sc">+</span>mar <span class="sc">+</span> kid5 <span class="sc">+</span> phd <span class="sc">+</span> ment), <span class="at">rcov=</span><span class="sc">~</span>trait<span class="sc">:</span>units, <span class="at">data=</span>bioChemists, <span class="at">prior=</span>prior.odp, <span class="at">family=</span><span class="st">&quot;zapoisson&quot;</span>, <span class="at">longer=</span><span class="dv">10</span>)</span>
+<span id="cb304-2"><a href="multi.html#cb304-2" tabindex="-1"></a><span class="fu">summary</span>(m.zap2)</span></code></pre></div>
 <pre><code>## 
 ##  Iterations = 30001:129901
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3039.251 
+##  DIC: 3039.872 
 ## 
 ##  R-structure:  ~trait:units
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp
-## trait:units     0.367   0.2611   0.4843    405.3
+## trait:units    0.3636   0.2551   0.4747    438.3
 ## 
 ##  Location effects: art ~ trait * (fem + mar + kid5 + phd + ment) 
 ## 
 ##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## (Intercept)             0.342282  0.010942  0.652098    817.7  0.030 *  
-## traitza_art            -0.560568 -1.050868 -0.039140    849.4  0.036 *  
-## femWomen               -0.204883 -0.379548 -0.043264   1000.0  0.020 *  
-## marMarried              0.089303 -0.099765  0.300598   1425.1  0.374    
-## kid5                   -0.132702 -0.251958  0.003326   1000.0  0.040 *  
-## phd                     0.014271 -0.065669  0.102145   1000.0  0.752    
-## ment                    0.019411  0.012568  0.026734    898.2 &lt;0.001 ***
-## traitza_art:femWomen    0.041297 -0.223434  0.321874   1000.0  0.802    
-## traitza_art:marMarried  0.145704 -0.162047  0.453230   1000.0  0.364    
-## traitza_art:kid5       -0.075348 -0.260525  0.150291   1211.0  0.436    
-## traitza_art:phd         0.017169 -0.124562  0.138759    904.6  0.802    
-## traitza_art:ment        0.028949  0.013823  0.046897    821.7  0.002 ** 
+## (Intercept)             0.332009 -0.028021  0.654377    869.3  0.070 .  
+## traitza_art            -0.540884 -1.118145 -0.056006    452.2  0.058 .  
+## femWomen               -0.201123 -0.371123 -0.030718   1000.0  0.032 *  
+## marMarried              0.091881 -0.092843  0.279585   1000.0  0.366    
+## kid5                   -0.131154 -0.250644 -0.006522    898.9  0.032 *  
+## phd                     0.016314 -0.065377  0.101470   1000.0  0.696    
+## ment                    0.019394  0.012961  0.026964   1000.0 &lt;0.001 ***
+## traitza_art:femWomen    0.038288 -0.254231  0.303005   1000.0  0.768    
+## traitza_art:marMarried  0.146334 -0.189678  0.430403   1000.0  0.334    
+## traitza_art:kid5       -0.074948 -0.247521  0.116607    969.6  0.446    
+## traitza_art:phd         0.010214 -0.124226  0.144946   1000.0  0.894    
+## traitza_art:ment        0.028568  0.013046  0.045079    830.6  0.002 ** 
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>The credible intervals on the interaction coefficients (including <code>traitza_art</code>) are large and so drawing firm conclusions is hard, although there does seem that the more papers a mentor produces, the more zero-deflation (or conversely the less papers a mentor produces, the more zero-inflation).</p>
@@ -1670,39 +1660,39 @@ where <span class="math inline">\(f_N\)</span> and <span class="math inline">\(F
 <summary>
 here
 </summary>
-<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="#cb250-1" tabindex="-1"></a>condE <span class="ot">&lt;-</span> <span class="cf">function</span>(mu, V, <span class="at">c =</span> <span class="dv">0</span>, <span class="at">greater =</span> <span class="cn">TRUE</span>) {</span>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="#cb250-1" tabindex="-1"></a>condE <span class="ot">&lt;-</span> <span class="cf">function</span>(mu, V, <span class="at">c=</span><span class="dv">0</span>, <span class="at">greater=</span><span class="cn">TRUE</span>) {</span>
 <span id="cb250-2"><a href="#cb250-2" tabindex="-1"></a></span>
-<span id="cb250-3"><a href="#cb250-3" tabindex="-1"></a>    <span class="co"># A bivariate normal with mean vector mu and covariance matrix V is</span></span>
-<span id="cb250-4"><a href="#cb250-4" tabindex="-1"></a>    <span class="co"># assumed.  condE give expectation of 1st variable given 2nd variable is &gt;</span></span>
-<span id="cb250-5"><a href="#cb250-5" tabindex="-1"></a>    <span class="co"># c (greater=TRUE) or &lt; c (greater=FALSE)</span></span>
-<span id="cb250-6"><a href="#cb250-6" tabindex="-1"></a></span>
-<span id="cb250-7"><a href="#cb250-7" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">nrow</span>(V) <span class="sc">!=</span> <span class="fu">ncol</span>(V) <span class="sc">|</span> <span class="fu">nrow</span>(V) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
-<span id="cb250-8"><a href="#cb250-8" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;V should be a 2x2 matrix&quot;</span>)</span>
-<span id="cb250-9"><a href="#cb250-9" tabindex="-1"></a>    }</span>
-<span id="cb250-10"><a href="#cb250-10" tabindex="-1"></a></span>
-<span id="cb250-11"><a href="#cb250-11" tabindex="-1"></a>    <span class="cf">if</span> (<span class="fu">length</span>(mu) <span class="sc">!=</span> <span class="dv">2</span>) {</span>
-<span id="cb250-12"><a href="#cb250-12" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;mu should be length 2&quot;</span>)</span>
-<span id="cb250-13"><a href="#cb250-13" tabindex="-1"></a>    }</span>
-<span id="cb250-14"><a href="#cb250-14" tabindex="-1"></a></span>
-<span id="cb250-15"><a href="#cb250-15" tabindex="-1"></a>    alpha <span class="ot">&lt;-</span> (c <span class="sc">-</span> mu[<span class="dv">2</span>])<span class="sc">/</span><span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>])</span>
-<span id="cb250-16"><a href="#cb250-16" tabindex="-1"></a></span>
-<span id="cb250-17"><a href="#cb250-17" tabindex="-1"></a>    <span class="cf">if</span> (greater) {</span>
-<span id="cb250-18"><a href="#cb250-18" tabindex="-1"></a>        lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(alpha))</span>
-<span id="cb250-19"><a href="#cb250-19" tabindex="-1"></a>        <span class="co"># inverse Mills ratio</span></span>
-<span id="cb250-20"><a href="#cb250-20" tabindex="-1"></a>        expectation <span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">+</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> lambda</span>
-<span id="cb250-21"><a href="#cb250-21" tabindex="-1"></a>    } <span class="cf">else</span> {</span>
-<span id="cb250-22"><a href="#cb250-22" tabindex="-1"></a>        lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span><span class="fu">pnorm</span>(alpha)</span>
-<span id="cb250-23"><a href="#cb250-23" tabindex="-1"></a>        expectation <span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">-</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>, <span class="dv">2</span>]) <span class="sc">*</span> lambda</span>
-<span id="cb250-24"><a href="#cb250-24" tabindex="-1"></a>    }</span>
-<span id="cb250-25"><a href="#cb250-25" tabindex="-1"></a>    <span class="co"># Expectation that E[l|l&gt;0] or E[l|l&lt;0]</span></span>
-<span id="cb250-26"><a href="#cb250-26" tabindex="-1"></a></span>
-<span id="cb250-27"><a href="#cb250-27" tabindex="-1"></a>    expectation <span class="ot">&lt;-</span> mu[<span class="dv">1</span>] <span class="sc">+</span> (expectation <span class="sc">-</span> mu[<span class="dv">2</span>]) <span class="sc">*</span> V[<span class="dv">1</span>, <span class="dv">2</span>]<span class="sc">/</span>V[<span class="dv">2</span>, <span class="dv">2</span>]</span>
-<span id="cb250-28"><a href="#cb250-28" tabindex="-1"></a>    <span class="co"># Expectation of x given l|l&gt;0.</span></span>
-<span id="cb250-29"><a href="#cb250-29" tabindex="-1"></a></span>
-<span id="cb250-30"><a href="#cb250-30" tabindex="-1"></a>    <span class="co"># The whole thing simplifies to mu[1] \pm lambda*V[1,2]/sqrt(V[2,2]) but</span></span>
-<span id="cb250-31"><a href="#cb250-31" tabindex="-1"></a>    <span class="co"># easier to see the logic without the simplification</span></span>
+<span id="cb250-3"><a href="#cb250-3" tabindex="-1"></a>        <span class="co"># A bivariate normal with mean vector mu and covariance matrix V is assumed.</span></span>
+<span id="cb250-4"><a href="#cb250-4" tabindex="-1"></a>        <span class="co"># condE give expectation of 1st variable given 2nd variable is &gt; c (greater=TRUE) or &lt; c (greater=FALSE)</span></span>
+<span id="cb250-5"><a href="#cb250-5" tabindex="-1"></a></span>
+<span id="cb250-6"><a href="#cb250-6" tabindex="-1"></a>        <span class="cf">if</span>(<span class="fu">nrow</span>(V)<span class="sc">!=</span><span class="fu">ncol</span>(V) <span class="sc">|</span> <span class="fu">nrow</span>(V)<span class="sc">!=</span><span class="dv">2</span>){</span>
+<span id="cb250-7"><a href="#cb250-7" tabindex="-1"></a>        <span class="fu">stop</span>(<span class="st">&quot;V should be a 2x2 matrix&quot;</span>)</span>
+<span id="cb250-8"><a href="#cb250-8" tabindex="-1"></a>        }</span>
+<span id="cb250-9"><a href="#cb250-9" tabindex="-1"></a></span>
+<span id="cb250-10"><a href="#cb250-10" tabindex="-1"></a>        <span class="cf">if</span>(<span class="fu">length</span>(mu)<span class="sc">!=</span><span class="dv">2</span>){</span>
+<span id="cb250-11"><a href="#cb250-11" tabindex="-1"></a>            <span class="fu">stop</span>(<span class="st">&quot;mu should be length 2&quot;</span>)</span>
+<span id="cb250-12"><a href="#cb250-12" tabindex="-1"></a>        }</span>
+<span id="cb250-13"><a href="#cb250-13" tabindex="-1"></a></span>
+<span id="cb250-14"><a href="#cb250-14" tabindex="-1"></a>        alpha  <span class="ot">&lt;-</span> (c <span class="sc">-</span> mu[<span class="dv">2</span>]) <span class="sc">/</span><span class="fu">sqrt</span>(V[<span class="dv">2</span>,<span class="dv">2</span>])</span>
+<span id="cb250-15"><a href="#cb250-15" tabindex="-1"></a></span>
+<span id="cb250-16"><a href="#cb250-16" tabindex="-1"></a>        <span class="cf">if</span>(greater){ </span>
+<span id="cb250-17"><a href="#cb250-17" tabindex="-1"></a>            lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span>(<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(alpha))</span>
+<span id="cb250-18"><a href="#cb250-18" tabindex="-1"></a>            <span class="co"># inverse Mills ratio</span></span>
+<span id="cb250-19"><a href="#cb250-19" tabindex="-1"></a>            expectation<span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">+</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>,<span class="dv">2</span>])<span class="sc">*</span>lambda</span>
+<span id="cb250-20"><a href="#cb250-20" tabindex="-1"></a>        }<span class="cf">else</span>{</span>
+<span id="cb250-21"><a href="#cb250-21" tabindex="-1"></a>            lambda <span class="ot">&lt;-</span> <span class="fu">dnorm</span>(alpha)<span class="sc">/</span><span class="fu">pnorm</span>(alpha)</span>
+<span id="cb250-22"><a href="#cb250-22" tabindex="-1"></a>            expectation<span class="ot">&lt;-</span> mu[<span class="dv">2</span>] <span class="sc">-</span> <span class="fu">sqrt</span>(V[<span class="dv">2</span>,<span class="dv">2</span>])<span class="sc">*</span>lambda </span>
+<span id="cb250-23"><a href="#cb250-23" tabindex="-1"></a>        }</span>
+<span id="cb250-24"><a href="#cb250-24" tabindex="-1"></a>        <span class="co"># Expectation that E[l|l&gt;0] or E[l|l&lt;0]</span></span>
+<span id="cb250-25"><a href="#cb250-25" tabindex="-1"></a></span>
+<span id="cb250-26"><a href="#cb250-26" tabindex="-1"></a>        expectation<span class="ot">&lt;-</span>mu[<span class="dv">1</span>]<span class="sc">+</span>(expectation<span class="sc">-</span>mu[<span class="dv">2</span>])<span class="sc">*</span>V[<span class="dv">1</span>,<span class="dv">2</span>]<span class="sc">/</span>V[<span class="dv">2</span>,<span class="dv">2</span>]</span>
+<span id="cb250-27"><a href="#cb250-27" tabindex="-1"></a>        <span class="co"># Expectation of x given l|l&gt;0.</span></span>
+<span id="cb250-28"><a href="#cb250-28" tabindex="-1"></a></span>
+<span id="cb250-29"><a href="#cb250-29" tabindex="-1"></a>        <span class="co"># The whole thing simplifies to </span></span>
+<span id="cb250-30"><a href="#cb250-30" tabindex="-1"></a>        <span class="co"># mu[1] \pm lambda*V[1,2]/sqrt(V[2,2])</span></span>
+<span id="cb250-31"><a href="#cb250-31" tabindex="-1"></a>        <span class="co"># but easier to see the logic without the simplification</span></span>
 <span id="cb250-32"><a href="#cb250-32" tabindex="-1"></a></span>
-<span id="cb250-33"><a href="#cb250-33" tabindex="-1"></a>    <span class="fu">return</span>(expectation)</span>
+<span id="cb250-33"><a href="#cb250-33" tabindex="-1"></a>        <span class="fu">return</span>(expectation)  </span>
 <span id="cb250-34"><a href="#cb250-34" tabindex="-1"></a>}</span></code></pre></div>
 </details>
 <p><br><a href="multi.html#fnref35" class="footnote-back">↩︎</a></p></li>

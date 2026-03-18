@@ -113,9 +113,14 @@ fig:mcmc-zip
 fig:ppzi
 fig:mcmc-hup
 fig:mzap1
+fig:unnamed-chunk-160
+fig:unnamed-chunk-161
+fig:unnamed-chunk-162
 fig:phylo
 fig:phylo2
+fig:unnamed-chunk-177
 fig:tyrant
+fig:unnamed-chunk-180
 fig:funnel
 fig:funnel2
 fig:funnel3
@@ -245,7 +250,8 @@ classical-and-berkson-errors.
 continuous-predictors
 discrete-predictors
 path
-path-anlaysis
+textttpath
+textttsir
 scaling
 technical-details
 model-form
