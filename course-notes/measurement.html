@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-03-18" />
+<meta name="date" content="2026-03-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -765,7 +765,7 @@ but it is instructive to look at the output. For example, if we look at row/colu
 ## outcomeverbal  -0.01107 -0.10693  0.07484     1000  0.788    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>Given an <span class="math inline">\(\alpha\)</span> of 0.05 we expect the estimated variance to be $(1/2Q(1-/2))^{2}=0.065 and we can see the best estimate is lower than this although the credible intervals overlap 0.065. The best estimate of the confidence level can also be obtained:</p>
+<p>Given an <span class="math inline">\(\alpha\)</span> of 0.05 we expect the estimated variance to be <span class="math inline">\((1/2Q(1-\alpha/2))^{2}\)</span>=0.065 and we can see the best estimate is lower than this although the credible intervals overlap 0.065. The best estimate of the confidence level can also be obtained:</p>
 <div class="sourceCode" id="cb385"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb385-1"><a href="measurement.html#cb385-1" tabindex="-1"></a>c<span class="ot">&lt;-</span>m.meta6<span class="sc">$</span>VCV[,<span class="st">&quot;I(u - l).units&quot;</span>]</span>
 <span id="cb385-2"><a href="measurement.html#cb385-2" tabindex="-1"></a>ci<span class="ot">&lt;-</span><span class="dv">2</span><span class="sc">*</span><span class="fu">pnorm</span>(<span class="dv">1</span><span class="sc">/</span>(<span class="dv">2</span><span class="sc">*</span><span class="fu">sqrt</span>(c)))<span class="sc">-</span><span class="dv">1</span></span>
 <span id="cb385-3"><a href="measurement.html#cb385-3" tabindex="-1"></a><span class="fu">plot</span>(ci)</span></code></pre></div>

@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-03-18" />
+<meta name="date" content="2026-03-19" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -390,7 +390,8 @@ div.csl-indent {
             <section class="normal" id="section-">
 <div id="path" class="section level1 hasAnchor" number="10">
 <h1><span class="header-section-number">10</span> Path Analysis<a href="path.html#path" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>In previous chapters, variables could be neatly divided into predictor variables and a response variable (or variables, in the multi-response models covered in Chapter <a href="multi.html#multi">7</a>). However, sometimes we may want to allow observations of a response variable to serve as predictors for other observations. The <span class="math inline">\(\texttt{sir}\)</span> function can be used to specify linear dependencies between elements of the response that are arbitrarily complex in their pattern. However, the <span class="math inline">\(\texttt{sir}\)</span> function is hard to use and can only be used for Gaussian responses without missing values. The simpler <span class="math inline">\(\texttt{path}\)</span> function only allows dependencies to exist between observations within a residual block but missing values and non-Gaussian repose variables are permitted. However, it is important to realise that when the response is non-Gaussian, dependencies are defined at the level of the latent variable, not the observation.</p>
+<p>In previous chapters, variables could be neatly divided into predictor variables and a response variable (or variables, in the multi-response models covered in Chapter <a href="multi.html#multi">7</a>). However, sometimes we may want to allow observations of a response variable to serve as predictors for other observations. The <span class="math inline">\(\texttt{sir}\)</span> function can be used to specify linear dependencies between elements of the response that are arbitrarily complex in their pattern. However, the <span class="math inline">\(\texttt{sir}\)</span> function is hard to use and can only be used for Gaussian responses without missing values. The simpler <span class="math inline">\(\texttt{path}\)</span> function only allows dependencies to exist between observations within a residual block but non-Gaussian repose variables are permitted. However, it is important to realise that when the response is non-Gaussian, dependencies are defined at the level of the latent variable, not the observation.</p>
+<p>Before discussing these models it will be useful to determine if they are indeed required, as very often they can be set up as a standard multivariate analysis without <span class="math inline">\(\texttt{path}\)</span>/<span class="math inline">\(\texttt{sir}\)</span> terms or even a series of univariate analyses.</p>
 <div id="textttpath" class="section level2 hasAnchor" number="10.1">
 <h2><span class="header-section-number">10.1</span> <span class="math inline">\(\texttt{path}\)</span><a href="path.html#textttpath" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <div class="sourceCode" id="cb386"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb386-1"><a href="path.html#cb386-1" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
