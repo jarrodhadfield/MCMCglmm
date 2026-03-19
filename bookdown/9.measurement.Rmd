@@ -317,7 +317,7 @@ m.meta6<-MCMCglmm(yi~outcome, random=~idh(I(u-l)):units, data=dat.kalaian1996, p
 summary(m.meta6)
 ``` 
 
-Given an $\alpha$ of 0.05 we expect the estimated variance to be $(1/2Q(1-\alpha/2))^{2}=`r round((1/(2*qnorm(1-0.05/2)))^2,3)` and we can see the best estimate is lower than this although the credible intervals overlap `r round((1/(2*qnorm(1-0.05/2)))^2,3)`. The best estimate of the confidence level can also be obtained:
+Given an $\alpha$ of 0.05 we expect the estimated variance to be $(1/2Q(1-\alpha/2))^{2}$=`r round((1/(2*qnorm(1-0.05/2)))^2,3)` and we can see the best estimate is lower than this although the credible intervals overlap `r round((1/(2*qnorm(1-0.05/2)))^2,3)`. The best estimate of the confidence level can also be obtained:
 
 ```{r }
 c<-m.meta6$VCV[,"I(u - l).units"]

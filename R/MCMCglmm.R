@@ -885,7 +885,14 @@ if(grepl("path\\(", fixed.text)){
  if(nadded>0){stop("observations in residual blocks must be complete")}
  path.terms<-close.bracket("path\\(", fixed.text)
  path.terms<-as.formula(paste("~", paste(apply(path.terms,1,function(x){substr(fixed.text, x[1], x[2])}), collapse="+"), "-1"))
- fixed.text<-gsub("(\\+|\\-) path\\(.*\\)", "", fixed.text)  # remove path analytic terms
+ fixed.text <- gsub("^[[:space:]]*path\\([^)]*\\)[[:space:]]*([+-][[:space:]]*)?", "", fixed.text)
+ # remove path analytic terms at start
+ fixed.text <- gsub("[+-][[:space:]]*path\\([^)]*\\)", "", fixed.text)
+ # remove path analytic terms in the middle or end
+ if(nchar(fixed.text)==0){
+   fixed.text<-"1" # add intercept if only path terms fitted.
+ }
+
 }else{
  path.terms<-NULL
 }
