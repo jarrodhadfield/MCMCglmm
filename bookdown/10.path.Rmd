@@ -2,7 +2,7 @@
 
 In previous chapters, variables could be neatly divided into predictor variables and a response variable (or variables, in the multi-response models covered in Chapter \@ref(multi)). However, sometimes we may want to allow observations of a response variable to serve as predictors for other observations. The $\texttt{sir}$ function can be used to specify linear dependencies between elements of the response that are arbitrarily complex in their pattern. However, the $\texttt{sir}$ function is hard to use and can only be used for Gaussian responses without missing values. The simpler $\texttt{path}$ function only allows dependencies to exist between observations within a residual block but non-Gaussian repose variables are permitted. However, it is important to realise that when the response is non-Gaussian, dependencies are defined at the level of the latent variable, not the observation.    
 
-Before discussing these models it will be useful to determine if they are indeed required, as very often they can be set up as a standard multivariate analysis without $\texttt{path}$/$\texttt{sir}$ terms or even a series of univariate analyses.  
+Before discussing these models it will be useful to determine if they are indeed required, as very often they can be set up as a standard multivariate analysis without $\texttt{path}$/$\texttt{sir}$ terms or even a series of univariate analyses.  .
 
 
 ## $\texttt{path}$
