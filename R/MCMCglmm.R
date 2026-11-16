@@ -143,6 +143,7 @@ if(is.null(ginverse)==FALSE){
   if(any(na.omit(unique(data[,names(ginverse)[i]]))%in%rownames(ginverse[[i]])==FALSE)){stop(paste("some levels of", names(ginverse)[i], "do not have a row entry in ginverse"))}
   if(any(duplicated(rownames(ginverse[[i]])))){stop(paste("rownames of ", names(ginverse)[i], "ginverse must be unique"))}
   if(determinant(ginverse[[i]])$sign<=0){stop(paste(names(ginverse)[i], "ginverse is not positive definite"))}
+  if(class(ginverse[[i]])!="dgCMatrix"){stop(paste(names(ginverse)[i], "ginverse should be of class dgCMatrix"))}
   data[,names(ginverse)[i]]<-factor(data[,names(ginverse)[i]], levels=rownames(ginverse[[i]]))                        
   }
 }
