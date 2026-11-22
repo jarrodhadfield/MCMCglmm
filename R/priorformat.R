@@ -1,4 +1,17 @@
-priorformat<-function(prior, start, nfl, meta, residual, vtype){
+## format an error message reporting expected and observed dimensions
+dim_msg<-function(msg, expected, observed){
+  sprintf("%s (expected %s, observed %s)", msg,
+          paste(expected, collapse=" x "), paste(observed, collapse=" x "))
+}
+
+priorformat<-function(prior, start, nfl, meta, residual, vtype, index=NA, term=NULL){
+
+       ## labels identifying this structure in error messages, e.g. "prior$G[[2]] (term 'animal')"
+       gr<-if(residual==0){"G"}else{"R"}
+       gr_index<-if(residual==0){index}else{residual}
+       tlab<-if(is.null(term)){""}else{sprintf(" (term '%s')", term)}
+       plab<-sprintf("prior$%s[[%s]]%s", gr, gr_index, tlab)
+       slab<-sprintf("start$%s[[%s]]%s", gr, gr_index, tlab)
 
        if(is.null(prior)){
           prior<-list(V=diag(sum(nfl)), nu=0, fix=as.numeric(meta))
@@ -19,13 +32,13 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
          prior<-resolve_prior(prior, k=sum(nfl), vtype=vtype[1])
        }
        if(is.null(prior$V)){
-         stop("V not specified for some prior$G/prior$R elements")
+         stop(paste0("V not specified for ", plab))
        }
        if(is.matrix(prior$V)==FALSE){
           prior$V<-as.matrix(prior$V)
        }
        if(!is.null(prior$alpha.mu) & residual!=0){
-          stop("Parameter expanded priors not implemented for residual structures")
+          stop(paste0("Parameter expanded priors not implemented for residual structures: ", plab))
        }
        if(is.null(prior$covu)){
          prior$covu<-FALSE
@@ -48,7 +61,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
          }
        }
        if(grepl("ante.*v$", vtype[1])){
-           if(!is.null(prior$alpha.V)){stop("parameter expanded priors not yet possible with antev structures -  nag j.hadfield@ed.ac.uk")}
+           if(!is.null(prior$alpha.V)){stop(paste0("parameter expanded priors not yet possible with antev structures - nag j.hadfield@ed.ac.uk: ", plab))}
            if(nrow(prior$V)!=1){stop("prior$V should be a scalar with antev structures")}
            prior$V<-diag(nfl)*as.numeric(prior$V)
        }
@@ -64,12 +77,12 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
            if(vtype=="idvm" & nrow(prior$V)==1 & ncol(prior$V)==1){
               prior$V<-diag(prior$V[1,1], sum(nfl))
            }else{ 
-              stop("V is the wrong dimension for some prior$G/prior$R elements")
+              stop(dim_msg(paste0("V is the wrong dimension for ", plab), rep(sum(nfl), 2), dim(prior$V)))
            }
          }
        }
        if(is.positive.definite(prior$V)==FALSE){
-         stop("V is not positive definite for some prior$G/prior$R elements")
+         stop(paste0("V is not positive definite for ", plab))
        }
        if(is.null(prior$alpha.V)){
           prior$alpha.V<-prior$V*0
@@ -78,10 +91,10 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
            prior$alpha.V<-as.matrix(prior$alpha.V)
          }
          if(any(dim(prior$alpha.V)!=dim(prior$V))){
-           stop("alpha.V is the wrong dimension for some prior$G/prior$R elements")
+           stop(dim_msg(paste0("alpha.V is the wrong dimension for ", plab), dim(prior$V), dim(prior$alpha.V)))
          }
          if(is.positive.definite(prior$alpha.V)==FALSE & all(prior$alpha.V==0)==FALSE){
-           stop("alpha.V is not positive definite for some prior$G/prior$R elements")
+           stop(paste0("alpha.V is not positive definite for ", plab))
          }
        } 
        if(is.null(prior$alpha.mu)){
@@ -91,7 +104,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
            prior$alpha.mu<-matrix(prior$alpha.mu, length(prior$alpha.mu), 1)
          }
          if(length(prior$alpha.mu)!=nrow(prior$alpha.V)){
-           stop("alpha.mu is the wrong length for some prior$G/prior$R elements")
+           stop(dim_msg(paste0("alpha.mu is the wrong length for ", plab), nrow(prior$alpha.V), length(prior$alpha.mu)))
          }
        }
        if(grepl("ante", vtype[1])){
@@ -100,7 +113,7 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
            nk<-nk*(nfl-(nk+1)/2)
          }
          if(!is.null(prior$beta.mu)){
-           if(length(prior$beta.mu)!=nk){stop("beta.mu is the wrong length for some prior$G/prior$R elements")}
+           if(length(prior$beta.mu)!=nk){stop(dim_msg(paste0("beta.mu is the wrong length for ", plab), nk, length(prior$beta.mu)))}
          }else{
            prior$beta.mu<-rep(0,nk)
          }
@@ -108,15 +121,15 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
            if(is.matrix(prior$beta.V)==FALSE){
              prior$beta.V<-as.matrix(prior$beta.V)
            }
-           if(nrow(prior$beta.V)!=ncol(prior$beta.V)){stop("beta.V is not square for some prior$G/prior$R elements")}
-           if(!is.positive.definite(prior$beta.V)){stop("beta.V is not positive-deifinite for some prior$G/prior$R elements")}
-           if(length(prior$beta.mu)!=nrow(prior$beta.V)){stop("beta.V is the wrong length for some prior$G/prior$R elements")}
+           if(nrow(prior$beta.V)!=ncol(prior$beta.V)){stop(sprintf("beta.V is not square for %s (observed %s)", plab, paste(dim(prior$beta.V), collapse=" x ")))}
+           if(!is.positive.definite(prior$beta.V)){stop(paste0("beta.V is not positive definite for ", plab))}
+           if(length(prior$beta.mu)!=nrow(prior$beta.V)){stop(dim_msg(paste0("beta.V is the wrong dimension for ", plab), rep(length(prior$beta.mu), 2), dim(prior$beta.V)))}
          }else{
            prior$beta.V<-diag(nk)*1e+10
          }
        }
        if(vtype[1]=="idvm" & nfl[1]>1){
-          if(!prior$alpha.V[1,1]==0){stop("parameter expanded priors not yet possible with idvm structures -  nag j.hadfield@ed.ac.uk")}
+          if(!prior$alpha.V[1,1]==0){stop(paste0("parameter expanded priors not yet possible with idvm structures - nag j.hadfield@ed.ac.uk: ", plab))}
           if(var(diag(prior$V))>0){stop("for idvm structures all diagonal elements of V should be the same")}
           if(prior$fix<2){         # either not fixed or not updated.
             prior$nu<-prior$nu/nfl # need to spread prior over all informative component.
@@ -128,20 +141,20 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
          CM<-prior$V[prior$fix:nrow(prior$V),prior$fix:nrow(prior$V)]         
          if(prior$fix!=1){
            if(is.null(prior$nu)){
-             stop("nu not specified for some prior$G/prior$R elements")
+             stop(paste0("nu not specified for ", plab))
            }
            if(length(prior$nu)!=1){
-             stop("nu in prior should be a scalar")
+             stop(paste("nu in", plab, "should be a scalar"))
            }
          }else{
            prior$nu=1
          }
        }else{
          if(is.null(prior$nu)){
-           stop("nu not specified for some prior$G/prior$R elements")
+           stop(paste0("nu not specified for ", plab))
          }
          if(length(prior$nu)!=1){
-           stop("nu in prior should be a scalar")
+           stop(paste("nu in", plab, "should be a scalar"))
          }
        }
      
@@ -156,10 +169,10 @@ priorformat<-function(prior, start, nfl, meta, residual, vtype){
            start<-as.matrix(start)
          }
          if(any(dim(start)!=sum(nfl)) ){
-           stop("V is the wrong dimension for some start$G/start$R elements")
+           stop(dim_msg(paste0("V is the wrong dimension for ", slab), rep(sum(nfl), 2), dim(start)))
          }
          if(is.positive.definite(start)==FALSE){
-           stop(paste("some start$G/start$R structures are not positive definite"))
+           stop(paste(slab, "is not positive definite"))
          }
        }
 

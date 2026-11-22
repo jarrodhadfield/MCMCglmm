@@ -702,7 +702,7 @@ for(r in 1:length(rmodel.terms)){
      }
    }
 
-   GRtmp<-priorformat(prior=if(NOpriorG){NULL}else{prior$G[[r]]},start=if(NOstartG){NULL}else{start$G[[r]]}, nfl=Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), residual=0, vtype=Zlist$vtype)
+   GRtmp<-priorformat(prior=if(NOpriorG){NULL}else{prior$G[[r]]},start=if(NOstartG){NULL}else{start$G[[r]]}, nfl=Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), residual=0, vtype=Zlist$vtype, index=r, term=rmodel.terms[r])
 
    if(r==1){
      Z<-Zlist$Z
@@ -721,7 +721,7 @@ for(r in 1:length(rmodel.terms)){
      ZR<-cbind(ZR, Zlist$Z)     
    }
 
-   GRtmp<-priorformat(prior=if(NOpriorG){NULL}else{prior$R[[r-ngstructures]]},start=if(NOstartG){NULL}else{start$R[[r-ngstructures]]}, nfl=Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), residual=r-ngstructures, vtype=Zlist$vtype)
+   GRtmp<-priorformat(prior=if(NOpriorG){NULL}else{prior$R[[r-ngstructures]]},start=if(NOstartG){NULL}else{start$R[[r-ngstructures]]}, nfl=Zlist$nfl, meta=any(grepl("MCMC_meta", rmodel.terms[r])), residual=r-ngstructures, vtype=Zlist$vtype, term=rmodel.terms[r])
 
    if(r==(ngstructures+1) & covu>0){
      beta_rr<-t(solve(GRtmp$start[[1]]$start[1:covu, 1:covu, drop=FALSE], GRtmp$start[[1]]$start[1:covu, (covu+1):Zlist$nfl, drop=FALSE]))+1e-16
@@ -871,7 +871,7 @@ if(is.null(tune$mh_V)){
   }
   for(i in 1:nR){
     tune$mh_V[[i]]<-as.matrix(tune$mh_V[[i]])
-    if(dim(tune$mh_V[[i]])[1]!= dim(tune$mh_V[[i]])[2] |  dim(tune$mh_V[[i]])[2]!= nfl[nG+i]){stop(paste("proposal distribution ", i, " is the wrong dimension"))}
+    if(dim(tune$mh_V[[i]])[1]!= dim(tune$mh_V[[i]])[2] |  dim(tune$mh_V[[i]])[2]!= nfl[nG+i]){stop(dim_msg(paste0("proposal distribution ", i, " is the wrong dimension"), rep(nfl[nG+i], 2), dim(tune$mh_V[[i]])))}
     if(is.positive.definite(tune$mh_V[[i]])==FALSE){stop(paste("proposal distribution ", i, " is not positive definite"))}
   }
 }	
@@ -937,7 +937,7 @@ if(sir | !is.null(path.terms)){  # Do structural parameters exist?
    if(any(family.names=="threshold")){stop("path models are not implemented for threshold responses")}
    if(sum(ncutpoints)>0){stop("path models are not implemented for ordinal responses with >2 categories")}
    L<-as(model.matrix(path.terms), "sparseMatrix")
-   if(nrow(L)!=nfl[nG+1]){stop("path design matrix is the wrong dimension; perhaps k is wrong")}
+   if(nrow(L)!=nfl[nG+1]){stop(sprintf("path design matrix is the wrong dimension; perhaps k is wrong (expected %d rows, observed %d)", nfl[nG+1], nrow(L)))}
    Lnames<-attr(terms(path.terms), "term.labels")
   }
   nL<-dim(L)[2]/dim(L)[1]  # number of structural parameters
@@ -1112,8 +1112,8 @@ if(is.null(prior$B)){
    prior$B$V<-as.matrix(prior$B$V)
   }	
   if(is.positive.definite(prior$B$V)==FALSE){stop("fixed effect V prior is not positive definite")}
-  if((dim(X)[2]+nL)!=dim(prior$B$mu)[1]){stop("fixed effect mu prior is the wrong dimension")}
-  if((dim(X)[2]+nL)!=dim(prior$B$V)[1] | (dim(X)[2]+nL)!=dim(prior$B$V)[2]){stop("fixed effect V prior is the wrong dimension")}
+  if((dim(X)[2]+nL)!=dim(prior$B$mu)[1]){stop(dim_msg("fixed effect mu prior is the wrong dimension", dim(X)[2]+nL, dim(prior$B$mu)[1]))}
+  if((dim(X)[2]+nL)!=dim(prior$B$V)[1] | (dim(X)[2]+nL)!=dim(prior$B$V)[2]){stop(dim_msg("fixed effect V prior is the wrong dimension", rep(dim(X)[2]+nL, 2), dim(prior$B$V)))}
   if(nL>0){
     if(any(prior$B$V[pL,-pL, drop=FALSE]!=0)){stop("sorry - sir effects and classic fixed effects have to be independent a priori")}
     prior$L$mu<-prior$B$mu[pL,1, drop=FALSE]
