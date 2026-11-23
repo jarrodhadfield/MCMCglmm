@@ -118,9 +118,9 @@ fig:unnamed-chunk-161
 fig:unnamed-chunk-162
 fig:phylo
 fig:phylo2
-fig:unnamed-chunk-177
+fig:unnamed-chunk-176
 fig:tyrant
-fig:unnamed-chunk-180
+fig:unnamed-chunk-179
 fig:funnel
 fig:funnel2
 fig:funnel3

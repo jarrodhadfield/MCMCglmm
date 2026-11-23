@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>7 Multi-response Models | MCMCglmm Course Notes</title>
   <meta name="description" content="Extended documentation and course notes for the MCMCglmm R package." />
-  <meta name="generator" content="bookdown 0.46 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.48 and GitBook 2.6.7" />
 
   <meta property="og:title" content="7 Multi-response Models | MCMCglmm Course Notes" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="Jarrod Hadfield" />
 
 
-<meta name="date" content="2026-04-16" />
+<meta name="date" content="2026-11-23" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -81,8 +81,9 @@
 
 
 <style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -154,6 +155,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging div.csl-entry {
   margin-left:2em;
@@ -361,7 +363,7 @@ div.csl-indent {
 <li class="chapter" data-level="11.2" data-path="technical-details.html"><a href="technical-details.html#MCMC-app"><i class="fa fa-check"></i><b>11.2</b> MCMC Sampling Schemes</a>
 <ul>
 <li class="chapter" data-level="11.2.1" data-path="technical-details.html"><a href="technical-details.html#updating-the-latent-variables-bf-l"><i class="fa fa-check"></i><b>11.2.1</b> Updating the latent variables <span class="math inline">\({\bf l}\)</span></a></li>
-<li class="chapter" data-level="11.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>11.2.2</b> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} = \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
+<li class="chapter" data-level="11.2.2" data-path="technical-details.html"><a href="technical-details.html#updating-the-location-vector-boldsymboltheta-leftboldsymbolmathbfbeta-bf-uright"><i class="fa fa-check"></i><b>11.2.2</b> Updating the location vector <span class="math inline">\(\boldsymbol{\theta} =  \left[{\boldsymbol{\mathbf{\beta}}}^{&#39;}\; {\bf u}^{&#39;}\right]^{&#39;}\)</span></a></li>
 <li class="chapter" data-level="11.2.3" data-path="technical-details.html"><a href="technical-details.html#updating-the-variance-structures-bf-g-and-bf-r"><i class="fa fa-check"></i><b>11.2.3</b> Updating the variance structures <span class="math inline">\({\bf G}\)</span> and <span class="math inline">\({\bf R}\)</span></a></li>
 <li class="chapter" data-level="11.2.4" data-path="technical-details.html"><a href="technical-details.html#ordinal-models"><i class="fa fa-check"></i><b>11.2.4</b> Ordinal Models</a></li>
 <li class="chapter" data-level="11.2.5" data-path="technical-details.html"><a href="technical-details.html#path-analyses"><i class="fa fa-check"></i><b>11.2.5</b> Path Analyses</a></li>
@@ -593,33 +595,33 @@ Figure 7.3: MCMC trace plot of the coefficient from a regression of car spending
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 4334.148 
+##  DIC: 4333.337 
 ## 
 ##  G-structure:  ~us(trait):id
 ## 
 ##                              post.mean l-95% CI u-95% CI eff.samp
-## traitbili:traitbili.id          1.0280   0.8500   1.2151   1083.8
-## traitascites:traitbili.id       0.6469   0.4518   0.8578   1000.0
-## traitbili:traitascites.id       0.6469   0.4518   0.8578   1000.0
-## traitascites:traitascites.id    0.8709   0.5241   1.2564    836.7
+## traitbili:traitbili.id          1.0228   0.8562   1.2032   1000.0
+## traitascites:traitbili.id       0.6460   0.4501   0.8427    859.9
+## traitbili:traitascites.id       0.6460   0.4501   0.8427    859.9
+## traitascites:traitascites.id    0.8852   0.5309   1.3394    720.9
 ## 
 ##  R-structure:  ~us(trait):units
 ## 
 ##                                 post.mean l-95% CI u-95% CI eff.samp
-## traitbili:traitbili.units          0.3201   0.2980   0.3429     1000
-## traitascites:traitbili.units       0.2670   0.2195   0.3185     1000
-## traitbili:traitascites.units       0.2670   0.2195   0.3185     1000
-## traitascites:traitascites.units    1.0000   1.0000   1.0000        0
+## traitbili:traitbili.units          0.3201   0.2969   0.3398    973.2
+## traitascites:traitbili.units       0.2676   0.2227   0.3106   1000.0
+## traitbili:traitascites.units       0.2676   0.2227   0.3106   1000.0
+## traitascites:traitascites.units    1.0000   1.0000   1.0000      0.0
 ## 
 ##  Location effects: cbind(log(bili), ascites) ~ trait - 1 + trait:(age + sex) 
 ## 
 ##                   post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## traitbili          1.390059  0.692547  2.063199   1000.0  0.002 ** 
-## traitascites      -3.043868 -4.005294 -2.017199   1000.0 &lt;0.001 ***
-## traitbili:age     -0.004398 -0.015013  0.006118    897.8  0.438    
-## traitascites:age   0.027481  0.012166  0.042823   1000.0  0.002 ** 
-## traitbili:sexf    -0.450712 -0.832682 -0.099044   1000.0  0.020 *  
-## traitascites:sexf  0.028799 -0.431070  0.546919   1000.0  0.930    
+## traitbili          1.395366  0.747660  2.100108   1000.0 &lt;0.001 ***
+## traitascites      -3.095051 -4.094514 -2.040510   1000.0 &lt;0.001 ***
+## traitbili:age     -0.004424 -0.014724  0.007124   1000.0  0.432    
+## traitascites:age   0.028135  0.010494  0.042789   1000.0 &lt;0.001 ***
+## traitbili:sexf    -0.453421 -0.851558 -0.080078   1000.0  0.022 *  
+## traitascites:sexf  0.043083 -0.403744  0.546423    887.2  0.876    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>We can see that the covariance between the traits is strongly positive both across and within patients. Patients with constitutively high concentrations of bilirunbin are prone to ascites, and periods when a patient has high concentrations of bilirunbin they are more prone to ascites. Looking at the correlations can give a better feel for the magnitude of the associations.</p>
@@ -640,8 +642,8 @@ Figure 7.5: MCMC trace plot of the coefficient from a probit regression of ascit
 <div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="multi.html#cb248-1" tabindex="-1"></a>preg.id<span class="ot">&lt;-</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitascites.id&quot;</span>]<span class="sc">/</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitbili.id&quot;</span>]</span>
 <span id="cb248-2"><a href="multi.html#cb248-2" tabindex="-1"></a>preg.units<span class="ot">&lt;-</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitascites.units&quot;</span>]<span class="sc">/</span>m.pbc1<span class="sc">$</span>VCV[,<span class="st">&quot;traitbili:traitbili.units&quot;</span>]</span>
 <span id="cb248-3"><a href="multi.html#cb248-3" tabindex="-1"></a><span class="fu">HPDinterval</span>(preg.units<span class="sc">-</span>preg.id)</span></code></pre></div>
-<pre><code>##            lower     upper
-## var1 -0.02286305 0.4562448
+<pre><code>##           lower     upper
+## var1 -0.0281524 0.4291309
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>The 95% credible interval overlaps zero, just.</p>
@@ -685,28 +687,28 @@ Figure 7.7: MCMC trace plot of the regression coefficient of log serum concentra
 ##  G-structure:  ~us(trait):id
 ## 
 ##                              post.mean l-95% CI u-95% CI eff.samp
-## traithepato:traithepato.id      1.8985   1.3595    2.526     1000
-## traitascites:traithepato.id     0.9391   0.6284    1.311     1000
-## traithepato:traitascites.id     0.9391   0.6284    1.311     1000
-## traitascites:traitascites.id    1.0110   0.6128    1.457     1000
+## traithepato:traithepato.id      1.9056   1.3559    2.528    891.9
+## traitascites:traithepato.id     0.9577   0.6094    1.288   1000.0
+## traithepato:traitascites.id     0.9577   0.6094    1.288   1000.0
+## traitascites:traitascites.id    1.0120   0.5644    1.480    897.1
 ## 
 ##  R-structure:  ~corg(trait):units
 ## 
 ##                                 post.mean l-95% CI u-95% CI eff.samp
-## traithepato:traithepato.units      1.0000  1.00000   1.0000      0.0
-## traitascites:traithepato.units     0.2394  0.07852   0.4175    903.7
-## traithepato:traitascites.units     0.2394  0.07852   0.4175    903.7
-## traitascites:traitascites.units    1.0000  1.00000   1.0000      0.0
+## traithepato:traithepato.units      1.0000  1.00000   1.0000        0
+## traitascites:traithepato.units     0.2384  0.06046   0.3829     1000
+## traithepato:traitascites.units     0.2384  0.06046   0.3829     1000
+## traitascites:traitascites.units    1.0000  1.00000   1.0000        0
 ## 
 ##  Location effects: cbind(hepato, ascites) ~ trait - 1 + trait:(age + sex) 
 ## 
 ##                   post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## traithepato        0.402183 -0.792992  1.505713    872.8  0.478    
-## traitascites      -3.023644 -4.031956 -1.912948   1000.0 &lt;0.001 ***
-## traithepato:age    0.006753 -0.010265  0.024141    878.4  0.490    
-## traitascites:age   0.023952  0.006669  0.038642   1000.0 &lt;0.001 ***
-## traithepato:sexf  -0.580279 -1.153023  0.015449   1000.0  0.056 .  
-## traitascites:sexf  0.109574 -0.382191  0.659287   1000.0  0.720    
+## traithepato        0.379496 -0.705219  1.497153     1000  0.482    
+## traitascites      -3.031100 -4.030307 -1.887718     1000 &lt;0.001 ***
+## traithepato:age    0.006933 -0.009162  0.025142     1000  0.430    
+## traitascites:age   0.023777  0.008087  0.039459     1067  0.002 ** 
+## traithepato:sexf  -0.566339 -1.125436  0.014022     1000  0.048 *  
+## traitascites:sexf  0.128622 -0.426557  0.589269     1000  0.604    
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>If we wish, we can also characterise the relationship in terms of a contingency table. The model defines a multivariate normal distribution of latent variables around the fixed-effect prediction, and the probability of falling in any of the four quadrants defined by the origin can be calculated. We can imagine a population of individuals all of which have the same expected latent variables (the weighted average of the male and female means at the average age, where the weights are the frequencies of males and females in the data frame):</p>
@@ -752,8 +754,8 @@ Figure 7.8: Representation of a bivariate Bernoulli model. The solid point repre
 <p>We don’t expect the predicted probabilities to perfectly match what is observed since the data are unbalanced (individuals vary in how many times they are observed) and individuals vary in their sex and age but our prediction is for a population of individuals that are in some way average. Nevertheless, the predicted probabilities are close:</p>
 <div class="sourceCode" id="cb259"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb259-1"><a href="multi.html#cb259-1" tabindex="-1"></a>P</span></code></pre></div>
 <pre><code>##           [,1]       [,2]
-## [1,] 0.4321614 0.01520272
-## [2,] 0.4589253 0.09371065</code></pre>
+## [1,] 0.4329356 0.01486599
+## [2,] 0.4580096 0.09418884</code></pre>
 </div>
 </div>
 <div id="sec-longwide" class="section level2 hasAnchor" number="7.3">
@@ -808,7 +810,7 @@ Figure 7.8: Representation of a bivariate Bernoulli model. The solid point repre
 ##  Thinning interval  = 10
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3890.091 
+##  DIC: 3890.141 
 ## 
 ##  G-structure:  ~us(at.level(trait, &quot;bili&quot;)):id
 ## 
@@ -817,31 +819,31 @@ Figure 7.8: Representation of a bivariate Bernoulli model. The solid point repre
 ##  R-structure:  ~us(at.level(trait, &quot;status&quot;)):id
 ## 
 ##                                                           post.mean l-95% CI
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id        1.0526   0.8665
-## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id      0.6843   0.5586
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id      0.6843   0.5586
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id        1.0470   0.8735
+## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id      0.6824   0.5577
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id      0.6824   0.5577
 ## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;status&quot;).id    1.0000   1.0000
 ##                                                           u-95% CI eff.samp
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id       1.2296   1000.0
-## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id     0.8056    900.8
-## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id     0.8056    900.8
-## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;status&quot;).id   1.0000      0.0
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;bili&quot;).id       1.2276     1000
+## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;bili&quot;).id     0.7998     1000
+## at.level(trait, &quot;bili&quot;).id:at.level(trait, &quot;status&quot;).id     0.7998     1000
+## at.level(trait, &quot;status&quot;).id:at.level(trait, &quot;status&quot;).id   1.0000        0
 ## 
 ##                ~us(at.level(trait, &quot;bili&quot;)):units
 ## 
 ##                                                       post.mean l-95% CI
-## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units    0.3181   0.2966
+## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units    0.3191   0.2976
 ##                                                       u-95% CI eff.samp
-## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units   0.3392     1000
+## at.level(trait, &quot;bili&quot;):at.level(trait, &quot;bili&quot;).units   0.3418    896.7
 ## 
 ##  Location effects: y ~ trait - 1 + at.level(trait, &quot;bili&quot;):(age + sex) - 1 + at.level(trait, &quot;status&quot;):sex 
 ## 
 ##                                post.mean  l-95% CI  u-95% CI eff.samp  pMCMC
-## traitbili                       2.200768  1.510415  2.858600   1000.0 &lt;0.001
-## traitstatus                    -0.202017 -0.363184 -0.060197    911.2  0.010
-## at.level(trait, &quot;bili&quot;):age    -0.018561 -0.028616 -0.008165   1000.0 &lt;0.001
-## at.level(trait, &quot;bili&quot;):sexf   -0.560530 -0.974695 -0.201330   1000.0  0.002
-## sexm:at.level(trait, &quot;status&quot;)  0.717815  0.289289  1.185448   1000.0 &lt;0.001
+## traitbili                       2.215247  1.462566  2.827789     1000 &lt;0.001
+## traitstatus                    -0.199805 -0.351322 -0.057165     1000  0.006
+## at.level(trait, &quot;bili&quot;):age    -0.018799 -0.027733 -0.006899     1000 &lt;0.001
+## at.level(trait, &quot;bili&quot;):sexf   -0.563475 -0.892161 -0.182209     1243  0.002
+## sexm:at.level(trait, &quot;status&quot;)  0.727511  0.235838  1.112661     1000 &lt;0.001
 ##                                   
 ## traitbili                      ***
 ## traitstatus                    ** 
@@ -958,16 +960,16 @@ SandLance
 Capelin
 </td>
 <td style="text-align:left;">
-73.70 [17.46-155.58]
+72.16 [15.04-160.44]
 </td>
 <td style="text-align:left;">
-0.09 [-0.38-0.58]
+0.09 [-0.41-0.53]
 </td>
 <td style="text-align:left;">
-0.23 [-0.21-0.71]
+0.21 [-0.29-0.66]
 </td>
 <td style="text-align:left;">
--0.14 [-0.55-0.34]
+-0.13 [-0.55-0.31]
 </td>
 </tr>
 <tr>
@@ -975,16 +977,16 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
-4.06 [-22.30-34.93]
+4.01 [-20.04-32.48]
 </td>
 <td style="text-align:left;">
-37.63 [9.17-82.47]
+36.87 [8.78-72.90]
 </td>
 <td style="text-align:left;">
--0.16 [-0.55-0.33]
+-0.14 [-0.59-0.32]
 </td>
 <td style="text-align:left;">
-0.36 [-0.03-0.73]
+0.35 [-0.05-0.70]
 </td>
 </tr>
 <tr>
@@ -992,16 +994,16 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
-7.10 [-7.95-29.48]
+6.77 [-11.89-25.54]
 </td>
 <td style="text-align:left;">
--3.52 [-15.62-7.27]
+-2.96 [-15.31-8.45]
 </td>
 <td style="text-align:left;">
-12.91 [3.65-25.38]
+12.96 [4.10-27.19]
 </td>
 <td style="text-align:left;">
--0.23 [-0.62-0.20]
+-0.22 [-0.62-0.21]
 </td>
 </tr>
 <tr>
@@ -1009,16 +1011,16 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
--5.02 [-22.75-13.27]
+-4.62 [-20.57-14.97]
 </td>
 <td style="text-align:left;">
-9.23 [-1.94-25.83]
+9.06 [-3.23-21.88]
 </td>
 <td style="text-align:left;">
--3.40 [-11.26-2.55]
+-3.30 [-10.53-3.92]
 </td>
 <td style="text-align:left;">
-17.01 [6.12-30.69]
+17.32 [5.78-31.47]
 </td>
 </tr>
 <tr grouplength="4">
@@ -1031,16 +1033,16 @@ SandLance
 Capelin
 </td>
 <td style="text-align:left;">
-65.79 [25.13-115.29]
+65.04 [27.37-112.69]
 </td>
 <td style="text-align:left;">
--0.14 [-0.55-0.30]
+-0.15 [-0.55-0.23]
 </td>
 <td style="text-align:left;">
--0.04 [-0.51-0.53]
+-0.06 [-0.58-0.46]
 </td>
 <td style="text-align:left;">
--0.03 [-0.45-0.39]
+-0.04 [-0.48-0.38]
 </td>
 </tr>
 <tr>
@@ -1048,16 +1050,16 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
--4.24 [-19.31-9.92]
+-4.93 [-18.59-8.98]
 </td>
 <td style="text-align:left;">
-16.96 [8.44-26.08]
+17.87 [8.66-28.29]
 </td>
 <td style="text-align:left;">
--0.00 [-0.49-0.44]
+0.04 [-0.42-0.51]
 </td>
 <td style="text-align:left;">
-0.68 [0.49-0.84]
+0.68 [0.50-0.85]
 </td>
 </tr>
 <tr>
@@ -1065,16 +1067,16 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
--0.42 [-9.44-9.01]
+-0.76 [-9.64-9.71]
 </td>
 <td style="text-align:left;">
-0.10 [-3.53-4.33]
+0.52 [-3.29-5.24]
 </td>
 <td style="text-align:left;">
-4.33 [1.77-7.07]
+4.45 [1.99-7.65]
 </td>
 <td style="text-align:left;">
-0.03 [-0.42-0.50]
+0.06 [-0.46-0.54]
 </td>
 </tr>
 <tr>
@@ -1082,16 +1084,16 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
--0.77 [-15.71-13.58]
+-1.18 [-14.98-14.01]
 </td>
 <td style="text-align:left;">
-11.25 [5.35-18.40]
+11.64 [4.14-19.39]
 </td>
 <td style="text-align:left;">
-0.40 [-3.57-4.26]
+0.65 [-3.77-5.20]
 </td>
 <td style="text-align:left;">
-15.93 [8.95-24.26]
+15.96 [9.01-25.67]
 </td>
 </tr>
 </tbody>
@@ -1156,7 +1158,7 @@ VAR(u^{(\texttt{C-O})})=&amp;VAR(u^{(\texttt{C})})+VAR(u^{(\texttt{O})})-2COV(u^
 <p>Even if the abundance of Capelin and <span class="math inline">\(\texttt{Other}\)</span> are independent across years, the variance in the log-odds depends on the year variance of both categories: <span class="math inline">\(VAR(u^{(\texttt{C})})+VAR(u^{(\texttt{O})})\)</span>.</p>
 <p>When we fitted multi-response models previously we naturally assumed that a diagonal covariance matrix somehow represents a null - the two traits are independent of each other. However, the above results suggest that we may need to modify our null when thinking about multinomial models. If we think that the log abundances of different prey items are independent across years but have the same yearly variation, then our null for the covariance matrix of multinomial year effects would have <span class="math inline">\(2\sigma^2_{u}\)</span> along the diagonal and <span class="math inline">\(\sigma^2_{u}\)</span> on the off-diagonals. Looking at the estimates when we fitted a fully unstructured covariance matrix for the year effects (Table <a href="multi.html#tab:puffin">7.1</a>) suggest this model may not perform that well. While the between-year variances have large credible intervals, and so a common variance of around 20 may not be too bad, a common covariance of 10 (correlation of 0.5) looks too large. Nevertheless, we can fit this model and assess the fit. We can represent the covariance structure of the year effects in this model as <span class="math inline">\({\bf V}_{\texttt{year}} = \sigma^2_{u}({\bf I}+{\bf J})\)</span> where <span class="math inline">\({\bf I}\)</span> and <span class="math inline">\({\bf J}\)</span> are <span class="math inline">\(4\times 4\)</span> identity and unit matrices, respectively<a href="#fn38" class="footnote-ref" id="fnref38"><sup>38</sup></a>. To fit a year covariance matrix of this form we can use an <span class="math inline">\(\texttt{idv}\)</span> variance structure with model formula <code>trait+at.set(trait, 1:(K-1))</code><a href="#fn39" class="footnote-ref" id="fnref39"><sup>39</sup></a>:</p>
 <div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="multi.html#cb278-1" tabindex="-1"></a>m.tuftedb<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(<span class="fu">cbind</span>(Capelin, Herring, Pollock, SandLance, Other)<span class="sc">~</span>trait<span class="dv">-1</span>, <span class="at">data=</span>tufted_puffin, <span class="at">random=</span><span class="sc">~</span><span class="fu">idv</span>(<span class="sc">~</span>trait<span class="sc">+</span><span class="fu">at.set</span>(trait, <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>))<span class="sc">:</span>year, <span class="at">rcov=</span><span class="sc">~</span><span class="fu">us</span>(trait)<span class="sc">:</span>units, <span class="at">family=</span><span class="st">&quot;multinomial&quot;</span>, <span class="at">longer=</span><span class="dv">20</span>, <span class="at">prior=</span>prior.tufted, <span class="at">pr=</span><span class="cn">TRUE</span>)</span></code></pre></div>
-<p>The posterior mean and 95% credible interval of <span class="math inline">\(\sigma^2_u\)</span> is 13.19 [7.94-19.57]. In the fully unstructured model (<span class="math inline">\(\texttt{m.tufted}\)</span>) the average of the four between-year variances halved was 17.66 and the average of the six between-year covariances was 2.55 (see Table <a href="multi.html#tab:puffin">7.1</a>). The estimate of <span class="math inline">\(\sigma^2_u\)</span> can be seen as a compromise estimate of these ten parameters. To assess whether this simpler model does a good job at capturing the differences between years we can decide on a suitable metric and compare the metric calculated on the observed data with that calculated on posterior predictive simulations. One possible metric would be to calculate the mean proportions of Capelin, Herring, Pollock and Sand lance across samples for each year and then take the variance in these year means for each prey item or the correlation between year means for pairs of prey items. Relating this metric to the parameters of the model is not straight forward since the sample means for each year will, in part, reflect between sample variability, particularly in years where replication is low. In addition, the model works with log-probabilities, yet the described metric works with raw proportions since these are often zero and logging isn’t an option. Despite the metric’s limitations, I would still expect it to reveal major problems with the specified year effects.</p>
+<p>The posterior mean and 95% credible interval of <span class="math inline">\(\sigma^2_u\)</span> is 13.08 [7.04-19.35]. In the fully unstructured model (<span class="math inline">\(\texttt{m.tufted}\)</span>) the average of the four between-year variances halved was 17.41 and the average of the six between-year covariances was 2.54 (see Table <a href="multi.html#tab:puffin">7.1</a>). The estimate of <span class="math inline">\(\sigma^2_u\)</span> can be seen as a compromise estimate of these ten parameters. To assess whether this simpler model does a good job at capturing the differences between years we can decide on a suitable metric and compare the metric calculated on the observed data with that calculated on posterior predictive simulations. One possible metric would be to calculate the mean proportions of Capelin, Herring, Pollock and Sand lance across samples for each year and then take the variance in these year means for each prey item or the correlation between year means for pairs of prey items. Relating this metric to the parameters of the model is not straight forward since the sample means for each year will, in part, reflect between sample variability, particularly in years where replication is low. In addition, the model works with log-probabilities, yet the described metric works with raw proportions since these are often zero and logging isn’t an option. Despite the metric’s limitations, I would still expect it to reveal major problems with the specified year effects.</p>
 <div class="figure"><span style="display:block;" id="fig:tufted-sim3"></span>
 <img src="_bookdown_files/fig/tufted-sim3-1.png" alt="The mean proportion of each prey item across samples in a given year were calculated for one thousand posterior predictive simulations from model $\texttt{m.tuftedb}$. This histograms represent the posterior predictive distributions for the variances of the yearly means (diagonal) or the correlations in yearly means between prey items. The red lines are the values calculated from the data." width="864" />
 <p class="caption">
@@ -1192,13 +1194,13 @@ u-95% CI
 Capelin
 </td>
 <td style="text-align:right;">
-58.98
+59.08
 </td>
 <td style="text-align:right;">
-11.34
+13.49
 </td>
 <td style="text-align:right;">
-134.65
+132.70
 </td>
 </tr>
 <tr>
@@ -1206,13 +1208,13 @@ Capelin
 Herring
 </td>
 <td style="text-align:right;">
-28.10
+30.85
 </td>
 <td style="text-align:right;">
-7.70
+5.74
 </td>
 <td style="text-align:right;">
-57.05
+64.69
 </td>
 </tr>
 <tr>
@@ -1220,13 +1222,13 @@ Herring
 Pollock
 </td>
 <td style="text-align:right;">
-10.96
+11.11
 </td>
 <td style="text-align:right;">
-1.89
+3.09
 </td>
 <td style="text-align:right;">
-22.17
+23.82
 </td>
 </tr>
 <tr>
@@ -1234,13 +1236,13 @@ Pollock
 SandLance
 </td>
 <td style="text-align:right;">
-14.21
+13.86
 </td>
 <td style="text-align:right;">
-3.70
+4.32
 </td>
 <td style="text-align:right;">
-26.65
+25.08
 </td>
 </tr>
 <tr>
@@ -1248,13 +1250,13 @@ SandLance
 Other
 </td>
 <td style="text-align:right;">
-1.35
+1.29
 </td>
 <td style="text-align:right;">
 0.00
 </td>
 <td style="text-align:right;">
-4.46
+4.43
 </td>
 </tr>
 </tbody>
@@ -1291,10 +1293,10 @@ units
 Capelin
 </td>
 <td style="text-align:left;">
-68.14 [15.38-151.53]
+75.54 [14.58-163.17]
 </td>
 <td style="text-align:left;">
-77.44 [32.96-126.39]
+83.07 [33.80-148.31]
 </td>
 </tr>
 <tr>
@@ -1302,10 +1304,10 @@ Capelin
 Herring
 </td>
 <td style="text-align:left;">
-33.78 [8.89-74.79]
+31.96 [8.09-67.75]
 </td>
 <td style="text-align:left;">
-11.12 [5.05-17.50]
+10.84 [5.53-17.00]
 </td>
 </tr>
 <tr>
@@ -1313,10 +1315,10 @@ Herring
 Pollock
 </td>
 <td style="text-align:left;">
-12.82 [2.80-26.37]
+13.18 [2.81-28.23]
 </td>
 <td style="text-align:left;">
-4.21 [0.56-7.92]
+4.03 [1.05-7.27]
 </td>
 </tr>
 <tr>
@@ -1324,10 +1326,10 @@ Pollock
 SandLance
 </td>
 <td style="text-align:left;">
-13.35 [3.95-26.65]
+12.90 [3.53-24.59]
 </td>
 <td style="text-align:left;">
-9.91 [5.42-15.20]
+9.67 [4.94-14.79]
 </td>
 </tr>
 <tr>
@@ -1335,10 +1337,10 @@ SandLance
 Other
 </td>
 <td style="text-align:left;">
-1.57 [0.00-5.55]
+1.50 [0.00-5.29]
 </td>
 <td style="text-align:left;">
-3.23 [0.00-6.22]
+3.12 [0.00-6.29]
 </td>
 </tr>
 </tbody>
@@ -1415,35 +1417,27 @@ V_{\texttt{units}} =\left[
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3021.529 
+##  DIC: 3008.353 
 ## 
 ##  R-structure:  ~idh(trait):units
 ## 
 ##                   post.mean l-95% CI u-95% CI eff.samp
-## traitart.units       0.3972   0.2951   0.4904    353.8
-## traitzi_art.units    1.0000   1.0000   1.0000      0.0
+## traitart.units       0.4116   0.3237   0.5166      747
+## traitzi_art.units    1.0000   1.0000   1.0000        0
 ## 
 ##  Location effects: art ~ trait - 1 + at.level(trait, 1):(fem + mar + kid5 + phd + ment) 
 ## 
-##                                post.mean   l-95% CI   u-95% CI eff.samp  pMCMC
-## traitart                       -0.169215  -0.443890   0.117923   649.77  0.238
-## traitzi_art                    -7.719087 -14.715896  -2.610300     2.53 &lt;0.001
-## at.level(trait, 1):femMen       0.204749   0.064065   0.342074  1171.70  0.004
-## at.level(trait, 1):marMarried   0.151521  -0.006506   0.328658  1000.00  0.074
-## at.level(trait, 1):kid5        -0.177760  -0.285810  -0.077662  1000.00  0.002
-## at.level(trait, 1):phd          0.027820  -0.054340   0.090490  1122.33  0.458
-## at.level(trait, 1):ment         0.027788   0.021779   0.033844  1000.00 &lt;0.001
-##                                  
-## traitart                         
-## traitzi_art                   ***
-## at.level(trait, 1):femMen     ** 
-## at.level(trait, 1):marMarried .  
-## at.level(trait, 1):kid5       ** 
-## at.level(trait, 1):phd           
-## at.level(trait, 1):ment       ***
+##                               post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
+## traitart                       -0.20030  -0.46919   0.09327 1000.000  0.170    
+## traitzi_art                   -14.48987 -19.07056  -7.56796    1.754 &lt;0.001 ***
+## at.level(trait, 1):femMen       0.20338   0.06003   0.34190 1123.993  0.002 ** 
+## at.level(trait, 1):marMarried   0.15551  -0.00225   0.32862 1000.000  0.068 .  
+## at.level(trait, 1):kid5        -0.17428  -0.27521  -0.06740 1000.000  0.002 ** 
+## at.level(trait, 1):phd          0.03031  -0.04270   0.10263 1000.000  0.422    
+## at.level(trait, 1):ment         0.02817   0.02169   0.03460 1000.000 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p>The first ‘trait’ has the same name as the response (<span class="math inline">\(\texttt{art}\)</span> in this example) and is the latent variable for the Poisson process. The second ‘trait’ is the latent variable for the zero-inflation and has the same name as the response prefixed by <span class="math inline">\(\texttt{zi_}\)</span> (<span class="math inline">\(\texttt{zi_art}\)</span>). We can see that there is good evidence for overdispersion: the <span class="math inline">\(\texttt{units}\)</span> variance for the Poisson process (<span class="math inline">\(\texttt{traitart.units}\)</span>) is far from zero and several of the covariates seem to impact the Poisson mean. However, note that the log odds of a zero belonging to the zero-inflation process is extremely small (-7.72) - essentially a probability of zero - and the mixing is very poor for this parameter which has a very low effective sample size. We can see this visually by looking at the MCMC traces from the model (Figure <a href="multi.html#fig:mcmc-zip">7.23</a>).</p>
+<p>The first ‘trait’ has the same name as the response (<span class="math inline">\(\texttt{art}\)</span> in this example) and is the latent variable for the Poisson process. The second ‘trait’ is the latent variable for the zero-inflation and has the same name as the response prefixed by <span class="math inline">\(\texttt{zi_}\)</span> (<span class="math inline">\(\texttt{zi_art}\)</span>). We can see that there is good evidence for overdispersion: the <span class="math inline">\(\texttt{units}\)</span> variance for the Poisson process (<span class="math inline">\(\texttt{traitart.units}\)</span>) is far from zero and several of the covariates seem to impact the Poisson mean. However, note that the log odds of a zero belonging to the zero-inflation process is extremely small (-14.49) - essentially a probability of zero - and the mixing is very poor for this parameter which has a very low effective sample size. We can see this visually by looking at the MCMC traces from the model (Figure <a href="multi.html#fig:mcmc-zip">7.23</a>).</p>
 <div class="figure"><span style="display:block;" id="fig:mcmc-zip"></span>
 <img src="_bookdown_files/fig/mcmc-zip-1.png" alt="MCMC traces for the first four fixed effects from the zero-inflated Poisson model `m.zip` in which trait 1 ($\texttt{art}$) is the Poisson process and trait 2 ($\texttt{zi.art}$) is the zero-inflation." width="672" />
 <p class="caption">
@@ -1481,24 +1475,24 @@ Figure 7.24: Posterior predictive distribution from an (overdispersed) Poisson m
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3106.443 
+##  DIC: 3106.674 
 ## 
 ##  R-structure:  ~idh(trait):units
 ## 
 ##                   post.mean l-95% CI u-95% CI eff.samp
-## traitart.units       0.3555   0.2485   0.4669    630.4
+## traitart.units       0.3566   0.2514   0.4791    736.3
 ## traithu_art.units    1.0000   1.0000   1.0000      0.0
 ## 
 ##  Location effects: art ~ trait - 1 + at.level(trait, 1):(fem + mar + kid5 + phd + ment) 
 ## 
 ##                               post.mean l-95% CI u-95% CI eff.samp  pMCMC    
-## traitart                        0.14783 -0.15160  0.46039    763.7  0.384    
-## traithu_art                    -1.01029 -1.16686 -0.81848   1000.0 &lt;0.001 ***
-## at.level(trait, 1):femMen       0.20113  0.02404  0.36258   1000.0  0.008 ** 
-## at.level(trait, 1):marMarried   0.08908 -0.08282  0.29976   1000.0  0.346    
-## at.level(trait, 1):kid5        -0.13458 -0.27209 -0.01632   1000.0  0.038 *  
-## at.level(trait, 1):phd          0.01341 -0.06609  0.09980    744.7  0.760    
-## at.level(trait, 1):ment         0.01956  0.01239  0.02649   1000.0 &lt;0.001 ***
+## traitart                        0.14624 -0.20165  0.45034    830.7  0.380    
+## traithu_art                    -1.01794 -1.17475 -0.85133    903.1 &lt;0.001 ***
+## at.level(trait, 1):femMen       0.19998  0.03088  0.36234   1000.0  0.026 *  
+## at.level(trait, 1):marMarried   0.08337 -0.10776  0.27348   1000.0  0.440    
+## at.level(trait, 1):kid5        -0.12925 -0.26418 -0.01775   1000.0  0.040 *  
+## at.level(trait, 1):phd          0.01448 -0.06979  0.09668   1000.0  0.744    
+## at.level(trait, 1):ment         0.01943  0.01226  0.02637    690.0 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Compared to the zero-inflated traces plotted in Figure <a href="multi.html#fig:mcmc-zip">7.23</a> the equivalent parameters in the hurdle model show better mixing (Figure <a href="multi.html#fig:mcmc-hup">7.25</a>).</p>
@@ -1512,7 +1506,7 @@ Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisso
 <div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="multi.html#cb294-1" tabindex="-1"></a>c2<span class="ot">&lt;-</span>(<span class="dv">16</span><span class="sc">*</span><span class="fu">sqrt</span>(<span class="dv">3</span>)<span class="sc">/</span>(<span class="dv">15</span><span class="sc">*</span>pi))<span class="sc">^</span><span class="dv">2</span></span>
 <span id="cb294-2"><a href="multi.html#cb294-2" tabindex="-1"></a><span class="fu">HPDinterval</span>(<span class="fu">plogis</span>(m.hup<span class="sc">$</span>Sol[,<span class="st">&quot;traithu_art&quot;</span>]<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">1</span><span class="sc">+</span>c2))) </span></code></pre></div>
 <pre><code>##          lower     upper
-## var1 0.2657294 0.3283723
+## var1 0.2664669 0.3243533
 ## attr(,&quot;Probability&quot;)
 ## [1] 0.95</code></pre>
 <p>While this is consistent with the overall frequency of zeros in the data set it is unclear whether it is consistent with the observed frequency of zeros across different groups of students. For example, the frequency of zero’s is perhaps lower in men than women and increases with the number of children under 5 (there is only one observation for a women with 3 children under 5).</p>
@@ -1525,9 +1519,9 @@ Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisso
 <span id="cb298-2"><a href="multi.html#cb298-2" tabindex="-1"></a>ysim<span class="ot">&lt;-</span><span class="fu">apply</span>(ysim, <span class="dv">1</span>, sum)<span class="sc">/</span><span class="dv">1000</span></span>
 <span id="cb298-3"><a href="multi.html#cb298-3" tabindex="-1"></a></span>
 <span id="cb298-4"><a href="multi.html#cb298-4" tabindex="-1"></a><span class="fu">tapply</span>(ysim, <span class="fu">list</span>(bioChemists<span class="sc">$</span>fem, bioChemists<span class="sc">$</span>kid5), mean)</span></code></pre></div>
-<pre><code>##               0         1         2      3
-## Men   0.2475814 0.2734820 0.3222439 0.4166
-## Women 0.3200704 0.3479821 0.3827826 0.4160</code></pre>
+<pre><code>##               0         1         2         3
+## Men   0.2471163 0.2722878 0.3239390 0.4174667
+## Women 0.3193402 0.3460179 0.3803913 0.4420000</code></pre>
 <p>which largely recapitulates what is seen in the data. We can relax the assumption of a fixed proportion of zeros by fitting the same predictors for the zero-modified process</p>
 <div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="multi.html#cb300-1" tabindex="-1"></a>m.hup2<span class="ot">&lt;-</span><span class="fu">MCMCglmm</span>(art<span class="sc">~</span>trait<span class="dv">-1</span><span class="sc">+</span>trait<span class="sc">:</span>(fem<span class="sc">+</span>mar<span class="sc">+</span>kid5<span class="sc">+</span>phd<span class="sc">+</span>ment), <span class="at">rcov=</span><span class="sc">~</span><span class="fu">idh</span>(trait)<span class="sc">:</span>units, <span class="at">data=</span>bioChemists, <span class="at">prior=</span>prior.zip, <span class="at">family=</span><span class="st">&quot;hupoisson&quot;</span>, <span class="at">longer=</span><span class="dv">10</span>)</span>
 <span id="cb300-2"><a href="multi.html#cb300-2" tabindex="-1"></a><span class="fu">summary</span>(m.hup2)</span></code></pre></div>
@@ -1536,29 +1530,29 @@ Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisso
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3047.131 
+##  DIC: 3046.95 
 ## 
 ##  R-structure:  ~idh(trait):units
 ## 
 ##                   post.mean l-95% CI u-95% CI eff.samp
-## traitart.units       0.3529   0.2429   0.4605    584.9
-## traithu_art.units    1.0000   1.0000   1.0000      0.0
+## traitart.units        0.353   0.2517   0.4677    651.8
+## traithu_art.units     1.000   1.0000   1.0000      0.0
 ## 
 ##  Location effects: art ~ trait - 1 + trait:(fem + mar + kid5 + phd + ment) 
 ## 
 ##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## traitart                0.336746 -0.003901  0.660538    898.1  0.050 .  
-## traithu_art            -0.286291 -0.937922  0.463449   1000.0  0.410    
-## traitart:femWomen      -0.197487 -0.357091  0.004876   1000.0  0.042 *  
-## traithu_art:femWomen    0.294816 -0.081355  0.623314   1097.5  0.100    
-## traitart:marMarried     0.088297 -0.119298  0.285623   1000.0  0.398    
-## traithu_art:marMarried -0.386799 -0.826199 -0.002998   1000.0  0.056 .  
-## traitart:kid5          -0.130792 -0.259294 -0.003182   1000.0  0.048 *  
-## traithu_art:kid5        0.331153  0.060392  0.591070    801.0  0.016 *  
-## traitart:phd            0.016407 -0.057650  0.100150   1000.0  0.716    
-## traithu_art:phd        -0.031913 -0.217134  0.162858   1000.0  0.756    
-## traitart:ment           0.019494  0.012362  0.026042   1000.0 &lt;0.001 ***
-## traithu_art:ment       -0.092044 -0.119956 -0.061384    578.3 &lt;0.001 ***
+## traitart                0.345645  0.008664  0.664375   1000.0  0.050 .  
+## traithu_art            -0.294075 -0.978307  0.359903   1000.0  0.410    
+## traitart:femWomen      -0.202474 -0.373295 -0.020149   1194.7  0.032 *  
+## traithu_art:femWomen    0.296395 -0.049450  0.628045    888.3  0.114    
+## traitart:marMarried     0.091851 -0.106710  0.273286   1000.0  0.334    
+## traithu_art:marMarried -0.386214 -0.805478  0.020149   1000.0  0.076 .  
+## traitart:kid5          -0.131468 -0.246346  0.013122   1000.0  0.050 *  
+## traithu_art:kid5        0.337230  0.099120  0.585381   1000.0  0.012 *  
+## traitart:phd            0.013411 -0.067362  0.097047   1000.0  0.764    
+## traithu_art:phd        -0.029399 -0.210653  0.157350   1000.0  0.766    
+## traitart:ment           0.019619  0.012535  0.026434   1000.0 &lt;0.001 ***
+## traithu_art:ment       -0.092763 -0.120750 -0.063624    539.3 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>However, the fully parameterised model involves almost doubling the number of location parameters. This highlights one of the disadvantages of hurdle models. If zeros do arise through the same process that generate the non-zero counts (either with zero-inflation or not) then the proportion of zero’s observed across a set of explanatory variables will vary if those predictors affect the expectation of the Poisson. It may then be necessary to fit an equally complicated model for both processes even though no additional parameter would be required if the model was fitted as a standard Poisson and a single intercept parameter may suffice in a zero-inflated model if there were excess zeros.</p>
@@ -1573,22 +1567,22 @@ Figure 7.25: MCMC traces for the first four fixed effects from the hurdle Poisso
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3033.201 
+##  DIC: 3033.116 
 ## 
 ##  R-structure:  ~trait:units
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp
-## trait:units    0.4245   0.3346   0.5382    653.2
+## trait:units    0.4257   0.3196   0.5286      649
 ## 
 ##  Location effects: art ~ fem + mar + kid5 + phd + ment 
 ## 
-##             post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## (Intercept)  0.093893 -0.195988  0.346553   1000.0  0.496    
-## femWomen    -0.201294 -0.333646 -0.054387   1170.3  0.004 ** 
-## marMarried   0.150736  0.002764  0.308497    826.2  0.056 .  
-## kid5        -0.172630 -0.273023 -0.071454    830.2  0.002 ** 
-## phd          0.030223 -0.043338  0.097853    947.7  0.392    
-## ment         0.027010  0.021281  0.033506   1000.0 &lt;0.001 ***
+##             post.mean l-95% CI u-95% CI eff.samp  pMCMC    
+## (Intercept)   0.09004 -0.16681  0.35855   1000.0  0.462    
+## femWomen     -0.19285 -0.33060 -0.05666   1121.9  0.006 ** 
+## marMarried    0.15026 -0.02655  0.30550   1051.3  0.080 .  
+## kid5         -0.17151 -0.26473 -0.07279   1000.0 &lt;0.001 ***
+## phd           0.02998 -0.02964  0.10146   1000.0  0.378    
+## ment          0.02741  0.02059  0.03332    940.5 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>If we plot the coefficients and <span class="math inline">\(\texttt{units}\)</span> variance for this model and compare it to the standard (overdispersed) Poisson we see that the posteriors are in close agreement, for all but the intercept (Figure <a href="multi.html#fig:mzap1">7.26</a>). The difference in intercept presumably arises because of the separate <span class="math inline">\(\txttt{unit}\)</span> effect for the two processes.</p>
@@ -1606,28 +1600,28 @@ Figure 7.26: In red is are the MCMC traces for the fixed effects and $ exttt{uni
 ##  Thinning interval  = 100
 ##  Sample size  = 1000 
 ## 
-##  DIC: 3039.872 
+##  DIC: 3039.899 
 ## 
 ##  R-structure:  ~trait:units
 ## 
 ##             post.mean l-95% CI u-95% CI eff.samp
-## trait:units    0.3636   0.2551   0.4747    438.3
+## trait:units    0.3631   0.2515   0.4813    413.8
 ## 
 ##  Location effects: art ~ trait * (fem + mar + kid5 + phd + ment) 
 ## 
 ##                        post.mean  l-95% CI  u-95% CI eff.samp  pMCMC    
-## (Intercept)             0.332009 -0.028021  0.654377    869.3  0.070 .  
-## traitza_art            -0.540884 -1.118145 -0.056006    452.2  0.058 .  
-## femWomen               -0.201123 -0.371123 -0.030718   1000.0  0.032 *  
-## marMarried              0.091881 -0.092843  0.279585   1000.0  0.366    
-## kid5                   -0.131154 -0.250644 -0.006522    898.9  0.032 *  
-## phd                     0.016314 -0.065377  0.101470   1000.0  0.696    
-## ment                    0.019394  0.012961  0.026964   1000.0 &lt;0.001 ***
-## traitza_art:femWomen    0.038288 -0.254231  0.303005   1000.0  0.768    
-## traitza_art:marMarried  0.146334 -0.189678  0.430403   1000.0  0.334    
-## traitza_art:kid5       -0.074948 -0.247521  0.116607    969.6  0.446    
-## traitza_art:phd         0.010214 -0.124226  0.144946   1000.0  0.894    
-## traitza_art:ment        0.028568  0.013046  0.045079    830.6  0.002 ** 
+## (Intercept)             0.334956  0.029707  0.662956   1000.0  0.046 *  
+## traitza_art            -0.550037 -1.102477 -0.022889   1000.0  0.050 *  
+## femWomen               -0.196439 -0.381632 -0.036124   1000.0  0.030 *  
+## marMarried              0.086580 -0.107308  0.257925   1000.0  0.346    
+## kid5                   -0.129811 -0.261332 -0.009393   1000.0  0.038 *  
+## phd                     0.015284 -0.065505  0.097989   1161.8  0.714    
+## ment                    0.019513  0.012087  0.026325   1095.0 &lt;0.001 ***
+## traitza_art:femWomen    0.028349 -0.258299  0.317898   1000.0  0.842    
+## traitza_art:marMarried  0.148764 -0.180367  0.428231    846.1  0.332    
+## traitza_art:kid5       -0.075824 -0.271205  0.121177   1000.0  0.464    
+## traitza_art:phd         0.014126 -0.117230  0.149192   1000.0  0.844    
+## traitza_art:ment        0.028890  0.013807  0.047489    703.9 &lt;0.001 ***
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>The credible intervals on the interaction coefficients (including <code>traitza_art</code>) are large and so drawing firm conclusions is hard, although there does seem that the more papers a mentor produces, the more zero-deflation (or conversely the less papers a mentor produces, the more zero-inflation).</p>

@@ -72,12 +72,12 @@ bayesm it is inconsistent with the prior definition for
 [`MCMCglmm`](https://jarrodhadfield.github.io/MCMCglmm/reference/MCMCglmm.md).
 The following pieces of code are sampling from the same distributions:
 
-|                                                                                  |                       |
-|----------------------------------------------------------------------------------|-----------------------|
-| `riwish(nu, nu*V)`                                                               | from MCMCpack         |
-| [`rwishart`](https://rdrr.io/pkg/bayesm/man/rwishart.html)`(nu, solve(nu*V))$IW` | from bayesm           |
-| `rIW(nu, solve(nu*V))`                                                           | from MCMCglmm \<1.11  |
-| `rIW(V, nu)`                                                                     | from MCMCglmm \>=1.11 |
+|  |  |
+|----|----|
+| `riwish(nu, nu*V)` | from MCMCpack |
+| [`rwishart`](https://rdrr.io/pkg/bayesm/man/rwishart.html)`(nu, solve(nu*V))$IW` | from bayesm |
+| `rIW(nu, solve(nu*V))` | from MCMCglmm \<1.11 |
+| `rIW(V, nu)` | from MCMCglmm \>=1.11 |
 
 ## Author
 
