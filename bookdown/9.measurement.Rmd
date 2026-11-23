@@ -236,7 +236,7 @@ inverse.cor<-function(v, r){
 ivi<-tapply(dat.kalaian1996$vi, dat.kalaian1996$study, inverse.cor, r=0.66)
 # for each study create the inverse measurement error covariance matrix
 
-ivi<-bdiag(ivi)
+ivi<-as(bdiag(ivi), "generalMatrix")
 # turn the list of matrices into a sparse block diagonal
 
 idx.after.sort <- order(dat.kalaian1996$study, seq_along(dat.kalaian1996$study))
