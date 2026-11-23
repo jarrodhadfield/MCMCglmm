@@ -104,7 +104,7 @@ Very slight differences exist because the prior specifications are not exactly e
 Phylogenies can also be expressed in tabular form, although only two columns are required because for each species we only need to record a single 'parent' - an immediate ancestor of that species. In general, however, phylogenies are stored as bifurcating trees and I have stuck with convention and used the `phylo` class from the `ape` package to store phylogenies. To illustrate, we can use the phylogeny of the world's birds available through the package $\texttt{clootl}$:
 
 ```{r }
-bird.tree<-clootl::extractTree(taxonomy_year="2021")
+bird.tree<-clootl::extractTree()
 ```
 
 ```{r, echo=FALSE, results = "hide"}
@@ -126,7 +126,7 @@ Each tip (on the right) corresponds to an extant (or recently extinct) species. 
 We can, if we wish, extract the phylogeny in tabular form. Let's do this for a subset of species: Siberian Thrush (*Geokichla sibirica*), Blue tit (*Cyanistes caeruleus*), Tufted Puffin (*Fratercula cirrhata*), Common Crane (*Grus grus*) and Bean Goose (*Anser fabalis*). 
 
 ```{r }
-my.species<-c("Geokichla_sibirica", "Cyanistes_caeruleus", "Fratercula_cirrhata", "Grus_grus", "Anser_fabalis") 
+my.species<-c("Geokichla sibirica", "Cyanistes caeruleus", "Fratercula cirrhata", "Grus grus", "Anser fabalis") 
 mini.phylo <- drop.tip(bird.tree, setdiff(bird.tree$tip.label, my.species))
 ```
 
@@ -167,7 +167,7 @@ round(A.mini.phylo,3)
 
 ``` {r echo=FALSE}
 A.mini.phylo<-solve(Ainv.mini.phylo$Ainv)
-rownames(A.mini.phylo)<-colnames(A.mini.phylo)<-substr(gsub("[a-z]*_", "_", colnames(A.mini.phylo)),1,5)
+rownames(A.mini.phylo)<-colnames(A.mini.phylo)<-substr(gsub("[a-z]* ", " ", colnames(A.mini.phylo)),1,5)
 round(A.mini.phylo,3)
 ```
 
@@ -179,20 +179,13 @@ The AVONET data-base, available through the package $\texttt{PNC}$, contains inf
 bird.data<-PNC::AVONET
 ```
 
-As with pedigrees, all species appearing in $\texttt{data}$ need to appear in the phylogeny. Typically, this will be the species at the tips of the phylogeny and so all species in $\texttt{data}$ should appear as a $\texttt{tip.label}$ in the $\texttt{phylo}$ object. The internal nodes in the phylogeny are typically ancestral species. Data may also exist for these ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data in the analysis as long as the phylogeny has labelled internal nodes that correspond to a species in $\texttt{data}$. Before we proceed with an analysis we need to do a bit of housekeeping. The names in the data and phylogeny are formatted slightly differently - we need to replace the space between the generic and specific name with an underscore:
-
-
-```{r }
-bird.data$species<-gsub(" ", "_", bird.data$species)
-```
-
-We also need to rename the column $\texttt{family}$ in $\texttt{bird.data}$ otherwise $\texttt{MCMCglmm}$ will be expecting a long-format multi-response model with the $\texttt{family}$ column specifying the distribution (see Section \@ref(sec-longwide)):
+As with pedigrees, all species appearing in $\texttt{data}$ need to appear in the phylogeny. Typically, this will be the species at the tips of the phylogeny and so all species in $\texttt{data}$ should appear as a $\texttt{tip.label}$ in the $\texttt{phylo}$ object. The internal nodes in the phylogeny are typically ancestral species. Data may also exist for these ancestral species, or even for species present at the tips but measured many generations before. It is possible to include these data in the analysis as long as the phylogeny has labelled internal nodes that correspond to a species in $\texttt{data}$. Before we proceed with an analysis we need to do a bit of housekeeping. We need to rename the column $\texttt{family}$ in $\texttt{bird.data}$ otherwise $\texttt{MCMCglmm}$ will be expecting a long-format multi-response model with the $\texttt{family}$ column specifying the distribution (see Section \@ref(sec-longwide)):
 
 ```{r }
 bird.data<-rename(bird.data, Family = family)
 ```
 
-Finally, there are `r sum(!bird.data$species%in%bird.tree$tip.label)` species that appear in $\texttt{bird.data}$ that are not represented in the phylogeny. In many cases this is probably due to taxonomic revisions, and the species do appear but under a different name. Here, we will simply omit these species from the analysis.  
+In addition, there are `r sum(!bird.data$species%in%bird.tree$tip.label)` species that appear in $\texttt{bird.data}$ that are not represented in the phylogeny. In many cases this is probably due to taxonomic revisions, and the species do appear but under a different name. Here, we will simply omit these species from the analysis.  
 
 ```{r }
 bird.data<-subset(bird.data, species%in%bird.tree$tip.label)
