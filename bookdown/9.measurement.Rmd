@@ -197,7 +197,7 @@ m.idh<-MCMCglmm(yi~outcome, random=~idh(units):units, data=dat.kalaian1996, prio
 ${\bf \texttt{ginverse}}$: A $\texttt{units}$ by $\texttt{units}$ measurement error covariance matrix can be specified through the $\texttt{ginverse}$ argument to $\texttt{MCMCglmm}$. Conceptually this is equivalent to the specification above, but computationally more efficient.
 
 ```{r }
-ivi<-as(Diagonal(nrow(dat.kalaian1996), 1/dat.kalaian1996$vi), "CsparseMatrix")
+ivi<-as(Diagonal(nrow(dat.kalaian1996), 1/dat.kalaian1996$vi), "generalMatrix")
 rownames(ivi)<-dat.kalaian1996$id
 
 prior.ginv<-list(R=IW(1, 0.002), G=list(G1=list(V=1, fix=1)))
